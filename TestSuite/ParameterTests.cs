@@ -236,6 +236,9 @@ namespace MySql.Data.MySqlClient.Tests
 			cmd.Parameters.Add( null );
 		}
 
+		/// <summary>
+		/// Bug #7398  	MySqlParameterCollection doesn't allow parameters without filled in names
+		/// </summary>
 		[Test]
 		public void AllowUnnamedParameters() 
 		{
