@@ -1,3 +1,8 @@
+	Bug #8667  	OUT parameters are not being valued [fixed]
+	Bug #8574  	MySQLCommandBuilder unable to support inline functions [fixed]
+	Bug #8509  	MySqlDataAdapter.FillSchema does not interpret unsigned integer	[fixed]
+	Bug #8630  	Executing a query with the SchemaOnly option reads the entire resultset	[fixed]
+	
 1-20-05 - Version 1.0.4  
 
 	Bug #7243 calling prepare causing exception [fixed]
@@ -128,8 +133,8 @@
 	- Fixed persist security info case problem
 	- Fixed GetBool so that 1, true, "true", and "yes" all count as trueWL# 2024 Make parameter mark configurable 
 	- Added the "old syntax" connection string parameter to allow use of @ parameter marker
-	- Fixed Bug #4658	 MySqlCommandBuilder
-	- Fixed Bug #4864	 ByteFX.MySqlClient caches passwords if 'Persist Security Info' is false
+	- Fixed Bug#4658	 MySqlCommandBuilder
+	- Fixed Bug#4864	 ByteFX.MySqlClient caches passwords if 'Persist Security Info' is false
 	- Updated license banner in all source files to include FLOSS exception
 	- Added new .Types namespace and implementations for most current MySql types
 	- Added MySqlField41 as a subclass of MySqlField
@@ -585,7 +590,7 @@ Note that this build has not been checked out with Mono.
 * Update connection string designer to support Use Compression flag
 
 2/15/2003
-* Fixed string encoding so that European characters like ä will work correctly
+* Fixed string encoding so that European characters like  will work correctly
 
 2/9/2003
 * Creating base classes to aid in building new data providers
