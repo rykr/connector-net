@@ -47,6 +47,7 @@ namespace MySql.Data.MySqlClient
 		private ArrayList			parameterMap;
 		private StoredProcedure		storedProcedure;
 		private CommandResult		lastResult;
+		private int					cursorPageSize;
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/ctor1/*'/>
 		public MySqlCommand()
@@ -55,6 +56,7 @@ namespace MySql.Data.MySqlClient
 			parameterMap = new ArrayList();
 			parameters = new MySqlParameterCollection();
 			updatedRowSource = UpdateRowSource.Both;
+			cursorPageSize = 0;
 		}
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/ctor2/*'/>
@@ -285,7 +287,7 @@ namespace MySql.Data.MySqlClient
 			{
 				if (! firstTime) return null;
 //				if (preparedStatement.ExecutionCount != 0) return null;
-				result = preparedStatement.Execute( parameters );
+				result = preparedStatement.Execute( parameters, cursorPageSize );
 
 				if (updateCount == -1) updateCount = 0;
 				updateCount += (long)result.AffectedRows;
@@ -418,6 +420,14 @@ namespace MySql.Data.MySqlClient
 			reader.Close();
 
 			return val;
+		}
+
+		public void Prepare(int cursorPageSize) 
+		{
+			if (! connection.driver.Version.isAtLeast(5,0,0))
+				throw new InvalidOperationException("Nested commands are only supported on MySQL 5.0 and later");
+			this.cursorPageSize = cursorPageSize;
+			Prepare();
 		}
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/Prepare/*'/>

@@ -259,7 +259,7 @@ namespace MySql.Data.MySqlClient
 		public abstract void Reset();
 		public abstract CommandResult SendQuery( byte[] bytes, int length, bool consume );
 		public abstract long ReadResult( ref ulong affectedRows, ref long lastInsertId );
-		public abstract bool OpenDataRow(int fieldCount, bool isBinary);
+		public abstract bool OpenDataRow(int fieldCount, bool isBinary, int statementId);
 		public abstract MySqlValue ReadFieldValue( int index, MySqlField field, MySqlValue value ); 
 		public abstract CommandResult ExecuteStatement( byte[] bytes );
 		public abstract void SkipField(MySqlValue valObject );

@@ -48,12 +48,14 @@ namespace MySql.Data.MySqlClient
 		protected PacketReader			reader;
 		protected PacketWriter			writer;
 		private   BitArray				nullMap;
+		private   bool					rowFetched;
 
 		public NativeDriver(MySqlConnectionString settings) : base(settings)
 		{
 			packetSeq = 0;
 			isOpen = false;
 			maxPacketSize = 1047552;
+			rowFetched = false;
 		}
 
 		public ClientFlags Flags
@@ -450,8 +452,11 @@ namespace MySql.Data.MySqlClient
 			}
 		}
 
-		public override bool OpenDataRow(int fieldCount, bool isBinary) 
+		public override bool OpenDataRow(int fieldCount, bool isBinary, int statementId) 
 		{
+			if (statementId > 0)
+				return FetchDataRow( statementId, fieldCount );
+
 			reader.OpenPacket();
 
 			if (reader.IsLastPacket) 
@@ -649,6 +654,42 @@ namespace MySql.Data.MySqlClient
 			}
 
 			return new PreparedStatement( this, statementId, parameters );
+		}
+
+		private void ClearFetchedRow() 
+		{
+			reader.OpenPacket();
+			if (! reader.IsLastPacket)
+				throw new MySqlException("Cursor reading out of sync");
+			ReadEOF(false);
+			rowFetched = false;
+		}
+
+		private bool FetchDataRow(int statementId, int fieldCount)
+		{
+			if (rowFetched) 
+				ClearFetchedRow();
+
+			if ( (serverStatus & ServerStatusFlags.LastRowSent) != 0)
+				return false;
+
+			SequenceByte = 0;
+			writer.StartPacket( 9 );
+			writer.WriteByte( (byte)DBCmd.FETCH );
+			writer.WriteInteger( statementId, 4 );
+			writer.WriteInteger( 1, 4 );
+			writer.Flush();
+
+			reader.OpenPacket();
+			if (reader.IsLastPacket) 
+			{
+				ReadEOF(false);
+				return false;
+			}
+
+			rowFetched = true;
+			ReadNullMap(fieldCount);
+			return true;
 		}
 
 	}
