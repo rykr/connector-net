@@ -418,6 +418,9 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
+		/// <summary>
+		/// Added test for IsDBNull from bug# 7399
+		/// </summary>
 		[Test()]
 		public void SequentialAccessBehavior() 
 		{
@@ -429,10 +432,13 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 				reader = cmd.ExecuteReader( CommandBehavior.SequentialAccess );
 				Assert.IsTrue( reader.Read() );
+				Assert.IsFalse( reader.IsDBNull(0));
+				int i = reader.GetInt32(0);
 				string s = reader.GetString( 1 );
 				Assert.AreEqual( "test1", s );
+
 				// this next line should throw an exception
-				int i = reader.GetInt32( 0 );
+				i = reader.GetInt32( 0 );
 				Assert.Fail( "This line should not execute" );
 			}
 			catch (MySqlException) { }
