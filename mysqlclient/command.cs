@@ -422,6 +422,7 @@ namespace MySql.Data.MySqlClient
 			return val;
 		}
 
+		/// <include file='docs/mysqlcommand.xml' path='docs/Prepare2/*'/>
 		public void Prepare(int cursorPageSize) 
 		{
 			if (! connection.driver.Version.isAtLeast(5,0,0))
