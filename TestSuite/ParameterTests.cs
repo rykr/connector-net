@@ -34,6 +34,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[TestFixtureSetUp]
 		public void SetUp()
 		{
+			csAdditions = ";logging=true";
 			Open();
 			execSQL("DROP TABLE IF EXISTS Test; CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME, ts TIMESTAMP, PRIMARY KEY(id))");
 		}
@@ -234,6 +235,25 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, name) VALUES (1, ?name)", conn);
 			cmd.Parameters.Add( null );
+		}
+
+		[Test]
+		public void AllowUnnamedParameters() 
+		{
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO test (id,name) VALUES (?id, ?name)", conn);
+			cmd.Parameters.Add( new MySqlParameter() );
+			cmd.Parameters.Add( new MySqlParameter() );
+			cmd.Parameters[0].ParameterName = "?id";
+			cmd.Parameters[0].Value = 1;
+			cmd.Parameters[1].ParameterName = "?name";
+			cmd.Parameters[1].Value = "test";
+			cmd.ExecuteNonQuery();
+
+			cmd.CommandText = "SELECT id FROM test";
+			Assert.AreEqual(1, cmd.ExecuteScalar());
+
+			cmd.CommandText = "SELECT name FROM test";
+			Assert.AreEqual( "test", cmd.ExecuteScalar());
 		}
 
 		[Test()]

@@ -271,8 +271,6 @@ namespace MySql.Data.MySqlClient
 			if (value == null) 
 				throw new ArgumentException("The MySqlParameterCollection only accepts non-null MySqlParameter type objects.", "value");
 
-			if ( value.ParameterName == null ) throw new ArgumentException("parameter must be named");
-
 			_parms.Add(value);
 			return value;
 		}
