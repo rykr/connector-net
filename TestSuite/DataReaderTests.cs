@@ -698,5 +698,36 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
+		/// <summary>
+		/// Bug #8630  	Executing a query with the SchemaOnly option reads the entire resultset
+		/// </summary>
+		[Test]
+		public void SchemaOnly() 
+		{
+			execSQL("INSERT INTO Test (id,name) VALUES(1,'test1')");
+			execSQL("INSERT INTO Test (id,name) VALUES(2,'test2')");
+			execSQL("INSERT INTO Test (id,name) VALUES(3,'test3')");
+
+			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+			MySqlDataReader reader = null;
+			try 
+			{
+				reader = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
+				DataTable table = reader.GetSchemaTable();
+				Assert.AreEqual(5, table.Rows.Count);
+				Assert.AreEqual(22, table.Columns.Count);
+				Assert.IsFalse(reader.Read());
+			}
+			catch (Exception ex) 
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally 
+			{
+				if (reader != null) reader.Close();
+			}
+		}
+
+
 	}
 }

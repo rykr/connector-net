@@ -1,4 +1,4 @@
-// Copyright (C) 2004 MySQL AB
+// Copyright (C) 2004-2005 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -42,9 +42,9 @@ namespace MySql.Data.Types
 			s = s.Replace("\'", "\\\'");
 			s = s.Replace("\"", "\\\"");
 			s = s.Replace("`", "\\`");
-			s = s.Replace("´", "\\´");
-			s = s.Replace("’", "\\’");
-			s = s.Replace("‘", "\\‘");
+//			s = s.Replace("", "\\");
+//			s = s.Replace("", "\\");
+//			s = s.Replace("", "\\");
 			return s;
 		}
 

@@ -10,8 +10,10 @@
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Component Id="BaseComponents" Guid="81f21eae-3342-43bf-9e26-45cf54c427de">
 				<File Id="ChangeLog" Name="CLog" LongName="CHANGES" src="..\CHANGES" DiskId="1"/>
+				<?if $(var.IsGPL) = true ?>
 				<File Id="EXCEPTIONS" Name="EXC" LongName="EXCEPTIONS" src="..\EXCEPTIONS" DiskId="1"/>
 				<File Id="COPYING" Name="COPY" LongName="COPYING" src="..\COPYING" DiskId="1" />
+				<?endif?>
 				<File Id="README1" Name="README" src="..\README" DiskId="1"/>
 			</Component>
 					

@@ -214,5 +214,51 @@ namespace MySql.Data.MySqlClient.Tests
 				Assert.Fail( ex.Message );
 			}
 		}
+
+		[Test]
+		public void ConnectingAsUTF8()
+		{
+			execSQL("CREATE Database IF NOT EXISTS test2 DEFAULT CHARACTER SET utf8");
+
+			string connStr = String.Format("server={0};user id={1}; password={2}; database=test2;pooling=false;charset=utf8",
+				host, user, password);
+			MySqlConnection c = new MySqlConnection(connStr);
+			c.Open();
+
+			MySqlCommand cmd = new MySqlCommand("DROP TABLE IF EXISTS test;CREATE TABLE test (id varbinary(16), active bit)", c);
+			cmd.ExecuteNonQuery();
+			cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x1234567890 AS Binary), true)";
+			cmd.ExecuteNonQuery();
+			cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x123456789a AS Binary), true)";
+			cmd.ExecuteNonQuery();
+			cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x123456789b AS Binary), true)";
+			cmd.ExecuteNonQuery();
+			c.Close();
+
+			MySqlConnection d = new MySqlConnection(connStr);
+			d.Open();
+
+			MySqlCommand cmd2 = new MySqlCommand( "SELECT id, active FROM test", d);
+			MySqlDataReader reader = null;
+			try 
+			{
+				reader = cmd2.ExecuteReader();
+				Assert.IsTrue(reader.Read());
+				Assert.IsTrue(reader.GetBoolean(1));
+			}
+			catch (Exception ex) 
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally 
+			{
+				if (reader != null) reader.Close();
+			}
+			
+			d.Close();
+
+			execSQL("DROP DATABASE IF EXISTS test2");
+		}
+
 	}
 }

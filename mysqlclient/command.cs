@@ -1,4 +1,4 @@
-// Copyright (C) 2004 MySQL AB
+// Copyright (C) 2004-2005 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -385,6 +385,7 @@ namespace MySql.Data.MySqlClient
 
 			if (0 != (behavior & CommandBehavior.SchemaOnly))
 			{
+				sql = String.Format("SET SQL_SELECT_LIMIT=0;{0};SET sql_select_limit=-1;", cmdText);
 			}
 
 			if (0 != (behavior & CommandBehavior.SingleRow))

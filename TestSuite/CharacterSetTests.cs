@@ -57,6 +57,31 @@ namespace MySql.Data.MySqlClient.Tests
 			c.Close();
 		}
 
+		[Test]
+		public void VarBinary() 
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			createTable("CREATE TABLE test (id int, name varchar(200) collate utf8_bin) charset utf8", "InnoDB");
+			execSQL("INSERT INTO test VALUES (1, 'Test1')");
+
+			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+			MySqlDataReader reader = null;
+			try 
+			{
+				reader = cmd.ExecuteReader();
+				Assert.IsTrue(reader.Read());
+				object o = reader.GetValue(1);
+				Assert.IsTrue(o is string);
+			}
+			catch (Exception ex) 
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally 
+			{
+				if (reader != null) reader.Close();
+			}
+		}
 
 		[Test]
 		public void Latin1Connection() 

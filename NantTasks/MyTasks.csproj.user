@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP LastOpenVersion = "7.10.3077" >
         <Build>
-            <Settings ReferencePath = "C:\Program Files\.NET Tools\Nant\bin\" >
+            <Settings ReferencePath = "C:\Program Files\.NET Tools\Nant\bin\;C:\Program Files\Nant\bin\" >
                 <Config
                     Name = "Debug"
                     EnableASPDebugging = "false"
