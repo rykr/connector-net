@@ -110,8 +110,8 @@ namespace MySql.Data.MySqlClient
 
 //			executionCount ++;
 			// send the data packet and return the CommandResult
-			CommandResult result = driver.ExecuteStatement( ((System.IO.MemoryStream)packet.Stream).ToArray() );
-			result.StatementId = cursorPageSize > 0 ? StatementId : 0;
+			CommandResult result = driver.ExecuteStatement( 
+				((System.IO.MemoryStream)packet.Stream).ToArray(), StatementId, cursorPageSize );
 			return result;
 		}
 

@@ -103,6 +103,15 @@ namespace MySql.Data.MySqlClient
 
 		#endregion
 
+		internal void ReadRemainingColumns() 
+		{
+			if (! usingSequentialAccess) return;
+
+			usingSequentialAccess = false;
+			for (int i=seqColumn+1; i < (int)fieldCount; i++)
+				values[i] = driver.ReadFieldValue( i, fields[i], values[i] );
+		}
+
 		public MySqlValue ReadColumnValue(int index)
 		{
 			if (! usingSequentialAccess || seqColumn == index) 

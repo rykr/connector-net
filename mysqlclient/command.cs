@@ -331,7 +331,7 @@ namespace MySql.Data.MySqlClient
 				throw new InvalidOperationException("Connection must be valid and open");
 
 			// Data readers have to be closed first
-			if (connection.Reader != null)
+			if (connection.Reader != null && cursorPageSize == 0)
 				throw new MySqlException("There is already an open DataReader associated with this Connection which must be closed first.");
 
 			if (CommandType == CommandType.StoredProcedure && ! connection.driver.Version.isAtLeast(5,0,0))

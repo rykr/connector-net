@@ -48,14 +48,17 @@ namespace MySql.Data.MySqlClient
 		protected PacketReader			reader;
 		protected PacketWriter			writer;
 		private   BitArray				nullMap;
-		private   bool					rowFetched;
+
+		private		int					lastCommandResult;
+		private		Hashtable			commandResults;
 
 		public NativeDriver(MySqlConnectionString settings) : base(settings)
 		{
 			packetSeq = 0;
 			isOpen = false;
 			maxPacketSize = 1047552;
-			rowFetched = false;
+			lastCommandResult = 0;
+			commandResults = new Hashtable();
 		}
 
 		public ClientFlags Flags
@@ -73,6 +76,11 @@ namespace MySql.Data.MySqlClient
 		{
 			get { return maxPacketSize; }
 			set { maxPacketSize = value; }
+		}
+
+		internal Hashtable CommandResults 
+		{ 
+			get { return commandResults; }
 		}
 
 		/// <summary>
@@ -590,11 +598,16 @@ namespace MySql.Data.MySqlClient
 		}
 
 
-		public override CommandResult ExecuteStatement( byte[] bytes )
+		public override CommandResult ExecuteStatement( byte[] bytes, int statementId, int cursorPageSize )
 		{
 			ExecuteCommand( DBCmd.EXECUTE, bytes, bytes.Length );
-
-			return new CommandResult( this, true );
+			CommandResult result = new CommandResult( this, true );
+			if (cursorPageSize > 0)
+			{
+				result.StatementId = statementId;
+				commandResults.Add( statementId, result);
+			}
+			return result;
 		}
 
 		private void ReadEOF( bool readPacket ) 
@@ -612,12 +625,23 @@ namespace MySql.Data.MySqlClient
 				int warningCount = reader.ReadInteger(2);
 				serverStatus = (ServerStatusFlags)reader.ReadInteger(2);
 				ShowWarnings(warningCount);
+
+				// if we are at the end of this cursor based resultset, then we remove
+				// the last row sent status flag so our next fetch doesn't abort early
+				// and we remove this command result from our list of active CommandResult objects.
+				if ((serverStatus & ServerStatusFlags.LastRowSent) != 0)
+				{
+					serverStatus &= ~ServerStatusFlags.LastRowSent;
+					commandResults.Remove(lastCommandResult);
+				}
 			}
 
 		}
 
 		public override PreparedStatement Prepare( string sql, string[] parmNames ) 
 		{
+			ClearFetchedRow();
+
 			byte[] bytes = encoding.GetBytes( sql );
 
 			ExecuteCommand( DBCmd.PREPARE, bytes, bytes.Length );
@@ -658,17 +682,23 @@ namespace MySql.Data.MySqlClient
 
 		private void ClearFetchedRow() 
 		{
+			if (lastCommandResult == 0) return;
+
+			CommandResult result = (CommandResult)commandResults[lastCommandResult];
+			result.ReadRemainingColumns();
+
 			reader.OpenPacket();
 			if (! reader.IsLastPacket)
 				throw new MySqlException("Cursor reading out of sync");
 			ReadEOF(false);
-			rowFetched = false;
+			lastCommandResult = 0;
 		}
 
 		private bool FetchDataRow(int statementId, int fieldCount)
 		{
-			if (rowFetched) 
-				ClearFetchedRow();
+			ClearFetchedRow();
+
+			if (!commandResults.ContainsKey(statementId)) return false;
 
 			if ( (serverStatus & ServerStatusFlags.LastRowSent) != 0)
 				return false;
@@ -680,14 +710,15 @@ namespace MySql.Data.MySqlClient
 			writer.WriteInteger( 1, 4 );
 			writer.Flush();
 
+			lastCommandResult = statementId;
 			reader.OpenPacket();
 			if (reader.IsLastPacket) 
 			{
 				ReadEOF(false);
+				lastCommandResult = 0;
 				return false;
 			}
 
-			rowFetched = true;
 			ReadNullMap(fieldCount);
 			return true;
 		}
