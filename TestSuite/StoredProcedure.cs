@@ -46,6 +46,29 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
+		[Test]
+		public void ReturningResultset() 
+		{
+			if (! Is50) return;
+
+			// create our procedure
+			execSQL( "DROP PROCEDURE IF EXISTS spTest" );
+			execSQL( "CREATE PROCEDURE spTest( val decimal(10,3)) begin select val; end" );
+			
+			using (MySqlCommand cmd = new MySqlCommand("spTest", conn))
+			{
+				cmd.CommandType = CommandType.StoredProcedure;
+
+				MySqlParameter p = cmd.Parameters.Add("val", MySqlDbType.Decimal);
+				p.Precision = 10;
+				p.Scale = 3;
+				p.Value = 21;
+
+				object id = cmd.ExecuteScalar();
+				Assert.AreEqual( 21, id );
+			}
+		}
+
 		[Test()]
 		public void NonQuery()
 		{
@@ -172,20 +195,22 @@ namespace MySql.Data.MySqlClient.Tests
 			if (! Is50) return;
 
 			// create our procedure
-			execSQL( "CREATE PROCEDURE spTest( INOUT strVal VARCHAR(50), INOUT numVal INT ) " +
-				"BEGIN  SET strVal = CONCAT(strVal,'ending'); SET numVal=numVal * 2;  END" );
+			execSQL( "CREATE PROCEDURE spTest( INOUT strVal VARCHAR(50), INOUT numVal INT, OUT outVal INT UNSIGNED ) " +
+				"BEGIN  SET strVal = CONCAT(strVal,'ending'); SET numVal=numVal * 2;  SET outVal=99; END" );
 
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
 			cmd.Parameters.Add( "?strVal", "beginning" );
 			cmd.Parameters.Add( "?numVal", 33 );
+			cmd.Parameters.Add( "?outVal", MySqlDbType.Int32);
 			cmd.Parameters[0].Direction = ParameterDirection.InputOutput;
 			cmd.Parameters[1].Direction = ParameterDirection.InputOutput;
+			cmd.Parameters[2].Direction = ParameterDirection.Output;
 			int rowsAffected = cmd.ExecuteNonQuery();
 			Assert.AreEqual( 0, rowsAffected );
 			Assert.AreEqual( "beginningending", cmd.Parameters[0].Value );
 			Assert.AreEqual( 66, cmd.Parameters[1].Value );
-
+			Assert.AreEqual(99, cmd.Parameters[2].Value);
 			execSQL("DROP PROCEDURE spTest");
 		}
 

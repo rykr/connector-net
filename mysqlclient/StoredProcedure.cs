@@ -88,8 +88,8 @@ namespace MySql.Data.MySqlClient
 					foreach (string paramDef in paramDefs) 
 					{
 						string[] parts = Utility.ContextSplit( paramDef.ToLower(), " \t", "");
-						string direction = parts.Length == 3 ? parts[0] : "in";
-						string vName = parts.Length == 3 ? parts[1] : parts[0];
+						string direction = parts.Length >= 3 ? parts[0] : "in";
+						string vName = parts.Length >= 3 ? parts[1] : parts[0];
 
 						string pName = connection.ParameterMarker + vName;
 						vName = "@" + hash + vName;

@@ -3,6 +3,7 @@
 	Bug #8509  	MySqlDataAdapter.FillSchema does not interpret unsigned integer	[fixed]
 	Bug #8630  	Executing a query with the SchemaOnly option reads the entire resultset	[fixed]
 	Bug #7398  	MySqlParameterCollection doesn't allow parameters without filled in names [fixed]
+	Fixed problem parsing stored procedure parameter defs such as OUT val INT  UNSIGNED
 	
 1-20-05 - Version 1.0.4  
 
