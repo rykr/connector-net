@@ -108,6 +108,14 @@
                     BuildAction = "None"
                 />
                 <File
+                    RelPath = "Installer\main.wxs"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Installer\ui.wxs"
+                    BuildAction = "Content"
+                />
+                <File
                     RelPath = "MySqlClient\AssemblyInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

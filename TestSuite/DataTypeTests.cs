@@ -383,5 +383,34 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 
+		/// <summary>
+		/// Bug #8929  	Timestamp values with a date > 10/29/9997 cause problems
+		/// </summary>
+		[Test]
+		public void LargeDateTime() 
+		{
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, dt) VALUES(?id,?dt)", conn);
+			cmd.Parameters.Add(new MySqlParameter("?id", 1));
+			cmd.Parameters.Add(new MySqlParameter("?dt", DateTime.Parse("9997-10-29")));
+			cmd.ExecuteNonQuery();
+			cmd.Parameters[0].Value = 2;
+			cmd.Parameters[1].Value = DateTime.Parse("9997-10-30");
+			cmd.ExecuteNonQuery();
+			cmd.Parameters[0].Value = 3;
+			cmd.Parameters[1].Value = DateTime.Parse("9999-12-31");
+			cmd.ExecuteNonQuery();
+
+			cmd.CommandText = "SELECT id,dt FROM Test";
+			using (MySqlDataReader reader = cmd.ExecuteReader()) 
+			{
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual(DateTime.Parse("9997-10-29").Date, reader.GetDateTime(1).Date);
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual(DateTime.Parse("9997-10-30").Date, reader.GetDateTime(1).Date);
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual(DateTime.Parse("9999-12-31").Date, reader.GetDateTime(1).Date);
+			}
+		}
+
 	}
 }
