@@ -75,6 +75,6 @@ using System.Runtime.CompilerServices;
 //
 [assembly: AssemblyDelaySign(false)]
 #if FINAL
-[assembly: AssemblyKeyFile(@"d:\work\connector-net\cnet.snk")]
+[assembly: AssemblyKeyFile(@"d:\work\Connector .Net\cnet.snk")]
 #endif
 [assembly: AssemblyKeyName("")]
