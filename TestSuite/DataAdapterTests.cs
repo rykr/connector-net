@@ -381,5 +381,27 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(5, ds.Tables[0].Rows[2]["id"]);
 		}
 
+		/// <summary>
+		/// Bug #8292  	GROUP BY / WITH ROLLUP with DataSet causes System.Data.ConstraintException
+		/// </summary>
+		[Test]
+		public void Rollup() 
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test ( id INT NOT NULL, amount INT )");
+			execSQL("INSERT INTO test VALUES (1, 44)");
+			execSQL("INSERT INTO test VALUES (2, 88)");
+
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test GROUP BY id WITH ROLLUP", conn);
+			DataSet ds = new DataSet();
+			da.Fill(ds);
+
+			Assert.AreEqual(1, ds.Tables.Count);
+			Assert.AreEqual(3, ds.Tables[0].Rows.Count);
+			Assert.AreEqual(88, ds.Tables[0].Rows[2]["amount"]);
+			Assert.AreEqual(DBNull.Value, ds.Tables[0].Rows[2]["id"]);
+		}
+
+
 	}
 }

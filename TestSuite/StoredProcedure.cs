@@ -46,6 +46,9 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
+		/// <summary>
+		/// Bug #7623  	Adding MySqlParameter causes error if MySqlDbType is Decimal
+		/// </summary>
 		[Test]
 		public void ReturningResultset() 
 		{
