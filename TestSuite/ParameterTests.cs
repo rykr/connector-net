@@ -34,7 +34,6 @@ namespace MySql.Data.MySqlClient.Tests
 		[TestFixtureSetUp]
 		public void SetUp()
 		{
-			csAdditions = ";logging=true";
 			Open();
 			execSQL("DROP TABLE IF EXISTS Test; CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME, ts TIMESTAMP, PRIMARY KEY(id))");
 		}
