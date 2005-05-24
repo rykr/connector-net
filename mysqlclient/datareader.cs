@@ -43,6 +43,7 @@ namespace MySql.Data.MySqlClient
 		private bool			hasRows;
 		private CommandResult	currentResult;
 		private int				readCount;
+		private DataTable		schemaTable;
 
 		/* 
 		 * Keep track of the connection in order to implement the
@@ -358,8 +359,8 @@ namespace MySql.Data.MySqlClient
 		public float GetFloat(int index)
 		{
 			MySqlValue v = GetFieldValue(index);
-			if (v is MySqlSingle)
-				return ((MySqlSingle)v).Value;
+			if (v is MySqlFloat)
+				return ((MySqlFloat)v).Value;
 			return Convert.ToSingle(v.ValueAsObject);
 		}
 
@@ -432,6 +433,8 @@ namespace MySql.Data.MySqlClient
 		/// <returns></returns>
 		public DataTable GetSchemaTable()
 		{
+			if (schemaTable != null) return schemaTable;
+
 			// Only Results from SQL SELECT Queries 
 			// get a DataTable for schema of the result
 			// otherwise, DataTable is null reference
@@ -468,6 +471,7 @@ namespace MySql.Data.MySqlClient
 			for (int i=0; i < fields.Length; i++)
 			{
 				MySqlField f = fields[i];
+
 				DataRow r = dataTableSchema.NewRow();
 				r["ColumnName"] = f.ColumnName;
 				r["ColumnOrdinal"] = ord++;
@@ -488,13 +492,14 @@ namespace MySql.Data.MySqlClient
 				r["IsKey"] = f.IsPrimaryKey;
 				r["IsAutoIncrement"] = f.IsAutoIncrement;
 				r["BaseSchemaName"] = null;
-				r["BaseCatalogName"] = null;
-				r["BaseTableName"] = f.TableName;
-				r["BaseColumnName"] = f.ColumnName;
+				r["BaseCatalogName"] = f.DatabaseName;
+				r["BaseTableName"] = f.RealTableName;
+				r["BaseColumnName"] = f.OriginalColumnName;
 
 				dataTableSchema.Rows.Add( r );
 			}
 
+			schemaTable = dataTableSchema;
 			return dataTableSchema;
 		}
 
@@ -614,14 +619,22 @@ namespace MySql.Data.MySqlClient
 				throw new MySqlException("Invalid attempt to NextResult when reader is closed.");
 
 			// clear any rows that have not been read from the last rowset
-			if (currentResult != null)
+			if (currentResult != null) 
 				currentResult.Consume();
 
 			// tell our command to continue execution of the SQL batch until it its
 			// another resultset
 			try 
 			{
-				currentResult = command.GetNextResultSet(this);
+				CommandResult nextResult = command.GetNextResultSet(this);
+				if (nextResult != null)
+					currentResult = nextResult;
+				else 
+				{
+					// if there was no more resultsets, then signal done
+					canRead = false;
+					return false;
+				}
 				readCount = 0;
 			}
 			catch (MySqlException ex) 
@@ -630,12 +643,7 @@ namespace MySql.Data.MySqlClient
 				throw;
 			}
 
-			// if there was no more resultsets, then signal done
-			if (currentResult == null) 
-			{
-				canRead = false;
-				return false;
-			}
+			schemaTable = null;
 
 			// When executing query statements, the result byte that is returned
 			// from MySql is the column count.  That is why we reference the LastResult

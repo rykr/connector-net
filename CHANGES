@@ -7,6 +7,11 @@
 	Bug #7623  	Adding MySqlParameter causes error if MySqlDbType is Decimal [fixed]
 	Now supports the new decimal type introduced in 5.0.3
 	Bug #8929  	Timestamp values with a date > 10/29/9997 cause problems [fixed]
+	Bug #8514  	CURRENT_TIMESTAMP default not respected [fixed]
+	Bug #9237  	MySqlDataReader.AffectedRecords not set to -1 [fixed]
+	Bug #9262  	Floating point numbers boundary conditions (MinValue/MaxValue)
+				(added code but really this isn't a bug)
+	Bug #7951   Error reading a timestamp column 				
 	
 1-20-05 - Version 1.0.4  
 
