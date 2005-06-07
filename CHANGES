@@ -12,6 +12,8 @@
 	Bug #9262  	Floating point numbers boundary conditions (MinValue/MaxValue)
 				(added code but really this isn't a bug)
 	Bug #7951   Error reading a timestamp column 				
+	Bug #10644  Cannot call a stored function directly from Connector/Net 	
+	Bug #9722   Connector does not recognize parameters separated by a linefeed 
 	
 1-20-05 - Version 1.0.4  
 

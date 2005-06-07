@@ -394,13 +394,16 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( 33, val );
 		}
 
+		/// <summary>
+		/// Bug #9722 Connector does not recognize parameters separated by a linefeed 
+		/// </summary>
 		[Test]
 		public void OtherProcSigs() 
 		{
 			if (! Is50) return;
 			
 			// create our procedure
-			execSQL( "CREATE PROCEDURE spTest( IN   	valin   	DECIMAL(10,2), IN val2 INT ) BEGIN  SELECT valin; END" );
+			execSQL( "CREATE PROCEDURE spTest(IN \r\nvalin DECIMAL(10,2),\nIN val2 INT) BEGIN  SELECT valin; END" );
 
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
@@ -408,6 +411,13 @@ namespace MySql.Data.MySqlClient.Tests
 			cmd.Parameters.Add( "?val2", 4 );
 			object val = cmd.ExecuteScalar();
 			Assert.AreEqual( 20.4, val );
+
+			// create our second procedure
+			execSQL("DROP PROCEDURE spTest");
+			execSQL("CREATE PROCEDURE spTest( \r\n) BEGIN  SELECT 4; END" );
+			cmd.Parameters.Clear();
+			val = cmd.ExecuteScalar();
+			Assert.AreEqual(4, val);
 		}
 
 
@@ -429,5 +439,6 @@ namespace MySql.Data.MySqlClient.Tests
 			cmd.ExecuteNonQuery();
 			Assert.AreEqual(44, cmd.Parameters[1].Value);
 		}
+
 	}
 }

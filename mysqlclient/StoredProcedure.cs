@@ -104,10 +104,10 @@ namespace MySql.Data.MySqlClient
 				if (param_list != null && param_list.Length > 0)
 				{
 					string[] paramDefs = Utility.ContextSplit( param_list, ",", "()" );
-					//string[] paramDefs = param_list.Split(',');
 					foreach (string paramDef in paramDefs) 
 					{
-						string[] parts = Utility.ContextSplit( paramDef.ToLower(), " \t", "");
+						string[] parts = Utility.ContextSplit( paramDef.ToLower(), " \t\r\n", "");
+						if (parts.Length == 0) continue;
 						string direction = parts.Length >= 3 ? parts[0] : "in";
 						string vName = parts.Length >= 3 ? parts[1] : parts[0];
 
