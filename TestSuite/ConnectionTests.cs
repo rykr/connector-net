@@ -260,5 +260,14 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("DROP DATABASE IF EXISTS test2");
 		}
 
+		/// <summary>
+		/// Bug #10281 Clone issue with MySqlConnection 
+		/// </summary>
+		[Test()]
+		public void TestConnectionClone()
+		{
+			MySqlConnection c = new MySqlConnection();
+			MySqlConnection clone = (MySqlConnection) ((ICloneable)c).Clone();
+		}
 	}
 }
