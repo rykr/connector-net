@@ -19,6 +19,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 
 using System;
+using System.Data;
 using MySql.Data.Common;
 
 namespace MySql.Data.MySqlClient
@@ -39,11 +40,12 @@ namespace MySql.Data.MySqlClient
 			connection = conn;
 		}
 
-		private string GetParameterList( string spName ) 
+		private string GetParameterList(string spName, bool isProc) 
 		{
 			// query the mysql.proc table for the procedure parameter list
-			string sql = String.Format("SELECT param_list FROM  mysql.proc WHERE db=_latin1 {0}db AND name=_latin1 {0}name",
-				connection.ParameterMarker);
+			string sql = String.Format("SELECT param_list FROM mysql.proc WHERE " +
+				"db=_latin1 {0}db AND name=_latin1 {0}name AND type='{1}'",
+				connection.ParameterMarker, isProc ? "PROCEDURE" : "FUNCTION");
 			MySqlCommand cmd = new MySqlCommand(sql, connection);
 			cmd.Parameters.Add("db", connection.Database);
 			cmd.Parameters.Add("name", spName);
@@ -66,20 +68,38 @@ namespace MySql.Data.MySqlClient
 			}
 		}
 
+		private string GetReturnParameter(MySqlCommand cmd)
+		{
+			foreach (MySqlParameter p in cmd.Parameters)
+				if (p.Direction == ParameterDirection.ReturnValue)
+					return hash + p.ParameterName;
+			return null;
+		}
+
+		private string PrepareAsFunction(MySqlCommand cmd)
+		{
+			return null;
+		}
+
 		/// <summary>
 		/// Creates the proper command text for executing the given stored procedure
 		/// </summary>
 		/// <param name="spName"></param>
 		/// <returns></returns>
-		public string Prepare( string spName )
+		public string Prepare(MySqlCommand cmd)
 		{
+			// if we have a return value paramter, then we treat it as a 
+			// stored function
+			string retParm = GetReturnParameter(cmd);
+			bool isProc = retParm == null;
+
 			string setStr = String.Empty;
-			string sqlStr = "call " + spName + "(";
+			string sqlStr = String.Empty;
 			
 			outSelect = String.Empty;
 			try 
 			{
-				string param_list = GetParameterList( spName );
+				string param_list = GetParameterList(cmd.CommandText, isProc);
 
 				if (param_list != null && param_list.Length > 0)
 				{
@@ -109,15 +129,22 @@ namespace MySql.Data.MySqlClient
 						}
 					}
 				}
-				sqlStr = sqlStr.TrimEnd(' ', ',') + ")";
+				sqlStr = sqlStr.TrimEnd(' ', ',');
 				outSelect = outSelect.TrimEnd(' ', ',');
+				if (isProc)
+					sqlStr = "call " + cmd.CommandText + "(" + sqlStr + ")";
+				else
+				{
+					sqlStr = "set @" + retParm + "=" + cmd.CommandText + "(" + sqlStr + ")";
+					outSelect = "@" + retParm;
+				}
 				if (setStr.Length > 0)
 					sqlStr = setStr + sqlStr;
 				return sqlStr;
 			}
 			catch (Exception ex)
 			{
-				throw new MySqlException("Exception trying to retrieve parameter info for " + spName + ": " + ex.Message, ex);
+				throw new MySqlException("Exception trying to retrieve parameter info for " + cmd.CommandText + ": " + ex.Message, ex);
 			}
 		}
 

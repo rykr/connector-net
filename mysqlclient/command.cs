@@ -287,10 +287,14 @@ namespace MySql.Data.MySqlClient
 //				if (preparedStatement.ExecutionCount != 0) return null;
 				result = preparedStatement.Execute( parameters );
 
-				if (updateCount == -1) updateCount = 0;
-				updateCount += (long)result.AffectedRows;
+				if (! result.IsResultSet) 
+				{
+					if (updateCount == -1) updateCount = 0;
+					updateCount += (long)result.AffectedRows;
+				}
 			}
-			else while (sqlBuffers.Count > 0)
+			else 
+			while (sqlBuffers.Count > 0)
 			{
 				MemoryStream sqlStream = (MemoryStream)sqlBuffers[0];
 
@@ -299,13 +303,12 @@ namespace MySql.Data.MySqlClient
 					result = connection.driver.SendQuery( sqlStream.GetBuffer(), (int)sqlStream.Length, false );
 					sqlBuffers.RemoveAt( 0 );
 				}
-
-				if (updateCount == -1) 
-					updateCount = 0;
-
-				updateCount += (long)result.AffectedRows;
-
-				if (result.IsResultSet) break;
+	
+				if (! result.IsResultSet) 
+				{
+					if (updateCount == -1) updateCount = 0;
+					updateCount += (long)result.AffectedRows;
+				}
 			}
 
 			if (result.IsResultSet) 
@@ -439,6 +442,15 @@ namespace MySql.Data.MySqlClient
 		}
 		#endregion
 
+		#region Internal Methods
+
+		internal void Unprepare() 
+		{
+			preparedStatement = null;
+		}
+
+		#endregion
+
 		#region Private Methods
 
 		/// <summary>
@@ -492,7 +504,7 @@ namespace MySql.Data.MySqlClient
 			{
 				if (storedProcedure == null)
 					storedProcedure = new StoredProcedure(connection);
-				sql = storedProcedure.Prepare( CommandText );
+				sql = storedProcedure.Prepare( this );
 			}
 
 			// tokenize the SQL

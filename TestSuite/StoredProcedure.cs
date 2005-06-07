@@ -381,6 +381,20 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
+		public void ExecuteWithCreate() 
+		{
+			if (! Is50) return;
+			
+			// create our procedure
+			string sql = "CREATE PROCEDURE spTest(IN var INT) BEGIN  SELECT var; END; call spTest(?v)";
+
+			MySqlCommand cmd = new MySqlCommand(sql, conn);
+			cmd.Parameters.Add(new MySqlParameter("?v", 33));
+			object val = cmd.ExecuteScalar();
+			Assert.AreEqual( 33, val );
+		}
+
+		[Test]
 		public void OtherProcSigs() 
 		{
 			if (! Is50) return;
@@ -396,5 +410,24 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( 20.4, val );
 		}
 
+
+		/// <summary>
+		/// Bug #10644 Cannot call a stored function directly from Connector/Net 
+		/// </summary>
+		[Test]
+		public void CallingStoredFunctionasProcedure()
+		{
+			if (! Is50) return;
+
+			execSQL("DROP FUNCTION IF EXISTS spFunc");
+			execSQL("CREATE FUNCTION spFunc(valin int) RETURNS INT BEGIN return valin * 2; END");
+			MySqlCommand cmd = new MySqlCommand("spFunc", conn);
+			cmd.CommandType = CommandType.StoredProcedure;
+			cmd.Parameters.Add("?valin", 22);
+			cmd.Parameters.Add("retval", MySqlDbType.Int32);
+			cmd.Parameters[1].Direction = ParameterDirection.ReturnValue;
+			cmd.ExecuteNonQuery();
+			Assert.AreEqual(44, cmd.Parameters[1].Value);
+		}
 	}
 }
