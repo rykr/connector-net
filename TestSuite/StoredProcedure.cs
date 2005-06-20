@@ -440,5 +440,47 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(44, cmd.Parameters[1].Value);
 		}
 
+		/// <summary>
+		/// Bug #11450  	Connector/Net, current database and stored procedures
+		/// </summary>
+		[Test]
+		public void NoDefaultDatabase()
+		{
+			if (! Is50) return;
+			
+			// create our procedure
+			execSQL("DROP PROCEDURE IF EXISTS spTest");
+			execSQL("CREATE PROCEDURE spTest() BEGIN  SELECT 4; END" );
+
+			string newConnStr = GetConnectionString(false);
+			MySqlConnection c = new MySqlConnection(newConnStr);
+			try 
+			{
+				c.Open();
+				MySqlCommand cmd2 = new MySqlCommand("use test", c);
+				cmd2.ExecuteNonQuery();
+
+				MySqlCommand cmd = new MySqlCommand("spTest", c);
+				cmd.CommandType = CommandType.StoredProcedure;
+				object val = cmd.ExecuteScalar();
+				Assert.AreEqual(4, val);
+
+				cmd2.CommandText = "use mysql";
+				cmd2.ExecuteNonQuery();
+
+				cmd.CommandText = "test.spTest";
+				val = cmd.ExecuteScalar();
+				Assert.AreEqual(4, val);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally 
+			{
+				c.Close();
+			}
+				
+		}
 	}
 }

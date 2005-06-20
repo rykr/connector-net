@@ -42,12 +42,29 @@ namespace MySql.Data.MySqlClient
 
 		private string GetParameterList(string spName, bool isProc) 
 		{
+			MySqlCommand cmd = new MySqlCommand();
+			cmd.Connection = connection;
+
+			int dotIndex = spName.IndexOf(".");
 			// query the mysql.proc table for the procedure parameter list
-			string sql = String.Format("SELECT param_list FROM mysql.proc WHERE " +
-				"db=_latin1 {0}db AND name=_latin1 {0}name AND type='{1}'",
+			// if our spname as a dot in it, then we assume the first part is the 
+			// database name.  If there is no dot, then we use database() as 
+			// the current database.
+			if (dotIndex == -1)
+				cmd.CommandText = "SELECT param_list FROM mysql.proc WHERE db=database() ";
+			else
+			{
+				string db = spName.Substring(0, dotIndex);
+				cmd.Parameters.Add("db", db);
+				spName = spName.Substring(dotIndex+1, spName.Length - dotIndex-1);
+				cmd.CommandText = String.Format("SELECT param_list FROM mysql.proc " + 
+					"WHERE db=_latin1 {0}db ", connection.ParameterMarker);
+			}
+
+			cmd.CommandText += String.Format("AND name=_latin1 {0}name AND type='{1}'",
 				connection.ParameterMarker, isProc ? "PROCEDURE" : "FUNCTION");
-			MySqlCommand cmd = new MySqlCommand(sql, connection);
-			cmd.Parameters.Add("db", connection.Database);
+
+			//cmd.Parameters.Add("db", connection.Database);
 			cmd.Parameters.Add("name", spName);
 			MySqlDataReader reader = null;
 
