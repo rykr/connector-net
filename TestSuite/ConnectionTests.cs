@@ -19,6 +19,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 
 using System;
+using System.Data;
 using MySql.Data.MySqlClient;
 using NUnit.Framework;
 using System.Configuration;
@@ -147,6 +148,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			MySqlConnection c = new MySqlConnection( conn.ConnectionString + ";pooling=false" );
 			c.Open();
+			Assert.IsTrue(c.State == ConnectionState.Open);
 
 			Assert.AreEqual( "test", c.Database.ToLower() );
 

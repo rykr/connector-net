@@ -466,14 +466,14 @@ namespace MySql.Data.MySqlClient
 		/// <returns>True if the parameter was successfully serialized, false otherwise.</returns>
 		private bool SerializeParameter( PacketWriter writer, string parmName )
 		{
-			if (! parameters.Contains( parmName )) 
+			MySqlParameter parameter = parameters[parmName];
+			if (parameter == null)
 			{
 				// if we are using old syntax, we can't throw exceptions for parameters
 				// not defined.
 				if (connection.Settings.UseOldSyntax) return false;
 				throw new MySqlException("Parameter '" + parmName + "' must be defined");
 			}
-			MySqlParameter parameter = parameters[parmName];
 			parameter.Serialize( writer, false );
 			return true;
 		}

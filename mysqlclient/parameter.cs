@@ -208,12 +208,7 @@ namespace MySql.Data.MySqlClient
 		public String ParameterName 
 		{
 			get { return paramName; }
-			set 
-			{ 
-				paramName = value; 
-				if (paramName[0] == '?' || paramName[0] == '@')
-					paramName = paramName.Substring(1, paramName.Length-1);
-			}
+			set { paramName = value; }
 		}
 
 		/// <summary>

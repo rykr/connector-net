@@ -188,7 +188,10 @@ namespace MySql.Data.MySqlClient
 				name = name.Substring(1, name.Length-1);
 			foreach (MySqlParameter p in _parms)
 			{
-				if (p.ParameterName.ToLower().Equals( name.ToLower() )) return true;
+				string currentName = p.ParameterName;
+				if (currentName[0] == paramMarker)
+					currentName = currentName.Substring(1, currentName.Length-1);
+				if (currentName.ToLower() == name.ToLower()) return true;
 			}
 			return false;
 		}
@@ -198,14 +201,18 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		/// <param name="parameterName">The name of the <see cref="MySqlParameter"/> object to retrieve. </param>
 		/// <returns>The zero-based location of the <see cref="MySqlParameter"/> in the collection.</returns>
-		public int IndexOf( string parameterName )
+		public int IndexOf(string parameterName)
 		{
 			if (parameterName[0] == paramMarker)
 				parameterName = parameterName.Substring(1, parameterName.Length-1);
+			parameterName = parameterName.ToLower();
 			for (int x=0; x < _parms.Count; x++) 
 			{
 				MySqlParameter p = (MySqlParameter)_parms[x];
-				if (p.ParameterName.ToLower().Equals( parameterName.ToLower() )) return x;
+				string listName = p.ParameterName;
+				if (listName[0] == paramMarker)
+					listName = listName.Substring(1, listName.Length-1);
+				if (listName.ToLower() == parameterName) return x;
 			}
 			throw new MySqlException("Parameter '" + parameterName + "' not found in collection");
 		}

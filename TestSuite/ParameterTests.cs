@@ -243,12 +243,17 @@ namespace MySql.Data.MySqlClient.Tests
 		public void AllowUnnamedParameters() 
 		{
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO test (id,name) VALUES (?id, ?name)", conn);
-			cmd.Parameters.Add( new MySqlParameter() );
-			cmd.Parameters.Add( new MySqlParameter() );
-			cmd.Parameters[0].ParameterName = "?id";
-			cmd.Parameters[0].Value = 1;
-			cmd.Parameters[1].ParameterName = "?name";
-			cmd.Parameters[1].Value = "test";
+
+			MySqlParameter p = new MySqlParameter();
+			p.ParameterName = "?id";
+			p.Value = 1;
+			cmd.Parameters.Add(p);
+
+			p = new MySqlParameter();
+			p.ParameterName = "?name";
+			p.Value = "test";
+			cmd.Parameters.Add(p);
+
 			cmd.ExecuteNonQuery();
 
 			cmd.CommandText = "SELECT id FROM test";

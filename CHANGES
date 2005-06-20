@@ -15,6 +15,8 @@
 	Bug #10644  Cannot call a stored function directly from Connector/Net 	
 	Bug #9722   Connector does not recognize parameters separated by a linefeed 
 	Bug #10281  Clone issue with MySqlConnection 
+	Bug #11450  Connector/Net, current database and stored procedures
+	Fixed bug where adding parameter objects that had been independently constructed did not work right.
 	
 1-20-05 - Version 1.0.4  
 
