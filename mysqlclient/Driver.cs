@@ -179,7 +179,12 @@ namespace MySql.Data.MySqlClient
 			// want results in
 			if (version.isAtLeast(4,1,0)) 
 			{
-				cmd.CommandText = "SET NAMES " + charSet + "; SET character_set_results=NULL";
+				cmd.CommandText = "SET character_set_results=NULL";
+				if (serverProps["character_set_client"].ToString() != charSet ||
+					serverProps["character_set_connection"].ToString() != charSet)
+				{
+					cmd.CommandText = "SET NAMES " + charSet + ";" + cmd.CommandText;
+				}
 				cmd.ExecuteNonQuery();
 			}
 
