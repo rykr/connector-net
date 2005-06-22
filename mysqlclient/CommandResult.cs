@@ -130,6 +130,10 @@ namespace MySql.Data.MySqlClient
 				if (IsResultSet) return true;
 			} 
 
+			// if our batch resulted in warnings, then report them now
+			if (driver.HasWarnings)
+				driver.ReportWarnings();
+
 			driver.IsProcessing = false;
 			return false;
 		}

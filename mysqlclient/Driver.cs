@@ -44,6 +44,7 @@ namespace MySql.Data.MySqlClient
 		protected MySqlConnection		connection;
 		protected bool					processing;
 		protected Hashtable				charSets;
+		protected bool					hasWarnings;
 
 		public Driver(MySqlConnectionString settings)
 		{
@@ -51,6 +52,7 @@ namespace MySql.Data.MySqlClient
 			connectionString = settings;
 			processing = false;
 			threadId = -1;
+			hasWarnings = false;
 		}
 
 		#region Properties
@@ -86,6 +88,11 @@ namespace MySql.Data.MySqlClient
 		public ServerStatusFlags ServerStatus 
 		{
 			get { return serverStatus; }
+		}
+
+		public bool HasWarnings 
+		{
+			get { return hasWarnings; }
 		}
 
 		#endregion
@@ -214,12 +221,9 @@ namespace MySql.Data.MySqlClient
 			}
 		}
 
-		public void ShowWarnings(int count) 
+		public void ReportWarnings() 
 		{
-			if (count == 0 || 
-				(serverStatus & (ServerStatusFlags.MoreResults | ServerStatusFlags.AnotherQuery )) != 0 ) return;
-
-			MySqlError[] errors = new MySqlError[count];
+			ArrayList errors = new ArrayList();
 
 			MySqlCommand cmd = new MySqlCommand("SHOW WARNINGS", connection);
 			MySqlDataReader reader = null;
@@ -229,14 +233,18 @@ namespace MySql.Data.MySqlClient
 				int i = 0;
 				while (reader.Read()) 
 				{
-					errors[i++] = new MySqlError( reader.GetString(0), reader.GetUInt32(1), reader.GetString(2) );
+					errors.Add(new MySqlError(reader.GetString(0), 
+						reader.GetUInt32(1), reader.GetString(2)));
 				}
 				reader.Close();
-				if (i == 0) return;  // MySQL resets warnings before each statement, so a batch could indicate
-									// warnings when there aren't any
+
+				hasWarnings = false;
+				// MySQL resets warnings before each statement, so a batch could indicate
+				// warnings when there aren't any
+				if (errors.Count == 0) return;   
 
 				MySqlInfoMessageEventArgs args = new MySqlInfoMessageEventArgs();
-				args.errors = errors;
+				args.errors = (MySqlError[])errors.ToArray(typeof(MySqlError));
 				if (connection != null)
 					connection.OnInfoMessage( args );
 			

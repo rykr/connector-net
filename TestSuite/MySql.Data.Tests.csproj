@@ -173,12 +173,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "EventTests.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Exceptions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "LanguageTests.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MySqlHelperTests.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

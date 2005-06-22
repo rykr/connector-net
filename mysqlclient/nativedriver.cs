@@ -399,12 +399,11 @@ namespace MySql.Data.MySqlClient
 			if ( version.isAtLeast(4,1,0) ) 
 			{
 				serverStatus = (ServerStatusFlags)reader.ReadInteger(2);
-				int warningCount = reader.ReadInteger(2);
+				hasWarnings = reader.ReadInteger(2) != 0;
 				if (reader.HasMoreData) 
 				{
 					string serverMessage = reader.ReadLenString();
 				}
-				ShowWarnings( warningCount );
 			}
 			return 0;
 		}
@@ -605,8 +604,8 @@ namespace MySql.Data.MySqlClient
 			if (reader.HasMoreData && version.isAtLeast(4,1,0)) 
 			{
 				int warningCount = reader.ReadInteger(2);
+				hasWarnings = warningCount != 0;
 				serverStatus = (ServerStatusFlags)reader.ReadInteger(2);
-				ShowWarnings(warningCount);
 			}
 
 		}
