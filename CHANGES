@@ -23,7 +23,7 @@
 	Bug #8387  	Connecting with NAMES and character_set_results can be up to 18 times slower.
 				Improved this by only issuing a SET NAMES if character_set_client or 
 				character_set_connection is different than what we are wanting.
-
+				
 1-20-05 - Version 1.0.4  
 
 	Bug #7243 calling prepare causing exception [fixed]

@@ -212,7 +212,8 @@ namespace MySql.Data.MySqlClient
 				charSets = new Hashtable();
 				while (reader.Read()) 
 				{
-					charSets[ Convert.ToInt32(reader["id"]) ] = reader["charset"];
+					charSets[ Convert.ToInt32(reader["id"]) ] = 
+						reader.GetString(reader.GetOrdinal("charset"));
 				}
 			}
 			catch (Exception ex) 
