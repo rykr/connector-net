@@ -18,6 +18,7 @@
 	Bug #11450  Connector/Net, current database and stored procedures
 	Fixed bug where adding parameter objects that had been independently constructed did not work right.
 	Bug #11490  certain incorrect queries trigger connection must be valid and open message
+	Bug #8228  	turkish character set causing the error [fixed]
 
 1-20-05 - Version 1.0.4  
 

@@ -417,9 +417,10 @@ namespace MySql.Data.MySqlClient
 			if (! isOpen)
 				throw new Exception("No current query in data reader");
 
+			name = name.ToLower(System.Globalization.CultureInfo.InvariantCulture);
 			for (int i=0; i < fields.Length; i ++) 
 			{
-				if (fields[i].ColumnName.ToLower().Equals(name.ToLower()))
+				if (fields[i].ColumnName.ToLower(System.Globalization.CultureInfo.InvariantCulture) == name)
 					return i;
 			}
 
