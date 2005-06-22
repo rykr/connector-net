@@ -17,7 +17,8 @@
 	Bug #10281  Clone issue with MySqlConnection 
 	Bug #11450  Connector/Net, current database and stored procedures
 	Fixed bug where adding parameter objects that had been independently constructed did not work right.
-	
+	Bug #11490  certain incorrect queries trigger connection must be valid and open message
+
 1-20-05 - Version 1.0.4  
 
 	Bug #7243 calling prepare causing exception [fixed]
