@@ -24,6 +24,9 @@
 				Improved this by only issuing a SET NAMES if character_set_client or 
 				character_set_connection is different than what we are wanting.
 				
+	Bug #8382  	Commandbuilder does not handle queries to other databases than the default one-
+				fixed this one with the help of a patch from Henrik Johnson.
+							
 1-20-05 - Version 1.0.4  
 
 	Bug #7243 calling prepare causing exception [fixed]

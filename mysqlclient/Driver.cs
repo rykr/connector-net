@@ -180,8 +180,10 @@ namespace MySql.Data.MySqlClient
 			if (version.isAtLeast(4,1,0)) 
 			{
 				cmd.CommandText = "SET character_set_results=NULL";
-				if (serverProps["character_set_client"].ToString() != charSet ||
-					serverProps["character_set_connection"].ToString() != charSet)
+				string clientCharSet = (string)serverProps["character_set_client"];
+				string connCharSet = (string)serverProps["character_set_connection"];
+				if ((clientCharSet != null && clientCharSet != charSet) ||
+					(connCharSet != null && connCharSet != charSet))
 				{
 					cmd.CommandText = "SET NAMES " + charSet + ";" + cmd.CommandText;
 				}
@@ -236,7 +238,6 @@ namespace MySql.Data.MySqlClient
 			try 
 			{
 				reader = cmd.ExecuteReader();
-				int i = 0;
 				while (reader.Read()) 
 				{
 					errors.Add(new MySqlError(reader.GetString(0), 
@@ -272,7 +273,7 @@ namespace MySql.Data.MySqlClient
 		public abstract PreparedStatement Prepare( string sql, string[] names ); 
 		public abstract void Reset();
 		public abstract CommandResult SendQuery( byte[] bytes, int length, bool consume );
-		public abstract long ReadResult( ref ulong affectedRows, ref long lastInsertId );
+		public abstract long ReadResult( ref long affectedRows, ref long lastInsertId );
 		public abstract bool OpenDataRow(int fieldCount, bool isBinary);
 		public abstract MySqlValue ReadFieldValue( int index, MySqlField field, MySqlValue value ); 
 		public abstract CommandResult ExecuteStatement( byte[] bytes );

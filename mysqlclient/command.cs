@@ -304,7 +304,7 @@ namespace MySql.Data.MySqlClient
 					sqlBuffers.RemoveAt( 0 );
 				}
 	
-				if (! result.IsResultSet) 
+				if (result.AffectedRows != -1)
 				{
 					if (updateCount == -1) updateCount = 0;
 					updateCount += (long)result.AffectedRows;

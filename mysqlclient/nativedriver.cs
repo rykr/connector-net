@@ -379,12 +379,16 @@ namespace MySql.Data.MySqlClient
 			}
 		}
 
-		public override long ReadResult( ref ulong affectedRows, ref long lastInsertId )
+		public override long ReadResult( ref long affectedRows, ref long lastInsertId )
 		{
 			reader.OpenPacket();
 
 			long cols = reader.GetFieldLength();
-			if (cols > 0) return cols;
+			if (cols > 0) 
+			{
+				affectedRows = -1;
+				return cols;
+			}
 
 			if (-1 == cols)
 			{
@@ -394,7 +398,7 @@ namespace MySql.Data.MySqlClient
 				cols = reader.GetFieldLength();
 			}
 
-			affectedRows = (ulong)reader.GetFieldLength();
+			affectedRows = (long)reader.GetFieldLength();
 			lastInsertId = (long)reader.GetFieldLength();
 			if ( version.isAtLeast(4,1,0) ) 
 			{

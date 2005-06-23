@@ -47,7 +47,7 @@ namespace MySql.Data.MySqlClient
 		private byte				scale;
 		private MySqlDbType			mySqlDbType;
 		private DbType				dbType;
-		private bool				typeSet;
+		private bool				inferType;
 
 		#region Constructors
 
@@ -56,7 +56,7 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		public MySqlParameter()
 		{
-			typeSet = false;
+			inferType = true;
 		}
 
 		/// <summary>
@@ -154,7 +154,11 @@ namespace MySql.Data.MySqlClient
 		public DbType DbType 
 		{
 			get { return dbType; }
-			set { SetDbType( value ); }
+			set 
+			{ 
+				SetDbType( value ); 
+				inferType = false;
+			}
 		}
 
 		/// <summary></summary>
@@ -198,7 +202,11 @@ namespace MySql.Data.MySqlClient
 		public MySqlDbType MySqlDbType 
 		{
 			get { return mySqlDbType; }
-			set { SetMySqlDbType( value ); }
+			set 
+			{ 
+				SetMySqlDbType( value ); 
+				inferType = false;
+			}
 		}
 
 		/// <summary>
@@ -276,7 +284,8 @@ namespace MySql.Data.MySqlClient
 					size = (value as Byte[]).Length;
 				else if (value is String)
 					size = (value as string).Length;
-				SetTypeFromValue();
+				if (inferType)
+					SetTypeFromValue();
 			}
 		}
 
@@ -409,14 +418,12 @@ namespace MySql.Data.MySqlClient
 				default: 
 					mySqlDbType = MySqlDbType.Blob; break;
 			}
-			typeSet = true;
 		}
 
 
 		private void SetTypeFromValue() 
 		{
 			if (paramValue == null) return;
-			if (typeSet) return;
 
 			if (paramValue is Guid) SetDbType( DbType.String );
 			else if (paramValue is TimeSpan) SetDbType( DbType.Time );
