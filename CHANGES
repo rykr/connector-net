@@ -33,6 +33,8 @@
 				thread pool only has a default of 25 threads so on a very heavily loaded system,
 				it's possible it could run out.  Connect has now been recoded to not use a 
 				worker thread.
+					
+	Bug #11542  Call to Stored Procedure throws exception when SP has no arguments [fixed]
 							
 1-20-05 - Version 1.0.4  
 

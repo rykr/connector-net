@@ -265,6 +265,7 @@ namespace MySql.Data.MySqlClient.Tests
 				"BEGIN  SELECT * FROM mysql.db; END" );
 
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
+			cmd.Parameters.Add("?a", 3);
 			cmd.CommandType = CommandType.StoredProcedure;
 			MySqlDataReader reader = cmd.ExecuteReader();
 			Assert.AreEqual( true, reader.Read() );

@@ -71,7 +71,7 @@ namespace MySql.Data.MySqlClient
 			try 
 			{
 				reader = cmd.ExecuteReader();
-				reader.Read();
+				if (!reader.Read()) return null;
 				return reader.GetString(0);
 			}
 			catch (Exception ex) 
