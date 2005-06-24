@@ -36,6 +36,8 @@
 					
 	Bug #11542  Call to Stored Procedure throws exception when SP has no arguments [fixed]
 							
+	Bug #11550  	Adding decimal parameters problem [fixed]
+							
 1-20-05 - Version 1.0.4  
 
 	Bug #7243 calling prepare causing exception [fixed]

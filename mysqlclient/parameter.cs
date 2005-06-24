@@ -68,7 +68,6 @@ namespace MySql.Data.MySqlClient
 		{
 			ParameterName = parameterName;
 			Value = value;
-			SetTypeFromValue();
 		}
 
 		/// <summary>
