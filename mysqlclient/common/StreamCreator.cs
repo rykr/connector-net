@@ -35,6 +35,7 @@ namespace MySql.Data.Common
 	/// </summary>
 	internal class StreamCreator
 	{
+		private const uint FIONBIO = 0x8004667e;
 		string				hostList;
 		int					port;
 		string				pipeName;
@@ -56,7 +57,7 @@ namespace MySql.Data.Common
 			this.timeOut = timeOut;
 
 			if (hostList.StartsWith("/"))
-				return CreateUnixSocketStream();
+				return CreateSocketStream(null, 0, true);
 
 			string [] dnsHosts = hostList.Split('&');
 			ArrayList ipAddresses = new ArrayList();
@@ -85,7 +86,7 @@ namespace MySql.Data.Common
 				if ( pipeName != null )
 					stream = CreateNamedPipeStream( (string)hostNames[index] );
 				else
-					stream = CreateSocketStream( (IPAddress)ipAddresses[index], port );
+					stream = CreateSocketStream( (IPAddress)ipAddresses[index], port, false );
 				if (stream != null) return stream;
 
 				index++;
@@ -93,27 +94,6 @@ namespace MySql.Data.Common
 			}
 
 			return stream;
-		}
-
-		private Stream CreateUnixSocketStream() 
-		{
-#if __MonoCS__ && !WINDOWS
-
-			Socket socket = new Socket (AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
-
-			try
-			{
-				UnixEndPoint endPoint = new UnixEndPoint (hostList[0]);
-				socket.Connect (endPoint);
-				return new NetworkStream (socket, true);
-			}
-			catch (Exception ex)
-			{
-				return null;
-			}
-#else
-			throw new PlatformNotSupportedException ("Unix sockets are only supported on this platform");
-#endif		
 		}
 
 		private Stream CreateNamedPipeStream( string hostname ) 
@@ -126,45 +106,37 @@ namespace MySql.Data.Common
 			return new NamedPipeStream(pipePath, FileAccess.ReadWrite);
 		}
 
-		private void ConnectSocketCallback( IAsyncResult iar )
+		private Stream CreateSocketStream(IPAddress ip, int port, bool unix) 
 		{
-			evnt.Set();
-			Socket socket = (Socket)iar.AsyncState;
-			try 
-			{
-				socket.EndConnect( iar );
-			}
-			catch (Exception) 
-			{
-				// we swallow the exception here because we are working async and are on 
-				// a worker thread.
-			}
-		}
-
-		private Stream CreateSocketStream( IPAddress ip, int port ) 
-		{
-			Socket socket = new Socket(AddressFamily.InterNetwork, 
-				SocketType.Stream, ProtocolType.Tcp);
 
 			try
 			{
 				//
 				// Lets try to connect
-				IPEndPoint endPoint	= new IPEndPoint( ip, port);
+				EndPoint endPoint;
+#if __MonoCS__ && !WINDOWS
+				if (unix)
+					endPoint = new UnixEndPoint(hostList[0]);
+				else
+#else
+					endPoint = 	new IPEndPoint(ip, port);
+				if (unix)
+					throw new PlatformNotSupportedException ("Unix sockets are not supported on Windows.");
+#endif
 
-				evnt.Reset();
-				IAsyncResult iar = socket.BeginConnect( endPoint, 
-					new AsyncCallback(ConnectSocketCallback), socket );
-				evnt.WaitOne( this.timeOut * 1000, false );
-				if (! socket.Connected) return null;
-
-				socket.SetSocketOption( SocketOptionLevel.Tcp, SocketOptionName.NoDelay, 1 );
-				return new NetworkStream( socket, true );
+				SocketStream ss = unix ? 
+					new SocketStream(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP) :
+					new SocketStream(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+				ss.Connect(endPoint, timeOut);
+				ss.Socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, 1);
+				return ss;
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
+				Console.WriteLine("EXCEPTION: " + ex.Message);
 				return null;
 			}
 		}
+
 	}
 }

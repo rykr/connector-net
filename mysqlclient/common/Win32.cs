@@ -107,5 +107,6 @@ namespace MySql.Data.Common
 
 		//Constants for dwCreationDisposition:
 		public const UInt32 OPEN_EXISTING = 3;
+
 	}
 }

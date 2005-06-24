@@ -11,6 +11,8 @@ Project("{20D4826A-C6FA-45DB-90F4-C717570B9F32}") = "MySqlCeClient", "MySqlCeCli
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySql.Data", "MySql.Data.csproj", "{5EAEFBC4-8389-4120-BAB3-9B27174F6F6F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -21,8 +23,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyTasks", "NantTasks\MyTask
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsApplication2", "c:\WindowsApplication2\WindowsApplication2.csproj", "{DCDCC2B4-C54A-4D7C-81AA-8FF856CD44E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsApplication1", "C:\WindowsApplication1\WindowsApplication1.csproj", "{A3A7602B-19F2-497F-B9F5-D16EDDB2B483}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "c:\ConsoleApplication1\ConsoleApplication1.csproj", "{1BDEE9AD-0091-453A-BD51-9ABFA613AD17}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -50,10 +58,14 @@ Global
 		{4B16FCC5-327F-4952-8AFB-32E9FA2AD752}.Debug.Build.0 = Debug|.NET
 		{4B16FCC5-327F-4952-8AFB-32E9FA2AD752}.Release.ActiveCfg = Release|.NET
 		{4B16FCC5-327F-4952-8AFB-32E9FA2AD752}.Release.Build.0 = Release|.NET
-		{DCDCC2B4-C54A-4D7C-81AA-8FF856CD44E8}.Debug.ActiveCfg = Debug|.NET
-		{DCDCC2B4-C54A-4D7C-81AA-8FF856CD44E8}.Debug.Build.0 = Debug|.NET
-		{DCDCC2B4-C54A-4D7C-81AA-8FF856CD44E8}.Release.ActiveCfg = Release|.NET
-		{DCDCC2B4-C54A-4D7C-81AA-8FF856CD44E8}.Release.Build.0 = Release|.NET
+		{A3A7602B-19F2-497F-B9F5-D16EDDB2B483}.Debug.ActiveCfg = Debug|.NET
+		{A3A7602B-19F2-497F-B9F5-D16EDDB2B483}.Debug.Build.0 = Debug|.NET
+		{A3A7602B-19F2-497F-B9F5-D16EDDB2B483}.Release.ActiveCfg = Release|.NET
+		{A3A7602B-19F2-497F-B9F5-D16EDDB2B483}.Release.Build.0 = Release|.NET
+		{1BDEE9AD-0091-453A-BD51-9ABFA613AD17}.Debug.ActiveCfg = Debug|.NET
+		{1BDEE9AD-0091-453A-BD51-9ABFA613AD17}.Debug.Build.0 = Debug|.NET
+		{1BDEE9AD-0091-453A-BD51-9ABFA613AD17}.Release.ActiveCfg = Release|.NET
+		{1BDEE9AD-0091-453A-BD51-9ABFA613AD17}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
