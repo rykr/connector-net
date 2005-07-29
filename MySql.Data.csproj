@@ -166,11 +166,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "MySqlClient\DatabaseMetaData.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "MySqlClient\datareader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

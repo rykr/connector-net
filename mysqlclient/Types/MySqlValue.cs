@@ -143,14 +143,15 @@ namespace MySql.Data.Types
 				case MySqlDbType.NewDecimal:
 					return new MySqlDecimal();
 
-				case MySqlDbType.Float: return new MySqlSingle();
+				case MySqlDbType.Float: return new MySqlFloat();
 
 				case MySqlDbType.Double: return new MySqlDouble();
 
 				case MySqlDbType.Set:
 				case MySqlDbType.Enum:
 				case MySqlDbType.String:
-				case MySqlDbType.VarChar: return new MySqlString(null, type);
+				case MySqlDbType.VarChar: 
+					return new MySqlString(null, type);
 
 				case MySqlDbType.Blob:
 				case MySqlDbType.MediumBlob:

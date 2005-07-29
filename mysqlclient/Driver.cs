@@ -143,7 +143,7 @@ namespace MySql.Data.MySqlClient
 			{
 				MySqlDataReader reader = cmd.ExecuteReader();
 				while (reader.Read()) 
-					serverProps[ reader.GetValue(0) ] = reader.GetValue(1);
+					serverProps[ reader.GetValue(0) ] = reader.GetString(1);
 				reader.Close();
 			}
 			catch (Exception ex)
@@ -180,10 +180,10 @@ namespace MySql.Data.MySqlClient
 			if (version.isAtLeast(4,1,0)) 
 			{
 				cmd.CommandText = "SET character_set_results=NULL";
-				string clientCharSet = (string)serverProps["character_set_client"];
-				string connCharSet = (string)serverProps["character_set_connection"];
-				if ((clientCharSet != null && clientCharSet != charSet) ||
-					(connCharSet != null && connCharSet != charSet))
+				object clientCharSet = serverProps["character_set_client"];
+				object connCharSet = serverProps["character_set_connection"];
+				if ((clientCharSet != null && clientCharSet.ToString() != charSet) ||
+					(connCharSet != null && connCharSet.ToString() != charSet))
 				{
 					cmd.CommandText = "SET NAMES " + charSet + ";" + cmd.CommandText;
 				}

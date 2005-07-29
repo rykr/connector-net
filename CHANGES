@@ -35,13 +35,14 @@
 	Bug #10486	MySqlDataAdapter.Update error for decimal column		[fixed]
 				All three of these bugs were related to the same problem					
 	Bug #11873 	Invalid timestamp in query produces incorrect reader exception [added test case, already fixed]
+	Bug #10454	incorrect return type documented for parameter collection Add methods [fixed]	
 	
 	Other changes
 	-------------
 	Fixed problem parsing stored procedure parameter defs such as OUT val INT  UNSIGNED
 	Now supports the new decimal type introduced in 5.0.3
 	Fixed bug where adding parameter objects that had been independently constructed did not work right.
-
+	Changed internal class MySqlSingle to MySqlFloat
 							
 1-20-05 - Version 1.0.4  
 
