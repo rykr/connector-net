@@ -166,21 +166,24 @@ namespace MySql.Data.MySqlClient.Tests
 				MySqlDataAdapter da = new MySqlDataAdapter("SELECT id, dt FROM Test", c);
 				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
 
-				DataSetTest dst = new DataSetTest();
-				da.Fill(dst, "DateTest");
+				DataTable dt = new DataTable();
+				dt.Columns.Add(new DataColumn("id", typeof(int)));
+				dt.Columns.Add(new DataColumn("dt", typeof(DateTime)));
+
+				da.Fill(dt);
 
 				DateTime now = DateTime.Now;
-				DataSetTest.DateTestRow row = dst.DateTest.NewDateTestRow();
-				row.id = 1;
-				row.dt = now;
-				dst.DateTest.Rows.Add( row );
-				da.Update( dst, "DateTest" );
+				DataRow row = dt.NewRow();
+				row["id"] = 1;
+				row["dt"] = now;
+				dt.Rows.Add(row);
+				da.Update(dt);
 
-				dst.DateTest.Clear();
-				da.Fill( dst.DateTest );
+				dt.Clear();
+				da.Fill(dt);
 
-				Assert.AreEqual( 1, dst.DateTest.Rows.Count );
-				Assert.AreEqual( now.Date, ((DateTime)dst.DateTest[0]["dt"]).Date );
+				Assert.AreEqual(1, dt.Rows.Count);
+				Assert.AreEqual(now.Date, ((DateTime)dt.Rows[0]["dt"]).Date );
 			}
 			catch (Exception ex) 
 			{
@@ -253,6 +256,69 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
+		/// <summary>
+		/// Bug #8929  	Timestamp values with a date > 10/29/9997 cause problems
+		/// </summary>
+		[Test]
+		public void LargeDateTime() 
+		{
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, dt) VALUES(?id,?dt)", conn);
+			cmd.Parameters.Add(new MySqlParameter("?id", 1));
+			cmd.Parameters.Add(new MySqlParameter("?dt", DateTime.Parse("9997-10-29")));
+			cmd.ExecuteNonQuery();
+			cmd.Parameters[0].Value = 2;
+			cmd.Parameters[1].Value = DateTime.Parse("9997-10-30");
+			cmd.ExecuteNonQuery();
+			cmd.Parameters[0].Value = 3;
+			cmd.Parameters[1].Value = DateTime.Parse("9999-12-31");
+			cmd.ExecuteNonQuery();
+
+			cmd.CommandText = "SELECT id,dt FROM Test";
+			using (MySqlDataReader reader = cmd.ExecuteReader()) 
+			{
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual(DateTime.Parse("9997-10-29").Date, reader.GetDateTime(1).Date);
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual(DateTime.Parse("9997-10-30").Date, reader.GetDateTime(1).Date);
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual(DateTime.Parse("9999-12-31").Date, reader.GetDateTime(1).Date);
+			}
+		}
+
+		[Test]
+		public void DefaultTimestamp() 
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (id INT, dt TIMESTAMP NOT NULL default CURRENT_TIMESTAMP)");
+
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+			DataSet ds = new DataSet();
+			da.FillSchema(ds, SchemaType.Source, "myTable");
+			da.Fill(ds, "myTable");
+			ds.Tables["myTable"].Columns["dt"].DefaultValue = "Now()";
+
+			DataRow row = ds.Tables["myTable"].NewRow();
+			row["id"] = 1;
+			ds.Tables["myTable"].Rows.Add(row);
+		}
+
+		[Test]
+		public void UsingDatesAsStrings()
+		{
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO test (dt) VALUES (?dt)", conn);
+			cmd.Parameters.Add("?dt", MySqlDbType.Date);
+			cmd.Parameters[0].Value = "2005-03-04";
+			cmd.ExecuteNonQuery();
+
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+			DataTable dt = new DataTable();
+			da.Fill(dt);
+			Assert.AreEqual(1, dt.Rows.Count);
+			DateTime date = (DateTime)dt.Rows[0]["dt"];
+			Assert.AreEqual(2005, date.Year);
+			Assert.AreEqual(3, date.Month);
+			Assert.AreEqual(4, date.Day);
+		}
 
 	}
 
