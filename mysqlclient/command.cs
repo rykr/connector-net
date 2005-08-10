@@ -237,8 +237,12 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		internal void Consume()
 		{
-			// if we are using prepared statements, then nothing to clean up
-			//if (preparedStatement != null) return;
+			// if we are using prepared statements, we have executed the statement at
+			// least once, and we did not get an active resultset from it
+			// then we don't need to check for another resultset
+			if (preparedStatement != null && preparedStatement.ExecutionCount > 0 &&
+				lastResult == null) 
+				return;
 
 			CommandResult result = GetNextResultSet(null);
 			while (result != null)
@@ -266,8 +270,6 @@ namespace MySql.Data.MySqlClient
 				(reader.Behavior & CommandBehavior.SingleResult) != 0 &&
 				lastResult != null) return null;
 
-			bool firstTime = lastResult == null;
-
 			// if the last result we returned has more results
 			if (lastResult != null && lastResult.ReadNextResult(false) )
 				return lastResult;
@@ -283,15 +285,12 @@ namespace MySql.Data.MySqlClient
 			// if we have a prepared statement, we execute it instead
 			if (preparedStatement != null)
 			{
-				if (! firstTime) return null;
-//				if (preparedStatement.ExecutionCount != 0) return null;
 				result = preparedStatement.Execute( parameters );
 
 				if (! result.IsResultSet) 
 				{
 					if (updateCount == -1) updateCount = 0;
 					updateCount += (long)result.AffectedRows;
-					preparedStatement = null;
 				}
 			}
 			else 
@@ -349,6 +348,8 @@ namespace MySql.Data.MySqlClient
 
 			if (preparedStatement == null)
 				sqlBuffers = PrepareSqlBuffers(CommandText);
+			else
+				preparedStatement.ExecutionCount = 0;
 
 			try 
 			{
@@ -403,6 +404,8 @@ namespace MySql.Data.MySqlClient
 			// if we don't have a prepared statement, then prepare our sql for execution
 			if (preparedStatement == null)
 				sqlBuffers = PrepareSqlBuffers(sql);
+			else
+				preparedStatement.ExecutionCount = 0;
 
 			reader.NextResult();
 			connection.Reader = reader;

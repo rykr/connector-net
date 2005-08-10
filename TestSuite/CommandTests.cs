@@ -224,6 +224,38 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		/// <summary>
+		/// Bug #12245  	using Prepare() on an insert command causes null parameters to convert to "0"
+		/// </summary>
+		[Test]
+		public void InsertingPreparedNulls()
+		{
+			execSQL("TRUNCATE TABLE test");
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES(1, ?str)", conn);
+			cmd.Parameters.Add("?str", MySqlDbType.VarChar);
+			cmd.Prepare();
+
+			cmd.Parameters[0].Value = null;
+			cmd.ExecuteNonQuery();
+
+			cmd.CommandText = "SELECT * FROM test";
+			MySqlDataReader reader = null;
+			try 
+			{
+				reader = cmd.ExecuteReader();
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual(DBNull.Value, reader[1]);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally 
+			{
+				if (reader != null) reader.Close();
+			}
+		}
+
+		/// <summary>
 		/// MySQL Bugs: #12163: Insert using prepared statement causes double insert
 		/// </summary>
 		[Test]
@@ -236,11 +268,22 @@ namespace MySql.Data.MySqlClient.Tests
 			reader.Close();
 
 			cmd.CommandText = "SELECT * FROM test";
-			reader = cmd.ExecuteReader();
-			Assert.IsTrue(reader.Read());
-			Assert.IsFalse(reader.Read());
-			Assert.IsFalse(reader.NextResult());
-			reader.Close();
+			reader = null;
+			try 
+			{
+				reader = cmd.ExecuteReader();
+				Assert.IsTrue(reader.Read());
+				Assert.IsFalse(reader.Read());
+				Assert.IsFalse(reader.NextResult());
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally 
+			{
+				if (reader != null) reader.Close();
+			}
 		}
 
 		/// <summary>

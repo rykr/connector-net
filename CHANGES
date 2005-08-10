@@ -37,7 +37,8 @@
 	Bug #11873 	Invalid timestamp in query produces incorrect reader exception [added test case, already fixed]
 	Bug #10454	incorrect return type documented for parameter collection Add methods [fixed]	
     Bug #12163  Insert using prepared statement causes double insert	
-	
+    Bug #12245  using Prepare() on an insert command causes null parameters to convert to "0"	
+
 	Other changes
 	-------------
 	Fixed problem parsing stored procedure parameter defs such as OUT val INT  UNSIGNED
