@@ -277,7 +277,7 @@ namespace MySql.Data.MySqlClient
 
 			// if we haven't prepared a statement and don't have any sql buffers
 			// to execute, we are done
-			if (preparedStatement == null && sqlBuffers.Count == 0)
+			if (preparedStatement == null && (sqlBuffers == null || sqlBuffers.Count == 0))
 				return null;
 
 			// if we have a prepared statement, we execute it instead
@@ -291,6 +291,7 @@ namespace MySql.Data.MySqlClient
 				{
 					if (updateCount == -1) updateCount = 0;
 					updateCount += (long)result.AffectedRows;
+					preparedStatement = null;
 				}
 			}
 			else 
@@ -431,8 +432,8 @@ namespace MySql.Data.MySqlClient
 				throw new InvalidOperationException("The connection property has not been set.");
 			if (connection.State != ConnectionState.Open)
 				throw new InvalidOperationException("The connection is not open.");
-			if (! connection.driver.Version.isAtLeast( 4,1,0)) return;
-				//throw new InvalidOperationException("Prepared statements are not supported with MySQL 4.0 and earlier.");
+			if (! connection.driver.Version.isAtLeast( 4,1,0)) 
+				return;
 
 			// strip out names from parameter markers
 			string strippedSQL = PrepareCommandText();

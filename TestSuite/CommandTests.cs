@@ -224,6 +224,26 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		/// <summary>
+		/// MySQL Bugs: #12163: Insert using prepared statement causes double insert
+		/// </summary>
+		[Test]
+		public void PreparedInsertUsingReader()
+		{
+			execSQL("TRUNCATE TABLE test");
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES(1, 'Test')", conn);
+			cmd.Prepare();
+			MySqlDataReader reader = cmd.ExecuteReader();
+			reader.Close();
+
+			cmd.CommandText = "SELECT * FROM test";
+			reader = cmd.ExecuteReader();
+			Assert.IsTrue(reader.Read());
+			Assert.IsFalse(reader.Read());
+			Assert.IsFalse(reader.NextResult());
+			reader.Close();
+		}
+
+		/// <summary>
 		/// Bug# 8119.  Unable to reproduce but left in anyway
 		/// </summary>
 		[Test]
@@ -262,5 +282,6 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 
 		}
+
 	}
 }

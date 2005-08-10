@@ -36,6 +36,7 @@
 				All three of these bugs were related to the same problem					
 	Bug #11873 	Invalid timestamp in query produces incorrect reader exception [added test case, already fixed]
 	Bug #10454	incorrect return type documented for parameter collection Add methods [fixed]	
+    Bug #12163  Insert using prepared statement causes double insert	
 	
 	Other changes
 	-------------
