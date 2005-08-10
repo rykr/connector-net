@@ -48,6 +48,39 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test()]
+		public void ConvertZeroDateTime()
+		{
+			execSQL("INSERT INTO Test VALUES(1, '0000-00-00', '0000-00-00', '00:00:00', NULL)");
+
+			MySqlConnection c;
+			MySqlDataReader reader = null;
+
+			string connStr = this.GetConnectionString(true);
+			connStr += ";convert zero datetime=yes";
+			c = new MySqlConnection(connStr);
+
+			try 
+			{
+				c.Open();
+
+				MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", c);
+				reader = cmd.ExecuteReader();
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual(DateTime.MinValue.Date, reader.GetDateTime(1).Date);
+				Assert.AreEqual(DateTime.MinValue.Date, reader.GetDateTime(2).Date);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally 
+			{
+				if (reader != null) reader.Close();
+				c.Close();
+			}
+		}
+
+		[Test()]
 		public void TestNotAllowZerDateAndTime() 
 		{
 			execSQL("INSERT INTO Test VALUES(1, 'Test', '0000-00-00', '0000-00-00', '00:00:00')");

@@ -312,8 +312,14 @@ namespace MySql.Data.MySqlClient
 		{
 			MySqlValue val = GetFieldValue(index);
 			if (val is MySqlDateTime)
-				return (val as MySqlDateTime).GetDateTime();
-			if (val is MySqlString)
+			{
+				MySqlDateTime dt = (MySqlDateTime)val;
+				if (connection.Settings.ConvertZeroDateTime && !dt.IsValidDateTime)
+					return DateTime.MinValue;
+				else
+					return dt.GetDateTime();
+			}
+			else if (val is MySqlString)
 			{
 				MySqlDateTime d = new MySqlDateTime( MySqlDbType.Datetime );
 				d = d.ParseMySql( (val as MySqlString).Value, true );
@@ -541,10 +547,13 @@ namespace MySql.Data.MySqlClient
 			// so .ToString() will print '0000-00-00' correctly
 			if (val is MySqlDateTime) 
 			{
-				if (connection.Settings.AllowZeroDateTime) 
+				MySqlDateTime dt = (MySqlDateTime)val;
+				if (! dt.IsValidDateTime && connection.Settings.ConvertZeroDateTime)
+					return DateTime.MinValue;
+				else if (connection.Settings.AllowZeroDateTime) 
 					return val;
 				else
-					return (val as MySqlDateTime).GetDateTime();
+					return dt.GetDateTime();
 			}
 
 			return val.ValueAsObject;
