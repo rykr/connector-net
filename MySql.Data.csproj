@@ -351,6 +351,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "MySqlClient\Types\MySqlBit.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MySqlClient\Types\MySqlByte.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

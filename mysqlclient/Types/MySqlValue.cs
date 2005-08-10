@@ -127,8 +127,12 @@ namespace MySql.Data.Types
 					if (unsigned) return new MySqlUInt32(type);
 					return new MySqlInt32(type);
 
+				case MySqlDbType.Bit:
+					return new MySqlBit();
+
 				case MySqlDbType.Int64: 
-					if (unsigned) return new MySqlUInt64();
+					if (unsigned)
+						return new MySqlUInt64();
 					return new MySqlInt64();
 
 				case MySqlDbType.Time:

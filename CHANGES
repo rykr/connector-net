@@ -43,6 +43,7 @@
 	Now supports the new decimal type introduced in 5.0.3
 	Fixed bug where adding parameter objects that had been independently constructed did not work right.
 	Changed internal class MySqlSingle to MySqlFloat
+    Implemented new BIT data type						
 							
 1-20-05 - Version 1.0.4  
 

@@ -338,6 +338,7 @@ namespace MySql.Data.MySqlClient
 				case MySqlDbType.Int24: dbType = isUnsigned ? DbType.UInt32 : DbType.Int32; break;
 				case MySqlDbType.Int32: dbType = isUnsigned ? DbType.UInt32 : DbType.Int32; break;
 				case MySqlDbType.Int64: dbType = isUnsigned ? DbType.UInt64 : DbType.Int64; break;
+				case MySqlDbType.Bit : dbType = DbType.UInt64; break;
 				case MySqlDbType.Float: dbType = DbType.Single; break;
 				case MySqlDbType.Double: dbType = DbType.Double; break;
 

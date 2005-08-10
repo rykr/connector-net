@@ -128,8 +128,11 @@ namespace MySql.Data.MySqlClient
 		Year        =  13,
 		/// <summary><b>Obsolete</b>  Use Datetime or Date type</summary>
 		Newdate     =  14,
-//		/// <summary>A variable-length string containing 0 to 65535 characters</summary>
-//		VarString = 15,
+		/// <summary>A variable-length string containing 0 to 65535 characters</summary>
+		VarString = 15,
+		/// <summary>Bit-field data type</summary>
+		Bit = 16,
+		/// <summary>New Decimal</summary>
 		NewDecimal = 246,
 		/// <summary>An enumeration. A string object that can have only one value, chosen from the list of values 'value1', 'value2', ..., NULL or the special "" error value. An ENUM can have a maximum of 65535 distinct values</summary>
 		Enum        = 247,
