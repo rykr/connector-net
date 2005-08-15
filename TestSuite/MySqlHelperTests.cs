@@ -49,6 +49,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #11490  	certain incorrect queries trigger connection must be valid and open message
 		/// </summary>
 		[Test]
+		[Category("4.1")]
 		public void Bug11490()
 		{
 			MySqlDataReader reader = null;
@@ -56,7 +57,7 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				reader = MySqlHelper.ExecuteReader(this.GetConnectionString(true),
-					"SELECT * FROM mysql.host WHERE TIME('2005/6/21')");
+					"SELECT * FROM mysql.host WHERE TIME('06/21/2005')");
 			}
 			catch (Exception ex)
 			{

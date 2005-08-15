@@ -245,8 +245,8 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( 500, dt.Rows.Count );
 		}
 
-		[Test()]
-		[NUnit.Framework.Explicit()]
+		[Test]
+		[Explicit]
 		public void UpdateManyRows() 
 		{
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
@@ -372,7 +372,14 @@ namespace MySql.Data.MySqlClient.Tests
 			row["id"] = DBNull.Value;
 			ds.Tables[0].Rows.Add(row);
 
-			da.Update(ds);
+			try 
+			{
+				da.Update(ds);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
 
 			ds.Clear();
 			da.Fill(ds);
@@ -385,6 +392,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #8292  	GROUP BY / WITH ROLLUP with DataSet causes System.Data.ConstraintException
 		/// </summary>
 		[Test]
+		[Category("4.1")]
 		public void Rollup() 
 		{
 			execSQL("DROP TABLE IF EXISTS test");
@@ -402,6 +410,70 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(DBNull.Value, ds.Tables[0].Rows[2]["id"]);
 		}
 
+		/// <summary>
+		/// Bug #8514  	CURRENT_TIMESTAMP default not respected
+		/// </summary>
+		[Test]
+		[Category("NotWorking")]
+		public void DefaultValues() 
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (id int, name VARCHAR(20) NOT NULL DEFAULT 'abc', dt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)");
+			
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+			MySqlCommand insCmd = new MySqlCommand("INSERT INTO test VALUES (?id, ?name, ?dt)", conn);
+			insCmd.Parameters.Add("?id", MySqlDbType.Int32, 0, "id");
+			insCmd.Parameters.Add("?name", MySqlDbType.VarChar, 20, "name");
+			insCmd.Parameters.Add("?dt", MySqlDbType.Datetime, 0, "dt");
+			da.InsertCommand = insCmd;
+
+			DataTable dt = new DataTable();
+
+			//da.FillSchema(ds, SchemaType.Source);//, "test");
+			da.MissingSchemaAction = MissingSchemaAction.AddWithKey;
+			try 
+			{
+				da.Fill(dt);
+			}
+			catch (Exception ex) 
+			{
+				Console.WriteLine(ex.Message);
+			}
+
+
+			DataRow row = dt.NewRow();
+			row["id"] = 1;
+			row["name"] = "xyz";
+			dt.Rows.Add(row);
+
+			DataRow row2 = dt.NewRow();
+			row2["id"] = 2;
+			row2["name"] = DBNull.Value;
+			dt.Rows.Add(row2);
+
+			da.Update(dt);
+
+			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+			try 
+			{
+				using (MySqlDataReader reader = cmd.ExecuteReader()) 
+				{
+					Assert.IsTrue(reader.Read());
+					Assert.AreEqual(1, reader["id"]);
+					Assert.AreEqual("xyz", reader["name"]);
+					Assert.AreEqual(DateTime.Now.Year, reader.GetDateTime(2).Year);
+					Assert.IsTrue(reader.Read());
+					Assert.AreEqual(2, reader["id"]);
+					Assert.AreEqual("abc", reader["name"]);
+					Assert.AreEqual(DateTime.Now.Year, reader.GetDateTime(2).Year);
+					Assert.IsFalse(reader.Read());
+				}
+			}
+			catch (Exception ex) 
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
 
 	}
 }

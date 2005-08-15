@@ -96,18 +96,22 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			try 
 			{
-				MySqlConnection c = new MySqlConnection( conn.ConnectionString + ";pooling=true" );
+				string connStr = conn.ConnectionString + ";pooling=true";
+				MySqlConnection c = new MySqlConnection(connStr);
 				c.Open();
 				int threadId = c.ServerThread;
 				c.Close();
 
 				// thread gets killed right here
 				KillConnection(c);
+				c.Dispose();
 
+				c = new MySqlConnection(connStr);
 				c.Open();
-				threadId = c.ServerThread;
+				int secondThreadId = c.ServerThread;
 				c.Close();
 				KillConnection(c);
+				//Assert.AreNotEqual(threadId, secondThreadId);
 
 			}
 			catch (Exception ex)

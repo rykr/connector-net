@@ -46,6 +46,7 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
+		[Category("4.1")]
 		public void Warnings()
 		{
 			conn.InfoMessage += new MySqlInfoMessageEventHandler(WarningsInfoMessage);
@@ -71,6 +72,19 @@ namespace MySql.Data.MySqlClient.Tests
 		private void WarningsInfoMessage(object sender, MySqlInfoMessageEventArgs args)
 		{
 			Assert.AreEqual(1, args.errors.Length);
+		}
+
+		[Test]
+		public void StateChange() 
+		{
+			MySqlConnection c = new MySqlConnection(GetConnectionString(true));
+			c.StateChange += new StateChangeEventHandler(StateChangeHandler);
+			c.Open();
+			c.Close();
+		}
+
+		private void StateChangeHandler(object sender, StateChangeEventArgs e)
+		{
 		}
 	}
 }

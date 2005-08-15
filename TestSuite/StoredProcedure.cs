@@ -404,7 +404,8 @@ namespace MySql.Data.MySqlClient.Tests
 			if (! Is50) return;
 			
 			// create our procedure
-			execSQL( "CREATE PROCEDURE spTest(IN \r\nvalin DECIMAL(10,2),\nIN val2 INT) BEGIN  SELECT valin; END" );
+			execSQL( "CREATE PROCEDURE spTest(IN \r\nvalin DECIMAL(10,2),\nIN val2 INT) " +
+				"SQL SECURITY INVOKER BEGIN  SELECT valin; END" );
 
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
 			cmd.CommandType = CommandType.StoredProcedure;

@@ -295,7 +295,7 @@ namespace MySql.Data.MySqlClient.Tests
 			System.Text.StringBuilder sql = new System.Text.StringBuilder();
 
 			for (int i=0; i < 10; i++) 
-				sql.Append("DROP TABLE IF EXISTS idx" + i + ";CREATE TABLE idx" + i + "(aa int not null auto_increment primary key, a int, b varchar(50), c int) type=memory;");
+				sql.Append("DROP TABLE IF EXISTS idx" + i + ";CREATE TABLE idx" + i + "(aa int not null auto_increment primary key, a int, b varchar(50), c int);");
 
 			int c = 0;
 			for (int z=0; z < 600; z++)

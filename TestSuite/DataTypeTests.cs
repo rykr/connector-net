@@ -484,7 +484,7 @@ namespace MySql.Data.MySqlClient.Tests
 			da.Fill(dt);
 			Assert.AreEqual(1, dt.Rows.Count);
 			Assert.AreEqual(1, dt.Rows[0]["id"]);
-			Assert.AreEqual(23.4, dt.Rows[0]["dec1"]);
+			Assert.AreEqual(Decimal.Parse("23.40"), dt.Rows[0]["dec1"]);
 		}
 
 		[Test]
@@ -527,6 +527,7 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
+		[Category("5.0")]
 		public void Bit()
 		{
 			execSQL("DROP TABLE IF EXISTS test");

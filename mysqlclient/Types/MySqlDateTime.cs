@@ -220,21 +220,46 @@ namespace MySql.Data.Types
 
 		private MySqlDateTime Parse40Timestamp( string s ) 
 		{
-			string format = "yy";
+			int pos = 0;
+			year = month = day = 1;
+			hour = minute = second = 0;
 
 			if (s.Length == 14 || s.Length == 8)
-				format += "yy";
-			if (s.Length > 2)
-				format += "MM";
-			if (s.Length > 4)
-				format += "dd";
-			if (s.Length > 8)
-				format += "HHmm";
-			if (s.Length > 10)
-				format += "ss";
+			{
+				year = int.Parse(s.Substring(pos, 4));
+				pos += 4;
+			}
+			else 
+			{
+				year = int.Parse(s.Substring(pos, 2));
+				pos += 2;
+				if (year >= 70)
+					year += 1900;
+				else
+					year += 2000;
+			}
 
-			return new MySqlDateTime( DateTime.ParseExact(s, format, 
-				System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat), mySqlDbType);
+			if (s.Length > 2)
+			{
+				month = int.Parse(s.Substring(pos, 2));
+				pos += 2;
+			}
+			if (s.Length > 4)
+			{
+				day = int.Parse(s.Substring(pos, 2));
+				pos += 2;
+			}
+			if (s.Length > 8)
+			{
+				hour = int.Parse(s.Substring(pos, 2));
+				minute = int.Parse(s.Substring(pos+2, 2));
+				pos += 4;
+			}
+			if (s.Length > 10)
+				second = int.Parse(s.Substring(pos, 2));
+
+			return new MySqlDateTime(year, month, day, hour, minute, 
+				                     second, mySqlDbType );
 		}
 
 		internal MySqlDateTime ParseMySql( string s, bool is41 ) 

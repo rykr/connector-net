@@ -144,6 +144,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #8382  	Commandbuilder does not handle queries to other databases than the default one-
 		/// </summary>
 		[Test]
+		[Category("4.1")]
 		public void DifferentDatabase()
 		{
 			execSQL("INSERT INTO test (id, name) VALUES (1,'test1')");

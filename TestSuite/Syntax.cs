@@ -61,6 +61,7 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test()]
+		[Category("4.1")]
 		public void ProblemCharsInSQL()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
@@ -209,8 +210,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("DROP TABLE IF EXISTS test");
 
 			execSQL("CREATE TABLE test (field1 mediumint(9) default '0', field2 float(9,3) " +
-				"default '0.000', field3 double(15,3) default '0.000') engine=innodb " +
-				"default charset=utf8");
+				"default '0.000', field3 double(15,3) default '0.000') engine=innodb ");
 			execSQL("INSERT INTO test values (1,1,1)");
 
 			MySqlDataReader reader = null;

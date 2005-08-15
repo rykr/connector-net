@@ -190,6 +190,9 @@ namespace MySql.Data.MySqlClient.Tests
 				c.Open();
 				c.Close();
 
+				execSQL("GRANT ALL ON *.* to ''@'localhost'");
+				execSQL("FLUSH PRIVILEGES");
+
 				// connect with all defaults
 				if (connStr.IndexOf("localhost") != -1) 
 				{
@@ -197,6 +200,9 @@ namespace MySql.Data.MySqlClient.Tests
 					c.Open();
 					c.Close();
 				}
+
+				execSQL("DELETE FROM mysql.user WHERE length(user) = 0");
+				execSQL("FLUSH PRIVILEGES");
 
 				// connect with no password
 				string host = System.Configuration.ConfigurationSettings.AppSettings["host"];
@@ -218,6 +224,7 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
+		[Category("4.1")]
 		public void ConnectingAsUTF8()
 		{
 			execSQL("CREATE Database IF NOT EXISTS test2 DEFAULT CHARACTER SET utf8");

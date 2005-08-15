@@ -275,11 +275,20 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlDataReader reader = null;
 			try 
 			{
-				reader = cmd.ExecuteReader( CommandBehavior.SingleRow );
-				Assert.IsTrue( reader.Read(), "First read" );
-				Assert.IsFalse( reader.Read(), "Second read" );
-				Assert.IsFalse( reader.NextResult(), "Trying NextResult" );
+				reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
+				Assert.IsTrue(reader.Read(), "First read");
+				Assert.IsFalse(reader.Read(), "Second read");
+				Assert.IsFalse(reader.NextResult(), "Trying NextResult");
 				reader.Close();
+
+				cmd.CommandText = "SELECT * FROM test where id=1";
+				reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual("test1", reader.GetString(1));
+				Assert.IsFalse(reader.Read());
+				Assert.IsFalse(reader.NextResult());
+				reader.Close();
+
 				reader = null;
 			}
 			catch (Exception ex) 

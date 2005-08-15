@@ -18,22 +18,30 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 
+using System;
 using System.Data;
 using System.Data.Common;
 using System.ComponentModel;
 
 namespace MySql.Data.MySqlClient
 {
+	public class MySqlDbNull 
+	{
+	}
+
 	/// <include file='docs/MySqlDataAdapter.xml' path='docs/class/*'/>
 	[System.Drawing.ToolboxBitmap( typeof(MySqlDataAdapter), "MySqlClient.resources.dataadapter.bmp")]
 	[System.ComponentModel.DesignerCategory("Code")]
 	[Designer("MySql.Data.MySqlClient.Design.MySqlDataAdapterDesigner,MySqlClient.Design")]
 	public sealed class MySqlDataAdapter : DbDataAdapter, IDbDataAdapter
 	{
-		private MySqlCommand m_selectCommand;
-		private MySqlCommand m_insertCommand;
-		private MySqlCommand m_updateCommand;
-		private MySqlCommand m_deleteCommand;
+		private MySqlCommand	m_selectCommand;
+		private MySqlCommand	m_insertCommand;
+		private MySqlCommand	m_updateCommand;
+		private MySqlCommand	m_deleteCommand;
+		private string			savedSql;
+		private bool			loadingDefaults;
+		private bool			mayUseDefault;
 
 		/*
 			* Inherit from Component through DbDataAdapter. The event
@@ -48,22 +56,23 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/Ctor/*'/>
 		public MySqlDataAdapter()
 		{
+			loadingDefaults = true;
 		}
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/Ctor1/*'/>
-		public MySqlDataAdapter( MySqlCommand selectCommand ) 
+		public MySqlDataAdapter( MySqlCommand selectCommand ) : this()
 		{
 			SelectCommand = selectCommand;
 		}
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/Ctor2/*'/>
-		public MySqlDataAdapter( string selectCommandText, MySqlConnection conn) 
+		public MySqlDataAdapter( string selectCommandText, MySqlConnection conn) : this()
 		{
 			SelectCommand = new MySqlCommand( selectCommandText, conn );
 		}
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/Ctor3/*'/>
-		public MySqlDataAdapter( string selectCommandText, string selectConnString) 
+		public MySqlDataAdapter( string selectCommandText, string selectConnString) : this()
 		{
 			SelectCommand = new MySqlCommand( selectCommandText, 
 				new MySqlConnection(selectConnString) );
@@ -128,11 +137,85 @@ namespace MySql.Data.MySqlClient
 			set { m_updateCommand = (MySqlCommand)value; }
 		}
 
+		internal bool LoadDefaults 
+		{
+			get { return loadingDefaults; }
+			set { loadingDefaults = value; }
+		}
+
 		#endregion
 
+
+		protected override int Fill(DataTable dataTable, IDataReader dataReader)
+		{
+			int result = base.Fill (dataTable, dataReader);
+			//LoadDefaultValues(dataTable, dataReader);
+			return result;
+		}
+
+		protected override int Fill(DataSet dataSet, string srcTable, IDataReader dataReader, int startRecord, int maxRecords)
+		{
+			int result = base.Fill (dataSet, srcTable, dataReader, startRecord, maxRecords);
+			//LoadDefaultValues(dataSet.Tables[srcTable], dataReader);
+			return result;
+		}
+
+
+/*		private void LoadDefaultValues(DataTable dataTable, IDataReader reader)
+		{
+			if (! loadingDefaults) return;
+			if (dataTable.ExtendedProperties["DefaultsChecked"] != null) return;
+			if (this.MissingSchemaAction != MissingSchemaAction.Add &&
+				this.MissingSchemaAction != MissingSchemaAction.AddWithKey) return;
+			
+			DataTable schemaTable = reader.GetSchemaTable();
+			reader.Close();
+
+			DatabaseMetaData dmd = new DatabaseMetaData(this.SelectCommand.Connection);
+
+			foreach (DataRow row in schemaTable.Rows)
+			{
+				DataRow dmdRow = dmd.GetColumn(row["BaseCatalogName"].ToString(), 
+					null, row["BaseTableName"].ToString(), row["BaseColumnName"].ToString() );
+				object defaultVal = dmdRow["COLUMN_DEFAULT"];
+				DataColumn col = dataTable.Columns[row["ColumnName"].ToString()];
+				if (defaultVal != System.DBNull.Value)
+				{
+					if (! col.AllowDBNull) col.ExtendedProperties.Add("UseDefault", true);
+					col.AllowDBNull = true;
+					mayUseDefault = true;
+				}
+			}
+
+			dataTable.ExtendedProperties.Add("DefaultsChecked", true);
+		}
+
+*/
+
+/*		private void FixupStatementDefaults(RowUpdatingEventArgs args)
+		{
+			DataTable table = args.Row.Table;
+			DataRow row = args.Row;
+
+			savedSql = args.Command.CommandText;
+			string newSql = savedSql;
+
+			if (mayUseDefault)
+				this.InsertCommand.Unprepare();
+
+			foreach (IDataParameter p in args.Command.Parameters)
+			{
+				if (row[p.SourceColumn] != DBNull.Value) continue;
+				DataColumn col = table.Columns[p.SourceColumn];
+				if (! col.ExtendedProperties.ContainsKey("UseDefault")) continue;
+				newSql = newSql.Replace("?"+p.ParameterName, "DEFAULT");
+			}
+			args.Command.CommandText = newSql;
+		}
+*/		
 		/*
-			* Implement abstract methods inherited from DbDataAdapter.
-			*/
+		* Implement abstract methods inherited from DbDataAdapter.
+		*/
 		/// <summary>
 		/// Overridden. See <see cref="DbDataAdapter.CreateRowUpdatedEvent"/>.
 		/// </summary>
@@ -163,12 +246,15 @@ namespace MySql.Data.MySqlClient
 		/// Overridden. Raises the RowUpdating event.
 		/// </summary>
 		/// <param name="value">A MySqlRowUpdatingEventArgs that contains the event data.</param>
-		override protected void OnRowUpdating(RowUpdatingEventArgs value)
+		override protected void OnRowUpdating(RowUpdatingEventArgs args)
 		{
+//			if (args.StatementType == StatementType.Insert)
+//				FixupStatementDefaults(args);
+
 			MySqlRowUpdatingEventHandler handler = (MySqlRowUpdatingEventHandler) Events[EventRowUpdating];
-			if ((null != handler) && (value is MySqlRowUpdatingEventArgs)) 
+			if ((null != handler) && (args is MySqlRowUpdatingEventArgs)) 
 			{
-				handler(this, (MySqlRowUpdatingEventArgs) value);
+				handler(this, (MySqlRowUpdatingEventArgs) args);
 			}
 		}
 
@@ -176,12 +262,14 @@ namespace MySql.Data.MySqlClient
 		/// Overridden. Raises the RowUpdated event.
 		/// </summary>
 		/// <param name="value">A MySqlRowUpdatedEventArgs that contains the event data. </param>
-		override protected void OnRowUpdated(RowUpdatedEventArgs value)
+		override protected void OnRowUpdated(RowUpdatedEventArgs args)
 		{
+			//args.Command.CommandText = savedSql;
+
 			MySqlRowUpdatedEventHandler handler = (MySqlRowUpdatedEventHandler) Events[EventRowUpdated];
-			if ((null != handler) && (value is MySqlRowUpdatedEventArgs)) 
+			if ((null != handler) && (args is MySqlRowUpdatedEventArgs)) 
 			{
-				handler(this, (MySqlRowUpdatedEventArgs) value);
+				handler(this, (MySqlRowUpdatedEventArgs) args);
 			}
 		}
 
