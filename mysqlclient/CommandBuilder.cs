@@ -109,7 +109,7 @@ namespace MySql.Data.MySqlClient
 		{
 			get 
 			{
-				if (schemaName != null)
+				if (schemaName != null && schemaName.Length > 0)
 					return Quote(schemaName) + "." + Quote(tableName);
 				return Quote(tableName);
 			}
@@ -187,20 +187,20 @@ namespace MySql.Data.MySqlClient
 
 			foreach (DataRow row in _schema.Rows)
 			{
-				string rowTableName = (string)row["BaseTableName"];
-				string rowSchemaName = (string)row["BaseSchemaName"];
+				string rowTableName = row["BaseTableName"].ToString();
+				string rowSchemaName = row["BaseSchemaName"].ToString();
 
 				if (true == (bool)row["IsKey"] || true == (bool)row["IsUnique"])
 					hasKeyOrUnique=true;
 
 				if (tableName == null)
 				{
-					schemaName = (string)row["BaseSchemaName"];
-					tableName = (string)row["BaseTableName"];
+					schemaName = rowSchemaName;
+					tableName = rowTableName;
 				}
-				else if (tableName != rowTableName && rowTableName != null && rowTableName.Length > 0)
+				else if (tableName != rowTableName && rowTableName.Length > 0)
 					throw new InvalidOperationException("MySqlCommandBuilder does not support multi-table statements");
-				else if (schemaName != rowSchemaName && rowSchemaName != null && rowSchemaName.Length > 0)
+				else if (schemaName != rowSchemaName && rowSchemaName.Length > 0)
 					throw new InvalidOperationException("MySqlCommandBuilder does not support multi-schema statements");
 			}
 			if (! hasKeyOrUnique)

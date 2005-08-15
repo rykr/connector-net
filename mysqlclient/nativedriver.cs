@@ -537,7 +537,7 @@ namespace MySql.Data.MySqlClient
 				field = new MySqlField( this.Version );
 
 				field.Encoding = encoding;
-				field.TableName = reader.ReadLenString();
+				field.TableName = field.RealTableName = reader.ReadLenString();
 				field.ColumnName = reader.ReadLenString();
 				field.ColumnLength = reader.ReadNBytes();
 				MySqlDbType type = (MySqlDbType)reader.ReadNBytes();

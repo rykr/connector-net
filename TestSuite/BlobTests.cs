@@ -48,6 +48,7 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
+		[Category("4.0")]
 		public void InsertBinary() 
 		{
 			int lenIn = 400000;
@@ -119,6 +120,7 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
+		[Category("4.0")]
 		public void GetChars() 
 		{
 			InternalGetChars(false);
@@ -176,6 +178,7 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
+		[Category("4.0")]
 		public void InsertText() 
 		{
 			InternalInsertText(false);
@@ -237,35 +240,44 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
+		[Category("4.0")]
 		public void UpdateDataSet() 
 		{
 			execSQL("TRUNCATE TABLE Test");
 			execSQL("INSERT INTO Test VALUES( 1, NULL, 'Text field' )");
 
-			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
-			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
-			DataTable dt = new DataTable();
-			da.Fill(dt);
+			try 
+			{
+				MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
+				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+				DataTable dt = new DataTable();
+				da.Fill(dt);
 
-			string s = (string)dt.Rows[0][2];
-			Assert.AreEqual( "Text field", s );
+				string s = (string)dt.Rows[0][2];
+				Assert.AreEqual( "Text field", s );
 
-			byte[] inBuf = Utils.CreateBlob(512);
-			dt.Rows[0]["blob1"] = inBuf;
-			DataTable changes = dt.GetChanges();
-			da.Update( changes );
-			dt.AcceptChanges();
+				byte[] inBuf = Utils.CreateBlob(512);
+				dt.Rows[0]["blob1"] = inBuf;
+				DataTable changes = dt.GetChanges();
+				da.Update( changes );
+				dt.AcceptChanges();
 
-			dt.Clear();
-			da.Fill(dt);
+				dt.Clear();
+				da.Fill(dt);
 
-			byte[] outBuf = (byte[])dt.Rows[0]["blob1"];
-			Assert.AreEqual( inBuf.Length, outBuf.Length, "checking length of updated buffer" );
-			for (int y=0; y < inBuf.Length; y++)
-				Assert.AreEqual( inBuf[y], outBuf[y], "checking array data" );
+				byte[] outBuf = (byte[])dt.Rows[0]["blob1"];
+				Assert.AreEqual( inBuf.Length, outBuf.Length, "checking length of updated buffer" );
+				for (int y=0; y < inBuf.Length; y++)
+					Assert.AreEqual( inBuf[y], outBuf[y], "checking array data" );
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
 		}
 
 		[Test]
+		[Category("4.0")]
 		public void GetCharsOnLongTextColumn() 
 		{
 			execSQL("INSERT INTO Test (id, text1) VALUES(1, 'Test')");
