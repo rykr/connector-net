@@ -302,15 +302,15 @@ namespace MySql.Data.MySqlClient
 					sqlBuffers.RemoveAt( 0 );
 				}
 	
-				// if this is a resultset, then we break out of our execution loop
-				if (result.IsResultSet)
-					break;
-
 				if (result.AffectedRows != -1)
 				{
 					if (updateCount == -1) updateCount = 0;
 					updateCount += (long)result.AffectedRows;
 				}
+
+				// if this is a resultset, then we break out of our execution loop
+				if (result.IsResultSet)
+					break;
 			}
 
 			if (result.IsResultSet) 

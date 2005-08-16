@@ -97,8 +97,8 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
 			DataTable dt = new DataTable();
-			da.Fill( dt );
-			Assert.AreEqual( 1, dt.Rows.Count );
+			da.Fill(dt);
+			Assert.AreEqual(1, dt.Rows.Count);
 
 			execSQL("UPDATE Test SET name='Test2' WHERE id=1");
 
