@@ -99,12 +99,11 @@ namespace MySql.Data.MySqlClient.Tests
 		public void TestConnectingSocketBadDbName()
 		{
 			string host = ConfigurationSettings.AppSettings["host"];
-			string userid = ConfigurationSettings.AppSettings["userid"];
-			string password = ConfigurationSettings.AppSettings["password"];
 
-			string connStr = "server={0};user id={1};password={2};database=dummy; pooling=false";
+			string connStr = "server={0};user id={1};password={2};database=dummy; " +
+				"pooling=false";
 			MySqlConnection c = new MySqlConnection(
-				String.Format(connStr, host, userid, password));
+				String.Format(connStr, host, this.user, this.password));
 			c.Open();
 			c.Close();
 		}
@@ -113,18 +112,16 @@ namespace MySql.Data.MySqlClient.Tests
 		public void TestPersistSecurityInfoCachingPasswords() 
 		{
 			string host = ConfigurationSettings.AppSettings["host"];
-			string uid = ConfigurationSettings.AppSettings["user"];
-			string pwd = ConfigurationSettings.AppSettings["password"];
 
 			string connStr = String.Format("database=test;server={0};user id={1};Password={2}; pooling=false",
-				host, uid, pwd );
+				host, this.user, this.password );
 			MySqlConnection c = new MySqlConnection( connStr );
 			c.Open();
 			c.Close();
 
 			// this shouldn't work
 			connStr = String.Format("database=test;server={0};user id={1};Password={2}; pooling=false",
-				host, uid, "bad_password" );
+				host, this.user, "bad_password" );
 			c = new MySqlConnection( connStr );
 			try 
 			{
@@ -139,7 +136,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			// this should work
 			connStr = String.Format("database=test;server={0};user id={1};Password={2}; pooling=false",
-				host, uid, pwd );
+				host, this.user, this.password);
 			c = new MySqlConnection( connStr );
 			c.Open();
 			c.Close();
