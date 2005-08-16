@@ -37,7 +37,7 @@ namespace MySql.Data.MySqlClient.Tests
 		protected string			host;
 		protected string			user;
 		protected string			password;
-		protected string			nopassuser;
+		//protected string			nopassuser;
 		protected string			otherkeys;
 
 		public BaseTest() 
@@ -59,9 +59,8 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				host = ConfigurationSettings.AppSettings["host"];
-				user = ConfigurationSettings.AppSettings["user"];
-				password = ConfigurationSettings.AppSettings["password"];
-				nopassuser = ConfigurationSettings.AppSettings["nopassuser"];
+				user = "root";
+				password = "";
 				otherkeys = ConfigurationSettings.AppSettings["otherkeys"];
 				string connString = GetConnectionString(true);
 				conn = new MySqlConnection( connString );

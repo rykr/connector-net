@@ -104,6 +104,10 @@
                     BuildAction = "None"
                 />
                 <File
+                    RelPath = "Client.build"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "README"
                     BuildAction = "None"
                 />

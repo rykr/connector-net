@@ -80,10 +80,12 @@ namespace MySql.Data.MySqlClient.Tests
 
 		[Test()]
 		[ExpectedException(typeof(MySqlException))]
-		[Explicit]
 		public void TestConnectingSocketBadUserName()
 		{
 			string host = ConfigurationSettings.AppSettings["host"];
+
+			execSQL("DELETE FROM mysql.user WHERE length(user) = 0");
+			execSQL("FLUSH PRIVILEGES");
 
 			string connStr = "server={0};user id=dummy;password=;database=Test";
 			MySqlConnection c = new MySqlConnection(
