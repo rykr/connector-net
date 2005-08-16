@@ -156,7 +156,7 @@
                     <property name="DocumentPrivates" value="False" />
                     <property name="DocumentEmptyNamespaces" value="False" />
                     <property name="IncludeAssemblyVersion" value="False" />
-                    <property name="CopyrightText" value="Copyright MySQL AB 2004" />
+                    <property name="CopyrightText" value="Copyright MySQL AB 2004-2005" />
                     <property name="CopyrightHref" value="http://www.mysql.com" />
 				</documenter>
 			</documenters>

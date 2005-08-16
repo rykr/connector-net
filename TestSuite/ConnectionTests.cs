@@ -201,13 +201,12 @@ namespace MySql.Data.MySqlClient.Tests
 					c.Close();
 				}
 
-				execSQL("DELETE FROM mysql.user WHERE length(user) = 0");
+				execSQL("GRANT ALL ON *.* to 'nopass'@'localhost'");
 				execSQL("FLUSH PRIVILEGES");
 
 				// connect with no password
 				string host = System.Configuration.ConfigurationSettings.AppSettings["host"];
-				string user = System.Configuration.ConfigurationSettings.AppSettings["nopassuser"];
-				connStr2 = "server=" + host + ";user id=" + user;
+				connStr2 = "server=" + host + ";user id=nopass";
 				c = new MySqlConnection( connStr2 );
 				c.Open();
 				c.Close();
@@ -220,6 +219,12 @@ namespace MySql.Data.MySqlClient.Tests
 			catch (Exception ex)
 			{
 				Assert.Fail( ex.Message );
+			}
+			finally 
+			{
+				execSQL("DELETE FROM mysql.user WHERE length(user) = 0");
+				execSQL("DELETE FROM mysql.user WHERE user='nopass'");
+				execSQL("FLUSH PRIVILEGES");
 			}
 		}
 
