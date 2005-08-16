@@ -46,7 +46,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 
 		[Test()]
-		[Explicit]
+		[Category("NotWorking")]
 		public void TimeoutDuringRead() 
 		{
 			execSQL( "SET @@global.wait_timeout=15" );
@@ -64,6 +64,7 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				reader = cmd.ExecuteReader();
+				reader.Read();
 				Thread.Sleep( 20000 );
 				while (reader.Read()) 
 				{

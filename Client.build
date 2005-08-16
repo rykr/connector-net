@@ -1,9 +1,6 @@
 <project name="MySqlClient" default="allframeworks" xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd">
 	<description>MySQLClient Managed Provider for MySQL</description>
 
-	<!-- sets where we can expect to find NUnit on your system -->
-	<property name="nunit" value="d:\program files\NUnit 2.2\bin"/>
-
 	<!-- filesets -->
 	<fileset id="Source">
 		<include name="mysqlclient/common/*.cs"/>
@@ -55,7 +52,7 @@
 		<csc output="bin/${framework}/${buildType}/MySql.Data.Tests.dll" target="library" debug="${debug}" optimize="${opt}">
 			<arg value="/nowarn:0679"/>
 			<sources>
-				<include name="TestSuite/*.cs"/>
+				<include name="TestSuite/*.cs" />
 			</sources>
 			<references>
 				<include name="bin/${framework}/${buildType}/MySql.Data.dll"/>
@@ -99,17 +96,20 @@
 		<servicecontroller action="Stop" service="MySql5.0"/>
 		
 		<echo message="Testing MySQL 4.0"/>
+		<property name="excludes" value="4.1, 5.0, NotWorking"/>
 		<servicecontroller action="Start" service="MySql4.0"/>
-		<call target="testdb"/>
+		<call target="testdb"/>  
 
 		<echo message="Testing MySQL 4.1"/>
 		<servicecontroller action="Stop" service="MySql4.0"/>
 		<servicecontroller action="Start" service="MySql4.1"/>
+		<property name="excludes" value="5.0, NotWorking"/>
 		<call target="testdb"/>
 
 		<echo message="Testing MySQL 5.0"/>
 		<servicecontroller action="Stop" service="MySql4.1"/>
 		<servicecontroller action="Start" service="MySql5.0"/>
+		<property name="excludes" value="NotWorking"/>
 		<call target="testdb"/>
 	</target>
 
@@ -117,7 +117,13 @@
 		<nunit2 verbose="true">
 			<formatter type="Plain" />
 			<test assemblyname="bin/${framework}/${buildType}/MySql.Data.Tests.dll"
-				appconfig="testsuite/MySql.Data.Tests.dll.config"  />
+				appconfig="testsuite/configs/socket.config">
+				<categories>
+					<exclude name="4.1"/>
+					<exclude name="5.0"/>
+					<exclude name="NotWorking" />
+				</categories>
+			</test>
 		</nunit2>
 	</target>
 	
@@ -166,7 +172,7 @@
 	<target name="clean" description="Remove all generated files">
 		<delete failonerror="false">
 			<fileset>
-				<include name="bin\*.*" />
+				<include name="bin/**" />
             </fileset>
         </delete>
     </target>

@@ -49,7 +49,7 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 
-		[Test()]
+		[Test]
 		public void TestFill()
 		{
 			FillImpl( false );
@@ -84,7 +84,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( String.Empty, ds.Tables[0].Rows[2]["name"] );
 		}
 
-		[Test()]
+		[Test]
 		public void TestUpdate()
 		{
 			MySqlCommand cmd = new MySqlCommand("TRUNCATE TABLE Test", conn);
@@ -135,7 +135,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( 0, dt.Rows.Count, "checking row count" );
 		}
 
-		[Test()]
+		[Test]
 		public void OriginalInName()
 		{
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
@@ -158,7 +158,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( 2, dt.Rows[0]["OriginalId"] );
 		}
 
-		[Test()]
+		[Test]
 		public void UseAdapterPropertyOfCommandBuilder() 
 		{
 			execSQL("INSERT INTO Test (id, id2, name) VALUES (NULL, 1, 'Test')");
@@ -182,7 +182,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( "Test Update", dt.Rows[0]["name"] );
 		}
 
-		[Test()]
+		[Test]
 		public void UpdateNullTextFieldToEmptyString() 
 		{
 			execSQL("INSERT INTO Test (id, id2, name) VALUES (1, 1, NULL)");
@@ -212,7 +212,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void UpdateExtendedTextFields() 
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
@@ -232,7 +232,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( "This is my new note", dt.Rows[0]["notes"]);
 		}
 
-		[Test()]
+		[Test]
 		public void SelectMoreThan252Rows() 
 		{
 			for (int i=0; i < 500; i++) 
@@ -245,7 +245,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( 500, dt.Rows.Count );
 		}
 
-		[Test]
+/*		[Test]
 		[Explicit]
 		public void UpdateManyRows() 
 		{
@@ -267,9 +267,9 @@ namespace MySql.Data.MySqlClient.Tests
 
 			dt.Clear();
 			da.Fill(dt);
-			Assert.AreEqual( 100000, dt.Rows.Count );
+			Assert.AreEqual(100000, dt.Rows.Count);
 		}
-
+*/
 		[Test]
 		public void DiscreteValues() 
 		{

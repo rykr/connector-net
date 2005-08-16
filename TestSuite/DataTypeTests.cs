@@ -468,7 +468,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			execSQL("DROP TABLE IF EXISTS test");
 			execSQL("CREATE TABLE test (id int not null auto_increment primary key, " +
-				"dec1 decimal(10,2))");
+				"dec1 decimal(10,1))");
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
@@ -484,7 +484,7 @@ namespace MySql.Data.MySqlClient.Tests
 			da.Fill(dt);
 			Assert.AreEqual(1, dt.Rows.Count);
 			Assert.AreEqual(1, dt.Rows[0]["id"]);
-			Assert.AreEqual(Decimal.Parse("23.40"), dt.Rows[0]["dec1"]);
+			Assert.AreEqual(23.4, dt.Rows[0]["dec1"]);
 		}
 
 		[Test]

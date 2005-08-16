@@ -29,7 +29,7 @@ namespace MySql.Data.MySqlClient.Tests
 	/// <summary>
 	/// Summary description for BlobTests.
 	/// </summary>
-	[NUnit.Framework.TestFixture]
+	[TestFixture]
 	public class BlobTests : BaseTest
 	{
 		[TestFixtureSetUp]
