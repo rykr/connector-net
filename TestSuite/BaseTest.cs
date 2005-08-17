@@ -131,9 +131,11 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 		}
 
-		protected void KillConnection( MySqlConnection c ) 
+		protected void KillConnection(MySqlConnection c) 
 		{
-			execSQL( "KILL " + c.ServerThread );
+			int threadId = c.ServerThread;
+			MySqlCommand cmd = new MySqlCommand("KILL " + threadId, c);
+			cmd.ExecuteNonQuery();
 			c.Ping();  // this final ping will cause MySQL to clean up the killed thread
 		}
 

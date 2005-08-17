@@ -29,15 +29,19 @@ namespace MySql.Data.Common
 	/// <summary>
 	/// Summary description for MySqlSocket.
 	/// </summary>
-	internal sealed class SocketStream : Stream
+	internal sealed class SocketStream : Stream, IDisposable
 	{
 		private const uint FIONBIO = 0x8004667e;
 		private Socket	socket;
+		private bool	canRead;
+		private bool	canWrite;
 
 		public SocketStream(AddressFamily addressFamily, SocketType socketType, ProtocolType protocol)
 			: base()
 		{
 			socket = new Socket(addressFamily, socketType, protocol);
+			canRead = true;
+			canWrite = true;
 		}
 
 		#region Properties
@@ -49,7 +53,7 @@ namespace MySql.Data.Common
 
 		public override bool CanRead
 		{
-			get	{ return true;	}
+			get	{ return canRead;	}
 		}
 
 		public override bool CanSeek
@@ -59,7 +63,7 @@ namespace MySql.Data.Common
 
 		public override bool CanWrite
 		{
-			get	{ return true; }
+			get	{ return canWrite; }
 		}
 
 		public override long Length
@@ -76,6 +80,12 @@ namespace MySql.Data.Common
 		#endregion
 
 		#region Stream Implementation
+
+		public override void Close()
+		{
+			Dispose();
+		}
+
 
 		public override void Flush()
 		{
@@ -97,12 +107,57 @@ namespace MySql.Data.Common
 
 		public override void Write(byte[] buffer, int offset, int count)
 		{
-			socket.Send(buffer, offset, count, SocketFlags.None);
+			bool shouldClose = false;
+			try 
+			{
+				socket.Send(buffer, offset, count, SocketFlags.None);
+			}
+			catch (SocketException se)
+			{
+				if (se.ErrorCode == 10053)
+					shouldClose = true;
+				else
+					throw;
+			}
+			catch (ObjectDisposedException ode)
+			{
+				shouldClose = true;
+			}
+			finally 
+			{
+				if (shouldClose)
+				{
+					canRead = false;
+					canWrite = false;
+					socket = null;
+				}
+			}
 		}
 
 
 		#endregion
-		
+
+		#region IDisposable Members
+
+		public void Dispose()
+		{
+			if (socket == null) return;
+
+			canRead = false;
+			canWrite = false;
+			try 
+			{
+				socket.Shutdown(SocketShutdown.Both);				
+			}
+			catch (Exception)
+			{
+			}
+			socket.Close();
+			socket = null;
+		}
+
+		#endregion
+
 
 		public bool Connect(EndPoint remoteEP, int timeout)
 		{
@@ -142,7 +197,5 @@ namespace MySql.Data.Common
 				throw new Exception("Error creating MySQLSocket");
 			return true;
 		}
-
-
 	}
 }

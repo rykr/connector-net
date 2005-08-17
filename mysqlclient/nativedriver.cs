@@ -351,10 +351,10 @@ namespace MySql.Data.MySqlClient
 		public override void Close() 
 		{
 			if (isOpen)
-				ExecuteCommand( DBCmd.QUIT, null, 0 );
+				ExecuteCommand(DBCmd.QUIT, null, 0);
 
-			reader.Stream.Close();
 			writer.Stream.Close();
+			reader.Stream.Close();
 
 			base.Close();
 		}

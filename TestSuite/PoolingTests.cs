@@ -97,26 +97,26 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				string connStr = conn.ConnectionString + ";pooling=true";
+				connStr = "server=bob;uid=root;pwd=;database=test;pooling=true";
 				MySqlConnection c = new MySqlConnection(connStr);
 				c.Open();
 				int threadId = c.ServerThread;
-				c.Close();
-
 				// thread gets killed right here
 				KillConnection(c);
+				c.Close();
+
 				c.Dispose();
 
 				c = new MySqlConnection(connStr);
 				c.Open();
 				int secondThreadId = c.ServerThread;
-				c.Close();
 				KillConnection(c);
-				//Assert.AreNotEqual(threadId, secondThreadId);
-
+				c.Close();
+				Assert.IsFalse(threadId == secondThreadId);
 			}
 			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 		}
 
@@ -152,7 +152,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 			catch (Exception ex) 
 			{ 
-				Assert.Fail( ex.Message );
+				Assert.Fail( ex.Message);
 			}
 		}
 
