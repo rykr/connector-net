@@ -114,7 +114,7 @@ namespace MySql.Data.Common
 			}
 			catch (SocketException se)
 			{
-				if (se.ErrorCode == 10053)
+				if (IsFatalSocketError(se.ErrorCode))
 					shouldClose = true;
 				else
 					throw;
@@ -158,6 +158,16 @@ namespace MySql.Data.Common
 
 		#endregion
 
+
+		private bool IsFatalSocketError(int socketErrorCode)
+		{
+			switch (socketErrorCode)
+			{
+				case 10053: 
+				case 10054: return true;
+				default: return false;
+			}
+		}
 
 		public bool Connect(EndPoint remoteEP, int timeout)
 		{
