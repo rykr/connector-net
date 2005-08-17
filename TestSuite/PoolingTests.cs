@@ -63,7 +63,9 @@ namespace MySql.Data.MySqlClient.Tests
 				c.Close();
 			}
 
-			KillConnection( c );
+			c.Open();
+			KillConnection(c);
+			c.Close();
 
 			connStr += ";Min Pool Size=10";
 			MySqlConnection[] connArray = new MySqlConnection[10];
@@ -86,8 +88,8 @@ namespace MySql.Data.MySqlClient.Tests
 			for (int i=0; i < connArray.Length; i++)
 			{
 				int id = connArray[i].ServerThread;
+				KillConnection(connArray[i]);
 				connArray[i].Close();
-				KillConnection( connArray[i] );
 			}
 		}
 
@@ -97,7 +99,6 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				string connStr = conn.ConnectionString + ";pooling=true";
-				connStr = "server=bob;uid=root;pwd=;database=test;pooling=true";
 				MySqlConnection c = new MySqlConnection(connStr);
 				c.Open();
 				int threadId = c.ServerThread;

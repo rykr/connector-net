@@ -119,7 +119,7 @@ namespace MySql.Data.Common
 				else
 					throw;
 			}
-			catch (ObjectDisposedException ode)
+			catch (ObjectDisposedException)
 			{
 				shouldClose = true;
 			}

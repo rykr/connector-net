@@ -25,10 +25,6 @@ using System.ComponentModel;
 
 namespace MySql.Data.MySqlClient
 {
-	public class MySqlDbNull 
-	{
-	}
-
 	/// <include file='docs/MySqlDataAdapter.xml' path='docs/class/*'/>
 	[System.Drawing.ToolboxBitmap( typeof(MySqlDataAdapter), "MySqlClient.resources.dataadapter.bmp")]
 	[System.ComponentModel.DesignerCategory("Code")]
@@ -39,9 +35,9 @@ namespace MySql.Data.MySqlClient
 		private MySqlCommand	m_insertCommand;
 		private MySqlCommand	m_updateCommand;
 		private MySqlCommand	m_deleteCommand;
-		private string			savedSql;
+//		private string			savedSql;
 		private bool			loadingDefaults;
-		private bool			mayUseDefault;
+//		private bool			mayUseDefault;
 
 		/*
 			* Inherit from Component through DbDataAdapter. The event
@@ -146,7 +142,7 @@ namespace MySql.Data.MySqlClient
 		#endregion
 
 
-		protected override int Fill(DataTable dataTable, IDataReader dataReader)
+/*		protected override int Fill(DataTable dataTable, IDataReader dataReader)
 		{
 			int result = base.Fill (dataTable, dataReader);
 			//LoadDefaultValues(dataTable, dataReader);
@@ -160,7 +156,7 @@ namespace MySql.Data.MySqlClient
 			return result;
 		}
 
-
+*/
 /*		private void LoadDefaultValues(DataTable dataTable, IDataReader reader)
 		{
 			if (! loadingDefaults) return;
@@ -245,7 +241,7 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// Overridden. Raises the RowUpdating event.
 		/// </summary>
-		/// <param name="value">A MySqlRowUpdatingEventArgs that contains the event data.</param>
+		/// <param name="args">A MySqlRowUpdatingEventArgs that contains the event data.</param>
 		override protected void OnRowUpdating(RowUpdatingEventArgs args)
 		{
 //			if (args.StatementType == StatementType.Insert)
@@ -261,7 +257,7 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// Overridden. Raises the RowUpdated event.
 		/// </summary>
-		/// <param name="value">A MySqlRowUpdatedEventArgs that contains the event data. </param>
+		/// <param name="args">A MySqlRowUpdatedEventArgs that contains the event data. </param>
 		override protected void OnRowUpdated(RowUpdatedEventArgs args)
 		{
 			//args.Command.CommandText = savedSql;

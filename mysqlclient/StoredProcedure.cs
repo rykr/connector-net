@@ -101,7 +101,7 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// Creates the proper command text for executing the given stored procedure
 		/// </summary>
-		/// <param name="spName"></param>
+		/// <param name="cmd"></param>
 		/// <returns></returns>
 		public string Prepare(MySqlCommand cmd)
 		{
