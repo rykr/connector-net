@@ -275,7 +275,21 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( DBNull.Value, name );
 		}
 
-		[Test()]
+		/// <summary>
+		/// Bug #12646  	Parameters are defaulted to Decimal
+		/// </summary>
+		[Test]
+		public void DefaultType()
+		{
+			IDbCommand cmd = conn.CreateCommand();
+			IDbDataParameter p = cmd.CreateParameter();
+			p.ParameterName = "?boo";
+			p.Value = "test";
+			MySqlParameter mp = (MySqlParameter)p;
+			Assert.AreEqual(MySqlDbType.String, mp.MySqlDbType);
+		}
+
+		[Test]
 		public void OddCharsInParameterNames() 
 		{
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, name) VALUES (1, ?nam$es)", conn);
