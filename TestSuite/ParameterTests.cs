@@ -286,7 +286,7 @@ namespace MySql.Data.MySqlClient.Tests
 			p.ParameterName = "?boo";
 			p.Value = "test";
 			MySqlParameter mp = (MySqlParameter)p;
-			Assert.AreEqual(MySqlDbType.String, mp.MySqlDbType);
+			Assert.AreEqual(MySqlDbType.VarChar, mp.MySqlDbType);
 		}
 
 		[Test]

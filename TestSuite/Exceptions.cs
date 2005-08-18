@@ -49,23 +49,23 @@ namespace MySql.Data.MySqlClient.Tests
 		[Category("NotWorking")]
 		public void TimeoutDuringRead() 
 		{
-			execSQL( "SET @@global.wait_timeout=15" );
-			execSQL( "SET @@local.wait_timeout=28800" );
+			execSQL("SET @@global.wait_timeout=15");
+			execSQL("SET @@local.wait_timeout=28800");
 
 			for (int i=1; i < 2000; i++)
-				execSQL( "INSERT INTO Test VALUES (" + i + ", 'This is a long text string that I am inserting')" );
+				execSQL("INSERT INTO Test VALUES (" + i + ", 'This is a long text string that I am inserting')");
 
-			MySqlConnection c2 = new MySqlConnection( conn.ConnectionString );
+			MySqlConnection c2 = new MySqlConnection(conn.ConnectionString);
 			c2.Open();
 
-			MySqlCommand cmd = new MySqlCommand( "SELECT * FROM Test", c2 );
+			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", c2);
 			MySqlDataReader reader = null;
 
 			try 
 			{
 				reader = cmd.ExecuteReader();
 				reader.Read();
-				Thread.Sleep( 20000 );
+				Thread.Sleep(20000);
 				while (reader.Read()) 
 				{
 				}
@@ -74,15 +74,15 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 			catch (MySqlException ex)
 			{
-				Assert.IsTrue( ex.IsFatal );
-				Assert.AreEqual( ConnectionState.Closed, c2.State );
+				Assert.IsTrue(ex.IsFatal);
+				Assert.AreEqual(ConnectionState.Closed, c2.State);
 			}
 			finally 
 			{
 				if (reader != null) reader.Close();
 			}
 
-			execSQL( "SET @@global.wait_timeout=28800" );
+			execSQL("SET @@global.wait_timeout=28800");
 		}
 	}
 }

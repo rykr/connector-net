@@ -38,6 +38,7 @@
 	Bug #10454	incorrect return type documented for parameter collection Add methods [fixed]	
     Bug #12163  Insert using prepared statement causes double insert	
     Bug #12245  using Prepare() on an insert command causes null parameters to convert to "0"	
+	Bug #12646  Parameters are defaulted to Decimal [added a new test case]
 
 	Other changes
 	-------------
