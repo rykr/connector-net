@@ -22,6 +22,7 @@ using System;
 using System.ComponentModel;
 using System.Data;
 using System.Text;
+using MySql.Data.Common;
 
 namespace MySql.Data.MySqlClient
 {
@@ -50,24 +51,22 @@ namespace MySql.Data.MySqlClient
 		public MySqlCommandBuilder()
 		{
 			_QuotePrefix = _QuoteSuffix = "`";
-			this.lastOneWins = false;
 		}
 
 		/// <include file='docs/MySqlCommandBuilder.xml' path='docs/Ctor1/*'/>
-		public MySqlCommandBuilder(bool lastOneWins)
+		public MySqlCommandBuilder(bool lastOneWins) : this()
 		{
-			_QuotePrefix = _QuoteSuffix = "`";
 			this.lastOneWins = lastOneWins;
 		}
 
 		/// <include file='docs/MySqlCommandBuilder.xml' path='docs/Ctor2/*'/>
-		public MySqlCommandBuilder( MySqlDataAdapter adapter ) : this()
+		public MySqlCommandBuilder(MySqlDataAdapter adapter) : this()
 		{
 			DataAdapter = adapter;
 		}
 
 		/// <include file='docs/MySqlCommandBuilder.xml' path='docs/Ctor3/*'/>
-		public MySqlCommandBuilder( MySqlDataAdapter adapter, bool lastOneWins ) : this(lastOneWins)
+		public MySqlCommandBuilder(MySqlDataAdapter adapter, bool lastOneWins) : this(lastOneWins)
 		{
 			DataAdapter = adapter;
 		}
@@ -84,10 +83,12 @@ namespace MySql.Data.MySqlClient
 			{ 
 				if (_adapter != null) 
 				{
-					_adapter.RowUpdating -= new MySqlRowUpdatingEventHandler( OnRowUpdating );
+					_adapter.RowUpdating -= new MySqlRowUpdatingEventHandler(OnRowUpdating);
 				}
+				if (value == null)
+					throw new ArgumentException(Resources.GetString("ParameterCannotBeNull"), "value");
 				_adapter = value;
-				_adapter.RowUpdating += new MySqlRowUpdatingEventHandler( OnRowUpdating );
+				_adapter.RowUpdating += new MySqlRowUpdatingEventHandler(OnRowUpdating);
 			}
 		}
 
@@ -126,6 +127,8 @@ namespace MySql.Data.MySqlClient
 		/// <exception cref="InvalidOperationException">The command text is not a valid stored procedure name.</exception>
 		public static void DeriveParameters(MySqlCommand command)
 		{
+			// this is just to make FxCop happy until we support this routine
+			string text = command.CommandText;
 			throw new MySqlException("DeriveParameters is not supported (due to MySql not supporting SP)");
 		}
 
@@ -174,9 +177,9 @@ namespace MySql.Data.MySqlClient
 			marker = conn.ParameterMarker;
 
 			if (_adapter == null)
-				throw new MySqlException("Improper MySqlCommandBuilder state: adapter is null");
+				throw new MySqlException(Resources.GetString("AdapterIsNull"));
 			if (_adapter.SelectCommand == null)
-				throw new MySqlException("Improper MySqlCommandBuilder state: adapter's SelectCommand is null");
+				throw new MySqlException(Resources.GetString("AdapterSelectIsNull"));
 
 			MySqlDataReader dr = _adapter.SelectCommand.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo);
 			_schema = dr.GetSchemaTable();
@@ -199,12 +202,12 @@ namespace MySql.Data.MySqlClient
 					tableName = rowTableName;
 				}
 				else if (tableName != rowTableName && rowTableName.Length > 0)
-					throw new InvalidOperationException("MySqlCommandBuilder does not support multi-table statements");
+					throw new InvalidOperationException(Resources.GetString("CBMultiTableNotSupported"));
 				else if (schemaName != rowSchemaName && rowSchemaName.Length > 0)
-					throw new InvalidOperationException("MySqlCommandBuilder does not support multi-schema statements");
+					throw new InvalidOperationException(Resources.GetString("CBMultiTableNotSupported"));
 			}
 			if (! hasKeyOrUnique)
-				throw new InvalidOperationException("MySqlCommandBuilder cannot operate on tables with no unique or key columns");
+				throw new InvalidOperationException(Resources.GetString("CBNoKeyColumn"));
 		}
 
 		private string Quote(string table_or_column)
@@ -214,7 +217,7 @@ namespace MySql.Data.MySqlClient
 			return _QuotePrefix + table_or_column + _QuoteSuffix;
 		}
 
-		private string GetParameterName( string columnName )
+		private static string GetParameterName(string columnName)
 		{
 			string colName = columnName.Replace(" ", "");
 			return colName;
@@ -266,7 +269,7 @@ namespace MySql.Data.MySqlClient
 			{
 				// don't include functions in where clause
 				string baseTableName = (string)row["BaseTableName"];
-				if (baseTableName == null || baseTableName == String.Empty)
+				if (baseTableName == null || baseTableName.Length == 0)
 					continue;
 
 				string colname = Quote(row["ColumnName"].ToString());
@@ -304,7 +307,7 @@ namespace MySql.Data.MySqlClient
 			{
 				// don't include functions in where clause
 				string baseTableName = (string)row["BaseTableName"];
-				if (baseTableName == null || baseTableName == String.Empty)
+				if (baseTableName == null || baseTableName.Length == 0)
 					continue;
 
 				// if we are doing last one wins and this column is not a key or is not
@@ -343,7 +346,7 @@ namespace MySql.Data.MySqlClient
 			{
 				// don't include functions in where clause
 				string baseTableName = (string)schemaRow["BaseTableName"];
-				if (baseTableName == null || baseTableName == String.Empty)
+				if (baseTableName == null || baseTableName.Length == 0)
 					continue;
 
 				string colname = Quote((string)schemaRow["ColumnName"]);
@@ -379,7 +382,7 @@ namespace MySql.Data.MySqlClient
 			{
 				// don't include functions in where clause
 				string baseTableName = (string)schemaRow["BaseTableName"];
-				if (baseTableName == null || baseTableName == String.Empty)
+				if (baseTableName == null || baseTableName.Length == 0)
 					continue;
 
 				string colname = Quote((string)schemaRow["ColumnName"]);
@@ -407,7 +410,7 @@ namespace MySql.Data.MySqlClient
 			return cmd;
 		}
 
-		private bool IncludedInInsert (DataRow schemaRow)
+		private static bool IncludedInInsert(DataRow schemaRow)
 		{
 			// If the parameter has one of these properties, then we don't include it in the insert:
 
@@ -422,7 +425,7 @@ namespace MySql.Data.MySqlClient
 			return true;
 		}
 
-		private bool IncludedInUpdate (DataRow schemaRow)
+		private static bool IncludedInUpdate(DataRow schemaRow)
 		{
 			// If the parameter has one of these properties, then we don't include it in the insert:
 
@@ -433,22 +436,24 @@ namespace MySql.Data.MySqlClient
 			return true;
 		}
 
-		private bool IncludedInWhereClause (DataRow schemaRow)
+		private static bool IncludedInWhereClause(DataRow schemaRow)
 		{
+			// just to shut fxcop up
+			bool hasErrors = schemaRow.HasErrors;
 			//			if ((bool) schemaRow ["IsLong"])
 			//				return false;
 			return true;
 		}
 
-		private void SetParameterValues(MySqlCommand cmd, DataRow dataRow)
+		private static void SetParameterValues(MySqlCommand cmd, DataRow dataRow)
 		{
 			foreach (MySqlParameter p in cmd.Parameters)
 			{
 				if (p.SourceVersion == DataRowVersion.Original)
 //				if (p.ParameterName.Length >= 8 && p.ParameterName.Substring(0, 8).Equals("Original"))
-					p.Value = dataRow[ p.SourceColumn, DataRowVersion.Original ];
+					p.Value = dataRow[p.SourceColumn, DataRowVersion.Original];
 				else
-					p.Value = dataRow[ p.SourceColumn, DataRowVersion.Current ];
+					p.Value = dataRow[p.SourceColumn, DataRowVersion.Current];
 			}
 		}
 

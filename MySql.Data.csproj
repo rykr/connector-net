@@ -260,6 +260,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "MySqlClient\Strings.resx"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "MySqlClient\transaction.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -276,6 +280,11 @@
                 />
                 <File
                     RelPath = "MySqlClient\common\Platform.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MySqlClient\common\Resources.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -301,11 +310,6 @@
                 />
                 <File
                     RelPath = "MySqlClient\common\Win32.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "MySqlClient\common\WinSock.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

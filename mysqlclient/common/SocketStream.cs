@@ -23,6 +23,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Collections;
+using MySql.Data.MySqlClient;
 
 namespace MySql.Data.Common
 {
@@ -74,7 +75,7 @@ namespace MySql.Data.Common
 		public override long Position
 		{
 			get	{ return 0;	}
-			set	{ throw new NotSupportedException("SocketStream does not support seek"); }
+			set	{ throw new NotSupportedException(Resources.GetString("SocketNoSeek")); }
 		}
 
 		#endregion
@@ -98,7 +99,7 @@ namespace MySql.Data.Common
 
 		public override long Seek(long offset, SeekOrigin origin)
 		{
-			throw new NotSupportedException("SocketStream does not support seek");
+			throw new NotSupportedException(Resources.GetString("SocketNoSeek"));
 		}
 
 		public override void SetLength(long value)
@@ -173,11 +174,11 @@ namespace MySql.Data.Common
 		{
 			// set the socket to non blocking
 			UInt32 arg = 1;
-			int result = WinSock.ioctlsocket(socket.Handle, FIONBIO, ref arg);
-			int wsaerror = WinSock.WSAGetLastError();
+			int result = NativeMethods.ioctlsocket(socket.Handle, FIONBIO, ref arg);
+			int wsaerror = NativeMethods.WSAGetLastError();
 
 			if (result != 0)
-				throw new Exception("Error creating MySQLSocket");
+				throw new MySqlException(Resources.GetString("ErrorCreatingSocket"));
 
 			// then we star the connect
 			SocketAddress addr = remoteEP.Serialize();
@@ -185,10 +186,10 @@ namespace MySql.Data.Common
 			for (int i=0; i<addr.Size; i++)
 				buff[i] = addr[i];
 
-			result = WinSock.connect(socket.Handle, buff, addr.Size);
-			wsaerror = WinSock.WSAGetLastError();
+			result = NativeMethods.connect(socket.Handle, buff, addr.Size);
+			wsaerror = NativeMethods.WSAGetLastError();
 			if (wsaerror != 10035)
-				throw new Exception("Error creating MySQLSocket");
+				throw new MySqlException(Resources.GetString("ErrorCreatingSocket"));
 
 			// next we wait for our connect timeout or until the socket is connected
 			ArrayList write = new ArrayList();
@@ -202,9 +203,9 @@ namespace MySql.Data.Common
 
 			// set socket back to blocking mode
 			arg = 0;
-			result = WinSock.ioctlsocket(socket.Handle, FIONBIO, ref arg);
+			result = NativeMethods.ioctlsocket(socket.Handle, FIONBIO, ref arg);
 			if (result != 0)
-				throw new Exception("Error creating MySQLSocket");
+				throw new  MySqlException(Resources.GetString("ErrorCreatingSocket"));
 			return true;
 		}
 	}

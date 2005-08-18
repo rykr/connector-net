@@ -32,7 +32,7 @@ namespace MySql.Data.MySqlClient
 	[System.Drawing.ToolboxBitmap( typeof(MySqlConnection), "MySqlClient.resources.connection.bmp")]
 	[System.ComponentModel.DesignerCategory("Code")]
 	[ToolboxItem(true)]
-	public sealed class MySqlConnection : Component, IDbConnection, ICloneable
+	public sealed class MySqlConnection : Component, IDbConnection, IDisposable, ICloneable
 	{
 		internal ConnectionState			state;
 		internal Driver						driver;
@@ -51,12 +51,13 @@ namespace MySql.Data.MySqlClient
 		{
 			//TODO: add event data to StateChange docs
 			settings = new MySqlConnectionString();
+			settings.LoadDefaultValues();
 		}
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/Ctor1/*'/>
-		public MySqlConnection(string connectionString)
+		public MySqlConnection(string connectionString) : this()
 		{
-			settings = new MySqlConnectionString(connectionString);
+			ConnectionString = connectionString;
 		}
 
 		#region Interal Methods & Properties
@@ -202,11 +203,11 @@ namespace MySql.Data.MySqlClient
 		{
 			//TODO: check note in help
 			if (state != ConnectionState.Open)
-				throw new MySqlException("Invalid operation: The connection is closed");
+				throw new InvalidOperationException(Resources.GetString("ConnectionNotOpen"));
 
 			MySqlTransaction t = new MySqlTransaction(this, iso);
 
-			MySqlCommand cmd = new MySqlCommand( "", this);
+			MySqlCommand cmd = new MySqlCommand("", this);
 
 			cmd.CommandText = "SET SESSION TRANSACTION ISOLATION LEVEL ";
 			switch (iso) 
@@ -220,7 +221,7 @@ namespace MySql.Data.MySqlClient
 				case IsolationLevel.Serializable:
 					cmd.CommandText += "SERIALIZABLE"; break;
 				case IsolationLevel.Chaos:
-					throw new NotSupportedException("Chaos isolation level is not supported");
+					throw new NotSupportedException(Resources.GetString("ChaosNotSupported"));
 			}
 
 			cmd.ExecuteNonQuery();
@@ -231,23 +232,25 @@ namespace MySql.Data.MySqlClient
 			return t;
 		}
 
-		IDbTransaction IDbConnection.BeginTransaction(IsolationLevel level)
+		IDbTransaction IDbConnection.BeginTransaction(IsolationLevel il)
 		{
-			return BeginTransaction(level);
+			return BeginTransaction(il);
 		}
 		#endregion
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/ChangeDatabase/*'/>
-		public void ChangeDatabase(string database)
+		public void ChangeDatabase(string databaseName)
 		{
-			if (database == null || database.Trim().Length == 0)
-				throw new ArgumentException( "Database parameter is invalid", "database" );
+			if (databaseName == null || databaseName.Trim().Length == 0)
+				throw new ArgumentException(
+					Resources.GetString("ParameterIsInvalid"), "database");
 
 			if (state != ConnectionState.Open)
-				throw new InvalidOperationException("Connection must be open to change database");
+				throw new InvalidOperationException(
+					Resources.GetString("ConnectionNotOpen"));
 
-			driver.SetDatabase( database );
-			settings.Database = database;
+			driver.SetDatabase(databaseName);
+			settings.Database = databaseName;
 		}
 
 		internal void SetState( ConnectionState newState ) 
@@ -271,24 +274,25 @@ namespace MySql.Data.MySqlClient
 		public void Open()
 		{
 			if (state == ConnectionState.Open)
-				throw new MySqlException("error connecting: The connection is already Open (state=Open).");
+				throw new InvalidOperationException(
+					Resources.GetString("ConnectionAlreadyOpen"));
 
-			SetState( ConnectionState.Connecting );
+			SetState(ConnectionState.Connecting);
 
 			try 
 			{
 				if (settings.Pooling) 
 				{
-					driver = MySqlPoolManager.GetConnection( settings );
+					driver = MySqlPoolManager.GetConnection(settings);
 				}
 				else
 				{
-					driver = Driver.Create( settings );
+					driver = Driver.Create(settings);
 				}
 			}
 			catch (Exception)
 			{
-				SetState( ConnectionState.Closed );
+				SetState(ConnectionState.Closed);
 				throw;
 			}
 
@@ -296,10 +300,10 @@ namespace MySql.Data.MySqlClient
 			if ( driver.Settings.UseOldSyntax)
 				Logger.LogWarning("You are using old syntax that will be removed in future versions");
 
-			SetState( ConnectionState.Open );
-			driver.Configure( this );
-			if (settings.Database != null && settings.Database != String.Empty)
-				ChangeDatabase( settings.Database );
+			SetState(ConnectionState.Open);
+			driver.Configure(this);
+			if (settings.Database != null && settings.Database.Length != 0)
+				ChangeDatabase(settings.Database);
 		}
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/Close/*'/>
@@ -348,15 +352,20 @@ namespace MySql.Data.MySqlClient
 		#endregion
 
 		#region IDisposeable
+
 		/// <summary>
 		/// Releases the resources used by the MySqlConnection.
 		/// </summary>
-		public new void Dispose() 
+		protected override void Dispose(bool disposing) 
 		{
-			if (State == ConnectionState.Open)
-				Close();
-			base.Dispose();
+			if (disposing)
+			{
+				if (State == ConnectionState.Open)
+					Close();
+			}
+			base.Dispose(disposing);
 		}
+
 		#endregion
   }
 
@@ -364,12 +373,12 @@ namespace MySql.Data.MySqlClient
 	/// Represents the method that will handle the <see cref="MySqlConnection.InfoMessage"/> event of a 
 	/// <see cref="MySqlConnection"/>.
 	/// </summary>
-	public delegate void MySqlInfoMessageEventHandler( object sender, MySqlInfoMessageEventArgs args );
+	public delegate void MySqlInfoMessageEventHandler(object sender, MySqlInfoMessageEventArgs args);
 
 	/// <summary>
 	/// Provides data for the InfoMessage event. This class cannot be inherited.
 	/// </summary>
-	public class MySqlInfoMessageEventArgs 
+	public class MySqlInfoMessageEventArgs : EventArgs
 	{
 		/// <summary>
 		/// 

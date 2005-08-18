@@ -50,9 +50,7 @@ namespace MySql.Data.MySqlClient
 		{
 			encoding = System.Text.Encoding.GetEncoding("latin1");
 			connectionString = settings;
-			processing = false;
 			threadId = -1;
-			hasWarnings = false;
 		}
 
 		#region Properties
@@ -81,7 +79,8 @@ namespace MySql.Data.MySqlClient
 
 		public bool IsProcessing 
 		{ 
-			get { return processing; }
+			//TODO: remove comment
+		//	get { return processing; }
 			set { processing = value; }
 		}
 
@@ -143,7 +142,7 @@ namespace MySql.Data.MySqlClient
 			{
 				MySqlDataReader reader = cmd.ExecuteReader();
 				while (reader.Read()) 
-					serverProps[ reader.GetValue(0) ] = reader.GetString(1);
+					serverProps[reader.GetValue(0)] = reader.GetString(1);
 				reader.Close();
 			}
 			catch (Exception ex)
@@ -161,7 +160,7 @@ namespace MySql.Data.MySqlClient
 			LoadCharacterSets();
 
 			string charSet = connectionString.CharacterSet;
-			if (charSet == null || charSet == String.Empty) 
+			if (charSet == null || charSet.Length == 0)
 			{
 				if (! version.isAtLeast(4,1,0))
 				{
@@ -179,7 +178,7 @@ namespace MySql.Data.MySqlClient
 			// want results in
 			if (version.isAtLeast(4,1,0)) 
 			{
-				cmd.CommandText = "SET character_set_results=NULL";
+				cmd.CommandText = "SET character_set_results=?n";
 				object clientCharSet = serverProps["character_set_client"];
 				object connCharSet = serverProps["character_set_connection"];
 				if ((clientCharSet != null && clientCharSet.ToString() != charSet) ||
@@ -187,6 +186,7 @@ namespace MySql.Data.MySqlClient
 				{
 					cmd.CommandText = "SET NAMES " + charSet + ";" + cmd.CommandText;
 				}
+				cmd.Parameters.Add("?n", DBNull.Value);
 				cmd.ExecuteNonQuery();
 			}
 
@@ -214,7 +214,7 @@ namespace MySql.Data.MySqlClient
 				charSets = new Hashtable();
 				while (reader.Read()) 
 				{
-					charSets[ Convert.ToInt32(reader["id"]) ] = 
+					charSets[ Convert.ToInt32(reader["id"], System.Globalization.NumberFormatInfo.InvariantInfo) ] = 
 						reader.GetString(reader.GetOrdinal("charset"));
 				}
 			}

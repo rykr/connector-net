@@ -28,6 +28,11 @@ namespace MySql.Data.MySqlClient
 	/// </summary>
 	internal class Logger
 	{
+		// private ctor
+		private Logger() 
+		{
+		}
+
 		static public void LogCommand( DBCmd cmd, string text)
 		{
 			if (text.Length > 300)
@@ -43,7 +48,7 @@ namespace MySql.Data.MySqlClient
 			Trace.WriteLine( msg );
 		}
 
-		static public void LogWarning( string s )
+		static public void LogWarning(string s)
 		{
 			Trace.WriteLine("WARNING:" + s);
 		}

@@ -19,15 +19,18 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 
 using System;
+using System.Threading;
 using System.Runtime.InteropServices;
 
 namespace MySql.Data.Common
 {
-	/// <summary>
-	/// Summary description for Win32.
-	/// </summary>
-	internal class Win32
+	class NativeMethods
 	{
+		// Keep the compiler from generating a default ctor
+		private NativeMethods() 
+		{
+		}
+
 		[StructLayout(LayoutKind.Sequential)]
 		public class SecurityAttributes 
 		{
@@ -37,21 +40,8 @@ namespace MySql.Data.Common
 			}
 			public int Length;
 			public IntPtr securityDescriptor = IntPtr.Zero;
-			public bool inheritHandle = false;
+			public bool inheritHandle;
 		}
-
-		[StructLayout(LayoutKind.Sequential)]
-		public class Overlapped 
-		{
-			public IntPtr Internal = IntPtr.Zero;
-			public IntPtr InternalHigh = IntPtr.Zero;
-			public uint Offset = 0;
-			public uint OffsetHigh = 0;
-			public IntPtr Event = IntPtr.Zero;
-		}
-
-		[DllImport("kernel32.dll")]
-		public static extern uint GetLastError();
 
 		[DllImport("Kernel32")]
 		static extern public int CreateFile(String fileName,
@@ -62,37 +52,33 @@ namespace MySql.Data.Common
 			uint flagsAndAttributes,
 			uint templateFile);
 
+		[return:MarshalAs(UnmanagedType.Bool)]
 		[DllImport("kernel32.dll", EntryPoint="PeekNamedPipe", SetLastError=true)]
-		static extern public bool PeekNamedPipe( int handle,
+		static extern public bool PeekNamedPipe(IntPtr handle,
 			byte[] buffer, 
 			uint nBufferSize, 
 			ref uint bytesRead,
 			ref uint bytesAvail, 
 			ref uint BytesLeftThisMessage);
 
-		[DllImport("Kernel32")]
-		static extern public bool ReadFile(
-			int fileHandle,            // handle to file
-			byte[] buffer,				// data buffer
-			uint numberOfBytesToRead,	// number of bytes to read
-			out uint numberOfBytesRead,	// number of bytes read
-			Overlapped overlapped		// overlapped buffer
-			);
-
-		[DllImport("Kernel32")]
-		static extern public bool WriteFile(
-			int fileHandle,				// handle to file
-			byte[] buffer,					// data buffer
-			uint numberOfBytesToWrite,		// number of bytes to write
-			out uint numberOfBytesWritten,	// number of bytes written
-			Overlapped overlapped			// overlapped buffer
-			);
-
+		[return:MarshalAs(UnmanagedType.Bool)]
 		[DllImport("kernel32.dll", SetLastError=true)]
-		public static extern bool CloseHandle( int handle );
+		static extern internal bool ReadFile(IntPtr hFile, [Out] byte[] lpBuffer, uint nNumberOfBytesToRead,
+			out uint lpNumberOfBytesRead, IntPtr lpOverlapped);
 
+		[return:MarshalAs(UnmanagedType.Bool)]
+		[DllImport("Kernel32")]
+		static extern internal bool WriteFile(IntPtr hFile, [In]byte[] buffer,
+			uint numberOfBytesToWrite, out uint numberOfBytesWritten,
+			IntPtr lpOverlapped);
+
+		[return:MarshalAs(UnmanagedType.Bool)]
 		[DllImport("kernel32.dll", SetLastError=true)]
-		public static extern bool FlushFileBuffers( int handle );
+		public static extern bool CloseHandle(IntPtr handle);
+
+		[return:MarshalAs(UnmanagedType.Bool)]
+		[DllImport("kernel32.dll", SetLastError=true)]
+		public static extern bool FlushFileBuffers(IntPtr handle);
 
 		//Constants for dwDesiredAccess:
 		public const UInt32 GENERIC_READ = 0x80000000;
@@ -107,6 +93,34 @@ namespace MySql.Data.Common
 
 		//Constants for dwCreationDisposition:
 		public const UInt32 OPEN_EXISTING = 3;
+
+		#region Winsock functions
+
+		// SOcket routines
+		[DllImport("ws2_32.dll", SetLastError=true)]
+		static extern public IntPtr socket(int af, int type, int protocol);
+
+		[DllImport("ws2_32.dll", SetLastError=true)]
+		static extern public int ioctlsocket(IntPtr socket, uint cmd, ref UInt32 arg);
+
+		[DllImport("ws2_32.dll", SetLastError=true)]
+		public static extern int WSAIoctl(IntPtr s, uint dwIoControlCode, byte[] inBuffer, uint cbInBuffer,
+			byte[] outBuffer, uint cbOutBuffer, IntPtr lpcbBytesReturned, IntPtr lpOverlapped,
+			IntPtr lpCompletionRoutine);
+
+		[DllImport("ws2_32.dll", SetLastError=true)]
+		static extern public int WSAGetLastError();
+
+		[DllImport("ws2_32.dll", SetLastError=true)]
+		static extern public int connect(IntPtr socket, byte[] addr, int addrlen);
+
+		[DllImport("ws2_32.dll", SetLastError=true)]
+		static extern public int recv(IntPtr socket, byte[] buff, int len, int flags);
+
+		[DllImport("ws2_32.Dll", SetLastError=true)]
+		static extern public int send(IntPtr socket, byte[] buff, int len, int flags);
+
+		#endregion
 
 	}
 }

@@ -35,7 +35,6 @@ namespace MySql.Data.Common
 
 		public NamedPipeStream(string host, FileAccess mode)
 		{
-			pipeHandle = 0;
 			Open(host, mode);
 		}
 
@@ -45,12 +44,12 @@ namespace MySql.Data.Common
 			uint pipemode = 0;
 
 			if ((mode & FileAccess.Read) > 0)
-				pipemode |= Win32.GENERIC_READ;
+				pipemode |= NativeMethods.GENERIC_READ;
 			if ((mode & FileAccess.Write) > 0)
-				pipemode |= Win32.GENERIC_WRITE;
+				pipemode |= NativeMethods.GENERIC_WRITE;
 
-			pipeHandle = Win32.CreateFile( host, pipemode,
-						0, null, Win32.OPEN_EXISTING, 0, 0 );
+			pipeHandle = NativeMethods.CreateFile( host, pipemode,
+						0, null, NativeMethods.OPEN_EXISTING, 0, 0 );
 //			try 
 //			{
 //				stream = new FileStream( (IntPtr)pipeHandle, FileAccess.ReadWrite );
@@ -62,7 +61,7 @@ namespace MySql.Data.Common
 
 		}
 
-		public bool DataAvailable
+/*		public bool DataAvailable
 		{
 			get 
 			{
@@ -72,8 +71,8 @@ namespace MySql.Data.Common
 					null, 0, ref bytesRead, ref avail, ref thismsg );
 				return (result == true && avail > 0);
 			}
-	}
-
+		}
+*/
 		public override bool CanRead
 		{
 			get { return (_mode & FileAccess.Read) > 0; }
@@ -86,17 +85,17 @@ namespace MySql.Data.Common
 
 		public override bool CanSeek
 		{
-			get { throw new NotSupportedException("NamedPipeStream does not support seeking"); }
+			get { throw new NotSupportedException(Resources.GetString("NamedPipeNoSeek")); }
 		}
 
 		public override long Length
 		{
-			get { throw new NotSupportedException("NamedPipeStream does not support seeking"); }
+			get { throw new NotSupportedException(Resources.GetString("NamedPipeNoSeek")); }
 		}
 
 		public override long Position 
 		{
-			get { throw new NotSupportedException("NamedPipeStream does not support seeking"); }
+			get { throw new NotSupportedException(Resources.GetString("NamedPipeNoSeek")); }
 			set { }
 		}
 
@@ -105,8 +104,9 @@ namespace MySql.Data.Common
 //			if (stream != null)
 //				stream.Flush();
 			if ( pipeHandle == 0 )
-				throw new ObjectDisposedException("NamedPipeStream", "The stream has already been closed");
-			Win32.FlushFileBuffers(pipeHandle);
+				throw new ObjectDisposedException("NamedPipeStream", 
+					Resources.GetString("StreamAlreadyClosed"));
+			NativeMethods.FlushFileBuffers((IntPtr)pipeHandle);
 		}
 
 		public override int Read(byte[] buffer, int offset, int count)
@@ -128,23 +128,28 @@ namespace MySql.Data.Common
 			}
 			return -1;*/
 			if (buffer == null) 
-				throw new ArgumentNullException("buffer", "The buffer to read into cannot be null");
+				throw new ArgumentNullException("buffer", 
+					Resources.GetString("BufferCannotBeNull"));
 			if (buffer.Length < (offset + count))
-				throw new ArgumentException("Buffer is not large enough to hold requested data", "buffer");
+				throw new ArgumentException(
+					Resources.GetString("BufferNotLargeEnough"));
 			if (offset < 0) 
-				throw new ArgumentOutOfRangeException("offset", offset, "Offset cannot be negative");
+				throw new ArgumentOutOfRangeException("offset", offset, 
+					Resources.GetString("OffsetCannotBeNegative"));
 			if (count < 0)
-				throw new ArgumentOutOfRangeException("count", count, "Count cannot be negative");
+				throw new ArgumentOutOfRangeException("count", count, 
+					Resources.GetString("CountCannotBeNegative"));
 			if (! CanRead)
-				throw new NotSupportedException("The stream does not support reading");
+				throw new NotSupportedException(Resources.GetString("StreamNoRead"));
 			if (pipeHandle == 0)
-				throw new ObjectDisposedException("NamedPipeStream", "The stream has already been closed");
+				throw new ObjectDisposedException("NamedPipeStream", 
+					Resources.GetString("StreamAlreadyClosed"));
 
 			// first read the data into an internal buffer since ReadFile cannot read into a buf at
 			// a specified offset
 			uint read=0;
 			byte[] buf = new Byte[count];
-			Win32.ReadFile( pipeHandle, buf, (uint)count, out read, null );
+			NativeMethods.ReadFile((IntPtr)pipeHandle, buf, (uint)count, out read, IntPtr.Zero); 
 			
 			for (int x=0; x < read; x++) 
 			{
@@ -157,13 +162,13 @@ namespace MySql.Data.Common
 		{
 //			stream.Close();
 			//stream = null;
-			Win32.CloseHandle(pipeHandle);
+			NativeMethods.CloseHandle((IntPtr)pipeHandle);
 			pipeHandle = 0;
 		}
 
 		public override void SetLength(long length)
 		{
-			throw new NotSupportedException("NamedPipeStream doesn't support SetLength");
+			throw new NotSupportedException(Resources.GetString("NamedPipeNoSetLength"));
 		}
 
 		public override void Write(byte[] buffer, int offset, int count)
@@ -177,24 +182,26 @@ namespace MySql.Data.Common
 //				Console.WriteLine( ex.Message );
 //			}
 			if (buffer == null) 
-				throw new ArgumentNullException("buffer", "The buffer to write into cannot be null");
+				throw new ArgumentNullException("buffer", Resources.GetString("BufferCannotBeNull"));
 			if (buffer.Length < (offset + count))
-				throw new ArgumentException("Buffer does not contain amount of requested data", "buffer");
+				throw new ArgumentException(Resources.GetString("BufferNotLargeEnough"), "buffer");
 			if (offset < 0) 
-				throw new ArgumentOutOfRangeException("offset", offset, "Offset cannot be negative");
+				throw new ArgumentOutOfRangeException("offset", offset, 
+					Resources.GetString("OffsetCannotBeNegative"));
 			if (count < 0)
-				throw new ArgumentOutOfRangeException("count", count, "Count cannot be negative");
+				throw new ArgumentOutOfRangeException("count", count, 
+					Resources.GetString("CountCannotBeNegative"));
 			if (! CanWrite)
-				throw new NotSupportedException("The stream does not support writing");
+				throw new NotSupportedException(Resources.GetString("StreamNoWrite"));
 			if (pipeHandle == 0)
-				throw new ObjectDisposedException("NamedPipeStream", "The stream has already been closed");
+				throw new ObjectDisposedException("NamedPipeStream", Resources.GetString("StreamAlreadyClosed"));
 			
 			// copy data to internal buffer to allow writing from a specified offset
 			uint bytesWritten = 0;
 			bool result;
 
 			if (offset == 0  && count <= 65535)
-				result = Win32.WriteFile( pipeHandle, buffer, (uint)count, out bytesWritten, null );
+				result = NativeMethods.WriteFile((IntPtr)pipeHandle, buffer, (uint)count, out bytesWritten, IntPtr.Zero);
 			else
 			{
 				byte[] localBuf = new byte[65535];
@@ -205,7 +212,7 @@ namespace MySql.Data.Common
 				{
 					int cnt = Math.Min( count, 65535 );
 					Array.Copy( buffer, offset, localBuf, 0, cnt );
-					result = Win32.WriteFile( pipeHandle, localBuf, (uint)cnt, out thisWritten, null );
+					result = NativeMethods.WriteFile((IntPtr)pipeHandle, localBuf, (uint)cnt, out thisWritten, IntPtr.Zero);
 					bytesWritten += thisWritten;
 					count -= cnt;
 					offset += cnt;
@@ -237,7 +244,6 @@ namespace MySql.Data.Common
 
 			if (! result)
 			{
-				uint err = Win32.GetLastError();
 				throw new IOException("Writing to the stream failed");
 			}
 			if (bytesWritten < count)
@@ -246,7 +252,7 @@ namespace MySql.Data.Common
 
 		public override long Seek( long offset, SeekOrigin origin )
 		{
-			throw new NotSupportedException("NamedPipeStream doesn't support seeking");
+			throw new NotSupportedException(Resources.GetString("NamedPipeNoSeek"));
 		}
 	}
 }

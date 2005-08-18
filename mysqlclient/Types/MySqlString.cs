@@ -36,7 +36,7 @@ namespace MySql.Data.Types
 			mySqlDbType = type;
 		}
 
-		private string EscapeString( string s )
+		private static string EscapeString(string s)
 		{
 			s = s.Replace("\\", "\\\\");
 			s = s.Replace("\'", "\\\'");

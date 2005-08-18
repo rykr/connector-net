@@ -63,12 +63,6 @@ namespace MySql.Data.MySqlClient
 			CommandText = cmdText;
 		}
 
-		MySqlCommand(System.ComponentModel.IContainer container) : this()
-		{
-			// Required for Windows.Forms Class Composition Designer support
-			container.Add(this);
-		}
-
 		/// <include file='docs/mysqlcommand.xml' path='docs/ctor3/*'/>
 		public MySqlCommand(string cmdText, MySqlConnection connection) : this(cmdText)
 		{
@@ -78,10 +72,10 @@ namespace MySql.Data.MySqlClient
 		}
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/ctor4/*'/>
-		public MySqlCommand(string cmdText, MySqlConnection connection, MySqlTransaction txn) : 
-			this(cmdText, connection)
+		public MySqlCommand(string cmdText, MySqlConnection connection, 
+			MySqlTransaction transaction) : this(cmdText, connection)
 		{
-			curTransaction	= txn;
+			curTransaction = transaction;
 		} 
 
 		#region Properties
@@ -229,7 +223,7 @@ namespace MySql.Data.MySqlClient
 
 		IDbDataParameter IDbCommand.CreateParameter()
 		{
-			return CreateParameter();
+			return this.CreateParameter();
 		}
 
 		/// <summary>
@@ -331,14 +325,14 @@ namespace MySql.Data.MySqlClient
 		{
 			// There must be a valid and open connection.
 			if (connection == null || connection.State != ConnectionState.Open)
-				throw new InvalidOperationException("Connection must be valid and open");
+				throw new InvalidOperationException(Resources.GetString("ConnectionMustBeOpen"));
 
 			// Data readers have to be closed first
 			if (connection.Reader != null)
-				throw new MySqlException("There is already an open DataReader associated with this Connection which must be closed first.");
+				throw new MySqlException(Resources.GetString("DataReaderOpen"));
 
 			if (CommandType == CommandType.StoredProcedure && ! connection.driver.Version.isAtLeast(5,0,0))
-				throw new MySqlException( "Stored procedures are not supported on this version of MySQL" );
+				throw new MySqlException(Resources.GetString("SPNotSupported"));
 		}
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/ExecuteNonQuery/*'/>
@@ -392,12 +386,12 @@ namespace MySql.Data.MySqlClient
 
 			if (0 != (behavior & CommandBehavior.SchemaOnly))
 			{
-				sql = String.Format("SET SQL_SELECT_LIMIT=0;{0};SET sql_select_limit=-1;", cmdText);
+				sql = "SET SQL_SELECT_LIMIT=0;" + cmdText + ";SET sql_select_limit=-1";
 			}
 
 			if (0 != (behavior & CommandBehavior.SingleRow))
 			{
-				sql = String.Format("SET SQL_SELECT_LIMIT=1;{0};SET sql_select_limit=-1;", cmdText);
+				sql = "SET SQL_SELECT_LIMIT=1;" + cmdText + ";SET sql_select_limit=-1";
 			}
 
 			updateCount = -1;
@@ -434,9 +428,9 @@ namespace MySql.Data.MySqlClient
 		public void Prepare()
 		{
 			if (connection == null)
-				throw new InvalidOperationException("The connection property has not been set.");
+				throw new InvalidOperationException(Resources.GetString("ConnectionNotSet"));
 			if (connection.State != ConnectionState.Open)
-				throw new InvalidOperationException("The connection is not open.");
+				throw new InvalidOperationException(Resources.GetString("ConnectionNotOpen"));
 			if (! connection.driver.Version.isAtLeast( 4,1,0)) 
 				return;
 
@@ -448,14 +442,6 @@ namespace MySql.Data.MySqlClient
 		}
 		#endregion
 
-		#region Internal Methods
-
-		internal void Unprepare() 
-		{
-			preparedStatement = null;
-		}
-
-		#endregion
 
 		#region Private Methods
 

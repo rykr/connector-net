@@ -24,6 +24,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Collections;
 using System.Threading;
+using MySql.Data.MySqlClient;
 #if __MonoCS__ 
 using Mono.Posix;
 #endif
@@ -40,16 +41,14 @@ namespace MySql.Data.Common
 		int					port;
 		string				pipeName;
 		int					timeOut;
-		ManualResetEvent	evnt;
 
 		public StreamCreator( string hosts, int port, string pipeName)
 		{
 			hostList = hosts;
-			if (hostList == null || hostList == String.Empty)
+			if (hostList == null || hostList.Length == 0)
 				hostList = "localhost";
 			this.port = port;
 			this.pipeName = pipeName;
-			evnt = new ManualResetEvent(false);
 		}
 
 		public Stream GetStream(int timeOut) 
@@ -77,9 +76,9 @@ namespace MySql.Data.Common
 			}
 
 			System.Random random = new Random((int)DateTime.Now.Ticks);
-			int index = random.Next(ipAddresses.Count-1);
+			int index = random.Next(ipAddresses.Count);
 
-			bool usePipe = pipeName != String.Empty;
+			bool usePipe = (pipeName != null && pipeName.Length != 0);
 			Stream stream = null;
 			for (int i=0; i < ipAddresses.Count; i++)
 			{
@@ -99,7 +98,7 @@ namespace MySql.Data.Common
 		private Stream CreateNamedPipeStream( string hostname ) 
 		{
 			string pipePath;
-			if (hostname.ToLower().Equals("localhost"))
+			if (0 == String.Compare(hostname, "localhost", true))
 				pipePath = @"\\.\pipe\" + pipeName;
 			else
 				pipePath = String.Format(@"\\{0}\pipe\{1}", hostname.ToString(), pipeName);
@@ -108,7 +107,7 @@ namespace MySql.Data.Common
 
 		private Stream CreateSocketStream(IPAddress ip, int port, bool unix) 
 		{
-
+			SocketStream ss = null;
 			try
 			{
 				//
@@ -119,23 +118,39 @@ namespace MySql.Data.Common
 					endPoint = new UnixEndPoint(hostList[0]);
 				else
 #else
-					endPoint = 	new IPEndPoint(ip, port);
+				endPoint = 	new IPEndPoint(ip, port);
 				if (unix)
-					throw new PlatformNotSupportedException ("Unix sockets are not supported on Windows.");
+					throw new PlatformNotSupportedException(
+						Resources.GetString("UnixSocketsNotSupported"));
 #endif
 
-				SocketStream ss = unix ? 
+				ss = unix ? 
 					new SocketStream(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP) :
 					new SocketStream(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 				ss.Connect(endPoint, timeOut);
 				ss.Socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, 1);
-				return ss;
 			}
-			catch (Exception ex)
+			catch (ArgumentOutOfRangeException are)
 			{
-				Console.WriteLine("EXCEPTION: " + ex.Message);
-				return null;
+				Logger.LogException(are);
+				ss = null;
 			}
+			catch (SocketException se) 
+			{
+				Logger.LogException(se);
+				ss = null;
+			}
+			catch (ObjectDisposedException ode) 
+			{
+				Logger.LogException(ode);
+				ss = null;
+			}
+			catch (MySqlException me)
+			{
+				Logger.LogException(me);
+				ss = null;
+			}
+			return ss;
 		}
 
 	}

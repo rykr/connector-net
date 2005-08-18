@@ -50,14 +50,14 @@ namespace MySql.Data.MySqlClient
 		 * CommandBehavior.CloseConnection flag. A null reference means
 		 * normal behavior (do not automatically close).
 		 */
-		private MySqlConnection connection = null;
+		private MySqlConnection connection;
 
 		/*
 		 * Because the user should not be able to directly create a 
 		 * DataReader object, the constructors are
 		 * marked as internal.
 		 */
-		internal MySqlDataReader( MySqlCommand cmd, CommandBehavior behavior)
+		internal MySqlDataReader(MySqlCommand cmd, CommandBehavior behavior)
 		{
 			this.command = cmd;
 			connection = (MySqlConnection)command.Connection;
@@ -227,10 +227,10 @@ namespace MySql.Data.MySqlClient
 			if (bufferIndex >= buffer.Length || bufferIndex < 0)
 				throw new IndexOutOfRangeException("Buffer index must be a valid index in buffer");
 			if (buffer.Length < (bufferIndex + length))
-				throw new ArgumentException( "Buffer is not large enough to hold the requested data" );
+				throw new ArgumentException("Buffer is not large enough to hold the requested data" );
 			if (dataIndex < 0 || 
 				((ulong)dataIndex >= (ulong)binary.Value.Length && (ulong)binary.Value.Length > 0))
-				throw new IndexOutOfRangeException( "Data index must be a valid index in the field" );
+				throw new IndexOutOfRangeException("Data index must be a valid index in the field" );
 
 			byte[] bytes = (byte[])binary.Value; 
 
@@ -741,15 +741,6 @@ namespace MySql.Data.MySqlClient
 				throw new MySqlException("Invalid attempt to access a field before calling Read()");
 
 			return val;
-		}
-
-		/*
-		* Implementation specific methods.
-		*/
-		private int _cultureAwareCompare(string strA, string strB)
-		{
-			//      return CultureInfo.CurrentCulture.CompareInfo.Compare(strA, strB, CompareOptions.IgnoreKanaType | CompareOptions.IgnoreWidth | CompareOptions.IgnoreCase);
-			return 0;
 		}
 
 
