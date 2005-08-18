@@ -28,7 +28,7 @@ namespace MySql.Data.MySqlClient
 	/// </summary>
 	/// <include file='docs/MySqlException.xml' path='MyDocs/MyMembers[@name="Class"]/*'/>
 	[Serializable]
-	public sealed class MySqlException : ApplicationException
+	public sealed class MySqlException : SystemException
 	{
 		private int		errorCode;
 		private bool	isFatal;
@@ -37,7 +37,7 @@ namespace MySql.Data.MySqlClient
 		{
 		}
 		
-		internal MySqlException( string msg, Exception ex ) : base(msg, ex)
+		internal MySqlException(string msg, Exception ex) : base(msg, ex)
 		{
 		}
 
@@ -45,17 +45,17 @@ namespace MySql.Data.MySqlClient
 		{
 		}
 
-		internal MySqlException( string msg, bool isFatal, Exception inner ) : base (msg, inner)
+		internal MySqlException(string msg, bool isFatal, Exception inner) : base (msg, inner)
 		{
 			this.isFatal = isFatal;
 		}
 
-		internal MySqlException(string msg, int errno) : base(msg)
+		internal MySqlException(string msg, int errno) : this(msg)
 		{
 			errorCode = errno;	
 		}
 
-		internal MySqlException(SerializationInfo info,
+		private MySqlException(SerializationInfo info,
 					StreamingContext context) : base(info, context)
 		{
 		}

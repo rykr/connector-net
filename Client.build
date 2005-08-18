@@ -81,6 +81,7 @@
 	<target name="test-net-1.1" depends="net-1.1">
 		<property name="framework" value="net-1.1"/>
 		<call target="testclient"/>
+		<call target="fxcop"/>
 	</target>
 
 	<target name="test-net-1.0" depends="net-1.0">
@@ -90,20 +91,22 @@
 
     <!-- target to run the test suite -->
 	<target name="testclient" description="Target to run NUnit tests">
+		<mkdir dir="results"/>
 		<echo message="Stopping all services"/>
 		<servicecontroller action="Stop" service="MySql4.0"/>
 		<servicecontroller action="Stop" service="MySql4.1"/>
 		<servicecontroller action="Stop" service="MySql5.0"/>
 		
 		<echo message="Testing MySQL 4.0"/>
-		<property name="excludes" value="4.1, 5.0, NotWorking"/>
+		<property name="excludes" value="4.1,5.0,NotWorking"/>
+		<property name="config_file" value="socket.config"/>
 		<servicecontroller action="Start" service="MySql4.0"/>
 		<call target="testdb"/>  
 
 		<echo message="Testing MySQL 4.1"/>
 		<servicecontroller action="Stop" service="MySql4.0"/>
 		<servicecontroller action="Start" service="MySql4.1"/>
-		<property name="excludes" value="5.0, NotWorking"/>
+		<property name="excludes" value="5.0,NotWorking"/>
 		<call target="testdb"/>
 
 		<echo message="Testing MySQL 5.0"/>
@@ -114,17 +117,16 @@
 	</target>
 
 	<target name="testdb" description="Target to test a database with all possible configurations">
-		<nunit2 verbose="true">
-			<formatter type="Plain" />
-			<test assemblyname="bin/${framework}/${buildType}/MySql.Data.Tests.dll"
-				appconfig="testsuite/configs/socket.config">
-				<categories>
-					<exclude name="4.1"/>
-					<exclude name="5.0"/>
-					<exclude name="NotWorking" />
-				</categories>
-			</test>
-		</nunit2>
+		<copy file="testsuite/configs/${config_file}" tofile="bin/${framework}/${buildType}/MySql.Data.Tests.dll.config"/>
+		<exec program="${nunit}\nunit-console.exe"
+		      commandline="/exclude=${excludes} /xml=../../../results/nunit-${framework}-${buildType}.xml bin/${framework}/${buildType}/MySql.Data.Tests.dll"
+		      failonerror="true"/>
+	</target>
+	
+	<target name="FXCop" description="Runs FXCop">
+		<exec program="${fxcop.executable}" 
+			commandline="/o:results/fxcop-${framework}-${buildType}.xml /c /f:bin/${framework}/${buildType}/MySql.Data.dll /s"
+			failonerror="false"/>
 	</target>
 	
 	<!-- documentation target -->
