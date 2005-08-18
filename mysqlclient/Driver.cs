@@ -178,7 +178,7 @@ namespace MySql.Data.MySqlClient
 			// want results in
 			if (version.isAtLeast(4,1,0)) 
 			{
-				cmd.CommandText = "SET character_set_results=?n";
+				cmd.CommandText = "SET character_set_results=NULL";
 				object clientCharSet = serverProps["character_set_client"];
 				object connCharSet = serverProps["character_set_connection"];
 				if ((clientCharSet != null && clientCharSet.ToString() != charSet) ||
@@ -186,7 +186,6 @@ namespace MySql.Data.MySqlClient
 				{
 					cmd.CommandText = "SET NAMES " + charSet + ";" + cmd.CommandText;
 				}
-				cmd.Parameters.Add("?n", DBNull.Value);
 				cmd.ExecuteNonQuery();
 			}
 
