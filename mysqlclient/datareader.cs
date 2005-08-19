@@ -140,7 +140,7 @@ namespace MySql.Data.MySqlClient
 				if (ex.IsFatal)
 				{
 					connection.Reader = null;
-					connection.Close();
+					connection.Terminate();
 				}
 				throw;
 			}
@@ -663,7 +663,8 @@ namespace MySql.Data.MySqlClient
 			}
 			catch (MySqlException ex) 
 			{
-				if (ex.IsFatal) connection.Close();
+				if (ex.IsFatal)
+					connection.Terminate();
 				throw;
 			}
 
@@ -685,7 +686,7 @@ namespace MySql.Data.MySqlClient
 			catch (MySqlException ex) 
 			{
 				if (ex.IsFatal) 
-					connection.Close();
+					connection.Terminate();
 				else
 					connection.SetState( ConnectionState.Open );
 				throw;
@@ -723,7 +724,8 @@ namespace MySql.Data.MySqlClient
 				}
 				catch (MySqlException ex) 
 				{
-					if (ex.IsFatal) connection.Close();
+					if (ex.IsFatal) 
+						connection.Terminate();
 					throw;
 				}
 
@@ -750,11 +752,23 @@ namespace MySql.Data.MySqlClient
 			if (index < 0 || index >= fields.Length) 
 				throw new ArgumentException( "You have specified an invalid column ordinal." );
 
-			MySqlValue val = currentResult.ReadColumnValue(index);
-			if ( readCount == 0 )
-				throw new MySqlException("Invalid attempt to access a field before calling Read()");
+			try
+			{
+				MySqlValue val = currentResult.ReadColumnValue(index);
+				if ( readCount == 0 )
+					throw new MySqlException("Invalid attempt to access a field before calling Read()");
 
-			return val;
+				return val;
+			}
+			catch (MySqlException ex)
+			{
+				if (ex.IsFatal)
+				{
+					connection.Reader = null;
+					connection.Terminate();
+				}
+				throw;
+			}
 		}
 
 

@@ -306,6 +306,20 @@ namespace MySql.Data.MySqlClient
 				ChangeDatabase(settings.Database);
 		}
 
+		internal void Terminate()
+		{
+			try 
+			{
+				if (settings.Pooling)
+					MySqlPoolManager.ReleaseConnection(driver);
+				else
+					driver.Close();
+			}
+			catch (Exception) { }
+
+			SetState(ConnectionState.Closed);
+		}
+
 		/// <include file='docs/MySqlConnection.xml' path='docs/Close/*'/>
 		public void Close()
 		{
@@ -315,12 +329,7 @@ namespace MySql.Data.MySqlClient
 			if (dataReader != null)
 				dataReader.Close();
 
-			if (settings.Pooling)
-				MySqlPoolManager.ReleaseConnection( driver );
-			else
-				driver.Close();
-
-			SetState( ConnectionState.Closed );
+			Terminate();
 		}
 
 		IDbCommand IDbConnection.CreateCommand()

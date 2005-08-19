@@ -108,30 +108,19 @@ namespace MySql.Data.Common
 
 		public override void Write(byte[] buffer, int offset, int count)
 		{
-			bool shouldClose = false;
 			try 
 			{
-				socket.Send(buffer, offset, count, SocketFlags.None);
+				if (canWrite && socket != null)
+					socket.Send(buffer, offset, count, SocketFlags.None);
 			}
-			catch (SocketException se)
+			catch (Exception ex)
 			{
-				if (IsFatalSocketError(se.ErrorCode))
-					shouldClose = true;
-				else
-					throw;
-			}
-			catch (ObjectDisposedException)
-			{
-				shouldClose = true;
-			}
-			finally 
-			{
-				if (shouldClose)
-				{
-					canRead = false;
-					canWrite = false;
-					socket = null;
-				}
+				canRead = false;
+				canWrite = false;
+				socket.Shutdown(SocketShutdown.Both);
+				socket.Close();
+				socket = null;
+				throw new MySqlException(ex.Message, true, ex);
 			}
 		}
 

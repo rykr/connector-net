@@ -353,7 +353,7 @@ namespace MySql.Data.MySqlClient
 			}
 			catch (MySqlException ex) 
 			{
-				if (ex.IsFatal) connection.Close();
+				if (ex.IsFatal) connection.Terminate();
 				throw;
 			}
 
