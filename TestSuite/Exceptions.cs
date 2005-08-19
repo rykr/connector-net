@@ -73,9 +73,8 @@ namespace MySql.Data.MySqlClient.Tests
 				reader.Close();
 				Assert.Fail("We should not reach this code");
 			}
-			catch (MySqlException ex)
+			catch (Exception)
 			{
-				Assert.IsTrue(ex.IsFatal);
 				Assert.AreEqual(ConnectionState.Closed, c2.State);
 			}
 			finally 
