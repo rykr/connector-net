@@ -45,18 +45,19 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 
-		[Test()]
-		[Category("NotWorking")]
+		[Test]
 		public void TimeoutDuringRead() 
 		{
-			execSQL("SET @@global.wait_timeout=15");
-			execSQL("SET @@local.wait_timeout=28800");
-
 			for (int i=1; i < 2000; i++)
 				execSQL("INSERT INTO Test VALUES (" + i + ", 'This is a long text string that I am inserting')");
 
+			// we create a new connection so our base one is not closed
 			MySqlConnection c2 = new MySqlConnection(conn.ConnectionString);
 			c2.Open();
+
+			// now we query to see what the write timeout is
+			MySqlCommand toCmd = new MySqlCommand("SET @@local.net_write_timeout=5", c2);
+			toCmd.ExecuteNonQuery();
 
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", c2);
 			MySqlDataReader reader = null;
@@ -64,11 +65,9 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				reader = cmd.ExecuteReader();
+				Thread.Sleep(6000);
 				reader.Read();
-				Thread.Sleep(20000);
-				while (reader.Read()) 
-				{
-				}
+				reader.Read();
 				reader.Close();
 				Assert.Fail("We should not reach this code");
 			}
@@ -80,9 +79,8 @@ namespace MySql.Data.MySqlClient.Tests
 			finally 
 			{
 				if (reader != null) reader.Close();
+				c2.Close();
 			}
-
-			execSQL("SET @@global.wait_timeout=28800");
 		}
 	}
 }

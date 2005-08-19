@@ -123,17 +123,31 @@ namespace MySql.Data.MySqlClient
 		{
 			if (! isOpen) return;
 
-			// finish any current command
-			if (currentResult != null)
-				currentResult.Consume();
+			try 
+			{
+				// finish any current command
+				if (currentResult != null)
+					currentResult.Consume();
 
-			connection.Reader = null;
-			command.Consume();
+				connection.Reader = null;
+				command.Consume();
 
-			if (0 != (commandBehavior & CommandBehavior.CloseConnection))
-				connection.Close();
-
-			isOpen = false;
+				if (0 != (commandBehavior & CommandBehavior.CloseConnection))
+					connection.Close();
+			}
+			catch (MySqlException ex)
+			{
+				if (ex.IsFatal)
+				{
+					connection.Reader = null;
+					connection.Close();
+				}
+				throw;
+			}
+			finally 
+			{
+				isOpen = false;
+			}
 		}
 
 
