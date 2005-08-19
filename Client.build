@@ -1,6 +1,9 @@
 <project name="MySqlClient" default="allframeworks" xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd">
 	<description>MySQLClient Managed Provider for MySQL</description>
 
+	<property name="fxcop.executable" value="c:\program files\fxcop"/>
+	<property name="nunit" value="c:\program files\nunit 2.2\bin" />
+
 	<!-- filesets -->
 	<fileset id="Source">
 		<include name="mysqlclient/common/*.cs"/>
@@ -123,7 +126,7 @@
 		      failonerror="true"/>
 	</target>
 	
-	<target name="FXCop" description="Runs FXCop">
+	<target name="fxcop" description="Runs FXCop">
 		<exec program="${fxcop.executable}" 
 			commandline="/o:results/fxcop-${framework}-${buildType}.xml /c /f:bin/${framework}/${buildType}/MySql.Data.dll /s"
 			failonerror="false"/>
