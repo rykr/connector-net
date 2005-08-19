@@ -46,7 +46,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 
 		[Test]
-		public void TimeoutDuringRead() 
+		public void Timeout() 
 		{
 			for (int i=1; i < 2000; i++)
 				execSQL("INSERT INTO Test VALUES (" + i + ", 'This is a long text string that I am inserting')");
@@ -56,16 +56,18 @@ namespace MySql.Data.MySqlClient.Tests
 			c2.Open();
 
 			// now we query to see what the write timeout is
-			MySqlCommand toCmd = new MySqlCommand("SET @@local.net_write_timeout=5", c2);
+			MySqlCommand toCmd = new MySqlCommand("SET @@local.wait_timeout=5", c2);
+			toCmd.ExecuteNonQuery();
+			toCmd.CommandText = "SET @@local.interactive_timeout=5";
 			toCmd.ExecuteNonQuery();
 
+			Thread.Sleep(8000);
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", c2);
 			MySqlDataReader reader = null;
 
 			try 
 			{
 				reader = cmd.ExecuteReader();
-				Thread.Sleep(6000);
 				reader.Read();
 				reader.Read();
 				reader.Close();
