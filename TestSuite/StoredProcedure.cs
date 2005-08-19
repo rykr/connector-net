@@ -28,7 +28,7 @@ namespace MySql.Data.MySqlClient.Tests
 	/// <summary>
 	/// Summary description for StoredProcedure.
 	/// </summary>
-	[TestFixture()]
+	[TestFixture]
 	public class StoredProcedure : BaseTest
 	{
 		private static string fillError = null;
@@ -36,7 +36,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			//csAdditions = ";logging=true";
+			csAdditions = ";pooling=false";
 			Open();
 			execSQL("DROP TABLE IF EXISTS Test; CREATE TABLE Test (id INT, name VARCHAR(100))");
 		}
@@ -55,7 +55,7 @@ namespace MySql.Data.MySqlClient.Tests
 		public void ReturningResultset() 
 		{
 			// create our procedure
-			execSQL( "CREATE PROCEDURE spTest( val decimal(10,3)) begin select val; end" );
+			execSQL( "CREATE PROCEDURE spTest(val decimal(10,3)) begin select val; end");
 			
 			using (MySqlCommand cmd = new MySqlCommand("spTest", conn))
 			{
@@ -71,7 +71,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		[Category("5.0")]
 		public void NonQuery()
 		{

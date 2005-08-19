@@ -122,8 +122,8 @@ namespace MySql.Data.MySqlClient.Tests
 				Assert.Fail(ex.Message);
 			}
 
-			Thread.CurrentThread.CurrentCulture = c;
-			Thread.CurrentThread.CurrentUICulture = c;
+			Thread.CurrentThread.CurrentCulture = curCulture;
+			Thread.CurrentThread.CurrentUICulture = curUICulture;
 		}
 	}
 }
