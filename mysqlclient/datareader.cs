@@ -683,12 +683,12 @@ namespace MySql.Data.MySqlClient
 				fields = currentResult.Fields;
 				return true;
 			}
-			catch (MySqlException ex) 
+			catch (Exception ex) 
 			{
-				if (ex.IsFatal) 
-					connection.Terminate();
-				else
+				if (ex is MySqlException && !(ex as MySqlException).IsFatal)
 					connection.SetState( ConnectionState.Open );
+				else
+					connection.Terminate();
 				throw;
 			}
 			finally 
