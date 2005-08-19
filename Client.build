@@ -1,7 +1,9 @@
 <project name="MySqlClient" default="allframeworks" xmlns="http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd">
 	<description>MySQLClient Managed Provider for MySQL</description>
 
+	<property name="ncover.executable" value="c:\program files\ncover\ncover.console.exe"/>
 	<property name="fxcop.executable" value="c:\program files\fxcop"/>
+	<property name="nunit.executable" value="c:\program files\nunit 2.2\bin\nunit-console.exe"/>
 	<property name="nunit" value="c:\program files\nunit 2.2\bin" />
 
 	<!-- filesets -->
@@ -10,11 +12,7 @@
 		<include name="mysqlclient/Types/*.cs"/>
 		<include name="mysqlclient/*.cs"/>
 	</fileset>
-	
-	<if test="${not property::exists('debug')}">
-		<property name="defines" value=""/>
-	</if>
-	
+
 	<if test="${not property::exists('debug')}">
 		<property name="debug" value="false"/>
 		<property name="opt" value="true"/>
@@ -43,7 +41,7 @@
 	<target name="client" description="Core client target">
 		<property name="nant.settings.currentframework" value="${framework}"/>
 		<mkdir dir="bin/${framework}/${buildType}" failonerror="false"/>
-		<csc define="${defines}" output="bin/${framework}/${buildType}/MySql.Data.dll" target="library" 
+		<csc output="bin/${framework}/${buildType}/MySql.Data.dll" target="library" 
 			debug="${debug}" optimize="${opt}" 
 			doc="bin/${framework}/${buildType}/MySql.Data.xml">
 			<arg value="/nowarn:0679"/>
@@ -116,15 +114,23 @@
 		<servicecontroller action="Stop" service="MySql4.1"/>
 		<servicecontroller action="Start" service="MySql5.0"/>
 		<property name="excludes" value="NotWorking"/>
-		<call target="testdb"/>
+		<call target="testdbwithncover"/>
 	</target>
 
 	<target name="testdb" description="Target to test a database with all possible configurations">
 		<copy file="testsuite/configs/${config_file}" tofile="bin/${framework}/${buildType}/MySql.Data.Tests.dll.config"/>
-		<exec program="${nunit}\nunit-console.exe"
+		<exec program="${nunit.executable}"
 		      commandline="/exclude=${excludes} /xml=../../../results/nunit-${framework}-${buildType}.xml bin/${framework}/${buildType}/MySql.Data.Tests.dll"
 		      failonerror="true"/>
 	</target>
+	
+	<target name="testdbwithncover" description="Target to test a database with all possible configurations">
+		<copy file="testsuite/configs/${config_file}" tofile="bin/${framework}/${buildType}/MySql.Data.Tests.dll.config"/>
+		<exec program="${ncover.executable}"
+		      commandline="/c &quot;${nunit.executable}&quot; &quot;bin/${framework}/${buildType}/MySql.Data.Tests.dll /exclude=${excludes} /xml=../../../results/nunit-${framework}-${buildType}.xml&quot; /a MySql.Data /o results/ncover-${framework}.xml"
+		      failonerror="true"/>
+	</target>
+	
 	
 	<target name="fxcop" description="Runs FXCop">
 		<exec program="${fxcop.executable}" 
