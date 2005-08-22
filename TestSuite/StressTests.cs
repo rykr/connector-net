@@ -46,10 +46,13 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
-		[Test()]
+		[Test]
 		public void TestMultiPacket()
 		{
 			int len = 20000000;
+
+			// currently do not test this with compression
+			if (conn.UseCompression) return;
 
 			execSQL("set @@global.max_allowed_packet=35000000");
 
@@ -110,7 +113,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("set @@global.max_allowed_packet=1047552");
 		}
 
-		[Test()]
+		[Test]
 		public void TestSequence()
 		{
 			MySqlCommand cmd = new MySqlCommand("insert into Test (id, name) values (?id, 'test')", conn);

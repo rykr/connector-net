@@ -233,7 +233,7 @@ public static void CreateSqlDataAdapter()
 	A <b>String</b> that is a SQL SELECT statement or stored procedure to be used by 
 	the <see cref="SelectCommand"/> property of the <see cref="MySqlDataAdapter"/>. 
 	</param>
-	<param name="conn">A <see cref="MySqlConnection"/> that represents the connection.</param>
+	<param name="connection">A <see cref="MySqlConnection"/> that represents the connection.</param>
 	<remarks>
 	<para>
 	This implementation of the <see cref="MySqlDataAdapter"/> opens and closes a <see cref="MySqlConnection"/>

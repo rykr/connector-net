@@ -94,7 +94,19 @@ namespace MySql.Data.Common
 
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			return socket.Receive(buffer, offset, count, SocketFlags.None);
+			try 
+			{
+				return socket.Receive(buffer, offset, count, SocketFlags.None);
+			}
+			catch (Exception ex)
+			{
+				canRead = false;
+				canWrite = false;
+				socket.Shutdown(SocketShutdown.Both);
+				socket.Close();
+				socket = null;
+				throw new MySqlException(ex.Message, true, ex);
+			}
 		}
 
 		public override long Seek(long offset, SeekOrigin origin)

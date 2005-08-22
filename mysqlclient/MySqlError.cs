@@ -47,16 +47,25 @@ namespace MySql.Data.MySqlClient
 			this.message = message;
 		}
 
+		/// <summary>
+		/// Error level
+		/// </summary>
 		public string	Level 
 		{
 			get { return level; }
 		}
 
+		/// <summary>
+		/// Error code
+		/// </summary>
 		public uint Code 
 		{
 			get { return code; }
 		}
 
+		/// <summary>
+		/// Error message
+		/// </summary>
 		public string Message 
 		{
 			get { return message; }
