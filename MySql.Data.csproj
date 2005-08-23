@@ -279,6 +279,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "MySqlClient\common\NativeMethods.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MySqlClient\common\Platform.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -305,11 +310,6 @@
                 />
                 <File
                     RelPath = "MySqlClient\common\Version.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "MySqlClient\common\Win32.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
