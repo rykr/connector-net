@@ -166,7 +166,7 @@ namespace MySql.Data.MySqlClient
 			while (length > 0) 
 			{
 				long toWrite = Math.Min( leftThisPacket, Math.Min( (long)length, leftToWrite  ) );
-				WriteFinal(buf, (int)offset, (int)toWrite);
+				stream.Write(buf, (int)offset, (int)toWrite);
 				stream.Flush();
 				leftThisPacket -= toWrite;
 				offset += (int)toWrite;
@@ -177,25 +177,20 @@ namespace MySql.Data.MySqlClient
 			}
 		}
 
-		protected void WriteFinal(byte[] buffer, int offset, int count)
+		public void Write( byte[] buffer, int offset, int count ) 
 		{
 			try 
 			{
-				stream.Write(buffer, offset, count);
+				if (! Buffering)
+					WriteChunk( buffer, offset, count );
+				else
+					stream.Write(buffer, offset, count);
 			}
 			catch (Exception ex)
 			{
 				Logger.LogException(ex);
 				throw new MySqlException("Unable to write to stream", true, ex);
 			}
-		}
-
-		public void Write( byte[] buffer, int offset, int count ) 
-		{
-			if (! Buffering)
-				WriteChunk( buffer, offset, count );
-			else
-				WriteFinal(buffer, offset, count);
 		}
 
 		public void WriteLength(long length) 

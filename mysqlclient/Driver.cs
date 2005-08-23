@@ -120,6 +120,15 @@ namespace MySql.Data.MySqlClient
 			creationTime = DateTime.Now;
 		}
 
+		public virtual void SafeClose()
+		{
+			try 
+			{
+				Close();
+			}
+			catch (Exception) { }
+		}
+
 		public virtual void Close() 
 		{
 			isOpen = false;

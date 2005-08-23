@@ -15,13 +15,19 @@
 
 	<if test="${not property::exists('debug')}">
 		<property name="debug" value="false"/>
-		<property name="opt" value="true"/>
-		<property name="buildType" value="release"/>
 	</if>
+	
+	<!-- we default to optimized release binaries -->
+	<property name="opt" value="true"/>
+	<property name="buildType" value="release"/>
 
     <if test="${(debug)}">
 		<property name="opt" value="false"/>
 		<property name="buildType" value="debug"/>
+	</if>
+
+	<if test="${not property::exists('defines')}">
+		<property name="defines" value=""/>
 	</if>
 	
     <if test="${not property::exists('build.dir')}">
@@ -45,7 +51,7 @@
 		<mkdir dir="${outdir}" failonerror="false"/>
 		<resgen input="mysqlclient/Strings.resx" output="${outdir}/Strings.resources"/>
 		<csc output="${outdir}/MySql.Data.dll" target="library" 
-			debug="${debug}" optimize="${opt}" 
+			define="${defines}" debug="${debug}" optimize="${opt}" 
 			doc="${outdir}/MySql.Data.xml">
 			<arg value="/nowarn:0679"/>
 			<resources>
@@ -98,9 +104,13 @@
 
 	<!-- This target will call the testdb target for each supported config. -->
 	<target name="test_all_configs">
-		<property name="config" value="tcp"/>
+<!--		<property name="config" value="tcp"/>
 		<call target="testdb"/>  
 		<property name="config" value="tcp_compressed"/>
+		<call target="testdb"/>  -->
+		<property name="config" value="pipe"/>
+		<call target="testdb"/>  
+		<property name="config" value="pipe_compressed"/>
 		<call target="testdb"/>  
 	</target>
 

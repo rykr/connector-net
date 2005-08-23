@@ -114,9 +114,9 @@ namespace MySql.Data.MySqlClient
 				throw new ArgumentException(Resources.GetString("BufferNotLargeEnough"),
 					"buffer");
 
-			EnsureData( count );
+			EnsureData(count);
 
-			Array.Copy( this.buffer, index, buffer, offset, count );
+			Array.Copy(this.buffer, index, buffer, offset, count);
 			index += count;
 
 			return count;

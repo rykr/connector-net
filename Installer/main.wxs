@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?define ProductName="MySQL Connector Net 1.0.4"?>
+<?define ProductVersion="1.0.5"?>
+<?define ProductName="MySQL Connector Net $(var.ProductVersion)"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
 	<Product Id="832f75d5-390b-4d00-ac52-a321ea39b98c" Name="$(var.ProductName)" Manufacturer="MySQL" Version="1.0.4" Language="1033">
 
@@ -15,6 +16,8 @@
 				<File Id="COPYING" Name="COPY" LongName="COPYING" src="..\COPYING" DiskId="1" />
 				<?endif?>
 				<File Id="README1" Name="README" src="..\README" DiskId="1"/>
+				<Registry Id="LocKey" Root="HKLM" Key="Software\MySQL AB\MySQL Connector/Net $(var.ProductVersion)" Name="Location" Type="string" Value="[TARGETDIR]"/>
+				<Registry Id="VerKey" Root="HKLM" Key="Software\MySQL AB\MySQL Connector/Net $(var.ProductVersion)" Name="Version" Type="string" Value="$(var.ProductVersion)"/>
 			</Component>
 					
 			<!-- binaries folder -->
@@ -51,7 +54,6 @@
 							<File Id="teCS3" Name="Form1.cs" src="..\Samples\TableEditor\cs\Form1.cs" DiskId="1"/>
 							<File Id="teCS4" Name="Form1.res" LongName="Form1.resx" src="..\Samples\TableEditor\cs\Form1.resx" DiskId="1"/>
 							<File Id="teCS5" Name="te.csp" LongName="TableEditor.csproj" src="..\Samples\TableEditor\cs\TableEditor.csproj" DiskId="1"/>
-							<File Id="teCS6" Name="te.csu" LongName="TableEditor.csproj.user" src="..\Samples\TableEditor\cs\TableEditor.csproj.user" DiskId="1"/>
 							<File Id="teCS7" Name="def.bld" LongName="TableEditor.build" src="..\Samples\TableEditor\cs\TableEditor.build" DiskId="1"/>
 						</Component>
 					</Directory>
@@ -61,7 +63,6 @@
 							<File Id="teVB3" Name="Form1.vb" src="..\Samples\TableEditor\vb\Form1.vb" DiskId="1"/>
 							<File Id="teVB4" Name="Form1.res" LongName="Form1.resx" src="..\Samples\TableEditor\vb\Form1.resx" DiskId="1"/>
 							<File Id="teVB5" Name="te.vbp" LongName="TableEditor.vbproj" src="..\Samples\TableEditor\vb\TableEditor.vbproj" DiskId="1"/>
-							<File Id="teVB6" Name="te.vbu" LongName="TableEditor.vbproj.user" src="..\Samples\TableEditor\vb\TableEditor.vbproj.user" DiskId="1"/>
 							<File Id="teVB7" Name="te.bld" LongName="TableEditor.build" src="..\Samples\TableEditor\vb\TableEditor.build" DiskId="1"/>
 						</Component>
 					</Directory>
@@ -85,7 +86,7 @@
 					<File Id="README2" Name="README" src="..\README" DiskId="1"/>
 				</Component>
 				<Directory Id="clientFolder" Name="msc" LongName="MySqlClient">
-					<Component Id="ClientSrc" Guid="91d0d8fc-5864-4eb6-a487-a77b04988ce5">
+					<Component Id="ClientSrc" Guid="00f0a2c4-ed4c-4021-a62f-2400e4c7a605">
 							<File Id="file1" Name="assinfo.cs" LongName="AssemblyInfo.cs" src="..\MySqlClient\AssemblyInfo.cs" DiskId="1"/>
 							<File Id="file2" Name="charset.cs" LongName="CharSetMap.cs" src="..\MySqlClient\CharSetMap.cs" DiskId="1"/>
 							<File Id="file3" Name="cmd.cs" LongName="command.cs" src="..\MySqlClient\command.cs" DiskId="1"/>
@@ -115,16 +116,20 @@
 							<File Id="file27" Name="shared.cs" LongName="SharedMemoryStream.cs" src="..\MySqlClient\SharedMemoryStream.cs" DiskId="1"/>
 							<File Id="file28" Name="sp.cs" LongName="StoredProcedure.cs" src="..\MySqlClient\StoredProcedure.cs" DiskId="1"/>
 							<File Id="file29" Name="txn.cs" LongName="Transaction.cs" src="..\MySqlClient\Transaction.cs" DiskId="1"/>
+							<File Id="file30" Name="string.res" LongName="strings.resx" src="..\MySqlClient\Strings.resx" DiskId="1"/>
 					</Component>
 					<Directory Id="commonFolder" Name="Common">
-						<Component Id="CommonSrc" Guid="29e4cc7d-2b4b-4d3b-a2d0-9a3e01ed7d5a">
+						<Component Id="CommonSrc" Guid="2664facc-2df2-4861-8a04-f968bb260821">
 							<File Id="commFile1" Name="dbcs.cs" LongName="DBConnectionString.cs" src="..\MySqlClient\common\DBConnectionString.cs" DiskId="1"/>
 							<File Id="commFile2" Name="nps.cs" LongName="NamedPipeStream.cs" src="..\MySqlClient\common\NamedPipeStream.cs" DiskId="1"/>
 							<File Id="commFile3" Name="platf.cs" LongName="Platform.cs" src="..\MySqlClient\common\Platform.cs" DiskId="1"/>
 							<File Id="commFile4" Name="scr.cs" LongName="StreamCreator.cs" src="..\MySqlClient\common\StreamCreator.cs" DiskId="1"/>
 							<File Id="commFile5" Name="version.cs" src="..\MySqlClient\common\Version.cs" DiskId="1"/>
 							<File Id="commFile6" Name="utility.cs" src="..\MySqlClient\common\utility.cs" DiskId="1"/>
-							<File Id="commFile7" Name="win32.cs" src="..\MySqlClient\common\win32.cs" DiskId="1"/>
+							<File Id="commFile7" Name="native.cs" LongName="NativeMethods.cs" src="..\MySqlClient\common\NativeMethods.cs" DiskId="1"/>
+							<File Id="commFile8" Name="resour.cs" LongName="Resources.cs" src="..\MySqlClient\common\resources.cs" DiskId="1"/>
+							<File Id="commFile9" Name="socketst.cs" LongName="SocketStream.cs" src="..\MySqlClient\common\socketstream.cs" DiskId="1"/>
+							
 					</Component>
 					</Directory>
 					<Directory Id="docSrcFolder" Name="Docs">
@@ -142,7 +147,7 @@
 						</Component>
 					</Directory>
 					<Directory Id="typesFolder" Name="Types">
-						<Component Id="TypesSrc" Guid="59b8b9c6-1f24-4828-9e4c-59ca4ccd8f9c">
+						<Component Id="TypesSrc" Guid="08a5348c-a3b7-4113-9e75-1e9bbe123847">
 							<File Id="typesFile1" Name="binary.cs" LongName="MySqlBinary.cs" src="..\MySqlClient\Types\MySqlBinary.cs" DiskId="1"/>
 							<File Id="typesFile2" Name="byte.cs" LongName="MySqlByte.cs" src="..\MySqlClient\Types\MySqlByte.cs" DiskId="1"/>
 							<File Id="typesFile3" Name="convexcp.cs" LongName="MySqlConversionException.cs" src="..\MySqlClient\Types\MySqlConversionException.cs" DiskId="1"/>
@@ -160,13 +165,14 @@
 							<File Id="typesFile16" Name="uint32.cs" LongName="MySqlUInt32.cs" src="..\MySqlClient\Types\MySqlUInt32.cs" DiskId="1"/>
 							<File Id="typesFile17" Name="uint64.cs" LongName="MySqlUInt64.cs" src="..\MySqlClient\Types\MySqlUInt64.cs" DiskId="1"/>
 							<File Id="typesFile18" Name="value.cs" LongName="MySqlValue.cs" src="..\MySqlClient\Types\MySqlValue.cs" DiskId="1"/>
+							<File Id="typesFile19" Name="bit.cs" LongName="MySqlBit.cs" src="..\MySqlClient\Types\MySqlBit.cs" DiskId="1"/>
 						</Component>
 					</Directory>
 					
 				</Directory>
 						
 				<Directory Id="TestSuite" Name="ts" LongName="TestSuite">
-					<Component Id="TestSuiteSrc" Guid="5f707212-3278-4bff-8d9a-4372ba7e08f2">
+					<Component Id="TestSuiteSrc" Guid="8f886c41-680e-4d0c-aaef-89f40d8ebb67">
 						<File Id="tsFile1" Name="assInfo.cs" LongName="AssemblyInfo.cs" src="..\TestSuite\AssemblyInfo.cs" DiskId="1"/>
 						<File Id="tsFile2" Name="BaseTest.cs" src="..\TestSuite\BaseTest.cs" DiskId="1"/>
 						<File Id="tsFile3" Name="BlobTest.cs" LongName="BlobTests.cs" src="..\TestSuite\BlobTests.cs" DiskId="1"/>
@@ -188,8 +194,19 @@
 						<File Id="tsFile20" Name="tnx.cs" LongName="Transactions.cs" src="..\TestSuite\Transactions.cs" DiskId="1"/>
 						<File Id="tsFile21" Name="utils.cs" src="..\TestSuite\utils.cs" DiskId="1"/>
 						<File Id="tsFile22" Name="proj" LongName="MySql.Data.Tests.csproj" src="..\TestSuite\MySql.Data.Tests.csproj" DiskId="1"/>
-						<File Id="tsFile23" Name="dstest.xsd" LongName="DataSetTest.xsd" src="..\TestSuite\DataSetTest.xsd" DiskId="1"/>
+						<File Id="tsFile24" Name="cstests.cs" LongName="CharacterSetTests.cs" src="..\TestSuite\CharacterSetTests.cs" DiskId="1"/>
+						<File Id="tsFile25" Name="datetime.cs" LongName="DateTimeTests.cs" src="..\TestSuite\DateTimeTests.cs" DiskId="1"/>
+						<File Id="tsFile26" Name="event.cs" LongName="EventTests.cs" src="..\TestSuite\EventTests.cs" DiskId="1"/>
+						<File Id="tsFile27" Name="helper.cs" LongName="MySqlHelperTests.cs" src="..\TestSuite\MySqlHelperTests.cs" DiskId="1"/>
 					</Component>
+					<Directory Id="TSConfigs" Name="config" LongName="configs">
+						<Component Id="TSConfigsSrc" Guid="b22ab0ca-82bb-40e6-908c-c953c4c83bb6">
+							<File Id="config1" Name="pipe.con" LongName="pipe.config" src="..\TestSuite\configs\pipe.config" DiskId="1"/>
+							<File Id="config2" Name="pipec.con" LongName="pipe_compressed.config" src="..\TestSuite\configs\pipe_compressed.config" DiskId="1"/>
+							<File Id="config3" Name="tcp.con" LongName="tcp.config" src="..\TestSuite\configs\tcp.config" DiskId="1"/>
+							<File Id="config4" Name="tcpc.con" LongName="tcp_compressed.config" src="..\TestSuite\configs\tcp_compressed.config" DiskId="1"/>
+						</Component>
+					</Directory>
 				</Directory>
 			</Directory>
 
@@ -234,6 +251,7 @@
 			<ComponentRef Id="DocsSrc"/>
 			<ComponentRef Id="TypesSrc"/>
 			<ComponentRef Id="TestSuiteSrc"/>
+			<ComponentRef Id="TSConfigsSrc"/>
 		</Feature>
 		
 		<CustomAction Id="DIRCA_TARGETDIR" Property="TARGETDIR" Value="[ProgramFilesFolder][Manufacturer]\[ProductName]" Execute="firstSequence" />

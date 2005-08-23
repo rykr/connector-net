@@ -101,7 +101,8 @@ namespace MySql.Data.Common
 			if (! CanRead)
 				throw new NotSupportedException(Resources.GetString("StreamNoRead"));
 			if (pipeHandle == 0) 
-				return 0;
+				throw new ObjectDisposedException("NamedPipeStream", 
+					Resources.GetString("StreamAlreadyClosed"));
 
 			// first read the data into an internal buffer since ReadFile cannot read into a buf at
 			// a specified offset
@@ -150,7 +151,8 @@ namespace MySql.Data.Common
 			if (! CanWrite)
 				throw new NotSupportedException(Resources.GetString("StreamNoWrite"));
 			if (pipeHandle == 0)
-				return;
+				throw new ObjectDisposedException("NamedPipeStream", 
+					Resources.GetString("StreamAlreadyClosed"));
 			
 			// copy data to internal buffer to allow writing from a specified offset
 			uint bytesWritten = 0;

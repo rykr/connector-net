@@ -220,7 +220,7 @@ namespace MySql.Data.MySqlClient
 					else 
 					{
 						int lenToRead = (int)Math.Min( len, bytesLeft );
-						int count = stream.Read( buffer, (int)pos, lenToRead );
+						int count = stream.Read(buffer, (int)pos, lenToRead);
 						if (count == 0)
 							throw new MySqlException( "Connection unexpectedly terminated", true, null );
 
