@@ -117,7 +117,7 @@ namespace MySql.Data.Common
 					Resources.GetString("ReadFromStreamFailed"), true, null);
 			}
 
-			Array.Copy(buf, 0, buffer, offset, read);
+			Array.Copy(buf, (int)0, buffer, (int)offset, (int)read);
 			return (int)read;
 		}
 
