@@ -198,7 +198,7 @@ namespace MySql.Data.MySqlClient
 			return ReadInteger((int)c);
 		}
 
-		public int Read( ref byte[] buffer, long pos, long len ) 
+		public int Read(ref byte[] buffer, long pos, long len) 
 		{
 			if (buffer == null || buffer.Length < len)
 				buffer = new byte[ pos + len ];
@@ -232,10 +232,10 @@ namespace MySql.Data.MySqlClient
 
 				return (int)totalLen;
 			}
-			catch (IOException ioe) 
+			catch (Exception ex) 
 			{
-				Logger.LogException( ioe ) ;
-				throw new MySqlException( "Connection unexpectedly terminated", true, ioe );
+				Logger.LogException(ex) ;
+				throw new MySqlException("Connection unexpectedly terminated", true, ex);
 			}
 		}
 

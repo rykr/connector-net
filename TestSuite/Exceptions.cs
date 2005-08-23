@@ -55,13 +55,7 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlConnection c2 = new MySqlConnection(conn.ConnectionString);
 			c2.Open();
 
-			// now we query to see what the write timeout is
-			MySqlCommand toCmd = new MySqlCommand("SET @@local.wait_timeout=5", c2);
-			toCmd.ExecuteNonQuery();
-			toCmd.CommandText = "SET @@local.interactive_timeout=5";
-			toCmd.ExecuteNonQuery();
-
-			Thread.Sleep(8000);
+			KillConnection(c2);
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", c2);
 			MySqlDataReader reader = null;
 

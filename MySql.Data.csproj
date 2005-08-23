@@ -9,7 +9,7 @@
             <Settings
                 ApplicationIcon = ""
                 AssemblyKeyContainerName = ""
-                AssemblyName = "MySQL.Data"
+                AssemblyName = "MySql.Data"
                 AssemblyOriginatorKeyFile = ""
                 DefaultClientScript = "JScript"
                 DefaultHTMLPageLayout = "Grid"
@@ -18,7 +18,7 @@
                 OutputType = "Library"
                 PreBuildEvent = ""
                 PostBuildEvent = ""
-                RootNamespace = "MySQL.Data.MySQLClient"
+                RootNamespace = "MySql.Data.MySqlClient"
                 RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
             >

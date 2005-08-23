@@ -50,29 +50,8 @@ namespace MySql.Data.Common
 
 			pipeHandle = NativeMethods.CreateFile( host, pipemode,
 						0, null, NativeMethods.OPEN_EXISTING, 0, 0 );
-//			try 
-//			{
-//				stream = new FileStream( (IntPtr)pipeHandle, FileAccess.ReadWrite );
-//			}
-//			catch (Exception ex) 
-//			{
-//				Console.WriteLine( ex.Message );
-//			}
-
 		}
 
-/*		public bool DataAvailable
-		{
-			get 
-			{
-				uint bytesRead=0, avail=0, thismsg=0;
-
-				bool result = Win32.PeekNamedPipe( pipeHandle, 
-					null, 0, ref bytesRead, ref avail, ref thismsg );
-				return (result == true && avail > 0);
-			}
-		}
-*/
 		public override bool CanRead
 		{
 			get { return (_mode & FileAccess.Read) > 0; }
@@ -101,32 +80,12 @@ namespace MySql.Data.Common
 
 		public override void Flush() 
 		{
-//			if (stream != null)
-//				stream.Flush();
-			if ( pipeHandle == 0 )
-				throw new ObjectDisposedException("NamedPipeStream", 
-					Resources.GetString("StreamAlreadyClosed"));
-			NativeMethods.FlushFileBuffers((IntPtr)pipeHandle);
+			if (pipeHandle != 0)
+				NativeMethods.FlushFileBuffers((IntPtr)pipeHandle);
 		}
 
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-/*			try 
-			{
-				uint bytesRead=0, avail=0, thismsg=0;
-
-				bool result = Win32.PeekNamedPipe( pipeHandle, 
-					null, 0, ref bytesRead, ref avail, ref thismsg );
-				if (result)
-					return stream.Read( buffer, offset, (int)avail );
-				else
-					return -1;
-			}
-			catch (Exception ex) 
-			{
-				Console.WriteLine(ex.Message);
-			}
-			return -1;*/
 			if (buffer == null) 
 				throw new ArgumentNullException("buffer", 
 					Resources.GetString("BufferCannotBeNull"));
@@ -141,29 +100,34 @@ namespace MySql.Data.Common
 					Resources.GetString("CountCannotBeNegative"));
 			if (! CanRead)
 				throw new NotSupportedException(Resources.GetString("StreamNoRead"));
-			if (pipeHandle == 0)
-				throw new ObjectDisposedException("NamedPipeStream", 
-					Resources.GetString("StreamAlreadyClosed"));
+			if (pipeHandle == 0) 
+				return 0;
 
 			// first read the data into an internal buffer since ReadFile cannot read into a buf at
 			// a specified offset
 			uint read=0;
 			byte[] buf = new Byte[count];
-			NativeMethods.ReadFile((IntPtr)pipeHandle, buf, (uint)count, out read, IntPtr.Zero); 
+			bool result = NativeMethods.ReadFile((IntPtr)pipeHandle, buf, 
+				(uint)count, out read, IntPtr.Zero); 
 			
-			for (int x=0; x < read; x++) 
+			if (! result)
 			{
-				buffer[offset+x] = buf[x];
+				Close();
+				throw new MySqlClient.MySqlException(
+					Resources.GetString("ReadFromStreamFailed"), true, null);
 			}
+
+			Array.Copy(buf, 0, buffer, offset, read);
 			return (int)read;
 		}
 
 		public override void Close()
 		{
-//			stream.Close();
-			//stream = null;
-			NativeMethods.CloseHandle((IntPtr)pipeHandle);
-			pipeHandle = 0;
+			if (pipeHandle != 0)
+			{
+				NativeMethods.CloseHandle((IntPtr)pipeHandle);
+				pipeHandle = 0;
+			}
 		}
 
 		public override void SetLength(long length)
@@ -173,14 +137,6 @@ namespace MySql.Data.Common
 
 		public override void Write(byte[] buffer, int offset, int count)
 		{
-//			try 
-//			{
-//				stream.Write( buffer, offset, count );
-//			}
-//			catch (Exception ex) 
-//			{
-//				Console.WriteLine( ex.Message );
-//			}
 			if (buffer == null) 
 				throw new ArgumentNullException("buffer", Resources.GetString("BufferCannotBeNull"));
 			if (buffer.Length < (offset + count))
@@ -194,7 +150,7 @@ namespace MySql.Data.Common
 			if (! CanWrite)
 				throw new NotSupportedException(Resources.GetString("StreamNoWrite"));
 			if (pipeHandle == 0)
-				throw new ObjectDisposedException("NamedPipeStream", Resources.GetString("StreamAlreadyClosed"));
+				return;
 			
 			// copy data to internal buffer to allow writing from a specified offset
 			uint bytesWritten = 0;
@@ -217,34 +173,13 @@ namespace MySql.Data.Common
 					count -= cnt;
 					offset += cnt;
 				}
-
-//				byte[] tempBuf = new byte[count];
-//				try 
-//				{
-//					Array.Copy( buffer, offset, tempBuf, 0, count );
-//				}
-//				catch (Exception ex) 
-//				{
-//					Console.Write(ex.Message);
-//				}
-//				localBuf = tempBuf;
 			}
-
-//			bool result = Win32.WriteFile( pipeHandle, localBuf, (uint)count, out bytesWritten, null );
-//			byte[] buf = new Byte[count];
-//			for (int x=0; x < count; x++) 
-//			{
-//				buf[x] = buffer[offset+x];
-//			}
-//			uint written=0;
-//			GCHandle h = GCHandle.Alloc( buffer, GCHandleType.Pinned );
-//			IntPtr addr = Marshal.UnsafeAddrOfPinnedArrayElement( buffer, offset );
-//			bool result = WriteFile( pipeHandle, addr, (uint)count, ref written, IntPtr.Zero );
-//			h.Free();
 
 			if (! result)
 			{
-				throw new IOException("Writing to the stream failed");
+				Close();
+				throw new MySqlClient.MySqlException(Resources.GetString("WriteToStreamFailed"),
+					true, null);
 			}
 			if (bytesWritten < count)
 				throw new IOException("Unable to write entire buffer to stream");

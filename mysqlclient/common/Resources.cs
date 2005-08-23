@@ -30,7 +30,8 @@ namespace MySql.Data.Common
 		public static string GetString(string name)
 		{
 			if (rm == null)
-				rm = new ResourceManager("Strings", System.Reflection.Assembly.GetCallingAssembly());
+				rm = new ResourceManager("MySql.Data.MySqlClient.MySqlClient.Strings", 
+					System.Reflection.Assembly.GetCallingAssembly());
 			return rm.GetString (name);
 		}
 	}
