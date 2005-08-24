@@ -38,6 +38,7 @@ namespace MySql.Data.MySqlClient
 		internal Driver						driver;
 		private  MySqlDataReader			dataReader;
 		private  MySqlConnectionString		settings;
+		private  bool						hasBeenOpen;
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/StateChange/*'/>
 		public event StateChangeEventHandler		StateChange;
@@ -170,7 +171,7 @@ namespace MySql.Data.MySqlClient
 			{
 				// Always return exactly what the user set.
 				// Security-sensitive information may be removed.
-				return settings.GetConnectionString();
+				return settings.GetConnectionString(!hasBeenOpen);
 			}
 			set
 			{
@@ -304,6 +305,7 @@ namespace MySql.Data.MySqlClient
 			driver.Configure(this);
 			if (settings.Database != null && settings.Database.Length != 0)
 				ChangeDatabase(settings.Database);
+			hasBeenOpen = true;
 		}
 
 		internal void Terminate()

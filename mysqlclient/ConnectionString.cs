@@ -265,10 +265,16 @@ namespace MySql.Data.MySqlClient
 		/// stripping out the password info
 		/// </summary>
 		/// <returns></returns>
-		public string GetConnectionString()
+		public string GetConnectionString(bool includePass)
 		{
-			if (connectString == null) return CreateConnectionString();
+			if (connectString == null) return String.Empty;//CreateConnectionString();
 
+			string connStr = connectString;
+			if (! PersistSecurityInfo && !includePass)
+				connStr = RemovePassword(connStr);
+
+			return connStr;
+/*
 			StringBuilder str = new StringBuilder();
 			Hashtable ht = ParseKeyValuePairs( connectString );
 
@@ -281,7 +287,13 @@ namespace MySql.Data.MySqlClient
 			if (str.Length > 0)
 				str.Remove( str.Length-1, 1 );
 
-			return str.ToString();
+			return str.ToString();*/
+		}
+
+
+		private string RemovePassword(string connStr)
+		{
+			return RemoveKeys(connStr, new string[2] { "password", "pwd" });
 		}
 
 		/// <summary>

@@ -46,7 +46,7 @@ namespace MySql.Data.Common
 
 		public void SetConnectionString(string value)
 		{
-			Hashtable ht = Parse( value );			
+			Hashtable ht = Parse(value);			
 			connectString = value;
 			keyValues = ht;
 		}
@@ -69,6 +69,22 @@ namespace MySql.Data.Common
 			if (val.Equals(true) || val.Equals("true") || val.Equals("yes") || val.Equals(1))
 				return true;
 			return false;
+		}
+
+		protected string RemoveKeys(string value, string[] keys)
+		{
+			System.Text.StringBuilder sb = new System.Text.StringBuilder();
+			string[] pairs = Utility.ContextSplit(value, ";", "\"'");
+			foreach (string keyvalue in pairs)
+			{
+				string test = keyvalue.Trim().ToLower();
+				if (test.StartsWith("pwd") || test.StartsWith("password"))
+					continue;
+				sb.Append(keyvalue);
+				sb.Append(";");
+			}
+			sb.Remove(sb.Length-1, 1);  // remove the trailing ;
+			return sb.ToString();
 		}
 
 		protected virtual bool ConnectionParameterParsed(Hashtable hash, string key, string value)

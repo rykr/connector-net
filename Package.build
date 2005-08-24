@@ -22,8 +22,8 @@
 	</fileset>
 
 	<!-- first remove all previous packages -->
-<!--	<delete dir="packages" failonerror="false"/>
-	<mkdir dir="packages"/>	-->
+	<delete dir="packages" failonerror="false"/>
+	<mkdir dir="packages"/>
 
 
 
@@ -115,7 +115,7 @@
     </target>
     
     <!-- verification targets -->
-	<target name="VerifyAll">
+	<target name="VerifyAll" depends="all">
 		<property name="licenseFile" value="gpl-banner.txt"/>
 		<property name="package" value="mysql-connector-net-${ver}"/>
 		<call target="VerifyPackage"/>

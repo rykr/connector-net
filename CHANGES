@@ -1,3 +1,5 @@
+8-24-05 - Version 1.0.4  
+
 	Bugs fixed or addressed
 	-------------------------
 	Bug #8667  	OUT parameters are not being valued [fixed]
@@ -40,6 +42,9 @@
     Bug #12245  using Prepare() on an insert command causes null parameters to convert to "0"	
 	Bug #12646  Parameters are defaulted to Decimal [added a new test case]
 	Bug #12628 	off by one on random selection of multiple hosts/ip addresses [fixed]
+	Bug #12551 	Error at the ConnectionString - Property [fixed]
+	Bug #8724 	NullReferenceException in Designer [fixed]
+	Bug #12771 	Connector/Net can't connect to MySQL 4.1.14-nt [fixed]
 
 	Other changes
 	-------------
