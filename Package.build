@@ -21,6 +21,10 @@
 		<include name="EXCEPTIONS"/>
 	</fileset>
 
+	<fileset id="SourceCommercial">
+		<include name="MySqlEULA.txt"/>
+	</fileset>
+
 	<!-- first remove all previous packages -->
 	<delete dir="packages" failonerror="false"/>
 	<mkdir dir="packages"/>
@@ -57,9 +61,8 @@
 		<mkdir dir="staging"/>
 		
 		<copy todir="staging"><fileset refid="BaseSource"/></copy>
-		<if test="${IsGPL}">
-			<copy todir="staging"><fileset refid="SourceGPL"/></copy>
-		</if>
+		<copy if="${IsGPL}" todir="staging"><fileset refid="SourceGPL"/></copy>
+		<copy unless="${IsGPL}" todir="staging"><fileset refid="SourceCommercial"/></copy>
 		
 		<copy todir="staging">
 			<fileset>
