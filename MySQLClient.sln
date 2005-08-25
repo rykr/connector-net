@@ -8,10 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySql.Data.Tests", "TestSui
 		{5EAEFBC4-8389-4120-BAB3-9B27174F6F6F} = {5EAEFBC4-8389-4120-BAB3-9B27174F6F6F}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dummy2", "c:\Dummy2\Dummy2.csproj", "{D3A251D7-83F1-433E-9EC9-1C514D02C08E}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -26,10 +22,6 @@ Global
 		{92CB29DF-61DE-4277-8DC6-D3587C7311EE}.Debug.Build.0 = Debug|.NET
 		{92CB29DF-61DE-4277-8DC6-D3587C7311EE}.Release.ActiveCfg = Release|.NET
 		{92CB29DF-61DE-4277-8DC6-D3587C7311EE}.Release.Build.0 = Release|.NET
-		{D3A251D7-83F1-433E-9EC9-1C514D02C08E}.Debug.ActiveCfg = Debug|.NET
-		{D3A251D7-83F1-433E-9EC9-1C514D02C08E}.Debug.Build.0 = Debug|.NET
-		{D3A251D7-83F1-433E-9EC9-1C514D02C08E}.Release.ActiveCfg = Release|.NET
-		{D3A251D7-83F1-433E-9EC9-1C514D02C08E}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
