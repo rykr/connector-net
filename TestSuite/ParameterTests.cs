@@ -171,7 +171,7 @@ namespace MySql.Data.MySqlClient.Tests
 			cmd.ExecuteNonQuery();
 		}
 
-		[Test()]
+		[Test]
 		public void NestedQuoting() 
 		{
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, name) VALUES(1, 'this is ?\"my value\"')", conn);
@@ -179,7 +179,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( 1, count );
 		}
 
-		[Test()]
+		[Test]
 		public void SetDbType() 
 		{
 			try 
@@ -188,7 +188,14 @@ namespace MySql.Data.MySqlClient.Tests
 				IDbCommand cmd = conn.CreateCommand();
 				IDbDataParameter prm = cmd.CreateParameter();
 				prm.DbType = DbType.Int32;
-				Assert.AreEqual( DbType.Int32, prm.DbType );
+				Assert.AreEqual(DbType.Int32, prm.DbType);
+
+				MySqlParameter p = new MySqlParameter("name", DbType.Int32);
+				Assert.AreEqual(DbType.Int32, p.DbType);
+				Assert.AreEqual(MySqlDbType.Int32, p.MySqlDbType);
+				p.Value = (object)3;
+				Assert.AreEqual(DbType.Int32, p.DbType);
+				Assert.AreEqual(MySqlDbType.Int32, p.MySqlDbType);
 			}
 			catch (Exception ex) 
 			{
@@ -196,7 +203,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void UseOldSyntax() 
 		{
 			string connStr = conn.ConnectionString + ";old syntax=yes;pooling=false";
