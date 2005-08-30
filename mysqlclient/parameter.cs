@@ -77,7 +77,7 @@ namespace MySql.Data.MySqlClient
 		/// <param name="dbType">One of the <see cref="MySqlDbType"/> values. </param>
 		public MySqlParameter( string parameterName, MySqlDbType dbType) : this (parameterName, null)
 		{
-			SetMySqlDbType( dbType );
+			MySqlDbType = dbType;
 		}
 
 		/// <summary>
