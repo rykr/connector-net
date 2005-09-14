@@ -161,7 +161,7 @@ namespace MySql.Data.MySqlClient.Tests
 				MySqlCommand cmd = new MySqlCommand("spTest", conn);
 				cmd.CommandType = CommandType.StoredProcedure;
 				cmd.Parameters.Add( "?p2", 1 );
-				int rowsAffected = cmd.ExecuteNonQuery();
+				cmd.ExecuteNonQuery();
 				Assert.Fail("Should have thrown an exception");
 			}
 			catch (MySqlException) 

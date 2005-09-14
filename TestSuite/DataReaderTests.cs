@@ -414,7 +414,7 @@ namespace MySql.Data.MySqlClient.Tests
 				reader = cmd.ExecuteReader();
 				while (reader.Read()) 
 				{
-					string s = reader.GetString(0);
+					reader.GetString(0);
 				}
 			}
 			catch (Exception ex) 
@@ -443,8 +443,9 @@ namespace MySql.Data.MySqlClient.Tests
 				Assert.IsTrue( reader.Read() );
 				Assert.IsFalse( reader.IsDBNull(0));
 				int i = reader.GetInt32(0);
-				string s = reader.GetString( 1 );
-				Assert.AreEqual( "test1", s );
+				string s = reader.GetString(1);
+				Assert.AreEqual(1, i);
+				Assert.AreEqual("test1", s);
 
 				// this next line should throw an exception
 				i = reader.GetInt32( 0 );
@@ -496,7 +497,7 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlDataReader reader = cmd.ExecuteReader();
 			try 
 			{
-				object o = reader.GetInt32(0);
+				reader.GetInt32(0);
 			}
 			catch (Exception) 
 			{

@@ -281,6 +281,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			MySqlConnection c = new MySqlConnection();
 			MySqlConnection clone = (MySqlConnection) ((ICloneable)c).Clone();
+			clone.ToString();
 		}
 	}
 }

@@ -47,6 +47,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 
@@ -74,6 +75,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da, true);
+			cb.ToString();  // keep the compiler happy
 			DataTable dt = new DataTable();
 			da.Fill( dt );
 			Assert.AreEqual( 1, dt.Rows.Count );
@@ -96,6 +98,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();  // keep the compiler happy
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 			Assert.AreEqual(1, dt.Rows.Count);
@@ -105,7 +108,7 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				dt.Rows[0]["name"] = "Test3";
-				int cnt = da.Update( dt );
+				da.Update( dt );
 				Assert.Fail("This should not work");
 			}
 			catch (DBConcurrencyException) 
@@ -130,6 +133,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT id, name, now() as ServerTime FROM test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();  // keep the compiler happy
 			DataSet ds = new DataSet();
 			da.Fill(ds);
 
@@ -155,6 +159,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT id, name FROM test.test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();  // keep the compiler happy
 			DataSet ds = new DataSet();
 			da.Fill(ds);
 
@@ -178,6 +183,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();  // keep the compiler happy
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 			DataRow row = dt.NewRow();

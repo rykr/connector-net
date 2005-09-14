@@ -161,6 +161,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			IDbCommand cmd = new MySqlCommand();
 			IDbCommand cmd2 = ((ICloneable)cmd).Clone() as IDbCommand;
+			cmd2.ToString();
 		}
 
 		[Test]

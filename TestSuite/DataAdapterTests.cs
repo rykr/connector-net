@@ -92,6 +92,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();  // keep the compiler happy
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 
@@ -140,6 +141,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();  // keep the compiler happy
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 
@@ -191,6 +193,7 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 				MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+				cb.ToString();  // keep the compiler happy
 
 				DataTable dt = new DataTable();
 				da.Fill(dt);
@@ -221,6 +224,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();  // keep the compiler happy
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 
@@ -299,6 +303,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();  // keep the compiler happy
 			DataTable dt = new DataTable();
 			da.Fill( dt );
 
@@ -322,9 +327,9 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("INSERT INTO Test VALUES (3, 'Test3')");
 			execSQL("INSERT INTO Test VALUES (4, 'Test4')");
 
-			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
-			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
-			DataTable dt = new DataTable();
+//			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
+//			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+//			DataTable dt = new DataTable();
 		}
 
 		[Test]
@@ -359,6 +364,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();  // keep the compiler happy
 			DataSet ds = new DataSet();
 			da.Fill(ds);
 			Assert.AreEqual(1, ds.Tables[0].Rows[0]["id"]);

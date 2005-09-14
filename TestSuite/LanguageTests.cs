@@ -331,7 +331,7 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				MySqlCommand cmd = new MySqlCommand("SELECT test FROM test_tbl", conn);
-				object o = cmd.ExecuteScalar();
+				cmd.ExecuteScalar();
 			}
 			catch (Exception ex) 
 			{

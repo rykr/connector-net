@@ -393,8 +393,8 @@ namespace MySql.Data.MySqlClient.Tests
 				reader = cmd.ExecuteReader();
 				while (reader.Read())
 				{
-					long field1 = reader.GetInt64(0);
-					int field2 = reader.GetInt32(1); // <--- aint... this succeeds
+					reader.GetInt64(0);
+					reader.GetInt32(1); // <--- aint... this succeeds
 				}
 			}
 			catch (Exception ex) 
@@ -412,8 +412,8 @@ namespace MySql.Data.MySqlClient.Tests
 				reader = cmd.ExecuteReader();
 				while (reader.Read())
 				{
-					long field1 = reader.GetInt64(0);
-					long field2 = reader.GetInt64(1); // <--- max(aint)... this fails
+					reader.GetInt64(0);
+					reader.GetInt64(1); // <--- max(aint)... this fails
 				}
 			}
 			catch (Exception ex) 
@@ -472,6 +472,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();  // keep the compiler happy
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 			DataRow row = dt.NewRow();

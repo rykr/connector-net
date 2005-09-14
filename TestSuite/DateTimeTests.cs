@@ -94,12 +94,12 @@ namespace MySql.Data.MySqlClient.Tests
 				Assert.IsTrue(reader.Read());
 
 				MySqlDateTime testDate = reader.GetMySqlDateTime(2);
-				Assert.IsFalse( reader.GetMySqlDateTime(2).IsValidDateTime, "IsZero is false" );
+				Assert.IsFalse(testDate.IsValidDateTime, "IsZero is false" );
 
 				try 
 				{
-					DateTime dt = (DateTime)reader.GetValue(2);
-					Assert.Fail( "This should not work" );
+					reader.GetValue(2);
+					Assert.Fail("This should not work");
 				}
 				catch (MySqlConversionException) { }
 
@@ -171,8 +171,8 @@ namespace MySql.Data.MySqlClient.Tests
 
 				try 
 				{
-					DateTime dt = reader.GetDateTime(1);
-					Assert.Fail( "This should not succeed" );
+					reader.GetDateTime(1);
+					Assert.Fail("This should not succeed");
 				}
 				catch (MySqlConversionException) {}
 
@@ -198,6 +198,7 @@ namespace MySql.Data.MySqlClient.Tests
 				c.Open();
 				MySqlDataAdapter da = new MySqlDataAdapter("SELECT id, dt FROM Test", c);
 				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+				cb.ToString();  // keep the compiler happy
 
 				DataTable dt = new DataTable();
 				dt.Columns.Add(new DataColumn("id", typeof(int)));
@@ -273,7 +274,7 @@ namespace MySql.Data.MySqlClient.Tests
 				MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", conn);
 				reader = cmd.ExecuteReader();
 				reader.Read();
-				DateTime dt = reader.GetDateTime(2);
+				reader.GetDateTime(2);
 				Assert.Fail("Should throw an exception");
 			}
 			catch (MySqlConversionException) 

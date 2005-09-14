@@ -86,7 +86,6 @@ namespace MySql.Data.MySqlClient.Tests
 
 			for (int i=0; i < connArray.Length; i++)
 			{
-				int id = connArray[i].ServerThread;
 				KillConnection(connArray[i]);
 				connArray[i].Close();
 			}
