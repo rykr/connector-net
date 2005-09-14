@@ -167,5 +167,27 @@ namespace MySql.Data.MySqlClient.Tests
 			conn.ChangeDatabase("test");
 		}
 
+		/// <summary>
+		/// Bug #13036  	Returns error when field names contain any of the following chars %<>()/ etc
+		/// </summary>
+		[Test]
+		public void SpecialCharactersInFieldNames()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (`col%1` int PRIMARY KEY, `col()2` int, `col<>3` int, `col/4` int)");
+
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			DataTable dt = new DataTable();
+			da.Fill(dt);
+			DataRow row = dt.NewRow();
+			row[0] = 1;
+			row[1] = 2;
+			row[2] = 3;
+			row[3] = 4;
+			dt.Rows.Add(row);
+			da.Update(dt);
+		}
+
 	}
 }
