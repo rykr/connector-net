@@ -142,8 +142,8 @@ namespace MySql.Data.MySqlClient
 		{
 			base.Open();
 
-			Stream stream = null;
 			// connect to one of our specified hosts
+			Stream stream;
 			try 
 			{
 				if (Settings.Protocol == ConnectionProtocol.SharedMemory)
@@ -406,7 +406,7 @@ namespace MySql.Data.MySqlClient
 				hasWarnings = reader.ReadInteger(2) != 0;
 				if (reader.HasMoreData) 
 				{
-					string serverMessage = reader.ReadLenString();
+					reader.ReadLenString();  //TODO: server message
 				}
 			}
 			return 0;

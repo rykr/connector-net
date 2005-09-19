@@ -23,6 +23,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using MySql.Data.MySqlClient;
 
 namespace MySql.Data.Common
@@ -32,7 +33,6 @@ namespace MySql.Data.Common
 	/// </summary>
 	internal sealed class SocketStream : Stream, IDisposable
 	{
-		private const uint FIONBIO = 0x8004667e;
 		private Socket	socket;
 		private bool	canRead;
 		private bool	canWrite;
@@ -161,35 +161,41 @@ namespace MySql.Data.Common
 		#endregion
 
 
-		private bool IsFatalSocketError(int socketErrorCode)
+		// This routine is internal to the Mono runtime so we can't change
+		// the name
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		private extern static void Connect_internal(IntPtr sock,
+			SocketAddress sa, out int error);
+
+		private static void Connect_internal_NET(IntPtr sock,
+			SocketAddress sa, out int error)
 		{
-			switch (socketErrorCode)
-			{
-				case 10053: 
-				case 10054: return true;
-				default: return false;
-			}
+			byte[] buff = new byte[sa.Size];
+			for (int i=0; i<sa.Size; i++)
+				buff[i] = sa[i];
+
+			int result = NativeMethods.connect(sock, buff, sa.Size);
+			if (result != 0)
+				error = NativeMethods.WSAGetLastError();
+			else
+				error = 0;
 		}
 
 		public bool Connect(EndPoint remoteEP, int timeout)
 		{
+			int err;
 			// set the socket to non blocking
-			UInt32 arg = 1;
-			int result = NativeMethods.ioctlsocket(socket.Handle, FIONBIO, ref arg);
-			int wsaerror = NativeMethods.WSAGetLastError();
-
-			if (result != 0)
-				throw new MySqlException(Resources.GetString("ErrorCreatingSocket"));
+			socket.Blocking = false;
 
 			// then we star the connect
 			SocketAddress addr = remoteEP.Serialize();
-			byte[] buff = new byte[addr.Size];
-			for (int i=0; i<addr.Size; i++)
-				buff[i] = addr[i];
 
-			result = NativeMethods.connect(socket.Handle, buff, addr.Size);
-			wsaerror = NativeMethods.WSAGetLastError();
-			if (wsaerror != 10035)
+			if (Platform.IsWindows())
+				Connect_internal_NET(socket.Handle, addr, out err);
+			else
+				Connect_internal(socket.Handle, addr, out err);
+
+			if (err != 10035 && err != 10036)
 				throw new MySqlException(Resources.GetString("ErrorCreatingSocket"));
 
 			// next we wait for our connect timeout or until the socket is connected
@@ -200,13 +206,11 @@ namespace MySql.Data.Common
 
 			Socket.Select(null, write, error, timeout*1000*1000);
 
-			if (write.Count == 0) return false;
+			if (write.Count == 0) 
+				return false;
 
 			// set socket back to blocking mode
-			arg = 0;
-			result = NativeMethods.ioctlsocket(socket.Handle, FIONBIO, ref arg);
-			if (result != 0)
-				throw new  MySqlException(Resources.GetString("ErrorCreatingSocket"));
+			socket.Blocking = true;
 			return true;
 		}
 	}

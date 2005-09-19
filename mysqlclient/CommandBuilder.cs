@@ -128,7 +128,6 @@ namespace MySql.Data.MySqlClient
 		public static void DeriveParameters(MySqlCommand command)
 		{
 			// this is just to make FxCop happy until we support this routine
-			string text = command.CommandText;
 			throw new MySqlException("DeriveParameters is not supported (due to MySql not supporting SP)");
 		}
 
@@ -447,8 +446,6 @@ namespace MySql.Data.MySqlClient
 
 		private static bool IncludedInWhereClause(DataRow schemaRow)
 		{
-			// just to shut fxcop up
-			bool hasErrors = schemaRow.HasErrors;
 			//			if ((bool) schemaRow ["IsLong"])
 			//				return false;
 			return true;

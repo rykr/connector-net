@@ -94,7 +94,7 @@ namespace MySql.Data.MySqlClient.Tests
 			c.Close();
 		}
 
-		[Test()]
+		[Test]
 		[ExpectedException(typeof(MySqlException))]
 		public void TestConnectingSocketBadDbName()
 		{
@@ -108,7 +108,7 @@ namespace MySql.Data.MySqlClient.Tests
 			c.Close();
 		}
 
-		[Test()]
+		[Test]
 		public void TestPersistSecurityInfoCachingPasswords() 
 		{
 			string host = ConfigurationSettings.AppSettings["host"];
@@ -276,12 +276,38 @@ namespace MySql.Data.MySqlClient.Tests
 		/// <summary>
 		/// Bug #10281 Clone issue with MySqlConnection 
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestConnectionClone()
 		{
 			MySqlConnection c = new MySqlConnection();
 			MySqlConnection clone = (MySqlConnection) ((ICloneable)c).Clone();
 			clone.ToString();
+		}
+
+		/// <summary>
+		/// Bug #13321  	Persist security info does not woek
+		/// </summary>
+		[Test]
+		public void PersistSecurityInfo()
+		{
+			string s = GetConnectionString(true).ToLower();
+			int start = s.IndexOf("persist security info");
+			int end = s.IndexOf(";", start);
+			string newConnStr = s.Substring(0, start);
+			newConnStr += s.Substring(end, s.Length - (end));
+			newConnStr += ";persist security info=false";
+
+			MySqlConnection conn2 = new MySqlConnection(newConnStr);
+			string p = "password";
+			if (conn2.ConnectionString.IndexOf("pwd") != -1)
+				p = "pwd";
+			else if (conn2.ConnectionString.IndexOf("passwd") != -1)
+				p = "passwd";
+
+			Assert.IsTrue(conn2.ConnectionString.IndexOf(p) != -1);
+			conn2.Open();
+			conn2.Close();
+			Assert.IsTrue(conn2.ConnectionString.IndexOf(p) == -1);
 		}
 	}
 }

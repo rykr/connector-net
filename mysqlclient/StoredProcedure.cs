@@ -93,11 +93,6 @@ namespace MySql.Data.MySqlClient
 			return null;
 		}
 
-		private string PrepareAsFunction(MySqlCommand cmd)
-		{
-			return null;
-		}
-
 		/// <summary>
 		/// Creates the proper command text for executing the given stored procedure
 		/// </summary>

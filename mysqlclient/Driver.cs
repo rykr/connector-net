@@ -143,6 +143,11 @@ namespace MySql.Data.MySqlClient
 		{
 			this.connection = connection;
 			
+			// if we have already configured this driver and we are supposed
+			// to cache server config, then exit
+			if (serverProps != null && connectionString.CacheServerConfig)
+				return;
+
 			// load server properties
 			serverProps = new Hashtable();
 			MySqlCommand cmd = new MySqlCommand("SHOW VARIABLES", connection);
