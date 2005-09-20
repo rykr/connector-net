@@ -3,8 +3,8 @@
 
 	<property name="ncover.executable" value="c:\program files\ncover\ncover.console.exe"/>
 	<property name="fxcop.executable" value="c:\program files\fxcop\fxcopcmd.exe"/>
-	<property name="nunit.executable" value="c:\program files\nunit 2.2\bin\nunit-console.exe"/>
-	<property name="nunit" value="c:\program files\nunit 2.2\bin" />
+    <property name="nunit-net" value="C:\Program Files\NUnit 2.2\bin" />
+    <property name="nunit-mono" value="c:\program files\NUnit-Mono 2.2\bin" />
 
 	<!-- filesets -->
 	<fileset id="Source">
@@ -45,13 +45,13 @@
 		<property name="outdir" value="bin/${framework}/${buildType}"/>
 		
 		<mkdir dir="${outdir}" failonerror="false"/>
-		<resgen input="mysqlclient/Strings.resx" output="${outdir}/Strings.resources"/>
+		<resgen input="mysqlclient/Strings.resx" output="mysqlclient/Strings.resources"/>
 		<csc output="${outdir}/MySql.Data.dll" target="library" 
 			define="${defines}" debug="${debug}" optimize="${opt}"
 			doc="${outdir}/MySql.Data.xml">
 			<arg value="/nowarn:0679"/>
-			<resources>
-				<include name="${outdir}/*.resources"/>
+			<resources prefix="MySql.Data.MySqlClient" dynamicprefix="true">
+				<include name="mysqlclient/Strings.resources"/>
 			</resources>
 			<references>
 				<include name="ICSharpCode.SharpZipLib.dll"/>
@@ -76,18 +76,21 @@
 
 	<!-- core managed driver target 1.0 -->	
 	<target name="net-1.0" description="1.0 .NET target">
+        <property name="nunit" value="${nunit-net}"/>
 		<property name="framework" value="net-1.0"/>
 		<call target="client"/>
 	</target>
 	
 	<!-- core managed driver target 1.1 -->
 	<target name="net-1.1" description="1.1 .NET target">
+        <property name="nunit" value="${nunit-net}"/>
 		<property name="framework" value="net-1.1"/>
 		<call target="client"/>
 	</target>
 	
 	<!-- core managed driver target mono 1.0 -->
 	<target name="mono-1.0" description="Mono 1.0 Target">
+        <property name="nunit" value="${nunit-mono}"/>
 		<property name="framework" value="mono-1.0"/>
 		<call target="client"/>
 	</target>
@@ -97,17 +100,20 @@
 	</target>
 	
 	<target name="test-net-1.1" depends="net-1.1">
+        <property name="nunit" value="${nunit-net}"/>
 		<property name="framework" value="net-1.1"/>
 		<call target="testclient"/>
 		<call target="fxcop"/>
 	</target>
 
 	<target name="test-net-1.0" depends="net-1.0">
+        <property name="nunit" value="${nunit-net}"/>
 		<property name="framework" value="net-1.0"/>
 		<call target="testclient"/>
 	</target>
 
 	<target name="test-mono-1.0" depends="mono-1.0">
+        <property name="nunit" value="${nunit-mono}"/>
 		<property name="framework" value="mono-1.0"/>
 		<call target="testclient"/>
 	</target>
@@ -164,11 +170,11 @@
 	<target name="testdb" description="Target to test a database with all possible configurations">
 		<copy file="testsuite/configs/${config}.config" tofile="bin/${framework}/${buildType}/MySql.Data.Tests.dll.config"/>
 		
-		<exec unless="${doCoverage}" program="${nunit.executable}"
+		<exec unless="${doCoverage}" program="${nunit}/nunit-console.exe"
 		      commandline="/exclude=${excludes} /xml=../../../results/nunit-${framework}-${buildType}.xml bin/${framework}/${buildType}/MySql.Data.Tests.dll"
 		      failonerror="true"/>
 		<exec if="${doCoverage}" program="${ncover.executable}"
-		      commandline="/c &quot;${nunit.executable}&quot; &quot;bin/${framework}/${buildType}/MySql.Data.Tests.dll /exclude=${excludes} /xml=../../../results/nunit-${framework}-${buildType}.xml&quot; /a MySql.Data /o results/ncover-${framework}-${config}.xml"
+		      commandline="/c &quot;${nunit}/nunit-console.exe&quot; &quot;bin/${framework}/${buildType}/MySql.Data.Tests.dll /exclude=${excludes} /xml=../../../results/nunit-${framework}-${buildType}.xml&quot; /a MySql.Data /o results/ncover-${framework}-${config}.xml"
 		      failonerror="true"/>
 	</target>
 
