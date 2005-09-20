@@ -3,6 +3,7 @@
     Bugs fixed or addressed
     -------------------------
     Bug #13036  Returns error when field names contain any of the following chars %<>()/ etc [fixed]
+    Bug #12835	1.0.5 won't install on system with 1.0.4 installed
 
     Other changes
     -------------------------

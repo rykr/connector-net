@@ -2,7 +2,7 @@
 <?define ProductVersion="1.0.6"?>
 <?define ProductName="MySQL Connector Net $(var.ProductVersion)"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
-	<Product Id="832f75d5-390b-4d00-ac52-a321ea39b98c" Name="$(var.ProductName)" Manufacturer="MySQL" Version="$(var.ProductVersion)" Language="1033">
+	<Product Id="dd2f84e8-fd94-4767-bd09-11c1df526341" Name="$(var.ProductName)" Manufacturer="MySQL" Version="$(var.ProductVersion)" Language="1033">
 
 		<Package Id="????????-????-????-????-????????????" Compressed="yes" InstallerVersion="200" Languages="1033" SummaryCodepage="1252" />
 		
