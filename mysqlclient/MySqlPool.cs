@@ -93,30 +93,30 @@ namespace MySql.Data.MySqlClient
 				for (int i=idlePool.Count-1; i >=0; i--)
 				{
 					driver = (idlePool[i] as Driver);
-					if ( driver.Ping() )
+					if (!settings.ResetPooledConnections)
+						break;
+
+					if (driver.Ping())
 					{
-						lock (inUsePool) 
-						{
-							inUsePool.Add( driver );
-						}
-						idlePool.RemoveAt( i );
+						driver.Reset();
 						break;
 					}
-					else 
+
+					driver.SafeClose();
+					idlePool.RemoveAt(i);
+					driver = null;
+				}
+				if (driver != null)
+				{
+					idlePool.Remove(driver);
+					lock (inUsePool) 
 					{
-						driver.SafeClose();
-						idlePool.RemoveAt(i);
-						driver = null;
+						inUsePool.Add(driver);
 					}
 				}
 			}
 
-			if ( driver != null ) 
-			{
-				driver.Settings = settings;
-				driver.Reset();
-			}
-			else if ((idlePool.Count+inUsePool.Count) < maxSize)
+			if (driver == null && (idlePool.Count+inUsePool.Count) < maxSize)
 			{
 				// if we couldn't get a pooled connection and there is still room
 				// make a new one

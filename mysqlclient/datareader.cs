@@ -661,13 +661,11 @@ namespace MySql.Data.MySqlClient
 				}
 				readCount = 0;
 			}
-			catch (MySqlException ex) 
+			catch (Exception)
 			{
-				if (ex.IsFatal)
-					connection.Terminate();
+				connection.Terminate();
 				throw;
 			}
-
 			schemaTable = null;
 
 			// When executing query statements, the result byte that is returned

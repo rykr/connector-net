@@ -5,6 +5,8 @@
     Bug #13036  Returns error when field names contain any of the following chars %<>()/ etc [fixed]
     Bug #12835	1.0.5 won't install on system with 1.0.4 installed [fixed]
     Bug #12978 	Fatal Error C# Compilation [fixed]
+    Bug #13276 	Exception on serialize after inserting null value [fixed]
+    Bug #13345 	Connecting from mono 1.1.8 to MySQL 5.0 using MySQL Connector/Net 1.0.5
     
     Other changes
     -------------------------

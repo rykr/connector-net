@@ -161,26 +161,6 @@ namespace MySql.Data.Common
 		#endregion
 
 
-		// This routine is internal to the Mono runtime so we can't change
-		// the name
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static void Connect_internal(IntPtr sock,
-			SocketAddress sa, out int error);
-
-		private static void Connect_internal_NET(IntPtr sock,
-			SocketAddress sa, out int error)
-		{
-			byte[] buff = new byte[sa.Size];
-			for (int i=0; i<sa.Size; i++)
-				buff[i] = sa[i];
-
-			int result = NativeMethods.connect(sock, buff, sa.Size);
-			if (result != 0)
-				error = NativeMethods.WSAGetLastError();
-			else
-				error = 0;
-		}
-
 		public bool Connect(EndPoint remoteEP, int timeout)
 		{
 			int err;
@@ -188,15 +168,15 @@ namespace MySql.Data.Common
 			socket.Blocking = false;
 
 			// then we star the connect
-			SocketAddress addr = remoteEP.Serialize();
-
-			if (Platform.IsWindows())
-				Connect_internal_NET(socket.Handle, addr, out err);
-			else
-				Connect_internal(socket.Handle, addr, out err);
-
-			if (err != 10035 && err != 10036)
-				throw new MySqlException(Resources.GetString("ErrorCreatingSocket"));
+			try 
+			{
+				socket.Connect(remoteEP);
+			}
+			catch (SocketException se)
+			{
+				if (se.ErrorCode != 10035 && se.ErrorCode != 10036)
+					throw new MySqlException(Resources.GetString("ErrorCreatingSocket"), se);
+			}
 
 			// next we wait for our connect timeout or until the socket is connected
 			ArrayList write = new ArrayList();

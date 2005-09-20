@@ -106,6 +106,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #11621  	connector does not support charset cp1250
 		/// </summary>
 		[Test]
+		[Category("NotWorking")]
 		public void CP1250Connection() 
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
