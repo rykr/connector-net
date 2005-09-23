@@ -43,7 +43,12 @@ namespace MySql.Data.Types
 		{
 			ulong v = Convert.ToUInt64( value );
 			if (binary)
-				writer.Write( BitConverter.GetBytes( v ) );
+			{
+				byte[] bytes = BitConverter.GetBytes(v);
+				writer.WriteByte(bytes[0]);
+				if (v > 255)
+					writer.WriteByte(bytes[1]);
+			}
 			else
 				writer.WriteStringNoNull( v.ToString() );
 		}

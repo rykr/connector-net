@@ -538,7 +538,7 @@ namespace MySql.Data.MySqlClient.Tests
 			cmd.Parameters.Add(new MySqlParameter("?b1", MySqlDbType.Bit));
 			cmd.Parameters.Add(new MySqlParameter("?b2", MySqlDbType.Bit));
 			cmd.Parameters.Add(new MySqlParameter("?b3", MySqlDbType.Bit));
-			cmd.Prepare();
+			//TODO: cmd.Prepare();
 			cmd.Parameters[0].Value = 1;
 			cmd.Parameters[1].Value = 15;
 			cmd.Parameters[2].Value = 500;

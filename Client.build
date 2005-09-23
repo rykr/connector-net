@@ -3,7 +3,7 @@
 
 	<property name="ncover.executable" value="c:\program files\ncover\ncover.console.exe"/>
 	<property name="fxcop.executable" value="c:\program files\fxcop\fxcopcmd.exe"/>
-    <property name="nunit-net" value="C:\Program Files\NUnit 2.2\bin" />
+    <property name="nunit-net" value="C:\Program Files\NUnit 2.2.2\bin" />
     <property name="nunit-mono" value="c:\program files\NUnit-Mono 2.2\bin" />
 
 	<!-- filesets -->
@@ -35,7 +35,7 @@
 	</if>
 
 	<!-- builds the client on all supported frameworks -->
-	<target name="allframeworks" depends="net-1.0, net-1.1, mono-1.0">
+	<target name="allframeworks" depends="net-1.0, net-1.1, net-2.0, mono-1.0">
 		<call target="Docs"/>
 	</target>
 
@@ -87,6 +87,13 @@
 		<property name="framework" value="net-1.1"/>
 		<call target="client"/>
 	</target>
+
+	<!-- core managed driver target 2.0 -->
+	<target name="net-2.0" description="2.0 .NET target">
+        <property name="nunit" value="${nunit-net}"/>
+		<property name="framework" value="net-2.0"/>
+		<call target="client"/>
+	</target>
 	
 	<!-- core managed driver target mono 1.0 -->
 	<target name="mono-1.0" description="Mono 1.0 Target">
@@ -96,7 +103,7 @@
 	</target>
 
 	<!-- testing targets -->
-	<target name="alltests" depends="test-net-1.1, test-net-1.0, test-mono-1.0">
+	<target name="alltests" depends="test-net-2.0, test-net-1.1, test-net-1.0">
 	</target>
 	
 	<target name="test-net-1.1" depends="net-1.1">
@@ -104,6 +111,12 @@
 		<property name="framework" value="net-1.1"/>
 		<call target="testclient"/>
 		<call target="fxcop"/>
+	</target>
+
+	<target name="test-net-2.0" depends="net-2.0">
+        <property name="nunit" value="${nunit-net}"/>
+		<property name="framework" value="net-2.0"/>
+		<call target="testclient"/>
 	</target>
 
 	<target name="test-net-1.0" depends="net-1.0">
@@ -159,7 +172,7 @@
 		<servicecontroller action="Stop" service="MySql4.1"/>
 		<servicecontroller action="Start" service="MySql5.0"/>
 		<property name="excludes" value="NotWorking"/>
-		<property name="doCoverage" value="true"/>
+		<!--<property name="doCoverage" value="true"/>-->
 		<call target="test_all_configs"/>
 	</target>
 
