@@ -1,4 +1,4 @@
- - Version 1.0.6
+9-27-05 - Version 1.0.6
  
     Bugs fixed or addressed
     -------------------------
@@ -12,6 +12,7 @@
     -------------------------
     Changed SocketStream and StreamCreator to be compatible with Mono
     Added options to not reset and reconfigure connections pulled from the pool
+    Connections pulled from the pool that are not reset are also not pinged
 
 8-24-05 - Version 1.0.5
 
