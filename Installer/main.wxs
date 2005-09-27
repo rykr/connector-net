@@ -25,13 +25,13 @@
 				<Directory Id="Bin11" Name="NET11" LongName=".NET 1.1">
 					<Component Id="Net11" Guid="77e80230-2238-49be-a4ed-49b5213c9a3a">
 						<File Id="CoreBin11" Name="MD11" LongName="MySql.Data.dll" src="..\bin\net-1.1\$(var.build)\mysql.data.dll" DiskId="1"  />
-						<Registry Id="vs71registry" Root="HKLM" Key="Software\Microsoft\VisualStudio\7.1\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)" Type="string" KeyPath="yes" Value="[TARGETDIR]\bin\.NET 1.1\" />
+						<Registry Id="vs71registry" Root="HKLM" Key="Software\Microsoft\VisualStudio\7.1\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)" Type="string" KeyPath="yes" Value="[TARGETDIR]bin\.NET 1.1\" />
 					</Component>
 				</Directory>
 				<Directory Id="Bin10" Name="NET10" LongName=".NET 1.0">
 					<Component Id="Net10" Guid="b18df028-1dfb-4577-95f6-2c504df41040">
 						<File Id="CoreBin10" Name="MD10" LongName="MySql.Data.dll" src="..\bin\net-1.0\$(var.build)\mysql.data.dll" DiskId="1" />
-						<Registry Id="vs70registry" Root="HKLM" Key="Software\Microsoft\VisualStudio\7.0\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)" Type="string" KeyPath="yes" Value="[TARGETDIR]\bin\.NET 1.0\" />
+						<Registry Id="vs70registry" Root="HKLM" Key="Software\Microsoft\VisualStudio\7.0\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)" Type="string" KeyPath="yes" Value="[TARGETDIR]bin\.NET 1.0\" />
 					</Component>
 				</Directory>
 				<Directory Id="Mono10" Name="MONO10" LongName="Mono 1.0">
