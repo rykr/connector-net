@@ -123,6 +123,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 		/// <summary>
 		/// Bug #8574 - MySqlCommandBuilder unable to support sub-queries
+		/// Bug #11947 - MySQLCommandBuilder mishandling CONCAT() aliased column
 		/// </summary>
 		[Test]
 		public void UsingFunctions() 
@@ -134,14 +135,21 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT id, name, now() as ServerTime FROM test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
 			cb.ToString();  // keep the compiler happy
-			DataSet ds = new DataSet();
-			da.Fill(ds);
+			DataTable dt = new DataTable();
+			da.Fill(dt);
 
-			ds.Tables[0].Rows[0]["id"] = 4;
-			DataSet changes = ds.GetChanges();
-			da.Update(changes);
-			ds.Merge( changes );
-			ds.AcceptChanges();
+			dt.Rows[0]["id"] = 4;
+			da.Update(dt);
+			
+			da.SelectCommand.CommandText = "SELECT id, name, CONCAT(name, '  boo') as newname from test";
+			dt.Clear();
+			da.Fill(dt);
+			dt.Rows[0]["id"] = 5;
+			da.Update(dt);
+
+			dt.Clear();
+			da.Fill(dt);
+			Assert.AreEqual(5, dt.Rows[0]["id"]);
 		}
 
 		/// <summary>

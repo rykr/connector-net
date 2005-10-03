@@ -5,6 +5,7 @@ x-xx-05 - Version 1.0.7
     Bug #13658 connection.state does not update on Ping() [ fixed ]
 	Bug #13590 ExecuteScalar returns only Int64 regardless of actual SQL type [added test case]
 	Bug #13662 Prepare() truncates accented character input [already fixed, added test]
+	Bug #11947 MySQLCommandBuilder mishandling CONCAT() aliased column [updated test case]
 	
 	Other changes
 	-------------------------    
