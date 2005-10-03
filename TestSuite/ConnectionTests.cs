@@ -309,5 +309,18 @@ namespace MySql.Data.MySqlClient.Tests
 			conn2.Close();
 			Assert.IsTrue(conn2.ConnectionString.IndexOf(p) == -1);
 		}
+
+		/// <summary>
+		/// Bug #13658  	connection.state does not update on Ping()
+		/// </summary>
+		[Test]
+		public void PingUpdatesState()
+		{
+			MySqlConnection conn2 = new MySqlConnection(GetConnectionString(true));
+			conn2.Open();
+			KillConnection(conn2);
+			Assert.IsFalse(conn2.Ping());
+			Assert.IsTrue(conn2.State == ConnectionState.Closed);
+		}
 	}
 }

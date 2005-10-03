@@ -452,7 +452,25 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 				c.Close();
 			}
-				
 		}
+
+		/// <summary>
+		/// Bug #13590  	ExecuteScalar returns only Int64 regardless of actual SQL type
+		/// </summary>
+		[Category("NotWorking")]
+		[Test]
+		public void TestSelectingInts()
+		{
+			execSQL("CREATE PROCEDURE spTest() BEGIN DECLARE myVar INT; " +
+				"SET MyVar := 1; SELECT CAST(myVar as INT); END");
+			
+			MySqlCommand cmd = new MySqlCommand("spTest", conn);
+			cmd.CommandType = CommandType.StoredProcedure;
+			object val = cmd.ExecuteScalar();
+			Assert.AreEqual(1, val, "Checking value");
+			Assert.IsTrue(val is System.Int32, "Checking type");
+		}
+
+
 	}
 }
