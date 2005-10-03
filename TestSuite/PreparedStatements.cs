@@ -389,5 +389,44 @@ namespace MySql.Data.MySqlClient.Tests
 				if (reader != null) reader.Close();
 			}
 		}
+
+		/// <summary>
+		/// Bug #13662  	Prepare() truncates accented character input
+		/// </summary>
+		[Test]
+		public void InsertAccentedCharacters()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (id INT UNSIGNED NOT NULL PRIMARY KEY " +
+				"AUTO_INCREMENT, input TEXT NOT NULL) CHARACTER SET UTF8");
+				// COLLATE " +
+				//"utf8_bin");
+			MySqlConnection conn2 = new MySqlConnection(GetConnectionString(true) + 
+				";charset=utf8");
+			try 
+			{
+				conn2.Open();
+
+				MySqlCommand cmd = new MySqlCommand("INSERT INTO test(input) " +
+					"VALUES (?input) ON DUPLICATE KEY UPDATE " +
+					"id=LAST_INSERT_ID(id)", conn2);
+				cmd.Parameters.Add(new MySqlParameter("?input", ""));
+				cmd.Prepare();
+				cmd.Parameters[0].Value = "irache martínez@yahoo.es aol.com";
+				cmd.ExecuteNonQuery();
+
+				MySqlCommand cmd2 = new MySqlCommand("SELECT input FROM test", conn2);
+				Assert.AreEqual("irache martínez@yahoo.es aol.com",
+					cmd2.ExecuteScalar());
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally 
+			{
+				conn2.Close();
+			}
+		}
 	}
 }
