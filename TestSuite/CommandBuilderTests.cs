@@ -150,6 +150,10 @@ namespace MySql.Data.MySqlClient.Tests
 			dt.Clear();
 			da.Fill(dt);
 			Assert.AreEqual(5, dt.Rows[0]["id"]);
+
+			da.SelectCommand.CommandText = "SELECT *, now() as stime FROM test WHERE id<4";
+			cb = new MySqlCommandBuilder(da, true);
+			da.InsertCommand = cb.GetInsertCommand();
 		}
 
 		/// <summary>

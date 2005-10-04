@@ -428,5 +428,38 @@ namespace MySql.Data.MySqlClient.Tests
 				conn2.Close();
 			}
 		}
+
+		/// <summary>
+		/// Bug #13541  	Prepare breaks if a parameter is used more than once
+		/// </summary>
+		[Test]
+		public void UsingParametersTwice()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE IF NOT EXISTS test (input TEXT NOT NULL, " +
+				"UNIQUE (input(100)), state INT NOT NULL, score INT NOT NULL)");
+
+			MySqlCommand cmd = new MySqlCommand("Insert into test (input, " +
+				"state, score) VALUES (?input, ?st, ?sc) ON DUPLICATE KEY " +
+				"UPDATE state=state|?st;", conn);
+			cmd.Parameters.Add (new MySqlParameter("?input", ""));
+			cmd.Parameters.Add (new MySqlParameter("?st", Convert.ToInt32(0)));
+			cmd.Parameters.Add (new MySqlParameter("?sc", Convert.ToInt32 (0)));
+			cmd.Prepare();
+
+			cmd.Parameters["input"].Value = "test";
+			cmd.Parameters["st"].Value = 1;
+			cmd.Parameters["sc"].Value = 42;
+			int result = cmd.ExecuteNonQuery();
+			Assert.AreEqual(1, result);
+
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+			DataTable dt = new DataTable();
+			da.Fill(dt);
+			Assert.AreEqual(1, dt.Rows.Count);
+			Assert.AreEqual("test", dt.Rows[0]["input"]);
+			Assert.AreEqual(1, dt.Rows[0]["state"]);
+			Assert.AreEqual(42, dt.Rows[0]["score"]);
+		}
 	}
 }
