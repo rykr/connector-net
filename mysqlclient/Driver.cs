@@ -96,6 +96,11 @@ namespace MySql.Data.MySqlClient
 
 		#endregion
 
+		public string Property(string key)
+		{
+			return (string)serverProps[key];
+		}
+
 		public bool IsTooOld() 
 		{
 			TimeSpan ts = DateTime.Now.Subtract( creationTime );

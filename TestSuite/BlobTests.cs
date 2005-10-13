@@ -54,6 +54,12 @@ namespace MySql.Data.MySqlClient.Tests
 			int lenIn = 400000;
 			byte[] dataIn = Utils.CreateBlob(lenIn);
 
+
+			MySqlCommand cmd2 = new MySqlCommand("SELECT * FROM test", conn);
+			MySqlDataReader reader2 = cmd2.ExecuteReader();
+			reader2.Read();
+			reader2.Close();
+
 			MySqlCommand cmd = new MySqlCommand("TRUNCATE TABLE Test", conn);
 			cmd.ExecuteNonQuery();
 

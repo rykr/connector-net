@@ -120,15 +120,31 @@ namespace MySql.Data.MySqlClient
 
 		#region Public Methods
 		/// <summary>
-		/// Retrieves parameter information from the stored procedure specified in the MySqlCommand and populates the Parameters collection of the specified MySqlCommand object.
-		/// This method is not currently supported since stored procedures are not available in MySql.
+		/// Retrieves parameter information from the stored procedure specified 
+		/// in the MySqlCommand and populates the Parameters collection of the 
+		/// specified MySqlCommand object.
+		/// This method is not currently supported since stored procedures are 
+		/// not available in MySql.
 		/// </summary>
-		/// <param name="command">The MySqlCommand referencing the stored procedure from which the parameter information is to be derived. The derived parameters are added to the Parameters collection of the MySqlCommand.</param>
-		/// <exception cref="InvalidOperationException">The command text is not a valid stored procedure name.</exception>
+		/// <param name="command">The MySqlCommand referencing the stored 
+		/// procedure from which the parameter information is to be derived. 
+		/// The derived parameters are added to the Parameters collection of the 
+		/// MySqlCommand.</param>
+		/// <exception cref="InvalidOperationException">The command text is not 
+		/// a valid stored procedure name.</exception>
 		public static void DeriveParameters(MySqlCommand command)
 		{
-			// this is just to make FxCop happy until we support this routine
-			throw new MySqlException("DeriveParameters is not supported (due to MySql not supporting SP)");
+			if (!command.Connection.driver.Version.isAtLeast(5,0,0))
+				throw new MySqlException("DeriveParameters is not supported on versions " +
+					"prior to 5.0");
+			StoredProcedure sp = new StoredProcedure(command.Connection);
+			sp.DiscoverParameters(command, "");
+		}
+
+		public static void DeriveParameters(MySqlCommand command, bool useProc)
+		{
+			StoredProcedure sp = new StoredProcedure(command.Connection);
+			sp.DiscoverParameters(command, useProc ? "PROCEDURE" : "FUNCTION");
 		}
 
 		/// <include file='docs/MySqlCommandBuilder.xml' path='docs/GetDeleteCommand/*'/>

@@ -471,6 +471,83 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.IsTrue(val is System.Int32, "Checking type");
 		}
 
+		/// <summary>
+		/// Bug #13632  	the MySQLCommandBuilder.deriveparameters has not been updated for MySQL 5
+		/// </summary>
+		[Category("5.0")]
+		[Test]
+		public void DeriveParameters()
+		{
+			execSQL("CREATE PROCEDURE spTest(IN \r\nvalin DECIMAL(10,2), " +
+				"\nIN val2 INT, INOUT val3 FLOAT, OUT val4 DOUBLE, INOUT val5 BIT, " +
+				"val6 VARCHAR(155), val7 SET('a','b')) BEGIN SELECT 1; END");
+
+			MySqlCommand cmd = new MySqlCommand("spTest", conn);
+			cmd.CommandType = CommandType.StoredProcedure;
+			MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+			MySqlCommandBuilder.DeriveParameters(cmd);
+
+			Assert.AreEqual(7, cmd.Parameters.Count);
+			Assert.AreEqual("valin", cmd.Parameters[0].ParameterName);
+			Assert.AreEqual(ParameterDirection.Input, cmd.Parameters[0].Direction);
+			Assert.AreEqual(MySqlDbType.NewDecimal, cmd.Parameters[0].MySqlDbType);
+
+			Assert.AreEqual("val2", cmd.Parameters[1].ParameterName);
+			Assert.AreEqual(ParameterDirection.Input, cmd.Parameters[1].Direction);
+			Assert.AreEqual(MySqlDbType.Int32, cmd.Parameters[1].MySqlDbType);
+
+			Assert.AreEqual("val3", cmd.Parameters[2].ParameterName);
+			Assert.AreEqual(ParameterDirection.InputOutput, cmd.Parameters[2].Direction);
+			Assert.AreEqual(MySqlDbType.Float, cmd.Parameters[2].MySqlDbType);
+
+			Assert.AreEqual("val4", cmd.Parameters[3].ParameterName);
+			Assert.AreEqual(ParameterDirection.Output, cmd.Parameters[3].Direction);
+			Assert.AreEqual(MySqlDbType.Double, cmd.Parameters[3].MySqlDbType);
+
+			Assert.AreEqual("val5", cmd.Parameters[4].ParameterName);
+			Assert.AreEqual(ParameterDirection.InputOutput, cmd.Parameters[4].Direction);
+			Assert.AreEqual(MySqlDbType.Bit, cmd.Parameters[4].MySqlDbType);
+
+			Assert.AreEqual("val6", cmd.Parameters[5].ParameterName);
+			Assert.AreEqual(ParameterDirection.Input, cmd.Parameters[5].Direction);
+			Assert.AreEqual(MySqlDbType.VarChar, cmd.Parameters[5].MySqlDbType);
+
+			Assert.AreEqual("val7", cmd.Parameters[6].ParameterName);
+			Assert.AreEqual(ParameterDirection.Input, cmd.Parameters[6].Direction);
+			Assert.AreEqual(MySqlDbType.Set, cmd.Parameters[6].MySqlDbType);
+		}
+
+		/// <summary>
+		/// Bug #13632  	the MySQLCommandBuilder.deriveparameters has not been updated for MySQL 5
+		/// </summary>
+		[Category("5.0")]
+		[Test]
+		public void DeriveParametersForFunction()
+		{
+			try 
+			{
+				execSQL("DROP FUNCTION IF EXISTS spTest");
+				execSQL("CREATE FUNCTION spTest(v1 DATETIME) RETURNS INT " +
+					" BEGIN RETURN 1; END");
+
+				MySqlCommand cmd = new MySqlCommand("spTest", conn);
+				cmd.CommandType = CommandType.StoredProcedure;
+				MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+				MySqlCommandBuilder.DeriveParameters(cmd, false);
+
+				Assert.AreEqual(2, cmd.Parameters.Count);
+				Assert.AreEqual("v1", cmd.Parameters[0].ParameterName);
+				Assert.AreEqual(ParameterDirection.Input, cmd.Parameters[0].Direction);
+				Assert.AreEqual(MySqlDbType.Datetime, cmd.Parameters[0].MySqlDbType);
+
+				Assert.AreEqual(ParameterDirection.ReturnValue, cmd.Parameters[1].Direction);
+				Assert.AreEqual(MySqlDbType.Int32, cmd.Parameters[1].MySqlDbType);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
 
 	}
 }
