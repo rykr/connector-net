@@ -607,7 +607,8 @@ namespace MySql.Data.MySqlClient
 					sqlPart.Remove( 0, sqlPart.Length ); 
 				}
 				else if (sqlPart.Length > 0 && sqlPart[0] == parameters.ParameterMarker && 
-					! Char.IsLetterOrDigit(c) && c != '_' && c != '.' && c != '$')
+					! Char.IsLetterOrDigit(c) && c != '_' && c != '.' && c != '$' 
+					&& c != '@')
 				{
 					tokens.Add( sqlPart.ToString() );
 					sqlPart.Remove( 0, sqlPart.Length ); 

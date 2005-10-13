@@ -549,5 +549,33 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
+		/// <summary>
+		/// Bug #13753  	Exception calling stored procedure with special characters in parameters
+		/// </summary>
+		[Test]
+		public void SpecialCharacters()
+		{
+			execSQL("SET sql_mode=ANSI_QUOTES");
+			try 
+			{
+				execSQL("CREATE PROCEDURE spTest(\"@Param1\" text) BEGIN SELECT \"@Param1\"; END");
+
+				MySqlCommand cmd = new MySqlCommand("spTest", conn);
+				cmd.Parameters.Add("@Param1", "This is my value");
+				cmd.CommandType = CommandType.StoredProcedure;
+
+				string val = (string)cmd.ExecuteScalar();
+				Assert.AreEqual("This is my value", val);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally 
+			{
+				execSQL("SET sql_mode=\"\"");
+			}
+		}
+
 	}
 }

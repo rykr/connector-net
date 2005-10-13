@@ -116,6 +116,14 @@ namespace MySql.Data.MySqlClient
 			return type;
 		}
 
+		private string CleanProcParameter(string parameter)
+		{
+			char c = parameter[0];
+			if (c == '`' || c == '\'' || c == '"')
+				return parameter.Substring(1, parameter.Length-2);
+			return parameter;
+		}
+
 		private string[] GetParameterParts(string parameterDef)
 		{
 			int pos = 0;
@@ -129,7 +137,7 @@ namespace MySql.Data.MySqlClient
 			else
 				parts[0] = "in";
 
-			parts[1] = split[pos++];
+			parts[1] = CleanProcParameter(split[pos++]);
 			parts[2] = CleanType(split[pos++]);
 			return parts;
 		}
@@ -212,15 +220,16 @@ namespace MySql.Data.MySqlClient
 							throw new MySqlException("Parameter '" + parts[1] + "' is not defined");
 
 						MySqlParameter p = cmd.Parameters[index];
-						//string pName = connection.ParameterMarker + p.ParameterName;
-						string vName = "@" + hash + CleanParameterName(p.ParameterName);
+						string cleanName = CleanParameterName(p.ParameterName);
+						string pName = connection.ParameterMarker + cleanName;
+						string vName = "@" + hash + cleanName;
 						if (p.Direction == ParameterDirection.Input)
 						{
-							sqlStr += p.ParameterName + ", ";
+							sqlStr += pName + ", ";
 							continue;
 						}
 						else if (p.Direction == ParameterDirection.InputOutput)
-							setStr += "set " + vName + "=" + p.ParameterName + ";";
+							setStr += "set " + vName + "=" + pName + ";";
 						sqlStr += vName + ", ";
 						outSelect += vName + ", ";
 					}

@@ -7,7 +7,8 @@ x-xx-05 - Version 1.0.7
 	Bug #13662 Prepare() truncates accented character input [already fixed, added test]
 	Bug #11947 MySQLCommandBuilder mishandling CONCAT() aliased column [updated test case]
 	Bug #13541 Prepare breaks if a parameter is used more than once [fixed]
-	Bug #13632 the MySQLCommandBuilder.deriveparameters has not been updated for MySQL 5	
+	Bug #13632 the MySQLCommandBuilder.deriveparameters has not been updated for MySQL 5
+	Bug #13753 Exception calling stored procedure with special characters in parameters
 	
 	Other changes
 	-------------------------    
