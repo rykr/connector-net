@@ -9,11 +9,13 @@ x-xx-05 - Version 1.0.7
 	Bug #13541 Prepare breaks if a parameter is used more than once [fixed]
 	Bug #13632 the MySQLCommandBuilder.deriveparameters has not been updated for MySQL 5
 	Bug #13753 Exception calling stored procedure with special characters in parameters
+	Bug #11386 Numeric parameters with Precision and Scale not taken into account by Connector [added test case]
+	Bug #6902  	Errors in parsing stored procedure parameters [fixed before, refixed]
 	
 	Other changes
 	-------------------------    
 	Failure to provide parameters for out and inout values is now detected
-
+	Changed pooling code to remove issue of skipping Ping() on bogus connnections
     
 9-27-05 - Version 1.0.6
  
