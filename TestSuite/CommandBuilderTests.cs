@@ -207,5 +207,27 @@ namespace MySql.Data.MySqlClient.Tests
 			da.Update(dt);
 		}
 
+		/// <summary>
+		/// Bug #14631  	"#42000Query was empty"
+		/// </summary>
+		[Test]
+		public void SemicolonAtEndOfSQL()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (id INT NOT NULL, name VARCHAR(100), PRIMARY KEY(id))");
+			execSQL("INSERT INTO test VALUES(1, 'Data')");
+
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test;", conn);
+			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			DataTable dt = new DataTable();
+			da.Fill(dt);
+			dt.Rows[0]["id"] = 2;
+			da.Update(dt);
+
+			dt.Clear();
+			da.Fill(dt);
+			Assert.AreEqual(1, dt.Rows.Count);
+			Assert.AreEqual(2, dt.Rows[0]["id"]);
+		}
 	}
 }

@@ -315,6 +315,14 @@ namespace MySql.Data.MySqlClient
 			return valueObject;
 		}
 
+		internal MySqlDbType GetPSType()
+		{
+			if (this.mySqlDbType == MySqlDbType.Bit)
+				return MySqlDbType.Byte;//UInt64;
+			else
+				return this.mySqlDbType;
+		}
+
 		internal void Serialize( PacketWriter writer, bool binary ) 
 		{
 			GetValueObject();

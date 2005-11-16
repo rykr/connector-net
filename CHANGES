@@ -12,6 +12,7 @@ x-xx-05 - Version 1.0.7
 	Bug #11386 Numeric parameters with Precision and Scale not taken into account by Connector [added test case]
 	Bug #6902  Errors in parsing stored procedure parameters [fixed before, refixed]
 	Bug #13927 Multiple Records to same Table in Transaction Problem [fixed]
+	Bug #14631 "#42000Query was empty" [fixed]
 	
 	Other changes
 	-------------------------    
