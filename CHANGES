@@ -10,7 +10,8 @@ x-xx-05 - Version 1.0.7
 	Bug #13632 the MySQLCommandBuilder.deriveparameters has not been updated for MySQL 5
 	Bug #13753 Exception calling stored procedure with special characters in parameters
 	Bug #11386 Numeric parameters with Precision and Scale not taken into account by Connector [added test case]
-	Bug #6902  	Errors in parsing stored procedure parameters [fixed before, refixed]
+	Bug #6902  Errors in parsing stored procedure parameters [fixed before, refixed]
+	Bug #13927 Multiple Records to same Table in Transaction Problem [fixed]
 	
 	Other changes
 	-------------------------    

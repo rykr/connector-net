@@ -550,6 +550,37 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		/// <summary>
+		/// Bug #11386  	Numeric parameters with Precision and Scale not taken into account by Connector
+		/// </summary>
+		[Test]
+		public void DecimalAsParameter()
+		{
+			execSQL("CREATE PROCEDURE spTest(IN d DECIMAL(19,4)) BEGIN SELECT d; END");
+
+			MySqlCommand cmd = new MySqlCommand("spTest", conn);
+			cmd.CommandType = CommandType.StoredProcedure;
+			cmd.Parameters.Add("?d", 21);
+			decimal d = (decimal)cmd.ExecuteScalar();
+			Assert.AreEqual(21, d);
+		}
+
+		/// <summary>
+		/// Bug #6902  	Errors in parsing stored procedure parameters
+		/// </summary>
+		[Test]
+		public void ParmWithCharacterSet()
+		{
+			execSQL("CREATE PROCEDURE spTest(P longtext character set utf8) " +
+				"BEGIN SELECT P; END");
+
+			MySqlCommand cmd = new MySqlCommand("spTest", conn);
+			cmd.CommandType = CommandType.StoredProcedure;
+			cmd.Parameters.Add("?P", "This is my value");
+			string p = (string)cmd.ExecuteScalar();
+			Assert.AreEqual("This is my value", p);
+		}
+
+		/// <summary>
 		/// Bug #13753  	Exception calling stored procedure with special characters in parameters
 		/// </summary>
 		[Test]
@@ -577,5 +608,51 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
+		[Test]
+		[Category("NotWorking")]
+		public void CallingSPWithPrepare()
+		{
+			execSQL("DROP PROCEDURE IF EXISTS spTest");
+			execSQL("CREATE PROCEDURE spTest(P int) BEGIN SELECT P; END");
+
+			MySqlCommand cmd = new MySqlCommand("spTest", conn);
+			cmd.CommandType = CommandType.StoredProcedure;
+			cmd.Parameters.Add("?P", 33);
+			cmd.Prepare();
+
+			int p = (int)cmd.ExecuteScalar();
+			Assert.AreEqual(33, p);
+		}
+
+		/// <summary>
+		/// Bug #13927  	Multiple Records to same Table in Transaction Problem
+		/// </summary>
+		[Test]
+		[Category("5.0")]
+		public void MultileRecords()
+		{
+			execSQL("DROP PROCEDURE IF EXISTS spTest");
+			execSQL("CREATE PROCEDURE spTest(id int, str VARCHAR(45)) BEGIN INSERT INTO test VALUES(id, str); END");
+
+			MySqlCommand cmd = new MySqlCommand("spTest", conn);
+			cmd.CommandType = CommandType.StoredProcedure;
+
+			cmd.Parameters.Add("?id", 1);
+			cmd.Parameters.Add("?str", "First record");
+			cmd.ExecuteNonQuery();
+
+			cmd.Parameters.Add("?id", 2);
+			cmd.Parameters.Add("?str", "Second record");
+			cmd.ExecuteNonQuery();
+
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+			DataTable dt = new DataTable();
+			da.Fill(dt);
+
+			Assert.AreEqual(1, dt.Rows[0]["id"]);
+			Assert.AreEqual(2, dt.Rows[1]["id"]);
+			Assert.AreEqual("First record", dt.Rows[0]["name"]);
+			Assert.AreEqual("Second record", dt.Rows[1]["name"]);
+		}
 	}
 }
