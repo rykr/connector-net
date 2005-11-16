@@ -538,10 +538,10 @@ namespace MySql.Data.MySqlClient.Tests
 			cmd.Parameters.Add(new MySqlParameter("?b1", MySqlDbType.Bit));
 			cmd.Parameters.Add(new MySqlParameter("?b2", MySqlDbType.Bit));
 			cmd.Parameters.Add(new MySqlParameter("?b3", MySqlDbType.Bit));
-			//TODO: cmd.Prepare();
+			cmd.Prepare();
 			cmd.Parameters[0].Value = 1;
-			cmd.Parameters[1].Value = 15;
-			cmd.Parameters[2].Value = 500;
+			cmd.Parameters[1].Value = 2;
+			cmd.Parameters[2].Value = 3;
 			cmd.ExecuteNonQuery();
 
 			MySqlDataReader reader = null;
@@ -552,8 +552,8 @@ namespace MySql.Data.MySqlClient.Tests
 				reader = cmd.ExecuteReader();
 				Assert.IsTrue(reader.Read());
 				Assert.AreEqual(1, reader[0]);
-				Assert.AreEqual(15, reader[1]);
-				Assert.AreEqual(500, reader[2]);
+				Assert.AreEqual(2, reader[1]);
+				Assert.AreEqual(3, reader[2]);
 			}
 			catch (Exception ex)
 			{

@@ -94,7 +94,7 @@ namespace MySql.Data.MySqlClient
 			foreach ( MySqlField param in paramList )
 			{
 				MySqlParameter parm = parameters[ param.ColumnName ];
-				packet.WriteInteger( (long)parm.MySqlDbType, 2 ); 
+				packet.WriteInteger((long)parm.GetPSType(), 2);
 			}
 
 			// now write out all non-null values

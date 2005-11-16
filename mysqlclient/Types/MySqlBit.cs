@@ -45,9 +45,7 @@ namespace MySql.Data.Types
 			if (binary)
 			{
 				byte[] bytes = BitConverter.GetBytes(v);
-				writer.WriteByte(bytes[0]);
-				if (v > 255)
-					writer.WriteByte(bytes[1]);
+				writer.Write(bytes);
 			}
 			else
 				writer.WriteStringNoNull( v.ToString() );

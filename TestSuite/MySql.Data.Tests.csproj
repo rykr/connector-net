@@ -80,14 +80,14 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
-                    Name = "nunit.framework"
-                    AssemblyName = "nunit.framework"
-                    HintPath = "..\..\..\..\..\Program Files (x86)\TestDriven.NET 1.1\NUnit\nunit.framework.dll"
+                    Name = "MySQL.Data"
+                    AssemblyName = "MySql.Data"
+                    HintPath = "..\bin\net-1.1\Debug\MySQL.Data.dll"
                 />
                 <Reference
-                    Name = "MySQL.Data"
-                    AssemblyName = "MySQL.Data"
-                    HintPath = "..\bin\net-1.1\Debug\MySQL.Data.dll"
+                    Name = "nunit.framework"
+                    AssemblyName = "nunit.framework"
+                    HintPath = "..\..\..\..\..\Program Files (x86)\TestDriven.NET 2.0\NUnit\nunit.framework.dll"
                 />
             </References>
         </Build>
