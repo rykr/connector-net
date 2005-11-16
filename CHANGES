@@ -13,7 +13,8 @@ x-xx-05 - Version 1.0.7
 	Bug #6902  Errors in parsing stored procedure parameters [fixed before, refixed]
 	Bug #13927 Multiple Records to same Table in Transaction Problem [fixed]
 	Bug #14631 "#42000Query was empty" [fixed]
-	
+	Bug #13806 Does not support Code Page 932	
+
 	Other changes
 	-------------------------    
 	Failure to provide parameters for out and inout values is now detected
