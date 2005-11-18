@@ -553,6 +553,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #11386  	Numeric parameters with Precision and Scale not taken into account by Connector
 		/// </summary>
 		[Test]
+		[Category("5.0")]
 		public void DecimalAsParameter()
 		{
 			execSQL("CREATE PROCEDURE spTest(IN d DECIMAL(19,4)) BEGIN SELECT d; END");
@@ -568,6 +569,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #6902  	Errors in parsing stored procedure parameters
 		/// </summary>
 		[Test]
+		[Category("5.0")]
 		public void ParmWithCharacterSet()
 		{
 			execSQL("CREATE PROCEDURE spTest(P longtext character set utf8) " +
@@ -584,6 +586,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #13753  	Exception calling stored procedure with special characters in parameters
 		/// </summary>
 		[Test]
+		[Category("5.0")]
 		public void SpecialCharacters()
 		{
 			execSQL("SET sql_mode=ANSI_QUOTES");

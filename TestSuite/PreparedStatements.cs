@@ -394,6 +394,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #13662  	Prepare() truncates accented character input
 		/// </summary>
 		[Test]
+		[Category("4.1")]
 		public void InsertAccentedCharacters()
 		{
 			execSQL("DROP TABLE IF EXISTS test");
@@ -433,6 +434,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #13541  	Prepare breaks if a parameter is used more than once
 		/// </summary>
 		[Test]
+		[Category("4.1")]
 		public void UsingParametersTwice()
 		{
 			execSQL("DROP TABLE IF EXISTS test");

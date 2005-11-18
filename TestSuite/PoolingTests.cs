@@ -144,8 +144,16 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 			catch (Exception) { }
 
-			// we now kill the first connection
-			execSQL("KILL " + c.ServerThread);
+			// we now kill the first connection to simulate a server stoppage
+			base.KillConnection(c);
+
+			// now we do something on the first connection
+			try 
+			{
+				c.ChangeDatabase("mysql");
+				Assert.Fail("This change database should not work");
+			}
+			catch (Exception) { }
 
 			// Opening a connection now should work
 			try 
@@ -172,7 +180,6 @@ namespace MySql.Data.MySqlClient.Tests
 			conn.Open();
 			object var2 = cmd.ExecuteScalar();
 			Assert.AreEqual( DBNull.Value, var2 );
-			conn.Close();
 		}
 
 		[Test]
@@ -195,7 +202,7 @@ namespace MySql.Data.MySqlClient.Tests
 				cmd.Parameters.Add("?b1", b1);
 				cmd.ExecuteNonQuery();
 			}
-			catch (Exception ex1)
+			catch (Exception)
 			{
 				Assert.IsTrue(c.State == ConnectionState.Closed);
 

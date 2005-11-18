@@ -134,22 +134,27 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT id, name, now() as ServerTime FROM test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
-			cb.ToString();  // keep the compiler happy
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 
 			dt.Rows[0]["id"] = 4;
 			da.Update(dt);
 			
-			da.SelectCommand.CommandText = "SELECT id, name, CONCAT(name, '  boo') as newname from test";
+			da.SelectCommand.CommandText = "SELECT id, name, CONCAT(name, '  boo') as newname from test where id=4";
 			dt.Clear();
 			da.Fill(dt);
+			Assert.AreEqual(1, dt.Rows.Count);
+			Assert.AreEqual("test1", dt.Rows[0]["name"]);
+			Assert.AreEqual("test1  boo", dt.Rows[0]["newname"]);
+
 			dt.Rows[0]["id"] = 5;
 			da.Update(dt);
 
 			dt.Clear();
+			da.SelectCommand.CommandText = "SELECT * FROM test WHERE id=5";
 			da.Fill(dt);
-			Assert.AreEqual(5, dt.Rows[0]["id"]);
+			Assert.AreEqual(1, dt.Rows.Count);
+			Assert.AreEqual("test1", dt.Rows[0]["name"]);
 
 			da.SelectCommand.CommandText = "SELECT *, now() as stime FROM test WHERE id<4";
 			cb = new MySqlCommandBuilder(da, true);

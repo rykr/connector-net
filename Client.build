@@ -3,7 +3,6 @@
 
 	<property name="ncover.executable" value="c:\program files\ncover\ncover.console.exe"/>
 	<property name="fxcop.executable" value="c:\program files\fxcop\fxcopcmd.exe"/>
-    <property name="nunit" value="C:\Program Files\NUnit 2.2.2" />
 
 	<!-- filesets -->
 	<fileset id="Source">
@@ -34,7 +33,7 @@
 	</if>
 
 	<!-- builds the client on all supported frameworks -->
-	<target name="allframeworks" depends="net-1.0, net-1.1, mono-1.0">
+	<target name="allframeworks" depends="net-1.0, net-1.1, net-2.0, mono-1.0">
 		<call target="Docs"/>
 	</target>
 
@@ -89,6 +88,7 @@
 
 	<!-- core managed driver target 2.0 -->
 	<target name="net-2.0" description="2.0 .NET target">
+		<property name="nunit-lib" value="${nunit}/bin"/>
 		<property name="framework" value="net-2.0"/>
 		<call target="client"/>
 	</target>
@@ -101,7 +101,7 @@
 	</target>
 
 	<!-- testing targets -->
-	<target name="alltests" depends="test-net-1.1, test-net-1.0">
+	<target name="alltests" depends="test-net-2.0, test-net-1.1, test-net-1.0">
 	</target>
 	
 	<target name="test-net-1.1" depends="net-1.1">
@@ -135,7 +135,7 @@
 <!--		<property name="config" value="pipe"/>
 		<call target="testdb"/>  
 		<property name="config" value="pipe_compressed"/>
-		<call target="testdb"/>  -->
+		<call target="testdb"/>-->
 	</target>
 
     <!-- 
@@ -169,6 +169,7 @@
 		<property name="excludes" value="NotWorking"/>
 		<!--<property name="doCoverage" value="true"/>-->
 		<call target="test_all_configs"/>
+		
 	</target>
 
 	<!-- 

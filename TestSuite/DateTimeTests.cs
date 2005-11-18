@@ -322,7 +322,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void UsingDatesAsStrings()
 		{
-			MySqlCommand cmd = new MySqlCommand("INSERT INTO test (dt) VALUES (?dt)", conn);
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO test (id, dt) VALUES (1, ?dt)", conn);
 			cmd.Parameters.Add("?dt", MySqlDbType.Date);
 			cmd.Parameters[0].Value = "2005-03-04";
 			cmd.ExecuteNonQuery();

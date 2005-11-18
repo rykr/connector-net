@@ -270,7 +270,7 @@ namespace MySql.Data.MySqlClient
 		{
 			bool result = driver.Ping();
 			if (! result)
-				SetState(ConnectionState.Closed);
+				Terminate();
 			return result;
 		}
 
