@@ -196,8 +196,19 @@ namespace MySql.Data.Common
 				parts[1] = parts[1].Trim();
 
 				// we also want to clear off any quotes
+				if (parts[1].Length >= 2)
+				{
+					if ((parts[1][0] == '"' && parts[1][parts[1].Length - 1] == '"') ||
+						(parts[1][0] == '\'' && parts[1][parts[1].Length - 1] == '\''))
+					{
+						parts[1] = parts[1].Substring(1, parts[1].Length - 2);
+					} 
+				}
+				else 
+				{
+					parts[1] = parts[1];
+				}
 				parts[0] = parts[0].Trim('\'', '"');
-				parts[1] = parts[1].Trim('\'', '"');
 
 				hash[parts[0]] = parts[1];
 			}

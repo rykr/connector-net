@@ -322,5 +322,26 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.IsFalse(conn2.Ping());
 			Assert.IsTrue(conn2.State == ConnectionState.Closed);
 		}
+
+		/// <summary>
+		/// Bug #16659  	Can't use double quotation marks(") as password access server by Connector/NET
+		/// </summary>
+		[Test]
+		public void ConnectWithQuotePassword()
+		{
+			execSQL("GRANT ALL ON *.* to 'test'@'localhost' IDENTIFIED BY '\"'");
+			string host = ConfigurationSettings.AppSettings["host"];
+			MySqlConnection c = new MySqlConnection("server=" + host + ";uid=test;pwd='\"';pooling=false");
+			try 
+			{
+				c.Open();
+				c.Close();
+			}
+			catch (Exception ex) 
+			{
+				Assert.Fail(ex.Message);
+			}
+			execSQL("DELETE FROM mysql.user WHERE user='test'");
+		}
 	}
 }
