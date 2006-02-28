@@ -160,19 +160,6 @@ namespace MySql.Data.MySqlClient
 			}
 		}
 
-		/// <summary></summary>
-		public bool IsUnsigned 
-		{
-			get { return isUnsigned; }
-			set 
-			{ 
-				if (isUnsigned != value) 
-					valueObject = null; 
-				isUnsigned = value; 
-				SetMySqlDbType( mySqlDbType ); 
-			}
-		}
-
 		/// <summary>
 		/// Gets or sets a value indicating whether the parameter is input-only, output-only, bidirectional, or a stored procedure return value parameter.
 		/// As of MySql version 4.1 and earlier, input-only is the only valid choice.
@@ -303,7 +290,7 @@ namespace MySql.Data.MySqlClient
 		{
 			if (valueObject == null)
 			{
-				valueObject = MySqlValue.GetMySqlValue( mySqlDbType, IsUnsigned, true );
+				valueObject = MySqlValue.GetMySqlValue( mySqlDbType, true );
 
 				MySqlDecimal dec = (valueObject as MySqlDecimal);
 				if (dec != null) 
@@ -341,11 +328,16 @@ namespace MySql.Data.MySqlClient
 			switch (mySqlDbType) 
 			{
 				case MySqlDbType.Decimal: dbType = DbType.Decimal; break;
-				case MySqlDbType.Byte: dbType = isUnsigned ? DbType.Byte : DbType.SByte; break;
-				case MySqlDbType.Int16: dbType = isUnsigned ? DbType.UInt16 : DbType.Int16; break;
-				case MySqlDbType.Int24: dbType = isUnsigned ? DbType.UInt32 : DbType.Int32; break;
-				case MySqlDbType.Int32: dbType = isUnsigned ? DbType.UInt32 : DbType.Int32; break;
-				case MySqlDbType.Int64: dbType = isUnsigned ? DbType.UInt64 : DbType.Int64; break;
+				case MySqlDbType.UByte: dbType = DbType.Byte; break;
+				case MySqlDbType.Byte: dbType = DbType.SByte; break;
+				case MySqlDbType.UInt16: dbType = DbType.UInt16; break;
+				case MySqlDbType.Int16: dbType = DbType.Int16; break;
+				case MySqlDbType.UInt24:
+				case MySqlDbType.UInt32: dbType = DbType.UInt32; break;
+				case MySqlDbType.Int24: 
+				case MySqlDbType.Int32: dbType = DbType.Int32; break;
+				case MySqlDbType.UInt64: dbType = DbType.UInt64; break;
+				case MySqlDbType.Int64: dbType = DbType.Int64; break;
 				case MySqlDbType.Bit : dbType = DbType.UInt64; break;
 				case MySqlDbType.Float: dbType = DbType.Single; break;
 				case MySqlDbType.Double: dbType = DbType.Double; break;
@@ -399,24 +391,12 @@ namespace MySql.Data.MySqlClient
 				case DbType.Single: mySqlDbType = MySqlDbType.Float; break;
 				case DbType.Double: mySqlDbType = MySqlDbType.Double; break;
 
-				case DbType.Int16: 
-				case DbType.UInt16:
-					mySqlDbType = MySqlDbType.Int16; 
-					isUnsigned = dbType == DbType.UInt16;
-					break;
-
-				case DbType.Int32: 
-				case DbType.UInt32:
-					mySqlDbType = MySqlDbType.Int32; 
-					isUnsigned = dbType == DbType.UInt32;
-					break;
-
-				case DbType.Int64: 
-				case DbType.UInt64:
-					mySqlDbType = MySqlDbType.Int64; 
-					isUnsigned = dbType == DbType.UInt64;
-					break;
-
+				case DbType.UInt16: mySqlDbType = MySqlDbType.UInt16; break;
+				case DbType.Int16: 	mySqlDbType = MySqlDbType.Int16; break;
+				case DbType.Int32: mySqlDbType = MySqlDbType.Int32; break;
+				case DbType.UInt32: mySqlDbType = MySqlDbType.UInt32; break;
+				case DbType.UInt64: mySqlDbType = MySqlDbType.UInt64; break;
+				case DbType.Int64: mySqlDbType = MySqlDbType.Int64; break;
 				case DbType.Decimal:
 				case DbType.Currency: mySqlDbType = MySqlDbType.Decimal; break;
 

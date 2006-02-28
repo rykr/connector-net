@@ -564,5 +564,34 @@ namespace MySql.Data.MySqlClient.Tests
 				if (reader != null) reader.Close();
 			}
 		}
+
+		/// <summary>
+		/// Bug #17375 CommandBuilder ignores Unsigned flag at Parameter creation 
+		/// </summary>
+		[Test]
+		public void UnsignedTypes()
+		{
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (b TINYINT UNSIGNED PRIMARY KEY)");
+			
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
+			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+
+			DataTable dt = new DataTable();
+			da.Fill(dt);
+
+			DataView dv = new DataView(dt);
+			DataRowView row;
+
+			row = dv.AddNew();
+			row["b"] = 120;
+			row.EndEdit();
+			da.Update(dv.Table);
+
+			row = dv.AddNew();
+			row["b"] = 135;
+			row.EndEdit();
+			da.Update(dv.Table);
+		}
 	}
 }

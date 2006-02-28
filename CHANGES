@@ -1,3 +1,6 @@
+    Bug #16659 Can't use double quotation marks(") as password access server by Connector/NET [fixed]
+    Bug #17375 CommandBuilder ignores Unsigned flag at Parameter creation [fixed]
+
 x-xx-05 - Version 1.0.7
 
     Bugs fixed or addressed

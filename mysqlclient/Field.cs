@@ -151,9 +151,25 @@ namespace MySql.Data.MySqlClient
 
 #endregion
 
+		public MySqlDbType ProviderType()
+		{
+			if (IsUnsigned) 
+			{
+				switch (Type) 
+				{
+					case MySqlDbType.Byte: return MySqlDbType.UByte;
+					case MySqlDbType.Int16: return MySqlDbType.UInt16;
+					case MySqlDbType.Int24: return MySqlDbType.UInt24;
+					case MySqlDbType.Int32: return MySqlDbType.UInt32;
+					case MySqlDbType.Int64: return MySqlDbType.UInt64;
+				}
+			}
+			return Type;
+		}
+
 		public MySqlValue GetValueObject() 
 		{
-			MySqlValue valueObject = MySqlValue.GetMySqlValue( mySqlDbType, IsUnsigned, IsBinary );
+			MySqlValue valueObject = MySqlValue.GetMySqlValue(ProviderType(), IsBinary);
 			return valueObject;
 		}
 
