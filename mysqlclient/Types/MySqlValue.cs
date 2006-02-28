@@ -159,7 +159,7 @@ namespace MySql.Data.Types
 
 				case MySqlDbType.Set:
 				case MySqlDbType.Enum:
-				case MySqlDbType.String:
+				case MySqlDbType.Char:
 				case MySqlDbType.VarChar: 
 					return new MySqlString(null, type);
 

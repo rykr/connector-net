@@ -149,7 +149,7 @@ namespace MySql.Data.MySqlClient
 		/// <summary>A variable-length string containing 0 to 255 characters</summary>
 		VarChar     = 253,
 		/// <summary><b>Obsolete</b>  Use VarChar type</summary>
-		String      = 254,
+		Char        = 254,
 		/// <summary></summary>
 		Geometry	= 255,
 		/// <summary></summary>

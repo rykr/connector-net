@@ -296,6 +296,7 @@ namespace MySql.Data.MySqlClient
 
 			switch (typename)
 			{
+				case "char" : return MySqlDbType.Char;
 				case "varchar": return MySqlDbType.VarChar;
 				case "date": return MySqlDbType.Date;
 				case "datetime": return MySqlDbType.Datetime;

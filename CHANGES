@@ -1,6 +1,7 @@
     Bug #16659 Can't use double quotation marks(") as password access server by Connector/NET [fixed]
     Bug #17375 CommandBuilder ignores Unsigned flag at Parameter creation [fixed]
-
+    Bug #17749 There is no char type in MySqlDbType [fixed]
+    
 x-xx-05 - Version 1.0.7
 
     Bugs fixed or addressed

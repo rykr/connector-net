@@ -360,7 +360,7 @@ namespace MySql.Data.MySqlClient
 				case MySqlDbType.LongBlob:
 				case MySqlDbType.Blob: dbType = DbType.Object; break;
 
-				case MySqlDbType.String: dbType = DbType.StringFixedLength; break;
+				case MySqlDbType.Char: dbType = DbType.StringFixedLength; break;
 			}
 		}
 
@@ -375,7 +375,7 @@ namespace MySql.Data.MySqlClient
 				case DbType.String: mySqlDbType = MySqlDbType.VarChar; break;
 
 				case DbType.AnsiStringFixedLength:
-				case DbType.StringFixedLength: mySqlDbType = MySqlDbType.String; break;
+				case DbType.StringFixedLength: mySqlDbType = MySqlDbType.Char; break;
 
 				case DbType.Boolean:
 				case DbType.Byte: 

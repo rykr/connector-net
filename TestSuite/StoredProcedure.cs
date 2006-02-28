@@ -478,16 +478,23 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void DeriveParameters()
 		{
+			execSQL("DROP TABLE IF EXISTS test2");
+			execSQL("CREATE TABLE test2 (c CHAR(20))");
+			execSQL("INSERT INTO test2 values ( 'xxxx')");
+			MySqlCommand cmd2 = new MySqlCommand("SELECT * FROM test2", conn);
+			MySqlDataReader reader =cmd2.ExecuteReader();
+			reader.Close();
+
 			execSQL("CREATE PROCEDURE spTest(IN \r\nvalin DECIMAL(10,2), " +
 				"\nIN val2 INT, INOUT val3 FLOAT, OUT val4 DOUBLE, INOUT val5 BIT, " +
-				"val6 VARCHAR(155), val7 SET('a','b')) BEGIN SELECT 1; END");
+				"val6 VARCHAR(155), val7 SET('a','b'), val8 CHAR) BEGIN SELECT 1; END");
 
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
 			MySqlDataAdapter da = new MySqlDataAdapter(cmd);
 			MySqlCommandBuilder.DeriveParameters(cmd);
 
-			Assert.AreEqual(7, cmd.Parameters.Count);
+			Assert.AreEqual(8, cmd.Parameters.Count);
 			Assert.AreEqual("valin", cmd.Parameters[0].ParameterName);
 			Assert.AreEqual(ParameterDirection.Input, cmd.Parameters[0].Direction);
 			Assert.AreEqual(MySqlDbType.NewDecimal, cmd.Parameters[0].MySqlDbType);
@@ -515,6 +522,10 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual("val7", cmd.Parameters[6].ParameterName);
 			Assert.AreEqual(ParameterDirection.Input, cmd.Parameters[6].Direction);
 			Assert.AreEqual(MySqlDbType.Set, cmd.Parameters[6].MySqlDbType);
+
+			Assert.AreEqual("val8", cmd.Parameters[7].ParameterName);
+			Assert.AreEqual(ParameterDirection.Input, cmd.Parameters[7].Direction);
+			Assert.AreEqual(MySqlDbType.Char, cmd.Parameters[7].MySqlDbType);
 		}
 
 		/// <summary>
@@ -657,5 +668,6 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual("First record", dt.Rows[0]["name"]);
 			Assert.AreEqual("Second record", dt.Rows[1]["name"]);
 		}
+
 	}
 }
