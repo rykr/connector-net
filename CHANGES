@@ -2,6 +2,7 @@
     Bug #17375 CommandBuilder ignores Unsigned flag at Parameter creation [fixed]
     Bug #17749 There is no char type in MySqlDbType [fixed]
 	Bug #16788 Only byte arrays and strings can be serialized by MySqlBinary [fixed]
+	Bug #16645 FOUND_ROWS() Bug [can't repeat - added test case]
 	
 x-xx-05 - Version 1.0.7
 
