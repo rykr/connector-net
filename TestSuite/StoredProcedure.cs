@@ -669,5 +669,37 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual("Second record", dt.Rows[1]["name"]);
 		}
 
+		/// <summary>
+		/// Bug #16788 Only byte arrays and strings can be serialized by MySqlBinary 
+		/// </summary>
+		[Test]
+		[Category("5.0")]
+		public void Bug16788()
+		{
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (id integer(9), state varchar(2))");
+			execSQL("CREATE PROCEDURE spTest(IN p1 integer(9), IN p2 varchar(2)) " +
+				"BEGIN " +
+				"INSERT INTO test (id, state) VALUES (p1, p2); " +
+				"END");
+			
+			MySqlCommand cmd = conn.CreateCommand();
+			cmd.CommandType = CommandType.StoredProcedure;
+			cmd.CommandText = "spTest";
+			cmd.Parameters.Add("p1", MySqlDbType.UInt16, 9);
+			cmd.Parameters["p1"].Value = 44;
+			cmd.Parameters.Add("p2", MySqlDbType.VarChar, 2);
+			cmd.Parameters["p2"].Value = "ss";
+			try
+			{
+				cmd.ExecuteNonQuery();
+			}
+			catch(Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
+
+	
 	}
 }
