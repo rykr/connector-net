@@ -463,5 +463,32 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(1, dt.Rows[0]["state"]);
 			Assert.AreEqual(42, dt.Rows[0]["score"]);
 		}
+
+		/// <summary>
+		/// Bug #16627 Index and length must refer to a location within the string." when executing c
+		/// </summary>
+		[Test]
+		[Category("4.1")]
+		public void ParameterLengths()
+		{
+			execSQL("CREATE TABLE test (id int, name VARCHAR(255))");
+
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (?id, ?name)", conn);
+			cmd.Parameters.Add("?id", MySqlDbType.Int32);
+			cmd.Parameters.Add("?name", MySqlDbType.VarChar);
+			cmd.Parameters[1].Size = 255;
+			cmd.Prepare();
+
+			cmd.Parameters[0].Value = 1;
+			cmd.Parameters[1].Value = "short string";
+			cmd.ExecuteNonQuery();
+
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+			DataTable dt = new DataTable();
+			da.Fill(dt);
+			Assert.AreEqual(1, dt.Rows.Count);
+			Assert.AreEqual(1, dt.Rows[0]["id"]);
+			Assert.AreEqual("short string", dt.Rows[0]["name"]);
+		}
 	}
 }
