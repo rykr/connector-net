@@ -3,6 +3,8 @@
     Bug #17749 There is no char type in MySqlDbType [fixed]
 	Bug #16788 Only byte arrays and strings can be serialized by MySqlBinary [fixed]
 	Bug #16645 FOUND_ROWS() Bug [can't repeat - added test case]
+    Bug #18570 Unsigned tinyint (NET byte) incorrectly determined param type from param val	[fixed]
+    Bug #19261 Supplying Input Parameters [fixed]
 	
 x-xx-05 - Version 1.0.7
 

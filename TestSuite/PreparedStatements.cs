@@ -578,5 +578,45 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(1, dt.Rows[0]["id"]);
 			Assert.AreEqual("short string", dt.Rows[0]["name"]);
 		}
+
+        /// <summary>
+        /// Bug #18570  	Unsigned tinyint (NET byte) incorrectly determined param type from param val
+        /// </summary>
+        [Test]
+        [Category("4.1")]
+        public void UnsignedTinyInt()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test(ID TINYINT UNSIGNED NOT NULL, " +
+	            "Name VARCHAR(50) NOT NULL,	PRIMARY KEY (ID), UNIQUE (ID), " +
+                "UNIQUE (Name))");
+            execSQL("INSERT INTO test VALUES ('127', 'name1')");
+            execSQL("INSERT INTO test VALUES ('128', 'name2')");
+            execSQL("INSERT INTO test VALUES ('255', 'name3')");
+
+            string sql = " SELECT count(*) FROM TEST WHERE ID = ?id";
+
+            MySqlCommand command = new MySqlCommand();
+            command.CommandText = sql;
+            command.CommandType = CommandType.Text;
+            command.Connection = (MySqlConnection)conn;
+            command.Prepare();
+
+            command.Parameters.Add("?id", (byte)127);
+            object count = command.ExecuteScalar();
+            Assert.AreEqual(1, count);
+
+            command.Parameters.Add("?id", (byte)128);
+            count = command.ExecuteScalar();
+            Assert.AreEqual(1, count);
+
+            command.Parameters.Add("?id", (byte)255);
+            count = command.ExecuteScalar();
+            Assert.AreEqual(1, count);
+
+            command.Parameters.Add("?id", "255");
+            count = command.ExecuteScalar();
+            Assert.AreEqual(1, count);
+        }
 	}
 }

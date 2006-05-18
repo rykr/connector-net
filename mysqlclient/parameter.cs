@@ -304,9 +304,11 @@ namespace MySql.Data.MySqlClient
 
 		internal int GetPSType()
 		{
-			if (this.mySqlDbType == MySqlDbType.Bit)
-				return (int)MySqlDbType.Int64 | 0x8000;
-			else
+            if (this.mySqlDbType == MySqlDbType.Bit)
+                return (int)MySqlDbType.Int64 | 0x8000;
+            else if (this.mySqlDbType == MySqlDbType.UByte)
+                return (int)MySqlDbType.Byte | 0x8000;
+            else
 				return (int)this.mySqlDbType;
 		}
 
@@ -378,9 +380,9 @@ namespace MySql.Data.MySqlClient
 				case DbType.StringFixedLength: mySqlDbType = MySqlDbType.Char; break;
 
 				case DbType.Boolean:
-				case DbType.Byte: 
+				case DbType.Byte:
 				case DbType.SByte:
-					mySqlDbType = MySqlDbType.Byte; 
+					mySqlDbType = dbType == DbType.Byte ? MySqlDbType.UByte : MySqlDbType.Byte; 
 					isUnsigned = dbType == DbType.Byte;
 					break;
 
