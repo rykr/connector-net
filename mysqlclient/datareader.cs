@@ -132,6 +132,13 @@ namespace MySql.Data.MySqlClient
 				connection.Reader = null;
 				command.Consume();
 
+                // if our batch resulted in warnings, then report them now
+                // this is suboptimal but we have to report them here since
+                // pulling warnings from the server requires a reader and
+                // we can't have more than one reader open at one time.
+                if (connection.driver.HasWarnings)
+                    connection.driver.ReportWarnings();
+
 				if (0 != (commandBehavior & CommandBehavior.CloseConnection))
 					connection.Close();
 			}

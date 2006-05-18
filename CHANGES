@@ -5,7 +5,8 @@
 	Bug #16645 FOUND_ROWS() Bug [can't repeat - added test case]
     Bug #18570 Unsigned tinyint (NET byte) incorrectly determined param type from param val	[fixed]
     Bug #19261 Supplying Input Parameters [fixed]
-	
+    Bug #19481 Where clause with datetime throws exception [any warning causes the exception] [fixed]
+    
 x-xx-05 - Version 1.0.7
 
     Bugs fixed or addressed

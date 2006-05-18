@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2005 MySQL AB
+// Copyright (C) 2004-2006 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -137,10 +137,6 @@ namespace MySql.Data.MySqlClient
 					return true;
 				}
 			} 
-
-			// if our batch resulted in warnings, then report them now
-			if (driver.HasWarnings)
-				driver.ReportWarnings();
 
 			return false;
 		}

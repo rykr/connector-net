@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2005 MySQL AB
+// Copyright (C) 2004-2006 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -26,6 +26,7 @@ using MySql.Data.MySqlClient;
 using MySql.Data.Types;
 using System.Globalization;
 using NUnit.Framework;
+using System.Text;
 
 namespace MySql.Data.MySqlClient.Tests
 {
@@ -336,6 +337,44 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(3, date.Month);
 			Assert.AreEqual(4, date.Day);
 		}
+
+        /// <summary>
+        /// Bug #19481 Where clause with datetime throws exception [any warning causes the exception]
+        /// </summary>
+        [Test]
+        public void Bug19481()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test(ID INT NOT NULL AUTO_INCREMENT, " +
+                "SATELLITEID VARCHAR(3) NOT NULL, ANTENNAID INT, AOS_TIMESTAMP DATETIME NOT NULL, " +
+                "TEL_TIMESTAMP DATETIME, LOS_TIMESTAMP DATETIME, PRIMARY KEY (ID))");
+            execSQL("INSERT INTO test VALUES (NULL,'224','0','2005-07-24 00:00:00'," +
+                "'2005-07-24 00:02:00','2005-07-24 00:22:00')");
+            execSQL("INSERT INTO test VALUES (NULL,'155','24','2005-07-24 03:00:00'," +
+                "'2005-07-24 03:02:30','2005-07-24 03:20:00')");
+            execSQL("INSERT INTO test VALUES (NULL,'094','34','2005-07-24 09:00:00'," +
+                "'2005-07-24 09:00:30','2005-07-24 09:15:00')");
+            execSQL("INSERT INTO test VALUES (NULL,'224','54','2005-07-24 12:00:00'," +
+                "'2005-07-24 12:01:00','2005-07-24 12:33:00')");
+            execSQL("INSERT INTO test VALUES (NULL,'155','25','2005-07-24 15:00:00'," +
+                "'2005-07-24 15:02:00','2005-07-24 15:22:00')");
+            execSQL("INSERT INTO test VALUES (NULL,'094','0','2005-07-24 17:00:00'," +
+                "'2005-07-24 17:02:12','2005-07-24 17:20:00')");
+            execSQL("INSERT INTO test VALUES (NULL,'224','24','2005-07-24 19:00:00'," +
+                "'2005-07-24 19:02:00','2005-07-24 19:27:00')");
+            execSQL("INSERT INTO test VALUES (NULL,'155','34','2005-07-24 21:00:00'," +
+                "'2005-07-24 21:02:33','2005-07-24 21:22:55')");
+            execSQL("INSERT INTO test VALUES (NULL,'094','55','2005-07-24 23:00:00'," +
+                "'2005-07-24 23:00:45','2005-07-24 23:22:23')");
+
+            DateTime date = DateTime.Parse("7/24/2005");
+            StringBuilder sql = new StringBuilder();
+            sql.AppendFormat("SELECT ID, ANTENNAID, TEL_TIMESTAMP, LOS_TIMESTAMP FROM test " +
+                "WHERE TEL_TIMESTAMP >= '{0}'", date.ToString("u"));
+            MySqlDataAdapter da = new MySqlDataAdapter(sql.ToString(), conn);
+            DataSet dataSet = new DataSet();
+            da.Fill(dataSet);
+        }
 
 	}
 
