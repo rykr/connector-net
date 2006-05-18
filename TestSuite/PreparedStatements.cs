@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2005 MySQL AB
+// Copyright (C) 2004-2006 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -25,7 +25,7 @@ using NUnit.Framework;
 
 namespace MySql.Data.MySqlClient.Tests
 {
-	[TestFixture()]
+	[TestFixture]
 	public class PreparedStatements : BaseTest
 	{
 		[TestFixtureSetUp]
@@ -36,7 +36,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("DROP TABLE IF EXISTS Test");
 		}
 
-		[Test()]
+		[Test]
 		public void Simple() 
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
@@ -69,7 +69,7 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 
-		[Test()]
+		[Test]
 		public void SimplePrepareBeforeParms() 
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
@@ -113,7 +113,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void DateAndTimes() 
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
@@ -169,7 +169,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void ResetCommandText() 
 		{
 			execSQL("DROP TABLE IF EXISTS Test"); 
@@ -188,31 +188,71 @@ namespace MySql.Data.MySqlClient.Tests
 			
 		}
 
-		[Test()]
+		[Test]
 		public void DifferentParameterOrder() 
 		{
 			execSQL("DROP TABLE IF EXISTS Test"); 
-			execSQL("CREATE TABLE Test (id int, name varchar(100))");
+			execSQL("CREATE TABLE Test (id int NOT NULL AUTO_INCREMENT, " +
+                    "id2 int NOT NULL, name varchar(50) DEFAULT NULL, " +
+                    "id3 int DEFAULT NULL, PRIMARY KEY (id))");
 
-			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (name,id) VALUES(?name,?id)", conn);
-			cmd.Prepare();
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, id2, name, id3) " +
+                                                "VALUES(?id, ?id2, ?name,?id3)", conn);
 
-			cmd.Parameters.Add( "?name", "Name" );
-			cmd.Parameters.Add( "?id", 1 );
-			Assert.AreEqual( 1, cmd.ExecuteNonQuery() );
+            MySqlParameter id = new MySqlParameter();
+            id.ParameterName = "?id";
+            id.DbType = DbType.Int32;
+            id.Value = DBNull.Value;
 
-			cmd.Parameters[0].Value = "Name 2";
-			cmd.Parameters[1].Value = 2;
-			Assert.AreEqual( 1, cmd.ExecuteNonQuery() );
+            MySqlParameter id2 = new MySqlParameter();
+            id2.ParameterName = "?id2";
+            id2.DbType = DbType.Int32;
+            id2.Value = 2;
 
-			cmd.CommandText = "SELECT id FROM Test";
-			Assert.AreEqual( 1, cmd.ExecuteScalar() );
+            MySqlParameter name = new MySqlParameter();
+            name.ParameterName = "?name";
+            name.DbType = DbType.String;
+            name.Value = "Test";
 
-			cmd.CommandText = "SELECT name FROM Test";
-			Assert.AreEqual( "Name", cmd.ExecuteScalar() );
+            MySqlParameter id3 = new MySqlParameter();
+            id3.ParameterName = "?id3";
+            id3.DbType = DbType.Int32;
+            id3.Value = 3;
+
+            try
+            {
+                cmd.Parameters.Add(id);
+                cmd.Parameters.Add(id2);
+                cmd.Parameters.Add(name);
+                cmd.Parameters.Add(id3);
+                cmd.Prepare();
+                Assert.AreEqual(1, cmd.ExecuteNonQuery());
+
+                cmd.Parameters.Clear();
+
+                id3.Value = DBNull.Value;
+                name.Value = DBNull.Value;
+                cmd.Parameters.Add(id);
+                cmd.Parameters.Add(id2);
+                cmd.Parameters.Add(id3);
+                cmd.Parameters.Add(name);
+
+                cmd.Prepare();
+                Assert.AreEqual(1, cmd.ExecuteNonQuery());
+
+                cmd.CommandText = "SELECT id3 FROM Test WHERE id=1";
+                Assert.AreEqual(3, cmd.ExecuteScalar());
+
+                cmd.CommandText = "SELECT name FROM Test WHERE id=2";
+                Assert.AreEqual(DBNull.Value, cmd.ExecuteScalar());
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
 		}
 
-		[Test()]
+		[Test]
 		public void Blobs() 
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
@@ -463,6 +503,54 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(1, dt.Rows[0]["state"]);
 			Assert.AreEqual(42, dt.Rows[0]["score"]);
 		}
+
+        /// <summary>
+        /// Bug #19261  	Supplying Input Parameters
+        /// </summary>
+        [Test]
+        [Category("4.1")]
+        public void MoreParametersOutOfOrder()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE `test` (`BlackListID` int(11) NOT NULL auto_increment, " +
+                    "`SubscriberID` int(11) NOT NULL, `Phone` varchar(50) default NULL, " +
+                    "`ContactID` int(11) default NULL, " +
+                    "`AdminJunk` tinyint(1) NOT NULL default '0', " +
+                    "PRIMARY KEY  (`BlackListID`), KEY `SubscriberID` (`SubscriberID`))");
+
+            IDbCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "INSERT INTO `test`(`SubscriberID`,`Phone`,`ContactID`, " +
+                "`AdminJunk`) VALUES (?SubscriberID,?Phone,?ContactID, ?AdminJunk);";
+
+            MySqlParameter oParameterSubscriberID = new MySqlParameter();
+            oParameterSubscriberID.ParameterName = "?SubscriberID";
+            oParameterSubscriberID.DbType = DbType.Int32;
+            oParameterSubscriberID.Value = 1;
+
+            MySqlParameter oParameterPhone = new MySqlParameter();
+            oParameterPhone.ParameterName = "?Phone";
+            oParameterPhone.DbType = DbType.String;
+            oParameterPhone.Value = DBNull.Value;
+
+            MySqlParameter oParameterContactID = new MySqlParameter();
+            oParameterContactID.ParameterName = "?ContactID";
+            oParameterContactID.DbType = DbType.Int32;
+            oParameterContactID.Value = DBNull.Value;
+
+            MySqlParameter oParameterAdminJunk = new MySqlParameter();
+            oParameterAdminJunk.ParameterName = "?AdminJunk";
+            oParameterAdminJunk.DbType = DbType.Boolean;
+            oParameterAdminJunk.Value = true;
+
+            cmd.Parameters.Add(oParameterSubscriberID);
+            cmd.Parameters.Add(oParameterPhone);
+            cmd.Parameters.Add(oParameterAdminJunk);
+            cmd.Parameters.Add(oParameterContactID);
+
+            cmd.Prepare();
+            int cnt = cmd.ExecuteNonQuery();
+            Assert.AreEqual(1, cnt);
+        }
 
 		/// <summary>
 		/// Bug #16627 Index and length must refer to a location within the string." when executing c

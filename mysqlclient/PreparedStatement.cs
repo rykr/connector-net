@@ -70,10 +70,15 @@ namespace MySql.Data.MySqlClient
 			//TODO: support long data here
 			// create our null bitmap
 			BitArray nullMap = new BitArray( parameters.Count ); //metaData.Length );
-			for (int x=0; x < parameters.Count; x++)
+
+            // now we run through the parameters that PREPARE sent back and use
+            // those names to index into the parameters the user gave us.
+            // if the user set that parameter to NULL, then we set the null map
+            // accordingly
+            for (int x=0; x < paramList.Length; x++)
 			{
-				if (parameters[x].Value == DBNull.Value ||
-					parameters[x].Value == null)
+                MySqlParameter p = parameters[paramList[x].ColumnName];
+				if (p.Value == DBNull.Value || p.Value == null)
 					nullMap[x] = true;
 			}
 			byte[] nullMapBytes = new byte[ (parameters.Count + 7)/8 ];
