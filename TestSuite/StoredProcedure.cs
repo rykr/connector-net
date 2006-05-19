@@ -474,6 +474,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// <summary>
 		/// Bug #13632  	the MySQLCommandBuilder.deriveparameters has not been updated for MySQL 5
         /// Bug #15077  	Error MySqlCommandBuilder.DeriveParameters for sp without parameters.
+        /// Bug #19515  	DiscoverParameters fails on numeric datatype
 		/// </summary>
 		[Category("5.0")]
 		[Test]
@@ -488,14 +489,15 @@ namespace MySql.Data.MySqlClient.Tests
 
 			execSQL("CREATE PROCEDURE spTest(IN \r\nvalin DECIMAL(10,2), " +
 				"\nIN val2 INT, INOUT val3 FLOAT, OUT val4 DOUBLE, INOUT val5 BIT, " +
-				"val6 VARCHAR(155), val7 SET('a','b'), val8 CHAR) BEGIN SELECT 1; END");
+				"val6 VARCHAR(155), val7 SET('a','b'), val8 CHAR, val9 NUMERIC(10,2)) " +
+                "BEGIN SELECT 1; END");
 
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
 			MySqlDataAdapter da = new MySqlDataAdapter(cmd);
 			MySqlCommandBuilder.DeriveParameters(cmd);
 
-			Assert.AreEqual(8, cmd.Parameters.Count);
+			Assert.AreEqual(9, cmd.Parameters.Count);
 			Assert.AreEqual("valin", cmd.Parameters[0].ParameterName);
 			Assert.AreEqual(ParameterDirection.Input, cmd.Parameters[0].Direction);
 			Assert.AreEqual(MySqlDbType.NewDecimal, cmd.Parameters[0].MySqlDbType);
@@ -527,6 +529,10 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual("val8", cmd.Parameters[7].ParameterName);
 			Assert.AreEqual(ParameterDirection.Input, cmd.Parameters[7].Direction);
 			Assert.AreEqual(MySqlDbType.Char, cmd.Parameters[7].MySqlDbType);
+
+            Assert.AreEqual("val9", cmd.Parameters[8].ParameterName);
+            Assert.AreEqual(ParameterDirection.Input, cmd.Parameters[8].Direction);
+            Assert.AreEqual(MySqlDbType.NewDecimal, cmd.Parameters[8].MySqlDbType);
 
             execSQL("DROP PROCEDURE spTest");
             execSQL("CREATE PROCEDURE spTest() BEGIN END");
@@ -710,6 +716,37 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-	
+        [Test]
+        [Category("5.0")]
+        public void ReturningEmptyResultSet()
+        {
+            execSQL("DROP PROCEDURE IF EXISTS spTest");
+            execSQL("DROP TABLE IF EXISTS test1");
+            execSQL("DROP TABLE IF EXISTS test2");
+            execSQL("CREATE TABLE test1 (id int AUTO_INCREMENT NOT NULL, " +
+                "Name VARCHAR(100) NOT NULL, PRIMARY KEY(id))");
+            execSQL("CREATE TABLE test2 (id int AUTO_INCREMENT NOT NULL, " +
+                "id1 INT NOT NULL, id2 INT NOT NULL, PRIMARY KEY(id))");
+            
+            execSQL("INSERT INTO test1 (Id, Name) VALUES (1, 'Item1')");
+            execSQL("INSERT INTO test1 (Id, Name) VALUES (2, 'Item2')");
+            execSQL("INSERT INTO test2 (Id, Id1, Id2) VALUES (1, 1, 1)");
+            execSQL("INSERT INTO test2 (Id, Id1, Id2) VALUES (2, 2, 1)");
+
+            execSQL("CREATE PROCEDURE spTest(Name VARCHAR(100), OUT Table1Id INT) " +
+                "BEGIN SELECT t1.Id INTO Table1Id FROM test1 t1 WHERE t1.Name LIKE Name; " +
+                "SELECT t3.Id2 FROM test2 t3 WHERE t3.Id1 = Table1Id; END");
+
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "spTest";
+            cmd.Parameters.Add("Name", "Item3");
+            cmd.Parameters.Add("Table1Id", MySqlDbType.Int32);
+            cmd.Parameters["Table1Id"].Direction = ParameterDirection.Output;
+
+            DataSet ds = new DataSet();
+            MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+            da.Fill(ds);
+        }
 	}
 }

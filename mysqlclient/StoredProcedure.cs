@@ -301,6 +301,7 @@ namespace MySql.Data.MySqlClient
 				case "varchar": return MySqlDbType.VarChar;
 				case "date": return MySqlDbType.Date;
 				case "datetime": return MySqlDbType.Datetime;
+                case "numeric":
 				case "decimal": 
 				case "dec":
 				case "fixed":
