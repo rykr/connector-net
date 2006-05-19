@@ -7,6 +7,7 @@
     Bug #19261 Supplying Input Parameters [fixed]
     Bug #19481 Where clause with datetime throws exception [any warning causes the exception] [fixed]
     Bug #15077 Error MySqlCommandBuilder.DeriveParameters for sp without parameters. [fixed]
+    Bug #16934 Unsigned values > 2^63 (UInt64) cannot be used in prepared statements
     
 x-xx-05 - Version 1.0.7
 

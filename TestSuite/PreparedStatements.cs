@@ -618,5 +618,51 @@ namespace MySql.Data.MySqlClient.Tests
             count = command.ExecuteScalar();
             Assert.AreEqual(1, count);
         }
+
+        /// <summary>
+        /// Bug #16934 Unsigned values > 2^63 (UInt64) cannot be used in prepared statements
+        /// </summary>
+        [Test]
+        [Category("4.1")]
+        public void UnsignedValues()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test (ulVal BIGINT UNSIGNED, lVal INT UNSIGNED, " +
+                "mVal MEDIUMINT UNSIGNED, sVal SMALLINT UNSIGNED)");
+
+            MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (?ulVal, " +
+                "?lVal, ?mVal, ?sVal)", conn);
+            cmd.Parameters.Add("?ulVal", MySqlDbType.UInt64);
+            cmd.Parameters.Add("?lVal", MySqlDbType.UInt32);
+            cmd.Parameters.Add("?mVal", MySqlDbType.UInt32);
+            cmd.Parameters.Add("?sVal", MySqlDbType.UInt16);
+            cmd.Prepare();
+            cmd.Parameters[0].Value = UInt64.MaxValue;
+            cmd.Parameters[1].Value = UInt32.MaxValue;
+            cmd.Parameters[2].Value = 16777215;
+            cmd.Parameters[3].Value = UInt16.MaxValue;
+            Assert.AreEqual(1, cmd.ExecuteNonQuery());
+            cmd.CommandText = "SELECT * FROM test";
+            cmd.CommandType = CommandType.Text;
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                Assert.AreEqual(UInt64.MaxValue, reader.GetUInt64(0));
+                Assert.AreEqual(UInt32.MaxValue, reader.GetUInt32(1));
+                Assert.AreEqual(16777215, reader.GetUInt32(2));
+                Assert.AreEqual(UInt16.MaxValue, reader.GetUInt16(3));
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
+        }
 	}
 }

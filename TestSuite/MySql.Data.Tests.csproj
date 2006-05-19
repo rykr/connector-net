@@ -75,9 +75,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data">
-      <Name>MySQL.Data</Name>
-      <HintPath>..\bin\net-1.1\Debug\MySQL.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=1.0.7.17581, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\net-2.0\Debug\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <Name>nunit.framework</Name>
