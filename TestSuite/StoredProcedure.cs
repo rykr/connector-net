@@ -106,32 +106,49 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+        /// <summary>
+        /// Bug #17814  	Stored procedure fails unless DbType set explicitly
+        /// </summary>
+		[Test]
 		[Category("5.0")]
 		public void OutputParameters()
 		{
 			// create our procedure
 			execSQL( "DROP PROCEDURE IF EXISTS spCount" );
-			execSQL( "CREATE PROCEDURE spCount( out value VARCHAR(50), OUT intVal INT, OUT dateVal TIMESTAMP, OUT floatVal FLOAT ) " + 
-				"BEGIN  SET value='42';  SET intVal=33; SET dateVal='2004-06-05 07:58:09'; SET floatVal = 1.2; END" );
+			execSQL( "CREATE PROCEDURE spCount(out value VARCHAR(50), OUT intVal INT, " +
+                "OUT dateVal TIMESTAMP, OUT floatVal FLOAT, OUT noTypeVarChar VARCHAR(20), " +
+                "OUT noTypeInt INT) " + 
+				"BEGIN  SET value='42';  SET intVal=33; SET dateVal='2004-06-05 07:58:09'; " +
+                "SET floatVal = 1.2; SET noTypeVarChar='test'; SET noTypeInt=66; END" );
 
 			MySqlCommand cmd = new MySqlCommand("spCount", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
-			cmd.Parameters.Add( new MySqlParameter("?value", MySqlDbType.VarChar));
-			cmd.Parameters.Add( new MySqlParameter( "?intVal", MySqlDbType.Int32 ) );
-			cmd.Parameters.Add( new MySqlParameter( "?dateVal", MySqlDbType.Datetime ) );
-			cmd.Parameters.Add( new MySqlParameter( "?floatVal", MySqlDbType.Float ) );
-			cmd.Parameters[0].Direction = ParameterDirection.Output;
+			cmd.Parameters.Add(new MySqlParameter("?value", MySqlDbType.VarChar));
+			cmd.Parameters.Add(new MySqlParameter("?intVal", MySqlDbType.Int32));
+			cmd.Parameters.Add(new MySqlParameter("?dateVal", MySqlDbType.Datetime));
+			cmd.Parameters.Add(new MySqlParameter("?floatVal", MySqlDbType.Float));
+            MySqlParameter vcP = new MySqlParameter();
+            vcP.ParameterName = "noTypeVarChar";
+            vcP.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add(vcP);
+            MySqlParameter vcI = new MySqlParameter();
+            vcI.ParameterName = "noTypeInt";
+            vcI.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add(vcI);
+            cmd.Parameters[0].Direction = ParameterDirection.Output;
 			cmd.Parameters[1].Direction = ParameterDirection.Output;
 			cmd.Parameters[2].Direction = ParameterDirection.Output;
 			cmd.Parameters[3].Direction = ParameterDirection.Output;
 			int rowsAffected = cmd.ExecuteNonQuery();
 
-			Assert.AreEqual( 0, rowsAffected );
-			Assert.AreEqual( "42", cmd.Parameters[0].Value );
-			Assert.AreEqual( 33, cmd.Parameters[1].Value );
-			Assert.AreEqual( new DateTime(2004, 6, 5, 7, 58, 9), Convert.ToDateTime(cmd.Parameters[2].Value) );
-			Assert.AreEqual( 1.2, cmd.Parameters[3].Value );
+			Assert.AreEqual(0, rowsAffected);
+			Assert.AreEqual("42", cmd.Parameters[0].Value);
+			Assert.AreEqual(33, cmd.Parameters[1].Value);
+			Assert.AreEqual(new DateTime(2004, 6, 5, 7, 58, 9), 
+                Convert.ToDateTime(cmd.Parameters[2].Value));
+			Assert.AreEqual(1.2, cmd.Parameters[3].Value);
+            Assert.AreEqual("test", cmd.Parameters[4].Value);
+            Assert.AreEqual(66, cmd.Parameters[5].Value);
 
 			execSQL("DROP PROCEDURE spCount");
 		}

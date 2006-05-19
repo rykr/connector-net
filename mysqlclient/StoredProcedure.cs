@@ -190,6 +190,29 @@ namespace MySql.Data.MySqlClient
 			return name;
 		}
 
+        private void CheckParameterTypes(MySqlCommand cmd)
+        {
+            bool setTypes = false;
+            foreach (MySqlParameter p in cmd.Parameters)
+            {
+                if (!p.TypeHasBeenSet)
+                {
+                    setTypes = true;
+                    break;
+                }
+            }
+            if (!setTypes) return;
+            MySqlCommand cmd2 = new MySqlCommand(cmd.CommandText, cmd.Connection);
+            cmd2.CommandType = cmd.CommandType;
+            DiscoverParameters(cmd2, "");
+            foreach (MySqlParameter p in cmd.Parameters)
+            {
+                if (p.TypeHasBeenSet) continue;
+                MySqlParameter parmWithType = cmd2.Parameters[p.ParameterName];
+                p.MySqlDbType = parmWithType.MySqlDbType;
+            }
+        }
+
 		/// <summary>
 		/// Creates the proper command text for executing the given stored procedure
 		/// </summary>
@@ -197,6 +220,7 @@ namespace MySql.Data.MySqlClient
 		/// <returns></returns>
 		public string Prepare(MySqlCommand cmd)
 		{
+            CheckParameterTypes(cmd);
 			MySqlParameter returnParameter = GetReturnParameter(cmd);
 
 			string returnDef;

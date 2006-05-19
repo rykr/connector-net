@@ -43,7 +43,6 @@ namespace MySql.Data.MySqlClient
 		private DataRowVersion		sourceVersion = DataRowVersion.Current;
 		private int					size;
 		private byte				precision;
-		private bool				isUnsigned;
 		private byte				scale;
 		private MySqlDbType			mySqlDbType;
 		private DbType				dbType;
@@ -146,6 +145,11 @@ namespace MySql.Data.MySqlClient
 		#endregion
 
 		#region Properties
+
+        internal bool TypeHasBeenSet
+        {
+            get { return inferType == false; }
+        }
 
 		/// <summary>
 		/// Gets or sets the <see cref="DbType"/> of the parameter.
@@ -394,7 +398,6 @@ namespace MySql.Data.MySqlClient
 				case DbType.Byte:
 				case DbType.SByte:
 					mySqlDbType = dbType == DbType.Byte ? MySqlDbType.UByte : MySqlDbType.Byte; 
-					isUnsigned = dbType == DbType.Byte;
 					break;
 
 				case DbType.Date: mySqlDbType = MySqlDbType.Date; break;
