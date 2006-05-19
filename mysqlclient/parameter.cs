@@ -315,7 +315,7 @@ namespace MySql.Data.MySqlClient
                 case MySqlDbType.UInt32:
                     return (int)MySqlDbType.Int32 | 0x8000;
                 case MySqlDbType.UInt24:
-                    return (int)MySqlDbType.Int64 | 0x8000;
+                    return (int)MySqlDbType.Int32 | 0x8000;
                 case MySqlDbType.UInt16:
                     return (int)MySqlDbType.Int16 | 0x8000;
                 default:

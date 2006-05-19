@@ -634,7 +634,7 @@ namespace MySql.Data.MySqlClient.Tests
                 "?lVal, ?mVal, ?sVal)", conn);
             cmd.Parameters.Add("?ulVal", MySqlDbType.UInt64);
             cmd.Parameters.Add("?lVal", MySqlDbType.UInt32);
-            cmd.Parameters.Add("?mVal", MySqlDbType.UInt32);
+            cmd.Parameters.Add("?mVal", MySqlDbType.UInt24);
             cmd.Parameters.Add("?sVal", MySqlDbType.UInt16);
             cmd.Prepare();
             cmd.Parameters[0].Value = UInt64.MaxValue;
