@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2005 MySQL AB
+// Copyright (C) 2004-2006 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -42,7 +42,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
-		[Test()]
+		[Test]
 		public void MultiWord()
 		{
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
@@ -68,7 +68,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( 3, dt.Rows[0]["multi word"] );
 		}
 
-		[Test()]
+		[Test]
 		public void LastOneWins() 
 		{
 			execSQL("INSERT INTO Test (id, name) VALUES (1, 'Test')");
@@ -91,7 +91,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( "Test3", dt.Rows[0]["name"] );			
 		}
 
-		[Test()]
+		[Test]
 		public void NotLastOneWins() 
 		{
 			execSQL("INSERT INTO Test (id, name) VALUES (1, 'Test')");

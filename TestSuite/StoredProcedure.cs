@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2005 MySQL AB
+// Copyright (C) 2004-2006 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -473,6 +473,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 		/// <summary>
 		/// Bug #13632  	the MySQLCommandBuilder.deriveparameters has not been updated for MySQL 5
+        /// Bug #15077  	Error MySqlCommandBuilder.DeriveParameters for sp without parameters.
 		/// </summary>
 		[Category("5.0")]
 		[Test]
@@ -526,7 +527,16 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual("val8", cmd.Parameters[7].ParameterName);
 			Assert.AreEqual(ParameterDirection.Input, cmd.Parameters[7].Direction);
 			Assert.AreEqual(MySqlDbType.Char, cmd.Parameters[7].MySqlDbType);
-		}
+
+            execSQL("DROP PROCEDURE spTest");
+            execSQL("CREATE PROCEDURE spTest() BEGIN END");
+            cmd.CommandText = "spTest";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Clear();
+            da = new MySqlDataAdapter(cmd);
+            MySqlCommandBuilder.DeriveParameters(cmd);
+            Assert.AreEqual(0, cmd.Parameters.Count);
+        }
 
 		/// <summary>
 		/// Bug #13632  	the MySQLCommandBuilder.deriveparameters has not been updated for MySQL 5

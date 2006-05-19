@@ -159,19 +159,20 @@ namespace MySql.Data.MySqlClient
 			string returns = String.Empty;
 			string[] defs = GetParameterDefs(cmd, out returns, procType);
 
-			foreach (string def in defs)
-			{
-				string[] parts = GetParameterParts(def);
-				if (parts == null) continue;
-				MySqlParameter p = new MySqlParameter(parts[1], GetType(parts[2]));
-				if (parts[0] == "out")
-					p.Direction = ParameterDirection.Output;
-				else if (parts[0] == "inout")
-					p.Direction = ParameterDirection.InputOutput;
-				else
-					p.Direction = ParameterDirection.Input;
-				cmd.Parameters.Add(p);
-			}
+            if (defs != null)
+			    foreach (string def in defs)
+			    {
+				    string[] parts = GetParameterParts(def);
+				    if (parts == null) continue;
+				    MySqlParameter p = new MySqlParameter(parts[1], GetType(parts[2]));
+				    if (parts[0] == "out")
+					    p.Direction = ParameterDirection.Output;
+				    else if (parts[0] == "inout")
+					    p.Direction = ParameterDirection.InputOutput;
+				    else
+					    p.Direction = ParameterDirection.Input;
+				    cmd.Parameters.Add(p);
+			    }
 
 			if (returns != null && returns.Length != 0)
 			{
