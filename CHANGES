@@ -10,6 +10,7 @@
     Bug #16934 Unsigned values > 2^63 (UInt64) cannot be used in prepared statements
 	Bug #19515 DiscoverParameters fails on numeric datatype [fixed]
     Bug #17814 Stored procedure fails unless DbType set explicitly
+    Bug #19294 IDataRecord.GetString method should return null for null values
 	
 x-xx-05 - Version 1.0.7
 

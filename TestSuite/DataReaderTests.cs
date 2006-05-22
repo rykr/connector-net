@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2005 MySQL AB
+// Copyright (C) 2004-2006 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -792,5 +792,34 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
+        /// <summary>
+        /// Bug #19294 IDataRecord.GetString method should return null for null values
+        /// </summary>
+        [Test]
+        public void GetStringOnNull()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test (id int, PRIMARY KEY(id))");
+            MySqlCommand cmd = new MySqlCommand("SHOW INDEX FROM test FROM test", conn);
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                string s = reader.GetString(reader.GetOrdinal("Sub_part"));
+            }
+            catch (System.Data.SqlTypes.SqlNullValueException ex1)
+            {
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
+        }
 	}
 }

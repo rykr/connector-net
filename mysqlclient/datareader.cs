@@ -22,6 +22,7 @@ using System;
 using System.Data;
 using System.Collections;
 using MySql.Data.Types;
+using System.Data.SqlTypes;
 
 namespace MySql.Data.MySqlClient
 {
@@ -535,11 +536,11 @@ namespace MySql.Data.MySqlClient
 		public String GetString(int index)
 		{
 			MySqlValue val = GetFieldValue(index);
-			MySqlString str = (val as MySqlString);
-			if (str != null) return str.Value;
+            if (val.IsNull)
+                throw new SqlNullValueException();
 
 			if (val is MySqlBinary)
-				return (currentResult[index] as MySqlBinary).ToString( fields[index].Encoding );
+				return (currentResult[index] as MySqlBinary).ToString(fields[index].Encoding);
 
 			return val.ToString();
 		}
