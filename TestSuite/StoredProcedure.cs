@@ -239,7 +239,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		[Category("5.0")]
 		public void ExecuteScalar() 
 		{
@@ -256,6 +256,24 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( "Test", result );
 			Assert.AreEqual( "valuein", cmd.Parameters[1].Value );
 		}
+
+        /// <summary>
+        /// Bug #13590  	ExecuteScalar returns only Int64 regardless of actual SQL type
+        /// </summary>
+        [Test]
+        [Category("5.0")]
+        public void ExecuteScalar2()
+        {
+            // create our procedure
+            execSQL("CREATE PROCEDURE spTest() " +
+                "BEGIN  DECLARE myVar1 INT; SET myVar1 := 1; SELECT myVar1; END");
+
+            MySqlCommand cmd = new MySqlCommand("spTest", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            object result = cmd.ExecuteScalar();
+            Assert.AreEqual(1, result);
+            Assert.IsTrue(result is Int32);
+        }
 
 		[Test()]
 		[Category("5.0")]

@@ -9,9 +9,9 @@
     Bug #15077 Error MySqlCommandBuilder.DeriveParameters for sp without parameters. [fixed]
     Bug #16934 Unsigned values > 2^63 (UInt64) cannot be used in prepared statements
 	Bug #19515 DiscoverParameters fails on numeric datatype [fixed]
-    Bug #17814 Stored procedure fails unless DbType set explicitly
-    Bug #19294 IDataRecord.GetString method should return null for null values
-	
+    Bug #17814 Stored procedure fails unless DbType set explicitly [fixed]
+    Bug #19294 IDataRecord.GetString method should return null for null values [fixed]
+    Bug #13590 ExecuteScalar returns only Int64 regardless of actual SQL type [added test case]
 x-xx-05 - Version 1.0.7
 
     Bugs fixed or addressed
