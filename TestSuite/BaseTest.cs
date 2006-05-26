@@ -37,17 +37,20 @@ namespace MySql.Data.MySqlClient.Tests
 		protected string			host;
 		protected string			user;
 		protected string			password;
-		//protected string			nopassuser;
 		protected string			otherkeys;
 
 		public BaseTest() 
 		{
 			csAdditions = ";pooling=false";
-		}
+            user = "root";
+            password = "";
+            otherkeys = ConfigurationSettings.AppSettings["otherkeys"];
+        }
 
 		protected string GetConnectionString(bool includedb)
 		{
-			if (includedb)
+            host = ConfigurationSettings.AppSettings["host"];
+            if (includedb)
 				return String.Format("server={0};user id={1};password={2};database=test;" +
 					"persist security info=true;{3}{4}", host, user, password, otherkeys, csAdditions );
 			return String.Format("server={0};user id={1};password={2};" +
@@ -58,10 +61,6 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			try 
 			{
-				host = ConfigurationSettings.AppSettings["host"];
-				user = "root";
-				password = "";
-				otherkeys = ConfigurationSettings.AppSettings["otherkeys"];
 				string connString = GetConnectionString(true);
 				conn = new MySqlConnection( connString );
 				conn.Open();
@@ -127,7 +126,7 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[TearDown]
-		protected void Teardown()
+		protected virtual void Teardown()
 		{
 		}
 

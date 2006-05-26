@@ -42,6 +42,11 @@ namespace MySql.Data.MySqlClient
 			Trace.WriteLine( msg );
 		}
 
+        static public void LogInformation(string msg)
+        {
+            Trace.WriteLine(msg);
+        }
+
 		static public void LogException( Exception ex )
 		{
 			string msg = String.Format("EXCEPTION: " + ex.Message);

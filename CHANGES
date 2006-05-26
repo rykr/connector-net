@@ -12,6 +12,10 @@
     Bug #17814 Stored procedure fails unless DbType set explicitly [fixed]
     Bug #19294 IDataRecord.GetString method should return null for null values [fixed]
     Bug #13590 ExecuteScalar returns only Int64 regardless of actual SQL type [added test case]
+    Bug #19017 GetBytes Error [fixed]
+    Bug #19936 DataReader already open exception [fixed]
+    Bug #17106 MySql.Data.MySqlClient.CharSetMap.GetEncoding thread synchronization issue [fixed]
+    
 x-xx-05 - Version 1.0.7
 
     Bugs fixed or addressed

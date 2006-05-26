@@ -32,10 +32,12 @@ namespace MySql.Data.MySqlClient
 	{
 		private static Hashtable	mapping;
 
-		// Declare a private ctor so a default one won't be made by the compiler
-		private CharSetMap() 
+        // we use a static constructor here since we only want to init
+        // the mapping once
+		static CharSetMap() 
 		{
-		}
+            InitializeMapping();
+        }
 
 		/// <summary>
 		/// Returns the text encoding for a given MySQL character set name
@@ -45,8 +47,6 @@ namespace MySql.Data.MySqlClient
 		/// <returns>Encoding object for the given character set name</returns>
 		public static Encoding GetEncoding( DBVersion version, string CharSetName ) 
 		{
-			if (mapping == null )
-				InitializeMapping();
 			try 
 			{
 				if (! mapping.Contains( CharSetName ))
@@ -74,6 +74,7 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		private static void InitializeMapping()
 		{
+            Logger.LogInformation("Initializing character set mapping array");
 			LoadCharsetMap();
 		}
 
