@@ -302,11 +302,15 @@ namespace MySql.Data.Types
 			}
 
 			long bufLength = reader.ReadByte();
-
-			int year = reader.ReadInteger(2);
-			int month = reader.ReadByte();
-			int day = reader.ReadByte();
-			int hour = 0, minute = 0, second = 0;
+            int year = 0, month = 0, day = 0;
+            int hour = 0, minute = 0, second = 0;
+            
+            if (bufLength >= 4)
+            {
+                year = reader.ReadInteger(2);
+                month = reader.ReadByte();
+                day = reader.ReadByte();
+            }
 
 			if (bufLength > 4) 
 			{

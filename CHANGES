@@ -15,6 +15,7 @@
     Bug #19017 GetBytes Error [fixed]
     Bug #19936 DataReader already open exception [fixed]
     Bug #17106 MySql.Data.MySqlClient.CharSetMap.GetEncoding thread synchronization issue [fixed]
+    Bug #17736 Selecting a row with with empty date '0000-00-00' results in Read() hanging. [fixed]
     
 x-xx-05 - Version 1.0.7
 

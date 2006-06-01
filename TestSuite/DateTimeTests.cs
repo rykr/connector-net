@@ -48,7 +48,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
-		[Test()]
+		[Test]
 		public void ConvertZeroDateTime()
 		{
 			execSQL("INSERT INTO Test VALUES(1, '0000-00-00', '0000-00-00', '00:00:00', NULL)");
@@ -81,7 +81,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void TestNotAllowZerDateAndTime() 
 		{
 			execSQL("INSERT INTO Test VALUES(1, 'Test', '0000-00-00', '0000-00-00', '00:00:00')");
@@ -264,7 +264,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void TestZeroDateTimeException() 
 		{
 			execSQL("INSERT INTO Test (id, d, dt) VALUES (1, '0000-00-00', '0000-00-00 00:00:00')");
@@ -376,6 +376,33 @@ namespace MySql.Data.MySqlClient.Tests
             da.Fill(dataSet);
         }
 
+        /// <summary>
+        /// Bug #17736 Selecting a row with with empty date '0000-00-00' results in Read() hanging. 
+        /// </summary>
+        [Category("4.1")]
+        [Test]
+        public void PreparedZeroDateTime()
+        {
+            execSQL("INSERT INTO test VALUES(1, Now(), '0000-00-00', NULL, NULL)");
+            MySqlCommand cmd = new MySqlCommand("SELECT d FROM test WHERE id=?id", conn);
+            cmd.Parameters.Add("?id", 1);
+            cmd.Prepare();
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = cmd.ExecuteReader();
+                reader.Read();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
+        }
 	}
 
 }
