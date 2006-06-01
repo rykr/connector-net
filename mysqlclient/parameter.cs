@@ -34,6 +34,7 @@ namespace MySql.Data.MySqlClient
 	[TypeConverter(typeof(MySqlParameter.MySqlParameterConverter))]
 	public sealed class MySqlParameter : MarshalByRefObject, IDataParameter, IDbDataParameter, ICloneable
 	{
+        private const int UNSIGNED_MASK = 0x8000;
 		private object				paramValue;
 		private MySqlValue			valueObject;
 		private ParameterDirection	direction = ParameterDirection.Input;
@@ -311,17 +312,17 @@ namespace MySql.Data.MySqlClient
             switch (mySqlDbType)
             {
                 case MySqlDbType.Bit:
-                    return (int)MySqlDbType.Int64 | 0x8000;
+                    return (int)MySqlDbType.Int64 | UNSIGNED_MASK;
                 case MySqlDbType.UByte:
-                    return (int)MySqlDbType.Byte | 0x8000;
+                    return (int)MySqlDbType.Byte | UNSIGNED_MASK;
                 case MySqlDbType.UInt64:
-                    return (int)MySqlDbType.Int64 | 0x8000;
+                    return (int)MySqlDbType.Int64 | UNSIGNED_MASK;
                 case MySqlDbType.UInt32:
-                    return (int)MySqlDbType.Int32 | 0x8000;
+                    return (int)MySqlDbType.Int32 | UNSIGNED_MASK;
                 case MySqlDbType.UInt24:
-                    return (int)MySqlDbType.Int32 | 0x8000;
+                    return (int)MySqlDbType.Int32 | UNSIGNED_MASK;
                 case MySqlDbType.UInt16:
-                    return (int)MySqlDbType.Int16 | 0x8000;
+                    return (int)MySqlDbType.Int16 | UNSIGNED_MASK;
                 default:
                     return (int)this.mySqlDbType;
             }
