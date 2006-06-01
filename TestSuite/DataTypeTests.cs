@@ -567,6 +567,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 		/// <summary>
 		/// Bug #17375 CommandBuilder ignores Unsigned flag at Parameter creation 
+        /// Bug #15274 Use MySqlDbType.UInt32, throwed exception 'Only byte arrays can be serialize' 
 		/// </summary>
 		[Test]
 		public void UnsignedTypes()
@@ -592,6 +593,28 @@ namespace MySql.Data.MySqlClient.Tests
 			row["b"] = 135;
 			row.EndEdit();
 			da.Update(dv.Table);
+
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (b MEDIUMINT UNSIGNED PRIMARY KEY)");
+            execSQL("INSERT INTO test VALUES(20)");
+            MySqlCommand cmd = new MySqlCommand("SELECT * FROM test WHERE (b > ?id)", conn);
+            cmd.Parameters.Add("?id", MySqlDbType.UInt16).Value = 10;
+            MySqlDataReader dr = null;
+            try
+            {
+                dr = cmd.ExecuteReader();
+                dr.Read();
+                Assert.AreEqual(20, dr.GetUInt16(0));
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                if (dr != null)
+                    dr.Close();
+            }
 		}
 	}
 }
