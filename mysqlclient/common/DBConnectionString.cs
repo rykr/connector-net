@@ -74,7 +74,8 @@ namespace MySql.Data.Common
 		protected string RemoveKeys(string value, string[] keys)
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-			string[] pairs = Utility.ContextSplit(value, ";", "\"'");
+            ContextString cs = new ContextString("\"'", false);
+			string[] pairs = cs.Split(value, ";");
 			foreach (string keyvalue in pairs)
 			{
 				string test = keyvalue.Trim().ToLower();

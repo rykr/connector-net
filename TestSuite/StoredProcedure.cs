@@ -35,7 +35,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			csAdditions = ";pooling=false";
+			csAdditions = ";pooling=false;procedure cache size=0";
 			Open();
 			execSQL("DROP TABLE IF EXISTS Test; CREATE TABLE Test (id INT, name VARCHAR(100))");
 		}
@@ -65,7 +65,7 @@ namespace MySql.Data.MySqlClient.Tests
 				p.Scale = 3;
 				p.Value = 21;
 
-				object id = cmd.ExecuteScalar();
+				decimal id = (decimal)cmd.ExecuteScalar();
 				Assert.AreEqual( 21, id );
 			}
 		}
@@ -350,8 +350,6 @@ namespace MySql.Data.MySqlClient.Tests
 			cmd.CommandType = CommandType.Text;
 			object result = cmd.ExecuteScalar();
 			Assert.AreEqual( "Test", result );
-
-			execSQL("DROP FUNCTION fnTest");
 		}
 
 		[Test()]
@@ -365,8 +363,6 @@ namespace MySql.Data.MySqlClient.Tests
 			cmd.CommandType = CommandType.Text;
 			object result = cmd.ExecuteScalar();
 			Assert.AreEqual( 26, result);
-
-			execSQL("DROP FUNCTION fnTest");
 		}
 
 		[Test()]
@@ -417,17 +413,19 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
-			cmd.Parameters.Add( "?valin", 20.4 );
-			cmd.Parameters.Add( "?val2", 4 );
-			object val = cmd.ExecuteScalar();
-			Assert.AreEqual( 20.4, val );
+			cmd.Parameters.Add("?valin", 20.4);
+			cmd.Parameters.Add("?val2", 4);
+			decimal val = (decimal)cmd.ExecuteScalar();
+            Decimal d = new Decimal(20.4);
+            Assert.AreEqual(d, val);
 
 			// create our second procedure
-			execSQL("DROP PROCEDURE spTest");
+			execSQL("DROP PROCEDURE IF EXISTS spTest");
 			execSQL("CREATE PROCEDURE spTest( \r\n) BEGIN  SELECT 4; END" );
 			cmd.Parameters.Clear();
-			val = cmd.ExecuteScalar();
-			Assert.AreEqual(4, val);
+			object val1 = cmd.ExecuteScalar();
+			Assert.AreEqual(4, val1);
+            execSQL("DROP PROCEDURE IF EXISTS spTest");
 		}
 
 
@@ -438,9 +436,8 @@ namespace MySql.Data.MySqlClient.Tests
 		[Category("5.0")]
 		public void CallingStoredFunctionasProcedure()
 		{
-			execSQL("DROP FUNCTION IF EXISTS spFunc");
-			execSQL("CREATE FUNCTION spFunc(valin int) RETURNS INT BEGIN return valin * 2; END");
-			MySqlCommand cmd = new MySqlCommand("spFunc", conn);
+			execSQL("CREATE FUNCTION fnTest(valin int) RETURNS INT BEGIN return valin * 2; END");
+			MySqlCommand cmd = new MySqlCommand("fnTest", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
 			cmd.Parameters.Add("?valin", 22);
 			cmd.Parameters.Add("retval", MySqlDbType.Int32);
@@ -588,14 +585,13 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			try 
 			{
-				execSQL("DROP FUNCTION IF EXISTS spTest");
-				execSQL("CREATE FUNCTION spTest(v1 DATETIME) RETURNS INT " +
+				execSQL("CREATE FUNCTION fnTest(v1 DATETIME) RETURNS INT " +
 					" BEGIN RETURN 1; END");
 
-				MySqlCommand cmd = new MySqlCommand("spTest", conn);
+				MySqlCommand cmd = new MySqlCommand("fnTest", conn);
 				cmd.CommandType = CommandType.StoredProcedure;
 				MySqlDataAdapter da = new MySqlDataAdapter(cmd);
-				MySqlCommandBuilder.DeriveParameters(cmd, false);
+				MySqlCommandBuilder.DeriveParameters(cmd);
 
 				Assert.AreEqual(2, cmd.Parameters.Count);
 				Assert.AreEqual("v1", cmd.Parameters[0].ParameterName);

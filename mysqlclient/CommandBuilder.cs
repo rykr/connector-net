@@ -23,6 +23,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Text;
 using MySql.Data.Common;
+using System.Collections;
 
 namespace MySql.Data.MySqlClient
 {
@@ -138,14 +139,18 @@ namespace MySql.Data.MySqlClient
 				throw new MySqlException("DeriveParameters is not supported on versions " +
 					"prior to 5.0");
 			StoredProcedure sp = new StoredProcedure(command.Connection);
-			sp.DiscoverParameters(command, "");
-		}
 
-		public static void DeriveParameters(MySqlCommand command, bool useProc)
-		{
-			StoredProcedure sp = new StoredProcedure(command.Connection);
-			sp.DiscoverParameters(command, useProc ? "PROCEDURE" : "FUNCTION");
-		}
+            string spName = command.CommandText;
+            int dotIndex = spName.IndexOf('.');
+            if (dotIndex == -1)
+                spName = command.Connection.Database + "." + spName;
+
+            ArrayList parameters = sp.DiscoverParameters(spName);
+
+            command.Parameters.Clear();
+            foreach (MySqlParameter p in parameters)
+                command.Parameters.Add(p);
+        }
 
 		/// <include file='docs/MySqlCommandBuilder.xml' path='docs/GetDeleteCommand/*'/>
 		public MySqlCommand GetDeleteCommand()

@@ -22,6 +22,9 @@ using System;
 using System.Data;
 using System.Text;
 using MySql.Data.Common;
+using System.Collections;
+using System.Globalization;
+using System.Diagnostics;
 
 namespace MySql.Data.MySqlClient
 {
@@ -49,74 +52,72 @@ namespace MySql.Data.MySqlClient
 			return null;
 		}
 
-		private string GetParameterList(MySqlCommand procCmd, out string returns,
-			string procType)
-		{
-			MySqlCommand cmd = new MySqlCommand();
-			string spName = procCmd.CommandText;
-			cmd.Connection = connection;
-			returns = null;
+        private string GetRoutineType(ref string spName)
+        {
+            int dotIndex = spName.IndexOf('.');
+            string schema = spName.Substring(0, dotIndex);
+            if (schema == null || schema == String.Empty)
+                schema = "database()";
+            else
+                schema = String.Format("'{0}'", schema);
+            string name = spName.Substring(dotIndex + 1);
 
-			int dotIndex = spName.IndexOf(".");
-			// query the mysql.proc table for the procedure parameter list
-			// if our spname as a dot in it, then we assume the first part is the 
-			// database name.  If there is no dot, then we use database() as 
-			// the current database.
-			if (dotIndex == -1)
-				cmd.CommandText = "SELECT param_list, returns FROM mysql.proc " +
-					"WHERE db=database() ";
-			else
-			{
-				string db = spName.Substring(0, dotIndex);
-				cmd.Parameters.Add("db", db);
-				spName = spName.Substring(dotIndex+1, spName.Length - dotIndex-1);
-				cmd.CommandText = String.Format("SELECT param_list, returns FROM mysql.proc " + 
-					"WHERE db=_latin1 {0}db ", connection.ParameterMarker);
-			}
+            MySqlCommand cmd = new MySqlCommand(String.Format("SELECT ROUTINE_SCHEMA, ROUTINE_TYPE FROM " +
+                "INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_SCHEMA={0} AND " +
+                "ROUTINE_NAME='{1}'", schema, name), connection);
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                object oSchema = reader.GetValue(0);
+                if (schema == "database()")
+                    spName = oSchema.ToString() + "." + name;
+                return reader.GetString(1);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
+        }
 
-			cmd.CommandText += String.Format("AND name=_latin1 {0}name",
-				connection.ParameterMarker);
-				
-			if (procType.Length > 0)
-				cmd.CommandText += " AND type='" + procType + "'";
+        private string GetProcedureBody(string spName, out string sql_mode, out bool isFunc)
+        {
+            sql_mode = String.Empty;
 
-			cmd.Parameters.Add(connection.ParameterMarker + "name", spName);
-			MySqlDataReader reader = null;
+            string type = GetRoutineType(ref spName);
+            if (type == null)
+                throw new MySqlException("Procedure or function '" + spName + "' does not exist.");
 
-			try 
-			{
-				reader = cmd.ExecuteReader();
-				if (!reader.Read()) return null;
-				if (!reader.IsDBNull(1))
-					returns = reader.GetString(1);
-				if (returns != null && returns.Length == 0)
-					returns = null;
-				string return_val = reader.GetString(0);
-				if (reader.Read())
-					throw new MySqlException("More than one procedure or function matches " +
-						"the name '" + spName + "'");
-				return return_val;
-			}
-			catch (Exception ex) 
-			{
-				Logger.LogException( ex );
-				throw;
-			}
-			finally 
-			{
-				if (reader != null) reader.Close();
-			}
-		}
+            MySqlDataReader reader = null;
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand(String.Format("SHOW CREATE " +
+                    "{0} {1}", type, spName), connection);
+                isFunc = type.ToLower(CultureInfo.InvariantCulture) == "function";
+                cmd.CommandText = String.Format("SHOW CREATE {0} {1}", type, spName);
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                sql_mode = reader.GetString(1);
+                return reader.GetString(2);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
+        }
 
-		private string CleanType(string type)
-		{
-			int paren_index = type.IndexOf("(");
-			if (paren_index != -1)
-				type = type.Substring(0, paren_index);
-			return type;
-		}
-
-		private string CleanProcParameter(string parameter)
+		private string CleanParameterName(string parameter)
 		{
 			char c = parameter[0];
 			if (c == '`' || c == '\'' || c == '"')
@@ -124,66 +125,119 @@ namespace MySql.Data.MySqlClient
 			return parameter;
 		}
 
-		private string[] GetParameterParts(string parameterDef)
+        private int FindRightParen(string body, string quotePattern)
+        {
+            int pos = 0;
+            bool left = false;
+            char quote = Char.MinValue;
+
+            foreach (char c in body)
+            {
+                if (c == ')')
+                {
+                    if (left)
+                        left = false;
+                    else if (quote == Char.MinValue)
+                        break;
+                }
+                else if (c == '(' && quote == Char.MinValue)
+                    left = true;
+                else
+                {
+                    int quoteIndex = quotePattern.IndexOf(c);
+                    if (quoteIndex > -1)
+                        if (quote == Char.MinValue)
+                            quote = c;
+                        else if (quote == c)
+                            quote = Char.MinValue;
+                }
+
+                pos++;
+            }
+            return pos;
+        }
+
+        private ArrayList ParseBody(string body, string sqlMode)
+        {
+            bool ansiQuotes = sqlMode.IndexOf("ANSI_QUOTES") != -1;
+            bool noBackslash = sqlMode.IndexOf("NO_BACKSLASH_ESCAPES") != -1;
+            string quotePattern = ansiQuotes ? "``\"\"" : "``";
+
+            ContextString cs = new ContextString(quotePattern, !noBackslash);
+            
+            int leftParen = cs.IndexOf(body, '(');
+            Debug.Assert(leftParen != -1);
+
+            // trim off the first part
+            body = body.Substring(leftParen + 1);
+
+            int rightParen = FindRightParen(body, quotePattern);
+            Debug.Assert(rightParen != -1);
+            string parms = body.Substring(0, rightParen).Trim();
+
+            quotePattern += "()";
+            ArrayList parmArray = new ArrayList();
+            string[] paramDefs = cs.Split(parms, ",");
+            if (paramDefs.Length > 0)
+                foreach (string def in paramDefs)
+                    parmArray.Add(ParseParameter(def, cs, sqlMode));
+
+            body = body.Substring(rightParen+1).Trim().ToLower(CultureInfo.InvariantCulture);
+            if (body.StartsWith("returns"))
+                parmArray.Add(ParseParameter(body, cs, sqlMode));
+            return parmArray;
+        }
+
+        private MySqlParameter ParseParameter(string parmDef, ContextString cs,
+            string sqlMode)
+        {
+            MySqlParameter p = new MySqlParameter();
+
+            parmDef = parmDef.Trim();
+            string lowerDef = parmDef.ToLower(CultureInfo.InvariantCulture);
+
+            if (lowerDef.StartsWith("inout "))
+            {
+                p.Direction = ParameterDirection.InputOutput;
+                parmDef = parmDef.Substring(6);
+            }
+            else if (lowerDef.StartsWith("in "))
+                parmDef = parmDef.Substring(3);
+            else if (lowerDef.StartsWith("out "))
+            {
+                p.Direction = ParameterDirection.Output;
+                parmDef = parmDef.Substring(4);
+            }
+            else if (lowerDef.StartsWith("returns "))
+            {
+                p.Direction = ParameterDirection.ReturnValue;
+                parmDef = parmDef.Substring(8);
+            }
+            parmDef = parmDef.Trim();
+
+            string[] split = cs.Split(parmDef, " \t\r\n");
+            if (p.Direction != ParameterDirection.ReturnValue)
+            {
+                p.ParameterName = CleanParameterName(split[0]);
+                parmDef = parmDef.Substring(split[0].Length);
+            }
+
+            ParseType(parmDef, sqlMode, p);
+            return p;
+        }
+
+		public ArrayList DiscoverParameters(string spName)
 		{
-			int pos = 0;
-			string[] parts = new string[3];
+            string sql_mode;
+            bool isFunc;
+            string body = GetProcedureBody(spName, out sql_mode, out isFunc);
 
-			string[] split = Utility.ContextSplit(parameterDef.ToLower(), " \t\r\n", "");
-			if (split.Length == 0) return null;
+            ArrayList parameters = ParseBody(body, sql_mode);
 
-			if (split[0] == "in" || split[0] == "out" || split[0] == "inout")
-				parts[0] = split[pos++];
-			else
-				parts[0] = "in";
-
-			parts[1] = CleanProcParameter(split[pos++]);
-			parts[2] = CleanType(split[pos++]);
-			return parts;
+            return parameters;
 		}
 
-		private string[] GetParameterDefs(MySqlCommand cmd, out string returns, 
-			string procType)
-		{
-			string sig = GetParameterList(cmd, out returns, procType);
-
-			if (sig == null || sig.Length == 0) 
-				return null;
-
-			string[] paramDefs = Utility.ContextSplit(sig, ",", "()");
-			return paramDefs;
-		}
-
-		public void DiscoverParameters(MySqlCommand cmd, string procType)
-		{
-			string returns = String.Empty;
-			string[] defs = GetParameterDefs(cmd, out returns, procType);
-
-            if (defs != null)
-			    foreach (string def in defs)
-			    {
-				    string[] parts = GetParameterParts(def);
-				    if (parts == null) continue;
-				    MySqlParameter p = new MySqlParameter(parts[1], GetType(parts[2]));
-				    if (parts[0] == "out")
-					    p.Direction = ParameterDirection.Output;
-				    else if (parts[0] == "inout")
-					    p.Direction = ParameterDirection.InputOutput;
-				    else
-					    p.Direction = ParameterDirection.Input;
-				    cmd.Parameters.Add(p);
-			    }
-
-			if (returns != null && returns.Length != 0)
-			{
-				MySqlParameter p = new MySqlParameter();
-				p.MySqlDbType = GetType(CleanType(returns));
-				p.Direction = ParameterDirection.ReturnValue;
-				cmd.Parameters.Add(p);
-			}
-		}
-
-		private string CleanParameterName(string name)
+		private string StripParameterName(string name)
 		{
 			if (name[0] == connection.ParameterMarker)
 				return name.Remove(0,1);
@@ -202,9 +256,10 @@ namespace MySql.Data.MySqlClient
                 }
             }
             if (!setTypes) return;
+
             MySqlCommand cmd2 = new MySqlCommand(cmd.CommandText, cmd.Connection);
             cmd2.CommandType = cmd.CommandType;
-            DiscoverParameters(cmd2, "");
+            MySqlCommandBuilder.DeriveParameters(cmd2);
             foreach (MySqlParameter p in cmd.Parameters)
             {
                 if (p.TypeHasBeenSet) continue;
@@ -223,63 +278,58 @@ namespace MySql.Data.MySqlClient
             CheckParameterTypes(cmd);
 			MySqlParameter returnParameter = GetReturnParameter(cmd);
 
-			string returnDef;
-			string[] defs = GetParameterDefs(cmd, out returnDef, 
-				returnParameter == null ? "PROCEDURE" : "FUNCTION");
+            try
+            {
+                ArrayList parameters = connection.ProcedureCache.GetProcedure(
+                connection, cmd.CommandText);
 
-			string sqlStr = String.Empty;
-			string setStr = String.Empty;
-			outSelect = String.Empty;
+		        string sqlStr = String.Empty;
+		        string setStr = String.Empty;
+		        outSelect = String.Empty;
 
-			try 
-			{
-				if (defs != null)
-				{
-					foreach (string def in defs)
-					{
-						string[] parts = GetParameterParts(def);
-						if (parts == null) continue;
+                foreach (MySqlParameter serverP in parameters)
+                {
+                    if (serverP.Direction == ParameterDirection.ReturnValue)
+                        continue;
+                    int index = cmd.Parameters.IndexOf(serverP.ParameterName);
+                    if (index == -1)
+                        throw new MySqlException("Parameter '" + serverP.ParameterName + "' is not defined");
 
-						int index = cmd.Parameters.IndexOf(parts[1]);
-						if (index == -1)
-							throw new MySqlException("Parameter '" + parts[1] + "' is not defined");
+                    MySqlParameter p = cmd.Parameters[index];
+                    string cleanName = StripParameterName(p.ParameterName);
+                    string pName = connection.ParameterMarker + cleanName;
+                    string vName = "@" + hash + cleanName;
+                    if (p.Direction == ParameterDirection.Input)
+                    {
+                        sqlStr += pName + ", ";
+                        continue;
+                    }
+                    else if (p.Direction == ParameterDirection.InputOutput)
+                        setStr += "set " + vName + "=" + pName + ";";
+                    sqlStr += vName + ", ";
+                    outSelect += vName + ", ";
+                }
 
-						MySqlParameter p = cmd.Parameters[index];
-						string cleanName = CleanParameterName(p.ParameterName);
-						string pName = connection.ParameterMarker + cleanName;
-						string vName = "@" + hash + cleanName;
-						if (p.Direction == ParameterDirection.Input)
-						{
-							sqlStr += pName + ", ";
-							continue;
-						}
-						else if (p.Direction == ParameterDirection.InputOutput)
-							setStr += "set " + vName + "=" + pName + ";";
-						sqlStr += vName + ", ";
-						outSelect += vName + ", ";
-					}
-				}
+                if (returnParameter == null)
+                    sqlStr = "call " + cmd.CommandText + "(" + sqlStr;
+                else
+                {
+                    string vname = "@" + hash + CleanParameterName(returnParameter.ParameterName);
+                    sqlStr = "set " + vname + "=" + cmd.CommandText + "(" + sqlStr;
+                    outSelect = vname + outSelect;
+                }
 
-				if (returnParameter == null)
-					sqlStr = "call " + cmd.CommandText + "(" + sqlStr;
-				else
-				{
-					string vname = "@" + hash + CleanParameterName(returnParameter.ParameterName);
-					sqlStr = "set " + vname + "=" + cmd.CommandText + "(" + sqlStr;
-					outSelect = vname + outSelect;
-				}
-
-				sqlStr = sqlStr.TrimEnd(' ', ',');
-				outSelect = outSelect.TrimEnd(' ', ',');
-				sqlStr += ")";
-				if (setStr.Length > 0)
-					sqlStr = setStr + sqlStr;
-				return sqlStr;
-			}
-			catch (Exception ex)
-			{
-				throw new MySqlException("Exception trying to retrieve parameter info for " + cmd.CommandText + ": " + ex.Message, ex);
-			}
+                sqlStr = sqlStr.TrimEnd(' ', ',');
+                outSelect = outSelect.TrimEnd(' ', ',');
+                sqlStr += ")";
+                if (setStr.Length > 0)
+                    sqlStr = setStr + sqlStr;
+                return sqlStr;
+            }
+            catch (Exception ex)
+            {
+                throw new MySqlException("Exception during execution of '" + cmd.CommandText + "': " + ex.Message, ex);
+            }
 		}
 
 		public void UpdateParameters(MySqlParameterCollection parameters)
@@ -308,23 +358,46 @@ namespace MySql.Data.MySqlClient
 			reader.Close();
 		}
 
-		private MySqlDbType GetType(string typename)
+		private void ParseType(string type, string sql_mode, MySqlParameter p)
 		{
-			typename = typename.ToLower();
-			bool isUnsigned = typename.IndexOf("unsigned") != -1;
-			string sqlmode = connection.driver.Property("sql_mode");
-			bool real_as_float = sqlmode.IndexOf("REAL_AS_FLOAT") != -1;
+            string typeName, flags = String.Empty, size;
+            int end;
 
-			int index = typename.IndexOf("(");
-			if (index != -1)
-				typename = typename.Substring(0, index);
+            type = type.ToLower(CultureInfo.InvariantCulture).Trim();
+            int start = type.IndexOf("(");
+            if (start != -1)
+                end = type.IndexOf(')', start + 1);
+            else
+                end = start = type.IndexOf(' ');
+            if (start == -1)
+                start = type.Length;
 
-			switch (typename)
+            typeName = type.Substring(0, start);
+            if (end != -1)
+                flags = type.Substring(end + 1);
+            bool unsigned = flags.IndexOf("unsigned") != -1;
+			bool real_as_float = sql_mode.IndexOf("REAL_AS_FLOAT") != -1;
+
+            p.MySqlDbType = GetTypeFromName(typeName, unsigned, real_as_float);
+
+            if (end > start && p.MySqlDbType != MySqlDbType.Set)
+            {
+                size = type.Substring(start+1, end-(start+1));
+                string[] parts = size.Split(new char[] { ',' } );
+                p.Size = p.Precision = Byte.Parse(parts[0]);
+                if (parts.Length > 1)
+                    p.Scale = Byte.Parse(parts[1]);
+            }
+        }
+
+        private MySqlDbType GetTypeFromName(string typeName, bool unsigned, bool realAsFloat)
+        {
+			switch (typeName)
 			{
-				case "char" : return MySqlDbType.Char;
-				case "varchar": return MySqlDbType.VarChar;
-				case "date": return MySqlDbType.Date;
-				case "datetime": return MySqlDbType.Datetime;
+                case "char": return MySqlDbType.Char;
+                case "varchar": return MySqlDbType.VarChar;
+                case "date": return MySqlDbType.Date;
+                case "datetime": return MySqlDbType.Datetime;
                 case "numeric":
 				case "decimal": 
 				case "dec":
@@ -342,23 +415,26 @@ namespace MySql.Data.MySqlClient
 				case "set": return MySqlDbType.Set;
 				case "enum": return MySqlDbType.Enum;
 				case "bit": return MySqlDbType.Bit;
+
 				case "tinyint":
 				case "bool":
 				case "boolean": 
 					return MySqlDbType.Byte;
 				case "smallint": 
-					return isUnsigned ? MySqlDbType.UInt16 : MySqlDbType.Int16;
+					return unsigned ? MySqlDbType.UInt16 : MySqlDbType.Int16;
 				case "mediumint": 
-					return isUnsigned ? MySqlDbType.UInt24 : MySqlDbType.Int24;
+					return unsigned ? MySqlDbType.UInt24 : MySqlDbType.Int24;
 				case "int" : 
 				case "integer":
-					return isUnsigned ? MySqlDbType.UInt32 : MySqlDbType.Int32;
-				case "bigint": 
-					return isUnsigned ? MySqlDbType.UInt64 : MySqlDbType.Int64;
+					return unsigned ? MySqlDbType.UInt32 : MySqlDbType.Int32;
+                case "serial":
+                    return MySqlDbType.UInt64;
+                case "bigint": 
+					return unsigned ? MySqlDbType.UInt64 : MySqlDbType.Int64;
 				case "float": return MySqlDbType.Float;
 				case "double": return MySqlDbType.Double;
 				case "real": return 
-					 real_as_float ? MySqlDbType.Float : MySqlDbType.Double;
+					 realAsFloat ? MySqlDbType.Float : MySqlDbType.Double;
 				case "blob":
 				case "text":
 					return MySqlDbType.Blob;

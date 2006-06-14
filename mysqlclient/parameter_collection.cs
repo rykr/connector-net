@@ -276,6 +276,9 @@ namespace MySql.Data.MySqlClient
 			if (value == null) 
 				throw new ArgumentException("The MySqlParameterCollection only accepts non-null MySqlParameter type objects.", "value");
 
+            if (value.Direction == ParameterDirection.ReturnValue)
+                return AddReturnParameter(value);
+
 			string inComingName = value.ParameterName.ToLower();
 			if (inComingName[0] == paramMarker)
 				inComingName = inComingName.Substring(1, inComingName.Length-1);
@@ -297,13 +300,26 @@ namespace MySql.Data.MySqlClient
 			return value;
 		}
 
-		/// <summary>
-		/// Adds a <see cref="MySqlParameter"/> to the <see cref="MySqlParameterCollection"/> given the specified parameter name and value.
-		/// </summary>
-		/// <param name="parameterName">The name of the parameter.</param>
-		/// <param name="value">The <see cref="MySqlParameter.Value"/> of the <see cref="MySqlParameter"/> to add to the collection.</param>
-		/// <returns>The newly added <see cref="MySqlParameter"/> object.</returns>
-		public MySqlParameter Add( string parameterName, object value )
+        private MySqlParameter AddReturnParameter(MySqlParameter value)
+        {
+            for (int i = 0; i < _parms.Count; i++)
+            {
+                MySqlParameter p = (MySqlParameter)_parms[i];
+                if (p.Direction != ParameterDirection.ReturnValue) continue;
+                _parms[i] = value;
+                return value;
+            }
+            _parms.Add(value);
+            return value;
+        }
+
+        /// <summary>
+        /// Adds a <see cref="MySqlParameter"/> to the <see cref="MySqlParameterCollection"/> given the specified parameter name and value.
+        /// </summary>
+        /// <param name="parameterName">The name of the parameter.</param>
+        /// <param name="value">The <see cref="MySqlParameter.Value"/> of the <see cref="MySqlParameter"/> to add to the collection.</param>
+        /// <returns>The newly added <see cref="MySqlParameter"/> object.</returns>
+        public MySqlParameter Add(string parameterName, object value)
 		{
 			return Add( new MySqlParameter( parameterName, value ) );
 		}

@@ -430,30 +430,33 @@ namespace MySql.Data.MySqlClient
 		{
 			if (paramValue == null) return;
 
-			if (paramValue is Guid) SetDbType( DbType.String );
-			else if (paramValue is TimeSpan) SetDbType( DbType.Time );
-			else if (paramValue is bool) SetDbType( DbType.Byte );
+			if (paramValue is Guid) 
+                DbType = DbType.String;
+			else if (paramValue is TimeSpan) 
+                DbType = DbType.Time;
+			else if (paramValue is bool) 
+                DbType = DbType.Byte;
 			else 
 			{
 
 				TypeCode tc = Type.GetTypeCode( paramValue.GetType() );
 				switch (tc) 
 				{
-					case TypeCode.SByte: SetDbType( DbType.SByte ); break;
-					case TypeCode.Byte: SetDbType( DbType.Byte ); break;
-					case TypeCode.Int16: SetDbType( DbType.Int16 ); break;
-					case TypeCode.UInt16: SetDbType( DbType.UInt16 ); break;
-					case TypeCode.Int32: SetDbType( DbType.Int32 ); break;
-					case TypeCode.UInt32: SetDbType( DbType.UInt32 ); break;
-					case TypeCode.Int64: SetDbType( DbType.Int64 ); break;
-					case TypeCode.UInt64: SetDbType( DbType.UInt64 ); break;
-					case TypeCode.DateTime: SetDbType( DbType.DateTime ); break;
-					case TypeCode.String: SetDbType( DbType.String ); break;
-					case TypeCode.Single: SetDbType( DbType.Single ); break;
-					case TypeCode.Double: SetDbType( DbType.Double ); break;
-					case TypeCode.Decimal: SetDbType( DbType.Decimal); break;
+					case TypeCode.SByte: DbType = DbType.SByte; break;
+					case TypeCode.Byte: DbType = DbType.Byte; break;
+					case TypeCode.Int16: DbType = DbType.Int16; break;
+					case TypeCode.UInt16: DbType = DbType.UInt16; break;
+					case TypeCode.Int32: DbType = DbType.Int32; break;
+					case TypeCode.UInt32: DbType = DbType.UInt32; break;
+					case TypeCode.Int64: DbType = DbType.Int64; break;
+					case TypeCode.UInt64: DbType = DbType.UInt64; break;
+					case TypeCode.DateTime: DbType = DbType.DateTime; break;
+					case TypeCode.String: DbType = DbType.String; break;
+					case TypeCode.Single: DbType = DbType.Single; break;
+					case TypeCode.Double: DbType = DbType.Double; break;
+                    case TypeCode.Decimal: DbType = DbType.Decimal; break;
 					case TypeCode.Object: 
-					default: SetDbType( DbType.Object ); break;
+					default: DbType = DbType.Object; break;
 				}
 			}
 		}

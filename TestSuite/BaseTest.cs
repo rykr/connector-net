@@ -128,7 +128,12 @@ namespace MySql.Data.MySqlClient.Tests
 		[TearDown]
 		protected virtual void Teardown()
 		{
-		}
+            if (Is50)
+            {
+                execSQL("DROP PROCEDURE IF EXISTS spTest");
+                execSQL("DROP FUNCTION IF EXISTS fnTest");
+            }
+        }
 
 		protected void KillConnection(MySqlConnection c) 
 		{

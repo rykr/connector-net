@@ -24,23 +24,56 @@ using System.Text;
 
 namespace MySql.Data.Common
 {
-	internal class Utility
+	internal class ContextString
 	{
+        string contextMarkers;
+        bool escapeBackslash;
+
 		// Create a private ctor so the compiler doesn't give us a default one
-		private Utility()
+		public ContextString(string contextMarkers, bool escapeBackslash)
 		{
+            this.contextMarkers = contextMarkers;
+            this.escapeBackslash = escapeBackslash;
 		}
 
-		public static string[] ContextSplit( string src, string delimiters, string contextMarkers )
+        public int IndexOf(string src, char target)
+        {
+            char contextMarker = Char.MinValue;
+            bool escaped = false;
+            int pos = 0;
+
+            foreach (char c in src)
+            {
+                int contextIndex = contextMarkers.IndexOf(c);
+
+                // if we have found the closing marker for our open marker, then close the context
+                if (contextIndex > -1 && contextMarker == contextMarkers[contextIndex] && !escaped)
+                    contextMarker = Char.MinValue;
+
+                // if we have found a context marker and we are not in a context yet, then start one
+                else if (contextMarker == Char.MinValue && contextIndex > -1 && !escaped)
+                    contextMarker = c;
+
+                else if (contextMarker == Char.MinValue && c == target)
+                    return pos;
+                else if (c == '\\' && escapeBackslash)
+                    escaped = !escaped;
+                pos++;
+            }
+            return -1;
+        }
+
+		public string[] Split(string src, string delimiters)
 		{
 			ArrayList parts = new ArrayList();
 			StringBuilder sb = new StringBuilder();
+            bool escaped = false;
 
 			char contextMarker = Char.MinValue;
 
 			foreach (char c in src)
 			{
-				if (delimiters.IndexOf(c) != -1)
+				if (delimiters.IndexOf(c) != -1 && !escaped)
 				{
 					if (contextMarker != Char.MinValue) 
 						sb.Append(c);
@@ -53,21 +86,24 @@ namespace MySql.Data.Common
 						}
 					}
 				}
+                else if (c == '\\' && escapeBackslash)
+                    escaped = !escaped;
 				else 
 				{
 					int contextIndex = contextMarkers.IndexOf(c);
+                    if (contextIndex > -1 && contextMarker != Char.MinValue)
+                        contextIndex++;
 
 					// if we have found the closing marker for our open marker, then close the context
-					if ((contextIndex % 2) == 1 && contextMarker == contextMarkers[contextIndex-1] )
+					if ((contextIndex % 2) == 1 && contextMarker == contextMarkers[contextIndex-1] && !escaped)
 						contextMarker = Char.MinValue;
 
 					// if we have found a context marker and we are not in a context yet, then start one
-					if (contextMarker == Char.MinValue && (contextMarkers.IndexOf(c) % 2 == 0))
+					else if (contextMarker == Char.MinValue && (contextMarkers.IndexOf(c) % 2 == 0) && !escaped)
 						contextMarker = c;
 
 					sb.Append( c );
 				}
-
 			}
 			if (sb.Length > 0)
 				parts.Add( sb.ToString() );

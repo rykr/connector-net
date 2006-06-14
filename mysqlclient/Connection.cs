@@ -39,6 +39,7 @@ namespace MySql.Data.MySqlClient
 		private  MySqlDataReader			dataReader;
 		private  MySqlConnectionString		settings;
 		private  bool						hasBeenOpen;
+        private ProcedureCache procedureCache;
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/StateChange/*'/>
 		public event StateChangeEventHandler		StateChange;
@@ -62,6 +63,11 @@ namespace MySql.Data.MySqlClient
 		}
 
 		#region Interal Methods & Properties
+
+        internal ProcedureCache ProcedureCache
+        {
+            get { return procedureCache; }
+        }
 
 		internal MySqlConnectionString Settings 
 		{
@@ -283,18 +289,21 @@ namespace MySql.Data.MySqlClient
 
 			SetState(ConnectionState.Connecting);
 
-			try 
-			{
-				if (settings.Pooling) 
-				{
-					driver = MySqlPoolManager.GetConnection(settings);
-				}
-				else
-				{
-					driver = Driver.Create(settings);
-				}
-			}
-			catch (Exception)
+            try
+            {
+                if (settings.Pooling)
+                {
+                    MySqlPool pool = MySqlPoolManager.GetPool(settings);
+                    driver = pool.GetConnection();
+                    procedureCache = pool.ProcedureCache;
+                }
+                else
+                {
+                    driver = Driver.Create(settings);
+                    procedureCache = new ProcedureCache(settings.ProcedureCacheSize);
+                }
+            }
+            catch (Exception)
 			{
 				SetState(ConnectionState.Closed);
 				throw;

@@ -256,6 +256,11 @@ namespace MySql.Data.MySqlClient
 			get { return GetString("charset"); }
 		}
 
+        public int ProcedureCacheSize
+        {
+            get { return GetInt("procedure cache size"); }
+        }
+
 		#endregion
 
 		/// <summary>
@@ -355,6 +360,7 @@ namespace MySql.Data.MySqlClient
 				defaults["convertzerodatetime"] = false;
 				defaults["reset_pooled_conn"] = true;
 				defaults["cache_server_config"] = false;
+                defaults["procedure cache size"] = 25;
 			}
 			return (Hashtable)defaults.Clone();
 		}
@@ -367,6 +373,10 @@ namespace MySql.Data.MySqlClient
 
 			switch (lowerCaseKey)
 			{
+                case "procedure cache size":
+                    hash["procedure cache size"] = Int32.Parse(lowerCaseValue);
+                    break;
+
 				case "cache server configuration":
 				case "cacheserverconfig":
 				case "cacheserverconfiguration":

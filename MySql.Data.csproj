@@ -124,6 +124,7 @@
     <Compile Include="MySqlClient\CommandResult.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MySqlClient\common\ContextString.cs" />
     <Compile Include="MySqlClient\common\DBConnectionString.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -143,9 +144,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MySqlClient\common\StreamCreator.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MySqlClient\common\Utility.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MySqlClient\common\Version.cs">
@@ -214,6 +212,7 @@
     <Compile Include="MySqlClient\PreparedStatement.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MySqlClient\ProcedureCache.cs" />
     <Compile Include="MySqlClient\SharedMemoryStream.cs">
       <SubType>Code</SubType>
     </Compile>

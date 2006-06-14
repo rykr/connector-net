@@ -43,7 +43,7 @@ namespace MySql.Data.MySqlClient
 			pools = new Hashtable();
 		}
 
-		public static Driver GetConnection(MySqlConnectionString settings) 
+		public static MySqlPool GetPool(MySqlConnectionString settings) 
 		{
 			// make sure the manager is initialized
 			if (MySqlPoolManager.pools == null)
@@ -65,7 +65,7 @@ namespace MySql.Data.MySqlClient
 					pool.Settings = settings;
 				}
 
-				return pool.GetConnection();
+				return pool;
 			}
 		}
 
