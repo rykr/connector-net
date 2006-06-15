@@ -28,30 +28,32 @@ using System.Diagnostics;
 
 namespace MySql.Data.MySqlClient.Tests
 {
-    class MyListener : TraceListener
+    class GenericListener : TraceListener
     {
-        private int numInits;
+        System.Collections.Specialized.StringCollection strings;
 
-        public MyListener()
+        public GenericListener()
         {
-            numInits = 0;
+            strings = new System.Collections.Specialized.StringCollection();
         }
 
-        public int NumInits
+        public int Find(string sToFind)
         {
-            get { return numInits; }
+            int count = 0;
+            foreach (string s in strings)
+                if (s.IndexOf(sToFind) != -1)
+                    count++;
+            return count;
         }
 
         public override void Write(string message)
         {
-            if (message == "Initializing character set mapping array")
-                numInits++;
+            strings.Add(message);
         }
 
         public override void WriteLine(string message)
         {
-            if (message == "Initializing character set mapping array")
-                numInits++;
+            strings.Add(message);
         }
     }
 
@@ -103,7 +105,7 @@ namespace MySql.Data.MySqlClient.Tests
         [Test]
         public void MultipleThreads()
         {
-            MyListener myListener = new MyListener();
+            GenericListener myListener = new GenericListener();
             ManualResetEvent ev = new ManualResetEvent(false);
             ArrayList threads = new ArrayList();
             System.Diagnostics.Trace.Listeners.Add(myListener);
@@ -126,7 +128,7 @@ namespace MySql.Data.MySqlClient.Tests
                     Thread.Sleep(50);
                 x++;
             }
-            Assert.AreEqual(1, myListener.NumInits);
+            Assert.AreEqual(1, myListener.Find("Initializing character set mapping array"));
         }
     }
 

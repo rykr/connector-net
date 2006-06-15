@@ -20,25 +20,35 @@
 
 using MySql.Data.MySqlClient;
 using System.Data;
-using System.Collections.Generic;
 using System.Collections;
 using MySql.Data.Common;
 using System.Diagnostics;
 using System;
 using System.Globalization;
+#if NET20
+using System.Collections.Generic;
+#endif
 
 namespace MySql.Data.MySqlClient
 {
     class ProcedureCache
     {
         private Hashtable procHash;
+#if NET20
         private Queue<int> hashQueue;
+#else
+        private Queue hashQueue;
+#endif
         private int maxSize;
 
         public ProcedureCache(int size)
         {
             maxSize = size;
+#if NET20
             hashQueue = new Queue<int>(maxSize);
+#else
+            hashQueue = new Queue(maxSize);
+#endif
             procHash = new Hashtable(maxSize);
         }
 
@@ -51,7 +61,18 @@ namespace MySql.Data.MySqlClient
             int hash = spName.GetHashCode();
             ArrayList array = (ArrayList)procHash[hash];
             if (array == null)
+            {
+                if (conn.Settings.Logging)
+                    Logger.LogInformation(String.Format(
+                        "Retrieving procedure metadata for {0} from server.",
+                        spName));
                 array = AddNew(conn, spName);
+            }
+            else
+                if (conn.Settings.Logging)
+                    Logger.LogInformation(String.Format(
+                        "Retrieving procedure metadata for {0} from procedure cache.",
+                        spName));
             return array;
         }
 
@@ -71,7 +92,11 @@ namespace MySql.Data.MySqlClient
 
         private void TrimHash()
         {
+#if NET20
             int oldestHash = hashQueue.Dequeue();
+#else
+            int oldestHash = (int)hashQueue.Dequeue();
+#endif
             procHash.Remove(oldestHash);
         }
 

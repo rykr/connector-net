@@ -779,5 +779,53 @@ namespace MySql.Data.MySqlClient.Tests
             MySqlDataAdapter da = new MySqlDataAdapter(cmd);
             da.Fill(ds);
         }
-	}
+
+        [Category("5.0")]
+        [Test]
+        public void ProcedureCache()
+        {
+            // open a new connection using a procedure cache
+            string connStr = GetConnectionString(true);
+            connStr += ";procedure cache size=25;logging=true";
+            MySqlConnection c = new MySqlConnection(connStr);
+            try
+            {
+                c.Open();
+
+                // install our custom trace listener
+                GenericListener myListener = new GenericListener();
+                System.Diagnostics.Trace.Listeners.Add(myListener);
+
+                for (int x = 0; x < 10; x++)
+                {
+                    execSQL("DROP PROCEDURE IF EXISTS spTest" + x);
+                    execSQL("CREATE PROCEDURE spTest" + x + "() BEGIN SELECT 1; END");
+                    MySqlCommand cmd = new MySqlCommand("spTest" + x, c);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    for (int y = 0; y < 20; y++)
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                // remove our custom trace listener
+                System.Diagnostics.Trace.Listeners.Remove(myListener);
+
+                // now see how many times our listener recorded a cache hit
+                Assert.AreEqual(190, myListener.Find("from procedure cache"));
+                Assert.AreEqual(10, myListener.Find("from server"));
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                if (c != null)
+                    c.Close();
+                for (int x = 0; x < 10; x++)
+                    execSQL("DROP PROCEDURE IF EXISTS spTest" + x);
+            }
+        }
+    }
 }

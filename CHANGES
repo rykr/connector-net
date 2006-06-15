@@ -1,3 +1,11 @@
+    Other changes
+    -------------
+    Implemented a stored procedure cache
+    Changed how stored procedure metadata is retrieved to allow users without select privs
+    on mysql.proc to use them
+    
+    Bugs fixed or addressed
+    -----------------------
     Bug #16659 Can't use double quotation marks(") as password access server by Connector/NET [fixed]
     Bug #17375 CommandBuilder ignores Unsigned flag at Parameter creation [fixed]
     Bug #17749 There is no char type in MySqlDbType [fixed]
