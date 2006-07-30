@@ -22,8 +22,6 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip.Compression;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using System.Security.Cryptography;
 using MySql.Data.Common;
 using System.Collections;
