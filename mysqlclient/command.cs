@@ -240,7 +240,7 @@ namespace MySql.Data.MySqlClient
 
 			// if we were executing a stored procedure and we are out of sql buffers to execute, 
 			// then we need to perform some additional work to get our inout and out parameters
-			if (storedProcedure != null && sqlBuffers.Count == 0)
+			if (storedProcedure != null)
 				storedProcedure.UpdateParameters(Parameters);
 		}
 
