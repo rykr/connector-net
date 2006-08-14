@@ -395,6 +395,12 @@ namespace MySql.Data.Types
 			return val.GetDateTime();
 		}
 
+        public static implicit operator MySqlDateTime(DateTime v)
+        {
+            MySqlDateTime dt = new MySqlDateTime(v, MySqlDbType.Datetime);
+            return dt;
+        }
+
 		#region IConvertible Members
 
 		ulong IConvertible.ToUInt64 (IFormatProvider provider)

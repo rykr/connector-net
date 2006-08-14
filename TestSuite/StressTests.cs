@@ -22,6 +22,8 @@ using System;
 using MySql.Data.MySqlClient;
 using System.Data;
 using NUnit.Framework;
+using System.Threading;
+using System.Collections;
 
 namespace MySql.Data.MySqlClient.Tests
 {
@@ -34,22 +36,22 @@ namespace MySql.Data.MySqlClient.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			Open();
-			execSQL("DROP TABLE IF EXISTS Test");
-			execSQL("CREATE TABLE Test (id INT NOT NULL, name varchar(100), blob1 LONGBLOB, text1 TEXT, " +
-				"PRIMARY KEY(id))");
-		}
+            Open();
+            execSQL("DROP TABLE IF EXISTS Test");
+            execSQL("CREATE TABLE Test (id INT NOT NULL, name varchar(100), blob1 LONGBLOB, text1 TEXT, " +
+                "PRIMARY KEY(id))");
+        }
 
 		[TestFixtureTearDown]
 		public void FixtureTearDown()
 		{
-			Close();
-		}
+            Close();
+        }
 
 		[Test]
 		public void TestMultiPacket()
 		{
-			int len = 20000000;
+            int len = 20000000;
 
 			// currently do not test this with compression
 			if (conn.UseCompression) return;
@@ -116,7 +118,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void TestSequence()
 		{
-			MySqlCommand cmd = new MySqlCommand("insert into Test (id, name) values (?id, 'test')", conn);
+            MySqlCommand cmd = new MySqlCommand("insert into Test (id, name) values (?id, 'test')", conn);
 			cmd.Parameters.Add( new MySqlParameter("?id", 1));
 
 			for (int i=1; i <= 8000; i++)
@@ -152,5 +154,5 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-	}
+    }
 }

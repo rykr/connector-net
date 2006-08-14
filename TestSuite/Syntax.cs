@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2005 MySQL AB
+// Copyright (C) 2004-2006 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -325,5 +325,32 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(1000, cnt);
 		}
 
+        [Test]
+        public void AutoIncrement()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test (testID int(11) NOT NULL auto_increment, testName varchar(100) default '', " +
+                    "PRIMARY KEY  (testID)) ENGINE=InnoDB DEFAULT CHARSET=latin1");
+            MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (NULL, 'test')", conn);
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = "SELECT @@IDENTITY as 'Identity'";
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                int ident = Int32.Parse(reader.GetValue(0).ToString());
+                Assert.AreEqual(1, ident);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
+        }
 	}
 }
