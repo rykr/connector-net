@@ -25,6 +25,7 @@
     Bug #17106 MySql.Data.MySqlClient.CharSetMap.GetEncoding thread synchronization issue [fixed]
     Bug #17736 Selecting a row with with empty date '0000-00-00' results in Read() hanging. [fixed]
 	Bug #20581 Null Reference Exception when closing reader after stored procedure. 
+	Bug #21521 # Symbols not allowed in column/table names.    
     
 x-xx-05 - Version 1.0.7
 
