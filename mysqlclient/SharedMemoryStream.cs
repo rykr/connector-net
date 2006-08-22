@@ -41,7 +41,10 @@ namespace MySql.Data.MySqlClient
 		private int				position;
 		private int				connectNumber;
 
-		private uint	EVENT_ALL_ACCESS = 0x001F0003;
+        private uint SYNCHRONIZE = 0x00100000;
+        private uint READ_CONTROL = 0x00020000;
+        private uint EVENT_MODIFY_STATE = 0x2; 
+        private uint EVENT_ALL_ACCESS = 0x001F0003;
 		private uint	FILE_MAP_WRITE = 0x2;
 		private int		BUFFERLENGTH = 16004;
 
@@ -65,12 +68,12 @@ namespace MySql.Data.MySqlClient
 		private void GetConnectNumber(int timeOut)
 		{
 			AutoResetEvent connectRequest = new AutoResetEvent(false);
-			connectRequest.Handle = OpenEvent( EVENT_ALL_ACCESS, false, 
-				memoryName + "_" + "CONNECT_REQUEST" );
+            connectRequest.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
+                false, memoryName + "_" + "CONNECT_REQUEST" );
 
 			AutoResetEvent connectAnswer = new AutoResetEvent(false);
-			connectAnswer.Handle = OpenEvent( EVENT_ALL_ACCESS, false, 
-				memoryName + "_" + "CONNECT_ANSWER" );
+            connectAnswer.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
+                false, memoryName + "_" + "CONNECT_ANSWER" );
 
 			IntPtr connectFileMap = OpenFileMapping( FILE_MAP_WRITE, false,
 				memoryName + "_" + "CONNECT_DATA" );
@@ -94,20 +97,20 @@ namespace MySql.Data.MySqlClient
 			dataView = MapViewOfFile( dataMap, FILE_MAP_WRITE, 0, 0, (UIntPtr)(uint)BUFFERLENGTH );
 
 			serverWrote = new AutoResetEvent(false);
-			serverWrote.Handle = OpenEvent( EVENT_ALL_ACCESS, false, 
-				dataMemoryName + "_SERVER_WROTE" );
+            serverWrote.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
+                false, dataMemoryName + "_SERVER_WROTE" );
 
 			serverRead = new AutoResetEvent(false);
-			serverRead.Handle = OpenEvent( EVENT_ALL_ACCESS, false, 
-				dataMemoryName + "_SERVER_READ" );
+            serverRead.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
+                false, dataMemoryName + "_SERVER_READ" );
 
 			clientWrote = new AutoResetEvent(false);
-			clientWrote.Handle = OpenEvent( EVENT_ALL_ACCESS, false, 
-				dataMemoryName + "_CLIENT_WROTE" );
+            clientWrote.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
+                false, dataMemoryName + "_CLIENT_WROTE" );
 
 			clientRead = new AutoResetEvent(false);
-			clientRead.Handle = OpenEvent( EVENT_ALL_ACCESS, false, 
-				dataMemoryName + "_CLIENT_READ" );
+            clientRead.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
+                false, dataMemoryName + "_CLIENT_READ" );
 
 			// tell the server we are ready
 			serverRead.Set();
