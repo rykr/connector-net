@@ -53,20 +53,25 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), d DATE, dt DATETIME, tm TIME,  PRIMARY KEY(id))");
 		}
 
-		[Test]
-		public void BytesAndBooleans() 
-		{
-			InternalBytesAndBooleans( false );
-			if (! Is41 && ! Is50) return;
-			InternalBytesAndBooleans( true );
-		}
+        [Test]
+        public void BytesAndBooleans()
+        {
+            InternalBytesAndBooleans(false);
+        }
+
+        [Category("4.1")]
+        [Test]
+        public void BytesAndBooleansPrepared()
+        {
+            InternalBytesAndBooleans(true);
+        }
 
 		private void InternalBytesAndBooleans( bool prepare ) 
 		{
-			execSQL( "DROP TABLE IF EXISTS Test" );
-			execSQL( "CREATE TABLE Test (id TINYINT, idu TINYINT UNSIGNED, i INT UNSIGNED)" );
-			execSQL( "INSERT INTO Test VALUES (-98, 140, 20)" );
-			execSQL( "INSERT INTO Test VALUES (0, 0, 0)" );
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (id TINYINT, idu TINYINT UNSIGNED, i INT UNSIGNED)");
+			execSQL("INSERT INTO Test VALUES (-98, 140, 20)");
+			execSQL("INSERT INTO Test VALUES (0, 0, 0)");
 
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", conn);
 			if (prepare) cmd.Prepare();
@@ -74,23 +79,23 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				reader = cmd.ExecuteReader();
-				Assert.IsTrue( reader.Read() );
-				Assert.AreEqual( -98, (sbyte)reader.GetByte(0) );
-				Assert.AreEqual( 140, reader.GetByte(1) );
-				Assert.IsTrue( reader.GetBoolean(1) );
-				Assert.AreEqual( 20, reader.GetUInt32(2) );
-				Assert.AreEqual( 20, reader.GetInt32(2) );
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual(-98, (sbyte)reader.GetByte(0));
+				Assert.AreEqual(140, reader.GetByte(1));
+				Assert.IsTrue(reader.GetBoolean(1));
+				Assert.AreEqual(20, reader.GetUInt32(2));
+				Assert.AreEqual(20, reader.GetInt32(2));
 
-				Assert.IsTrue( reader.Read() );
-				Assert.AreEqual( 0, reader.GetByte(0) );
-				Assert.AreEqual( 0, reader.GetByte(1) );
-				Assert.IsFalse( reader.GetBoolean(1) );
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual(0, reader.GetByte(0));
+				Assert.AreEqual(0, reader.GetByte(1));
+				Assert.IsFalse(reader.GetBoolean(1));
 
-				Assert.IsFalse( reader.Read() );
+				Assert.IsFalse(reader.Read());
 			}
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 			finally 
 			{

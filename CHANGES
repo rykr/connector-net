@@ -3,6 +3,7 @@
     Implemented a stored procedure cache
     Changed how stored procedure metadata is retrieved to allow users without select privs
     on mysql.proc to use them
+    Fixed shared memory connections
     
     Bugs fixed or addressed
     -----------------------

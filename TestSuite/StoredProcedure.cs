@@ -859,5 +859,24 @@ namespace MySql.Data.MySqlClient.Tests
                     reader.Close();
             }
         }
+
+        [Test]
+        public void UnsignedOutputParameters()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE  test (id INT(10) UNSIGNED AUTO_INCREMENT, PRIMARY KEY (id)) ");
+            execSQL("CREATE PROCEDURE spTest (OUT id BIGINT UNSIGNED) " +
+                    "BEGIN INSERT INTO test VALUES (NULL); SET id=LAST_INSERT_ID(); END");
+
+            MySqlCommand cmd = new MySqlCommand("spTest", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("?id", MySqlDbType.UInt64);
+            cmd.Parameters[0].Direction = ParameterDirection.Output;
+            cmd.ExecuteNonQuery();
+
+            object o = cmd.Parameters[0].Value;
+            Assert.IsTrue(o is ulong);
+            Assert.AreEqual(1, o);
+        }
     }
 }

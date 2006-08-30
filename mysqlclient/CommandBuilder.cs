@@ -87,7 +87,7 @@ namespace MySql.Data.MySqlClient
 					_adapter.RowUpdating -= new MySqlRowUpdatingEventHandler(OnRowUpdating);
 				}
 				if (value == null)
-					throw new ArgumentException(Resources.GetString("ParameterCannotBeNull"), "value");
+					throw new ArgumentException(Resources.ParameterCannotBeNull, "value");
 				_adapter = value;
 				_adapter.RowUpdating += new MySqlRowUpdatingEventHandler(OnRowUpdating);
 			}
@@ -197,9 +197,9 @@ namespace MySql.Data.MySqlClient
 			marker = conn.ParameterMarker;
 
 			if (_adapter == null)
-				throw new MySqlException(Resources.GetString("AdapterIsNull"));
+				throw new MySqlException(Resources.AdapterIsNull);
 			if (_adapter.SelectCommand == null)
-				throw new MySqlException(Resources.GetString("AdapterSelectIsNull"));
+				throw new MySqlException(Resources.AdapterSelectIsNull);
 
 			MySqlDataReader dr = _adapter.SelectCommand.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo);
 			_schema = dr.GetSchemaTable();
@@ -222,12 +222,12 @@ namespace MySql.Data.MySqlClient
 					tableName = rowTableName;
 				}
 				else if (tableName != rowTableName && rowTableName.Length > 0)
-					throw new InvalidOperationException(Resources.GetString("CBMultiTableNotSupported"));
+					throw new InvalidOperationException(Resources.CBMultiTableNotSupported);
 				else if (schemaName != rowSchemaName && rowSchemaName.Length > 0)
-					throw new InvalidOperationException(Resources.GetString("CBMultiTableNotSupported"));
+					throw new InvalidOperationException(Resources.CBMultiTableNotSupported);
 			}
 			if (! hasKeyOrUnique)
-				throw new InvalidOperationException(Resources.GetString("CBNoKeyColumn"));
+				throw new InvalidOperationException(Resources.CBNoKeyColumn);
 		}
 
 		private string Quote(string table_or_column)

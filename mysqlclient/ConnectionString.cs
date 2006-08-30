@@ -444,7 +444,7 @@ namespace MySql.Data.MySqlClient
 
 				default:
 					if (! base.ConnectionParameterParsed(hash, key, value))
-						throw new ArgumentException(Resources.GetString("KeywordNotSupported"), key);
+						throw new ArgumentException(Resources.KeywordNotSupported, key);
 					break;
 			}
 

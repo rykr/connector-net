@@ -325,14 +325,14 @@ namespace MySql.Data.MySqlClient
 		{
 			// There must be a valid and open connection.
 			if (connection == null || connection.State != ConnectionState.Open)
-				throw new InvalidOperationException(Resources.GetString("ConnectionMustBeOpen"));
+				throw new InvalidOperationException(Resources.ConnectionMustBeOpen);
 
 			// Data readers have to be closed first
 			if (connection.Reader != null)
-				throw new MySqlException(Resources.GetString("DataReaderOpen"));
+				throw new MySqlException(Resources.DataReaderOpen);
 
 			if (CommandType == CommandType.StoredProcedure && ! connection.driver.Version.isAtLeast(5,0,0))
-				throw new MySqlException(Resources.GetString("SPNotSupported"));
+				throw new MySqlException(Resources.SPNotSupported);
 		}
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/ExecuteNonQuery/*'/>
@@ -428,9 +428,9 @@ namespace MySql.Data.MySqlClient
 		public void Prepare()
 		{
 			if (connection == null)
-				throw new InvalidOperationException(Resources.GetString("ConnectionNotSet"));
+				throw new InvalidOperationException(Resources.ConnectionNotSet);
 			if (connection.State != ConnectionState.Open)
-				throw new InvalidOperationException(Resources.GetString("ConnectionNotOpen"));
+				throw new InvalidOperationException(Resources.ConnectionNotOpen);
 			if (! connection.driver.Version.isAtLeast( 4,1,0)) 
 				return;
 

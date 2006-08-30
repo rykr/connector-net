@@ -75,7 +75,7 @@ namespace MySql.Data.Common
 		public override long Position
 		{
 			get	{ return 0;	}
-			set	{ throw new NotSupportedException(Resources.GetString("SocketNoSeek")); }
+			set	{ throw new NotSupportedException(Resources.SocketNoSeek); }
 		}
 
 		#endregion
@@ -111,7 +111,7 @@ namespace MySql.Data.Common
 
 		public override long Seek(long offset, SeekOrigin origin)
 		{
-			throw new NotSupportedException(Resources.GetString("SocketNoSeek"));
+			throw new NotSupportedException(Resources.SocketNoSeek);
 		}
 
 		public override void SetLength(long value)
@@ -175,7 +175,7 @@ namespace MySql.Data.Common
 			catch (SocketException se)
 			{
 				if (se.ErrorCode != 10035 && se.ErrorCode != 10036)
-					throw new MySqlException(Resources.GetString("ErrorCreatingSocket"), se);
+					throw new MySqlException(Resources.ErrorCreatingSocket, se);
 			}
 
 			// next we wait for our connect timeout or until the socket is connected
