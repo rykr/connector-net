@@ -47,15 +47,21 @@ namespace MySql.Data.MySqlClient.Tests
             otherkeys = ConfigurationSettings.AppSettings["otherkeys"];
         }
 
+        protected virtual string GetConnectionInfo()
+        {
+            return String.Empty;
+        }
+
 		protected string GetConnectionString(bool includedb)
 		{
-            host = ConfigurationSettings.AppSettings["host"];
+            string connStr = String.Format("server={0};user id={1};password={2};" +
+                "persist security info=true;{3}{4}", host, user, password,
+                otherkeys, csAdditions);
             if (includedb)
-				return String.Format("server={0};user id={1};password={2};database=test;" +
-					"persist security info=true;{3}{4}", host, user, password, otherkeys, csAdditions );
-			return String.Format("server={0};user id={1};password={2};" +
-				"persist security info=true;{3}{4}", host, user, password, otherkeys, csAdditions );
-		}
+                connStr += ";database=test";
+            connStr += GetConnectionInfo();
+            return connStr;
+        }
 
 		protected void Open()
 		{

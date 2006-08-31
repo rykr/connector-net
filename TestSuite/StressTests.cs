@@ -153,6 +153,49 @@ namespace MySql.Data.MySqlClient.Tests
 				if (reader != null) reader.Close();
 			}
 		}
-
     }
+
+    #region Configs
+
+    public class StressTestsSocketCompressed : StressTests
+    {
+        protected override string GetConnectionInfo()
+        {
+            return ";port=3306;compress=true";
+        }
+    }
+
+    public class StressTestsPipe : StressTests
+    {
+        protected override string GetConnectionInfo()
+        {
+            return ";protocol=pipe";
+        }
+    }
+
+    public class StressTestsPipeCompressed : StressTests
+    {
+        protected override string GetConnectionInfo()
+        {
+            return ";protocol=pipe;compress=true";
+        }
+    }
+
+    public class StressTestsSharedMemory : StressTests
+    {
+        protected override string GetConnectionInfo()
+        {
+            return ";protocol=memory";
+        }
+    }
+
+    public class StressTestsSharedMemoryCompressed : StressTests
+    {
+        protected override string GetConnectionInfo()
+        {
+            return ";protocol=memory;compress=true";
+        }
+    }
+
+    #endregion
 }
