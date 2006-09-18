@@ -102,7 +102,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void TestNotReadingResultset()
 		{
 			for (int x=0; x < 10; x++)
@@ -121,7 +121,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void GetBytes()
 		{
 			int len = 50000;
@@ -184,7 +184,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 		}
 
-		[Test()]
+		[Test]
 		public void TestSingleResultSetBehavior()
 		{
 			execSQL("INSERT INTO Test (id, name, b1) VALUES (1, 'Test1', NULL)");
@@ -201,7 +201,7 @@ namespace MySql.Data.MySqlClient.Tests
 			reader.Close();
 		}
 
-		[Test()]
+		[Test]
 		public void GetSchema() 
 		{
 			string sql = "CREATE TABLE test2( " +
@@ -237,7 +237,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("DROP TABLE IF EXISTS test2");
 		}
 
-		[Test()]
+		[Test]
 		public void CloseConnectionBehavior() 
 		{
 			execSQL("INSERT INTO Test(id,name) VALUES(1,'test')");
@@ -264,7 +264,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void SingleRowBehavior() 
 		{
 			execSQL("INSERT INTO Test(id,name) VALUES(1,'test1')");
@@ -301,7 +301,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void SingleRowBehaviorWithLimit() 
 		{
 			execSQL("INSERT INTO Test(id,name) VALUES(1,'test1')");
@@ -340,7 +340,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void SimpleSingleRow() 
 		{
 			execSQL("INSERT INTO Test(id,name) VALUES(1,'test1')");
@@ -366,42 +366,55 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void ConsecutiveNulls() 
 		{
-			execSQL("INSERT INTO Test (id, name) VALUES (1, 'Test')");
-			execSQL("INSERT INTO Test (id, name) VALUES (2, NULL)");
-			execSQL("INSERT INTO Test (id, name) VALUES (3, 'Test2')");
+			execSQL("INSERT INTO Test (id, name, dt) VALUES (1, 'Test', NULL)");
+			execSQL("INSERT INTO Test (id, name, dt) VALUES (2, NULL, now())");
+			execSQL("INSERT INTO Test (id, name, dt) VALUES (3, 'Test2', NULL)");
 
-			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", conn);
+			MySqlCommand cmd = new MySqlCommand("SELECT id, name, dt FROM Test", conn);
 			MySqlDataReader reader = null;
 			try 
 			{
 				reader = cmd.ExecuteReader();
 				reader.Read();
-				Assert.AreEqual( 1, reader.GetValue(0) );
-				Assert.AreEqual( "Test", reader.GetValue(1) );
-				Assert.AreEqual( "Test", reader.GetString(1) );
+				Assert.AreEqual(1, reader.GetValue(0));
+				Assert.AreEqual("Test", reader.GetValue(1));
+				Assert.AreEqual("Test", reader.GetString(1));
+                Assert.AreEqual(DBNull.Value, reader.GetValue(2));
 				reader.Read();
-				Assert.AreEqual( 2, reader.GetValue(0) );
-				Assert.AreEqual( DBNull.Value, reader.GetValue(1) );
-				Assert.AreEqual( null, reader.GetString(1) );
-				reader.Read();
-				Assert.AreEqual( 3, reader.GetValue(0) );
-				Assert.AreEqual( "Test2", reader.GetValue(1) );
-				Assert.AreEqual( "Test2", reader.GetString(1) );
-				Assert.IsFalse( reader.Read() );
-				Assert.IsFalse( reader.NextResult() );
+				Assert.AreEqual(2, reader.GetValue(0));
+				Assert.AreEqual(DBNull.Value, reader.GetValue(1));
+                try
+                {
+                    reader.GetString(1);
+                    Assert.Fail("Should not get here");
+                }
+                catch (Exception) { }
+                Assert.IsFalse(reader.IsDBNull(2));
+                reader.Read();
+				Assert.AreEqual(3, reader.GetValue(0));
+				Assert.AreEqual("Test2", reader.GetValue(1));
+				Assert.AreEqual("Test2", reader.GetString(1));
+                Assert.AreEqual(DBNull.Value, reader.GetValue(2));
+                try
+                {
+                    reader.GetMySqlDateTime(2);
+                    Assert.Fail("Should not get here");
+                }
+                catch (Exception) { }
+                Assert.IsFalse(reader.Read());
+				Assert.IsFalse(reader.NextResult());
 			}
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 			finally 
 			{
 				if (reader != null) reader.Close();
 			}
-
 		}
 
 		[Test()]
@@ -557,7 +570,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void TestManyDifferentResultsets()
 		{
 			MySqlDataReader reader =null;

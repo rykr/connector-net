@@ -215,7 +215,7 @@ namespace MySql.Data.MySqlClient
 		/// <returns></returns>
 		public byte GetByte(int i)
 		{
-			MySqlValue v = GetFieldValue(i);
+			MySqlValue v = GetFieldValue(i, false);
 			if (v is MySqlUByte)
 				return ((MySqlUByte)v).Value;
 			else
@@ -237,7 +237,7 @@ namespace MySql.Data.MySqlClient
 			if (i >= fields.Length) 
 				throw new IndexOutOfRangeException();
 
-			MySqlValue val = GetFieldValue(i);
+			MySqlValue val = GetFieldValue(i, false);
 
 			if (! (val is MySqlBinary))
 				throw new MySqlException("GetBytes can only be called on binary columns");
@@ -326,13 +326,13 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetMySqlDateTime/*'/>
 		public MySqlDateTime GetMySqlDateTime(int index)
 		{
-			return (MySqlDateTime)GetFieldValue(index);
+			return (MySqlDateTime)GetFieldValue(index, true);
 		}
 
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetDateTime/*'/>
 		public DateTime GetDateTime(int index)
 		{
-			MySqlValue val = GetFieldValue(index);
+			MySqlValue val = GetFieldValue(index, true);
 			if (val is MySqlDateTime)
 			{
 				MySqlDateTime dt = (MySqlDateTime)val;
@@ -343,17 +343,17 @@ namespace MySql.Data.MySqlClient
 			}
 			else if (val is MySqlString)
 			{
-				MySqlDateTime d = new MySqlDateTime( MySqlDbType.Datetime );
-				d = d.ParseMySql( (val as MySqlString).Value, true );
+				MySqlDateTime d = new MySqlDateTime(MySqlDbType.Datetime);
+				d = d.ParseMySql((val as MySqlString).Value, true);
 				return d.GetDateTime();
 			}
-			throw new NotSupportedException( "Unable to convert from type " + val.GetType().ToString() + " to DateTime" );
+			throw new NotSupportedException("Unable to convert from type " + val.GetType().ToString() + " to DateTime");
 		}
 
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetDecimal/*'/>
 		public Decimal GetDecimal(int index)
 		{
-			MySqlValue v = GetFieldValue(index);
+			MySqlValue v = GetFieldValue(index, true);
 			if (v is MySqlDecimal)
 				return ((MySqlDecimal)v).Value;
 			return Convert.ToDecimal(v.ValueAsObject);
@@ -362,7 +362,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetDouble/*'/>
 		public double GetDouble(int index)
 		{
-			MySqlValue v = GetFieldValue(index);
+			MySqlValue v = GetFieldValue(index, true);
 			if (v is MySqlDouble)
 				return ((MySqlDouble)v).Value;
 			return Convert.ToDouble(v.ValueAsObject);
@@ -386,7 +386,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetFloat/*'/>
 		public float GetFloat(int index)
 		{
-			MySqlValue v = GetFieldValue(index);
+			MySqlValue v = GetFieldValue(index, true);
 			if (v is MySqlFloat)
 				return ((MySqlFloat)v).Value;
 			return Convert.ToSingle(v.ValueAsObject);
@@ -401,7 +401,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetInt16/*'/>
 		public Int16 GetInt16(int index)
 		{
-			MySqlValue v = GetFieldValue(index);
+			MySqlValue v = GetFieldValue(index, true);
 			if (v is MySqlInt16)
 				return ((MySqlInt16)v).Value;
 			return Convert.ToInt16(v.ValueAsObject);
@@ -410,7 +410,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetInt32/*'/>
 		public Int32 GetInt32(int index)
 		{
-			MySqlValue v = GetFieldValue(index);
+			MySqlValue v = GetFieldValue(index, true);
 			if (v is MySqlInt32)
 				return ((MySqlInt32)v).Value;
 			return Convert.ToInt32(v.ValueAsObject);
@@ -419,7 +419,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetInt64/*'/>
 		public Int64 GetInt64(int index)
 		{
-			MySqlValue v = GetFieldValue(index);
+			MySqlValue v = GetFieldValue(index, true);
 			if (v is MySqlInt64)
 				return ((MySqlInt64)v).Value;
 			return Convert.ToInt64(v.ValueAsObject);
@@ -535,9 +535,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetString/*'/>
 		public String GetString(int index)
 		{
-			MySqlValue val = GetFieldValue(index);
-            if (val.IsNull)
-                throw new SqlNullValueException();
+			MySqlValue val = GetFieldValue(index, true);
 
 			if (val is MySqlBinary)
 				return (currentResult[index] as MySqlBinary).ToString(fields[index].Encoding);
@@ -548,7 +546,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetTimeSpan/*'/>
 		public TimeSpan GetTimeSpan(int index)
 		{
-			MySqlTimeSpan ts = (MySqlTimeSpan)GetFieldValue(index);
+			MySqlTimeSpan ts = (MySqlTimeSpan)GetFieldValue(index, true);
 			return ts.Value;
 		}
 
@@ -562,7 +560,7 @@ namespace MySql.Data.MySqlClient
 			if (! isOpen) throw new Exception("No current query in data reader");
 			if (i >= fields.Length) throw new IndexOutOfRangeException();
 
-			MySqlValue val = GetFieldValue(i);
+			MySqlValue val = GetFieldValue(i, false);
 			if (val.IsNull) return DBNull.Value;
 
 			// if the column is a date/time, then we return a MySqlDateTime
@@ -599,7 +597,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetUInt16/*'/>
 		public UInt16 GetUInt16( int index )
 		{
-			MySqlValue v = GetFieldValue(index);
+			MySqlValue v = GetFieldValue(index, true);
 			if (v is MySqlUInt16)
 				return ((MySqlUInt16)v).Value;
 			return Convert.ToUInt16(v.ValueAsObject);
@@ -608,7 +606,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetUInt32/*'/>
 		public UInt32 GetUInt32( int index )
 		{
-			MySqlValue v = GetFieldValue(index);
+			MySqlValue v = GetFieldValue(index, true);
 			if (v is MySqlUInt32)
 				return ((MySqlUInt32)v).Value;
 			return Convert.ToUInt32(v.ValueAsObject);
@@ -617,7 +615,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetUInt64/*'/>
 		public UInt64 GetUInt64( int index )
 		{
-			MySqlValue v = GetFieldValue(index);
+			MySqlValue v = GetFieldValue(index, true);
 			if (v is MySqlUInt64)
 				return ((MySqlUInt64)v).Value;
 			return Convert.ToUInt64(v.ValueAsObject);
@@ -746,7 +744,7 @@ namespace MySql.Data.MySqlClient
 		}
 
 
-		private MySqlValue GetFieldValue(int index) 
+		private MySqlValue GetFieldValue(int index, bool checkNull) 
 		{
 			if (index < 0 || index >= fields.Length) 
 				throw new ArgumentException( "You have specified an invalid column ordinal." );
@@ -754,7 +752,10 @@ namespace MySql.Data.MySqlClient
 			try
 			{
 				MySqlValue val = currentResult.ReadColumnValue(index);
-				if ( readCount == 0 )
+                if (val.IsNull && checkNull)
+                    throw new SqlNullValueException();
+
+				if (readCount == 0)
 					throw new MySqlException("Invalid attempt to access a field before calling Read()");
 
 				return val;
