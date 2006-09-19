@@ -28,6 +28,7 @@
 	Bug #20581 Null Reference Exception when closing reader after stored procedure. 
 	Bug #21521 # Symbols not allowed in column/table names.    
 	Bug #16884 Invalid DateTime Values from DataReader     
+	Bug #7248  There is already an open DataReader associated with this Connection which must 
 	
 x-xx-05 - Version 1.0.7
 

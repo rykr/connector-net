@@ -324,8 +324,25 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 				Assert.Fail( ex.Message );
 			}
-
 		}
+
+        /// <summary>
+        /// Bug #7248 There is already an open DataReader associated with this Connection which must 
+        /// </summary>
+        [Test]
+        public void GenWarnings()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test (id INT, dt DATETIME)");
+            execSQL("INSERT INTO test VALUES (1, NOW())");
+            execSQL("INSERT INTO test VALUES (2, NOW())");
+            execSQL("INSERT INTO test VALUES (3, NOW())");
+
+            MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test WHERE dt = '" +
+                DateTime.Now + "'", conn);
+            DataSet ds = new DataSet();
+            da.Fill(ds);
+        }
 	}
 
     #region Configs
