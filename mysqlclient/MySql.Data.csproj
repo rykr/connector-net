@@ -100,7 +100,8 @@
     <Content Include="docs\MySqlParameterCollection.xml" />
     <Content Include="docs\MySqlTransaction.xml" />
     <None Include="Installer\main.wxs" />
-    <None Include="Installer\ui.wxs" />
+    <None Include="Installer\samples.wxs" />
+    <None Include="Installer\sources.wxs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CharSetMap.cs" />
     <Compile Include="command.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="common\NamedPipeStream.cs" />
     <Compile Include="common\NativeMethods.cs" />
     <Compile Include="common\Platform.cs" />
+    <Compile Include="common\SharedMemoryStream.cs" />
     <Compile Include="common\SocketStream.cs" />
     <Compile Include="common\StreamCreator.cs" />
     <Compile Include="common\Version.cs" />
@@ -141,7 +143,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SharedMemoryStream.cs" />
     <Compile Include="StoredProcedure.cs" />
     <Compile Include="transaction.cs" />
     <Compile Include="Types\MySqlBinary.cs" />

@@ -21,6 +21,8 @@ using System;
 using System.Data;
 using MySql.Data.MySqlClient;
 using NUnit.Framework;
+using System.Globalization;
+using System.Threading;
 
 namespace MySql.Data.MySqlClient.Tests
 {
@@ -877,6 +879,37 @@ namespace MySql.Data.MySqlClient.Tests
             object o = cmd.Parameters[0].Value;
             Assert.IsTrue(o is ulong);
             Assert.AreEqual(1, o);
+        }
+
+        /// <summary>
+        /// Bug #22452 MySql.Data.MySqlClient.MySqlException: 
+        /// </summary>
+        [Category("5.0")]
+        [Test]
+        public void TurkishStoredProcs()
+        {
+            execSQL("CREATE PROCEDURE spTest(IN p_paramname INT) BEGIN SELECT p_paramname; END");
+            CultureInfo uiCulture = Thread.CurrentThread.CurrentUICulture;
+            CultureInfo culture = Thread.CurrentThread.CurrentCulture;
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("tr-TR");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("tr-TR");
+
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand("spTest", conn);
+                cmd.Parameters.Add("p_paramname", 2);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.ExecuteScalar();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                Thread.CurrentThread.CurrentCulture = culture;
+                Thread.CurrentThread.CurrentUICulture = uiCulture;
+            }
         }
     }
 }
