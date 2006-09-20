@@ -234,4 +234,7 @@
   <data name="UnableToExecuteSP" xml:space="preserve">
     <value>Unable to execute stored procedure '{0}'.</value>
   </data>
+  <data name="NoNestedTransactions" xml:space="preserve">
+    <value>Nested transactions are not supported.</value>
+  </data>
 </root>

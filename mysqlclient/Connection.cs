@@ -40,6 +40,7 @@ namespace MySql.Data.MySqlClient
 		private  MySqlConnectionString		settings;
 		private  bool						hasBeenOpen;
         private ProcedureCache procedureCache;
+        internal MySqlTransaction activeLegacyTransaction;
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/StateChange/*'/>
 		public event StateChangeEventHandler		StateChange;
@@ -212,6 +213,9 @@ namespace MySql.Data.MySqlClient
 			if (state != ConnectionState.Open)
 				throw new InvalidOperationException(Resources.ConnectionNotOpen);
 
+            if (activeLegacyTransaction != null)
+                throw new NotSupportedException(Resources.NoNestedTransactions);
+
 			MySqlTransaction t = new MySqlTransaction(this, iso);
 
 			MySqlCommand cmd = new MySqlCommand("", this);
@@ -236,6 +240,7 @@ namespace MySql.Data.MySqlClient
 			cmd.CommandText = "BEGIN";
 			cmd.ExecuteNonQuery();
 
+            activeLegacyTransaction = t;
 			return t;
 		}
 

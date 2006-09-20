@@ -72,5 +72,31 @@ namespace MySql.Data.MySqlClient.Tests
 				if (reader != null) reader.Close();
 			}
 		}
+
+        /// <summary>
+        /// Bug #22400 Nested transactions 
+        /// </summary>
+        [Test]
+        public void NestedTransactions()
+        {
+            MySqlTransaction t1 = conn.BeginTransaction();
+            try
+            {
+                MySqlTransaction t2 = conn.BeginTransaction();
+                t2.Rollback();
+                Assert.Fail("Exception should have been thrown");
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                t1.Rollback();
+            }
+        }
 	}
 }
