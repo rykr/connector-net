@@ -416,10 +416,22 @@ namespace MySql.Data.MySqlClient
 			updateCount = -1;
 
 			object val = null;
-			MySqlDataReader reader = ExecuteReader();
-			if (reader.Read())
-				val = reader.GetValue(0);
-			reader.Close();
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = ExecuteReader();
+                if (reader.Read())
+                    val = reader.GetValue(0);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
 
 			return val;
 		}
