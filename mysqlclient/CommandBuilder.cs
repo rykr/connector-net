@@ -201,9 +201,29 @@ namespace MySql.Data.MySqlClient
 			if (_adapter.SelectCommand == null)
 				throw new MySqlException(Resources.AdapterSelectIsNull);
 
-			MySqlDataReader dr = _adapter.SelectCommand.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo);
-			_schema = dr.GetSchemaTable();
-			dr.Close();
+            bool needsClosing = false;
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+                needsClosing = true;
+            }
+
+            try
+            {
+                MySqlDataReader reader = _adapter.SelectCommand.ExecuteReader(
+                    CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo);
+                _schema = reader.GetSchemaTable();
+                reader.Close();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally 
+            {
+                if (needsClosing && conn != null)
+                    conn.Close();
+            }
 
 			// make sure we got at least one unique or key field and count base table names
 			bool   hasKeyOrUnique=false;
