@@ -30,7 +30,7 @@ namespace MySql.Data.Types
 	/// </summary>
 	public class MySqlDateTime : MySqlValue, IConvertible, IComparable
 	{
-		private int	year, month, day, hour, minute, second;
+        private int year, month, day, hour, minute, second, milli;
 		private static string	fullPattern;
 		private static string	shortPattern;
 
@@ -55,7 +55,7 @@ namespace MySql.Data.Types
 				ComposePatterns();
 		}
 
-		internal MySqlDateTime( MySqlDbType type ) 
+		internal MySqlDateTime(MySqlDbType type) 
 		{
 			mySqlDbType = type;
 			objectValue = this;
@@ -69,6 +69,7 @@ namespace MySql.Data.Types
 			hour = val.Hour;
 			minute = val.Minute;
 			second = val.Second;
+            milli = val.Millisecond;
 		}
 
 		#region Properties
@@ -126,9 +127,15 @@ namespace MySql.Data.Types
 			set { second = value; }
 		}
 
+        public int Millisecond
+        {
+            get { return milli; }
+            set { milli = value; }
+        }
+
 		#endregion
 
-		private void SerializeText( PacketWriter writer, DateTime value ) 
+		private void SerializeText(PacketWriter writer, MySqlDateTime value) 
 		{
 			string val = String.Empty;
 
@@ -146,20 +153,21 @@ namespace MySql.Data.Types
 
 		internal override void Serialize(PacketWriter writer, bool binary, object value, int length)
 		{
-			if (value is MySqlDateTime)
-				value = (value as MySqlDateTime).GetDateTime();
+            MySqlDateTime dtValue;
 
-			if (value is string)
-				value = DateTime.Parse((string)value, 
-					System.Globalization.CultureInfo.CurrentCulture);
+            if (value is DateTime)
+                dtValue = new MySqlDateTime((DateTime)value, MySqlDbType);
+            else if (value is string)
+                dtValue = new MySqlDateTime(DateTime.Parse((string)value,
+                    System.Globalization.CultureInfo.CurrentCulture), MySqlDbType);
+            else if (value is MySqlDateTime)
+                dtValue = (MySqlDateTime)value;
+            else
+				throw new MySqlException("Unable to serialize date/time value.");
 
-			if (! (value is DateTime))
-				throw new MySqlException( "Only DateTime objects can be serialized by MySqlDateTime" );
-
-			DateTime dtValue = (DateTime)value;
 			if (! binary)
 			{
-				SerializeText( writer, dtValue );
+				SerializeText(writer, dtValue);
 				return;
 			}
 
@@ -168,24 +176,24 @@ namespace MySql.Data.Types
 			else
 				writer.WriteByte( 7 );
 
-			writer.WriteInteger( dtValue.Year, 2 );
-			writer.WriteByte( (byte)dtValue.Month );
-			writer.WriteByte( (byte)dtValue.Day );
+			writer.WriteInteger(dtValue.Year, 2);
+			writer.WriteByte((byte)dtValue.Month);
+			writer.WriteByte((byte)dtValue.Day);
 			if (mySqlDbType == MySqlDbType.Date) 
 			{
-				writer.WriteByte( 0 );
-				writer.WriteByte( 0 );
-				writer.WriteByte( 0 );
+				writer.WriteByte(0);
+				writer.WriteByte(0);
+				writer.WriteByte(0);
 			}
 			else 
 			{
-				writer.WriteByte( (byte)dtValue.Hour );
-				writer.WriteByte( (byte)dtValue.Minute  );
-				writer.WriteByte( (byte)dtValue.Second );
+				writer.WriteByte((byte)dtValue.Hour);
+				writer.WriteByte((byte)dtValue.Minute);
+				writer.WriteByte((byte)dtValue.Second);
 			}
 			
 			if (mySqlDbType == MySqlDbType.Timestamp)
-				writer.WriteInteger( dtValue.Millisecond, 4 );
+				writer.WriteInteger(dtValue.Millisecond, 4);
 		}
 
 		internal override DbType DbType 
