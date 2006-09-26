@@ -201,41 +201,42 @@ namespace MySql.Data.MySqlClient.Tests
 			reader.Close();
 		}
 
-		[Test]
-		public void GetSchema() 
-		{
-			string sql = "CREATE TABLE test2( " +
-				"id INT UNSIGNED AUTO_INCREMENT NOT NULL, " +
-				"name VARCHAR(255) NOT NULL, " + 
-				"PRIMARY KEY( id ))";
+        [Test]
+        public void GetSchema()
+        {
+            string sql = "CREATE TABLE test2(id INT UNSIGNED AUTO_INCREMENT " +
+                "NOT NULL, name VARCHAR(255) NOT NULL, name2 VARCHAR(40), fl FLOAT, " +
+                "dt DATETIME, PRIMARY KEY(id))";
 
-			execSQL("DROP TABLE IF EXISTS test2");
-			execSQL(sql);
-			execSQL("INSERT INTO test2 VALUES(1,'Test')");
+            execSQL("DROP TABLE IF EXISTS test2");
+            execSQL(sql);
+            execSQL("INSERT INTO test2 VALUES(1,'Test', 'Test', 1.0, now())");
 
-			MySqlDataReader reader = null;
+            MySqlDataReader reader = null;
 
-			try 
-			{
-				MySqlCommand cmd = new MySqlCommand("SELECT * FROM test2", conn);
-				reader = cmd.ExecuteReader();
-				DataTable dt = reader.GetSchemaTable();
-				Assert.AreEqual( true, dt.Rows[0]["IsAutoIncrement"], "Checking auto increment" );
-				Assert.AreEqual( true, dt.Rows[0]["IsUnique"], "Checking IsUnique" );
-				Assert.AreEqual( false, dt.Rows[0]["AllowDBNull"], "Checking AllowDBNull" );
-				Assert.AreEqual( false, dt.Rows[1]["AllowDBNull"], "Checking AllowDBNull" );
-			}
-			catch (Exception ex) 
-			{
-				Assert.Fail(ex.Message);
-			}
-			finally 
-			{
-				if (reader != null) reader.Close();
-			}
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM test2", conn);
+                reader = cmd.ExecuteReader();
+                DataTable dt = reader.GetSchemaTable();
+                Assert.AreEqual(true, dt.Rows[0]["IsAutoIncrement"], "Checking auto increment");
+                Assert.AreEqual(true, dt.Rows[0]["IsUnique"], "Checking IsUnique");
+                Assert.AreEqual(false, dt.Rows[0]["AllowDBNull"], "Checking AllowDBNull");
+                Assert.AreEqual(false, dt.Rows[1]["AllowDBNull"], "Checking AllowDBNull");
+                Assert.AreEqual(255, dt.Rows[1]["ColumnSize"]);
+                Assert.AreEqual(40, dt.Rows[2]["ColumnSize"]);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
 
-			execSQL("DROP TABLE IF EXISTS test2");
-		}
+            execSQL("DROP TABLE IF EXISTS test2");
+        }
 
 		[Test]
 		public void CloseConnectionBehavior() 

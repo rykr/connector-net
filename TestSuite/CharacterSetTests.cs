@@ -123,5 +123,37 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual("€ŤŽš", name);
 			c.Close();
 		}
+
+        /// <summary>
+        /// Bug #14592 Wrong column length returned for VARCHAR UTF8 columns 
+        /// </summary>
+        [Test]
+        public void GetSchemaOnUTF8()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test(name VARCHAR(40) NOT NULL, name2 VARCHAR(20)) " +
+                "CHARACTER SET utf8");
+            execSQL("INSERT INTO test VALUES('Test', 'Test')");
+
+            MySqlDataReader reader = null;
+
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+                reader = cmd.ExecuteReader();
+                DataTable dt = reader.GetSchemaTable();
+                Assert.AreEqual(40, dt.Rows[0]["ColumnSize"]);
+                Assert.AreEqual(20, dt.Rows[1]["ColumnSize"]);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
+
 	}
 }

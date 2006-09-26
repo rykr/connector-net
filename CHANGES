@@ -29,6 +29,8 @@
 	Bug #21521 # Symbols not allowed in column/table names.    
 	Bug #16884 Invalid DateTime Values from DataReader     
 	Bug #7248  There is already an open DataReader associated with this Connection which must 
+	Bug #11991 ExecuteScalar 	
+	Bug #14592 Wrong column length returned for VARCHAR UTF8 columns 	
 	
 x-xx-05 - Version 1.0.7
 
