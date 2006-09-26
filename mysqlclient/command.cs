@@ -340,7 +340,11 @@ namespace MySql.Data.MySqlClient
 		{
 			CheckState();
 
-			updateCount = 0;
+            if (cmdText == null ||
+                cmdText.Trim().Length == 0)
+                throw new InvalidOperationException(Resources.CommandTextNotInitialized);
+
+            updateCount = 0;
 
 			if (preparedStatement == null)
 				sqlBuffers = PrepareSqlBuffers(CommandText);
@@ -382,6 +386,10 @@ namespace MySql.Data.MySqlClient
 		{
 			CheckState();
 
+            if (cmdText == null ||
+                cmdText.Trim().Length == 0)
+                throw new InvalidOperationException(Resources.CommandTextNotInitialized);
+
 			string sql = TrimSemicolons(cmdText);
 
 			if (0 != (behavior & CommandBehavior.SchemaOnly))
@@ -412,8 +420,11 @@ namespace MySql.Data.MySqlClient
 		public object ExecuteScalar()
 		{
 			// ExecuteReader will check out state
+            if (cmdText == null ||
+                cmdText.Trim().Length == 0)
+                throw new InvalidOperationException(Resources.CommandTextNotInitialized);
 
-			updateCount = -1;
+            updateCount = -1;
 
 			object val = null;
             MySqlDataReader reader = null;
@@ -447,7 +458,11 @@ namespace MySql.Data.MySqlClient
 				return;
 
 			// strip out names from parameter markers
+            // if the length of the command text is zero, then just return
 			string psSQL = CommandText;
+            if (psSQL == null ||
+                psSQL.Trim().Length == 0)
+                return;
 
 			if (CommandType == CommandType.StoredProcedure)
 			{
