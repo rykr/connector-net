@@ -23,6 +23,7 @@ using MySql.Data.MySqlClient;
 using NUnit.Framework;
 using System.Globalization;
 using System.Threading;
+using MySql.Data.Types;
 
 namespace MySql.Data.MySqlClient.Tests
 {
@@ -277,23 +278,25 @@ namespace MySql.Data.MySqlClient.Tests
             Assert.IsTrue(result is Int32);
         }
 
-		[Test()]
-		[Category("5.0")]
-		public void ExecuteReader()
-		{
-			// create our procedure
-			execSQL( "CREATE PROCEDURE spTest() " +
-				"BEGIN  SELECT * FROM mysql.db; END" );
+        [Test]
+        [Category("5.0")]
+        public void ExecuteReader()
+        {
+            // create our procedure
+            execSQL("CREATE PROCEDURE spTest(OUT p INT) " +
+                "BEGIN  SELECT * FROM mysql.db; SET p=2; END");
 
-			MySqlCommand cmd = new MySqlCommand("spTest", conn);
-			cmd.Parameters.Add("?a", 3);
-			cmd.CommandType = CommandType.StoredProcedure;
-			MySqlDataReader reader = cmd.ExecuteReader();
-			Assert.AreEqual( true, reader.Read() );
-			Assert.AreEqual( false, reader.NextResult() );
-			Assert.AreEqual( false, reader.Read() );
-			reader.Close();
-		}
+            MySqlCommand cmd = new MySqlCommand("spTest", conn);
+            cmd.Parameters.Add("?p", MySqlDbType.Int32);
+            cmd.Parameters[0].Direction = ParameterDirection.Output;
+            cmd.CommandType = CommandType.StoredProcedure;
+            MySqlDataReader reader = cmd.ExecuteReader();
+            Assert.AreEqual(true, reader.Read());
+            Assert.AreEqual(false, reader.NextResult());
+            Assert.AreEqual(false, reader.Read());
+            reader.Close();
+            Assert.AreEqual(2, cmd.Parameters[0].Value);
+        }
 
 		[Test()]
 		[Category("5.0")]

@@ -708,7 +708,7 @@ namespace MySql.Data.MySqlClient.Tests
                 cmd.Prepare();
                 Assert.Fail("Should not reach here");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }
