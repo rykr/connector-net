@@ -25,15 +25,12 @@ using NUnit.Framework;
 namespace MySql.Data.MySqlClient.Tests
 {
 	[TestFixture]
-	public class CommandBuilderTest : BaseTest
+	public class CommandBuilderTests : BaseTest
 	{
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
 			Open();
-
-			execSQL("DROP TABLE IF EXISTS Test");
-			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME,  `multi word` int, PRIMARY KEY(id))");
 		}
 
 		[TestFixtureTearDown]
@@ -42,30 +39,44 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
+        protected override void Setup()
+        {
+            base.Setup();
+
+            execSQL("DROP TABLE IF EXISTS Test");
+            execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME,  `multi word` int, PRIMARY KEY(id))");
+        }
+
 		[Test]
 		public void MultiWord()
 		{
-			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
-			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
-			cb.ToString();
-			DataTable dt = new DataTable();
-			da.Fill(dt);
+            try
+            {
+                MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
+                MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
 
-			DataRow row = dt.NewRow();
-			row["id"] = 1;
-			row["name"] = "Name";
-			row["dt"] = DBNull.Value;
-			row["tm"] = DBNull.Value;
-			row["multi word"] = 2;
-			dt.Rows.Add( row );
-			da.Update( dt );
-			Assert.AreEqual( 1, dt.Rows.Count );
-			Assert.AreEqual( 2, dt.Rows[0]["multi word"] );
+                DataRow row = dt.NewRow();
+                row["id"] = 1;
+                row["name"] = "Name";
+                row["dt"] = DBNull.Value;
+                row["tm"] = DBNull.Value;
+                row["multi word"] = 2;
+                dt.Rows.Add(row);
+                da.Update(dt);
+                Assert.AreEqual(1, dt.Rows.Count);
+                Assert.AreEqual(2, dt.Rows[0]["multi word"]);
 
-			dt.Rows[0]["multi word"] = 3;
-			da.Update( dt );
-			Assert.AreEqual( 1, dt.Rows.Count );
-			Assert.AreEqual( 3, dt.Rows[0]["multi word"] );
+                dt.Rows[0]["multi word"] = 3;
+                da.Update(dt);
+                Assert.AreEqual(1, dt.Rows.Count);
+                Assert.AreEqual(3, dt.Rows[0]["multi word"]);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
 		}
 
 		[Test]
@@ -75,7 +86,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da, true);
-			cb.ToString();  // keep the compiler happy
+
 			DataTable dt = new DataTable();
 			da.Fill( dt );
 			Assert.AreEqual( 1, dt.Rows.Count );
@@ -108,7 +119,7 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				dt.Rows[0]["name"] = "Test3";
-				da.Update( dt );
+				da.Update(dt);
 				Assert.Fail("This should not work");
 			}
 			catch (DBConcurrencyException) 
@@ -116,9 +127,9 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 
 			dt.Rows.Clear();
-			da.Fill( dt );
-			Assert.AreEqual( 1, dt.Rows.Count );
-			Assert.AreEqual( "Test2", dt.Rows[0]["name"] );			
+			da.Fill(dt);
+			Assert.AreEqual(1, dt.Rows.Count);
+			Assert.AreEqual("Test2", dt.Rows[0]["name"]);			
 		}
 
 		/// <summary>
@@ -222,17 +233,27 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("CREATE TABLE test (id INT NOT NULL, name VARCHAR(100), PRIMARY KEY(id))");
 			execSQL("INSERT INTO test VALUES(1, 'Data')");
 
-			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test;", conn);
-			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
-			DataTable dt = new DataTable();
-			da.Fill(dt);
-			dt.Rows[0]["id"] = 2;
-			da.Update(dt);
+            try
+            {
+                DataSet ds = new DataSet();
+                MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM `test`;", conn);
+                da.FillSchema(ds, SchemaType.Source, "test");
 
-			dt.Clear();
-			da.Fill(dt);
-			Assert.AreEqual(1, dt.Rows.Count);
-			Assert.AreEqual(2, dt.Rows[0]["id"]);
+                MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                dt.Rows[0]["id"] = 2;
+                da.Update(dt);
+
+                dt.Clear();
+                da.Fill(dt);
+                Assert.AreEqual(1, dt.Rows.Count);
+                Assert.AreEqual(2, dt.Rows[0]["id"]);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
 		}
 	}
 }

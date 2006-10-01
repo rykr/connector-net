@@ -129,7 +129,7 @@
 					<File Id="file436" Name="STRESS_1.CS" LongName="StressTests.cs" src="..\TestSuite\StressTests.cs" />
 					<File Id="file437" Name="Syntax.cs" src="..\TestSuite\Syntax.cs" />
 					<File Id="file438" Name="THREAD_1.CS" LongName="Threading.cs" src="..\TestSuite\Threading.cs" />
-					<File Id="file439" Name="TRANSA_1.CS" LongName="Transactions.cs" src="..\TestSuite\Transactions.cs" />
+					<File Id="file439" Name="Simple_1.CS" LongName="SimpleTransactions.cs" src="..\TestSuite\SimpleTransactions.cs" />
 					<File Id="file440" Name="USAGEA_1.CS" LongName="UsageAdvisor.cs" src="..\TestSuite\UsageAdvisor.cs" />
 					<File Id="file441" Name="Utils.cs" src="..\TestSuite\Utils.cs" />
 				</Component>

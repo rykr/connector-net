@@ -73,7 +73,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			Assert.AreEqual(1, args.errors.Length);
 		}
-
+		
 		[Test]
 		public void StateChange() 
 		{
@@ -85,6 +85,6 @@ namespace MySql.Data.MySqlClient.Tests
 
 		private void StateChangeHandler(object sender, StateChangeEventArgs e)
 		{
-		}
+		}		
 	}
 }

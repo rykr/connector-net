@@ -220,13 +220,6 @@ namespace MySql.Data.MySqlClient
 			get { return GetBool("reset_pooled_conn"); }
 		}
 
-		[Category("Pooling")]
-		[Description("Should connections pulled from connection pools use cached server configuration")]
-		[DefaultValue(false)]
-		public bool CacheServerConfig
-		{
-			get { return GetBool("cache_server_config"); }
-		}
 
 		#endregion
 
@@ -270,27 +263,13 @@ namespace MySql.Data.MySqlClient
 		/// <returns></returns>
 		public string GetConnectionString(bool includePass)
 		{
-			if (connectString == null) return String.Empty;//CreateConnectionString();
+			if (connectString == null) return String.Empty;
 
 			string connStr = connectString;
 			if (! PersistSecurityInfo && !includePass)
 				connStr = RemovePassword(connStr);
 
 			return connStr;
-/*
-			StringBuilder str = new StringBuilder();
-			Hashtable ht = ParseKeyValuePairs( connectString );
-
-			if (! PersistSecurityInfo) 
-				ht.Remove("password");
-
-			foreach( string key in ht.Keys)
-				str.AppendFormat("{0}={1};", key, ht[key]);
-
-			if (str.Length > 0)
-				str.Remove( str.Length-1, 1 );
-
-			return str.ToString();*/
 		}
 
 
@@ -359,7 +338,6 @@ namespace MySql.Data.MySqlClient
 				defaults["allowzerodatetime"] = false;
 				defaults["convertzerodatetime"] = false;
 				defaults["reset_pooled_conn"] = true;
-				defaults["cache_server_config"] = false;
                 defaults["procedure cache size"] = 25;
 			}
 			return (Hashtable)defaults.Clone();
@@ -377,15 +355,7 @@ namespace MySql.Data.MySqlClient
                     hash["procedure cache size"] = Int32.Parse(lowerCaseValue);
                     break;
 
-				case "cache server configuration":
-				case "cacheserverconfig":
-				case "cacheserverconfiguration":
-					hash["cache_server_config"] = boolVal;
-					break;
-
-				case "reset pooled connections":
-				case "resetpooledconnections":
-				case "reset connections":
+				case "connection reset":
 					hash["reset_pooled_conn"] = boolVal;
 					break;
 

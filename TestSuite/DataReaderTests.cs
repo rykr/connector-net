@@ -48,9 +48,9 @@ namespace MySql.Data.MySqlClient.Tests
 		protected override void Setup()
 		{
 			base.Setup();
-			execSQL("DROP TABLE IF EXISTS Test");
-			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), d DATE, dt DATETIME, b1 LONGBLOB, PRIMARY KEY(id))");
-		}
+            execSQL("DROP TABLE IF EXISTS Test");
+            execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), d DATE, dt DATETIME, b1 LONGBLOB, PRIMARY KEY(id))");
+        }
 
 
 		[Test]
@@ -107,13 +107,15 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			for (int x=0; x < 10; x++)
 			{
-				MySqlConnection c = new MySqlConnection( conn.ConnectionString + ";pooling=false" );
+				MySqlConnection c = new MySqlConnection( conn.ConnectionString + 
+                    ";pooling=false" );
 				c.Open();
 
-				MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, name, b1) VALUES(?val, 'Test', NULL)", c);
-				cmd.Parameters.Add( new MySqlParameter("?val", x));
+				MySqlCommand cmd = new MySqlCommand(
+                    "INSERT INTO Test (id, name, b1) VALUES(?val, 'Test', NULL)", c);
+				cmd.Parameters.Add(new MySqlParameter("?val", x));
 				int affected = cmd.ExecuteNonQuery();
-				Assert.AreEqual( 1, affected );
+				Assert.AreEqual(1, affected);
 
 				cmd = new MySqlCommand("SELECT * FROM Test", c);
 				cmd.ExecuteReader();
@@ -125,9 +127,10 @@ namespace MySql.Data.MySqlClient.Tests
 		public void GetBytes()
 		{
 			int len = 50000;
-			byte[] bytes = Utils.CreateBlob( len );
-			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, name, b1) VALUES(1, 'Test', ?b1)", conn);
-			cmd.Parameters.Add( "?b1", bytes );
+			byte[] bytes = Utils.CreateBlob(len);
+			MySqlCommand cmd = new MySqlCommand(
+                "INSERT INTO Test (id, name, b1) VALUES(1, 'Test', ?b1)", conn);
+			cmd.Parameters.Add("?b1", bytes);
 			cmd.ExecuteNonQuery();
 
 			cmd.CommandText = "SELECT * FROM Test";
@@ -137,21 +140,21 @@ namespace MySql.Data.MySqlClient.Tests
 				reader = cmd.ExecuteReader();
 				reader.Read();
 
-				long sizeBytes = reader.GetBytes( 4, 0, null, 0, 0 );
-				Assert.AreEqual( len, sizeBytes );
+				long sizeBytes = reader.GetBytes(4, 0, null, 0, 0);
+				Assert.AreEqual(len, sizeBytes);
 
 				byte[] buff1 = new byte[len/2];
 				byte[] buff2 = new byte[len - (len/2)];
-				long buff1cnt = reader.GetBytes( 4, 0, buff1, 0, len /2 );
-				long buff2cnt = reader.GetBytes( 4, buff1cnt, buff2, 0, buff2.Length );
-				Assert.AreEqual( buff1.Length, buff1cnt );
-				Assert.AreEqual( buff2.Length, buff2cnt );
+				long buff1cnt = reader.GetBytes(4, 0, buff1, 0, len /2);
+				long buff2cnt = reader.GetBytes(4, buff1cnt, buff2, 0, buff2.Length);
+				Assert.AreEqual(buff1.Length, buff1cnt);
+				Assert.AreEqual(buff2.Length, buff2cnt);
 
 				for (int i=0; i<buff1.Length; i++)
-					Assert.AreEqual( bytes[i], buff1[i] );
+					Assert.AreEqual(bytes[i], buff1[i]);
 
 				for (int i=0; i<buff2.Length; i++)
-					Assert.AreEqual( bytes[buff1.Length + i], buff2[i] );
+					Assert.AreEqual(bytes[buff1.Length + i], buff2[i]);
 
 				reader.Close();
 
@@ -163,11 +166,11 @@ namespace MySql.Data.MySqlClient.Tests
 				int startIndex = 0;
 				while (mylen > 0)
 				{
-					int readLen = Math.Min( mylen, buff.Length );
+					int readLen = Math.Min(mylen, buff.Length);
 					int retVal = (int)reader.GetBytes(4, startIndex, buff, 0, readLen);
-					Assert.AreEqual( readLen, retVal );
+					Assert.AreEqual(readLen, retVal);
 					for (int i=0; i < readLen; i++)
-						Assert.AreEqual( bytes[startIndex+i], buff[i] );
+						Assert.AreEqual(bytes[startIndex+i], buff[i]);
 					startIndex += readLen;
 					mylen -= readLen;
 				}
@@ -190,73 +193,74 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("INSERT INTO Test (id, name, b1) VALUES (1, 'Test1', NULL)");
 			execSQL("INSERT INTO Test (id, name, b1) VALUES (2, 'Test1', NULL)");
 
-			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test WHERE id=1; SELECT * FROM Test WHERE id=2", conn);
-			MySqlDataReader reader = cmd.ExecuteReader( CommandBehavior.SingleResult );
+			MySqlCommand cmd = new MySqlCommand(
+                "SELECT * FROM Test WHERE id=1; SELECT * FROM Test WHERE id=2", conn);
+			MySqlDataReader reader = cmd.ExecuteReader(CommandBehavior.SingleResult);
 			bool result = reader.Read();
-			Assert.AreEqual( true, result );
+			Assert.AreEqual(true, result);
 
 			result = reader.NextResult();
-			Assert.AreEqual( false, result );
+			Assert.AreEqual(false, result);
 
 			reader.Close();
 		}
 
-        [Test]
-        public void GetSchema()
-        {
-            string sql = "CREATE TABLE test2(id INT UNSIGNED AUTO_INCREMENT " +
+		[Test]
+		public void GetSchema() 
+		{
+			string sql = "CREATE TABLE test2(id INT UNSIGNED AUTO_INCREMENT " +
                 "NOT NULL, name VARCHAR(255) NOT NULL, name2 VARCHAR(40), fl FLOAT, " +
                 "dt DATETIME, PRIMARY KEY(id))";
 
-            execSQL("DROP TABLE IF EXISTS test2");
-            execSQL(sql);
-            execSQL("INSERT INTO test2 VALUES(1,'Test', 'Test', 1.0, now())");
+			execSQL("DROP TABLE IF EXISTS test2");
+			execSQL(sql);
+			execSQL("INSERT INTO test2 VALUES(1,'Test', 'Test', 1.0, now())");
 
-            MySqlDataReader reader = null;
+			MySqlDataReader reader = null;
 
-            try
-            {
-                MySqlCommand cmd = new MySqlCommand("SELECT * FROM test2", conn);
-                reader = cmd.ExecuteReader();
-                DataTable dt = reader.GetSchemaTable();
-                Assert.AreEqual(true, dt.Rows[0]["IsAutoIncrement"], "Checking auto increment");
-                Assert.AreEqual(true, dt.Rows[0]["IsUnique"], "Checking IsUnique");
-                Assert.AreEqual(false, dt.Rows[0]["AllowDBNull"], "Checking AllowDBNull");
-                Assert.AreEqual(false, dt.Rows[1]["AllowDBNull"], "Checking AllowDBNull");
+			try 
+			{
+				MySqlCommand cmd = new MySqlCommand("SELECT * FROM test2", conn);
+				reader = cmd.ExecuteReader();
+				DataTable dt = reader.GetSchemaTable();
+				Assert.AreEqual(true, dt.Rows[0]["IsAutoIncrement"], "Checking auto increment");
+				Assert.AreEqual(true, dt.Rows[0]["IsUnique"], "Checking IsUnique");
+				Assert.AreEqual(false, dt.Rows[0]["AllowDBNull"], "Checking AllowDBNull");
+				Assert.AreEqual(false, dt.Rows[1]["AllowDBNull"], "Checking AllowDBNull");
                 Assert.AreEqual(255, dt.Rows[1]["ColumnSize"]);
                 Assert.AreEqual(40, dt.Rows[2]["ColumnSize"]);
             }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                if (reader != null) reader.Close();
-            }
+			catch (Exception ex) 
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally 
+			{
+				if (reader != null) reader.Close();
+			}
 
-            execSQL("DROP TABLE IF EXISTS test2");
-        }
+			execSQL("DROP TABLE IF EXISTS test2");
+		}
 
 		[Test]
 		public void CloseConnectionBehavior() 
 		{
 			execSQL("INSERT INTO Test(id,name) VALUES(1,'test')");
 
-			MySqlConnection c2 = new MySqlConnection( conn.ConnectionString );
+			MySqlConnection c2 = new MySqlConnection(conn.ConnectionString);
 			c2.Open();
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", c2);
 			MySqlDataReader reader = null;
 			try 
 			{
-				reader = cmd.ExecuteReader( CommandBehavior.CloseConnection );
-				Assert.IsTrue( reader.Read() );
+				reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+				Assert.IsTrue(reader.Read());
 				reader.Close();
-				Assert.IsTrue( c2.State == ConnectionState.Closed );
+				Assert.IsTrue(c2.State == ConnectionState.Closed);
 			}
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 			finally 
 			{
@@ -313,22 +317,22 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlDataReader reader = null;
 			try 
 			{
-				reader = cmd.ExecuteReader( CommandBehavior.SingleRow );
-				Assert.IsTrue( reader.Read(), "First read" );
-				Assert.IsFalse( reader.Read(), "Second read" );
-				Assert.IsFalse( reader.NextResult(), "Trying NextResult" );
+				reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
+				Assert.IsTrue(reader.Read(), "First read");
+				Assert.IsFalse(reader.Read(), "Second read");
+				Assert.IsFalse(reader.NextResult(), "Trying NextResult");
 				reader.Close();
 
-				reader = cmd.ExecuteReader( CommandBehavior.SingleRow );
-				Assert.IsTrue( reader.Read(), "First read" );
-				Assert.IsFalse( reader.Read(), "Second read" );
-				Assert.IsFalse( reader.NextResult(), "Trying NextResult" );
+				reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
+				Assert.IsTrue(reader.Read(), "First read");
+				Assert.IsFalse(reader.Read(), "Second read");
+				Assert.IsFalse(reader.NextResult(), "Trying NextResult");
 				reader.Close();
 
-				reader = cmd.ExecuteReader( CommandBehavior.SingleRow );
-				Assert.IsTrue( reader.Read(), "First read" );
-				Assert.IsFalse( reader.Read(), "Second read" );
-				Assert.IsFalse( reader.NextResult(), "Trying NextResult" );
+				reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
+				Assert.IsTrue(reader.Read(), "First read");
+				Assert.IsFalse(reader.Read(), "Second read");
+				Assert.IsFalse(reader.NextResult(), "Trying NextResult");
 				reader.Close();
 			}
 			catch (Exception ex) 
@@ -351,11 +355,11 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				reader = cmd.ExecuteReader();
-				Assert.IsTrue( reader.Read(), "First read" );
-				Assert.AreEqual( 1, reader.GetInt32(0) );
-				Assert.AreEqual( "test1", reader.GetString(1) );
-				Assert.IsFalse( reader.Read(), "Second read" );
-				Assert.IsFalse( reader.NextResult(), "Trying NextResult" );
+				Assert.IsTrue(reader.Read(), "First read");
+				Assert.AreEqual(1, reader.GetInt32(0));
+				Assert.AreEqual("test1", reader.GetString(1));
+				Assert.IsFalse(reader.Read(), "Second read");
+				Assert.IsFalse(reader.NextResult(), "Trying NextResult");
 			}
 			catch (Exception ex) 
 			{
@@ -367,26 +371,26 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test]
-		public void ConsecutiveNulls() 
-		{
-			execSQL("INSERT INTO Test (id, name, dt) VALUES (1, 'Test', NULL)");
-			execSQL("INSERT INTO Test (id, name, dt) VALUES (2, NULL, now())");
-			execSQL("INSERT INTO Test (id, name, dt) VALUES (3, 'Test2', NULL)");
+        [Test]
+        public void ConsecutiveNulls()
+        {
+            execSQL("INSERT INTO Test (id, name, dt) VALUES (1, 'Test', NULL)");
+            execSQL("INSERT INTO Test (id, name, dt) VALUES (2, NULL, now())");
+            execSQL("INSERT INTO Test (id, name, dt) VALUES (3, 'Test2', NULL)");
 
-			MySqlCommand cmd = new MySqlCommand("SELECT id, name, dt FROM Test", conn);
-			MySqlDataReader reader = null;
-			try 
-			{
-				reader = cmd.ExecuteReader();
-				reader.Read();
-				Assert.AreEqual(1, reader.GetValue(0));
-				Assert.AreEqual("Test", reader.GetValue(1));
-				Assert.AreEqual("Test", reader.GetString(1));
+            MySqlCommand cmd = new MySqlCommand("SELECT id, name, dt FROM Test", conn);
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                Assert.AreEqual(1, reader.GetValue(0));
+                Assert.AreEqual("Test", reader.GetValue(1));
+                Assert.AreEqual("Test", reader.GetString(1));
                 Assert.AreEqual(DBNull.Value, reader.GetValue(2));
-				reader.Read();
-				Assert.AreEqual(2, reader.GetValue(0));
-				Assert.AreEqual(DBNull.Value, reader.GetValue(1));
+                reader.Read();
+                Assert.AreEqual(2, reader.GetValue(0));
+                Assert.AreEqual(DBNull.Value, reader.GetValue(1));
                 try
                 {
                     reader.GetString(1);
@@ -395,9 +399,9 @@ namespace MySql.Data.MySqlClient.Tests
                 catch (Exception) { }
                 Assert.IsFalse(reader.IsDBNull(2));
                 reader.Read();
-				Assert.AreEqual(3, reader.GetValue(0));
-				Assert.AreEqual("Test2", reader.GetValue(1));
-				Assert.AreEqual("Test2", reader.GetString(1));
+                Assert.AreEqual(3, reader.GetValue(0));
+                Assert.AreEqual("Test2", reader.GetValue(1));
+                Assert.AreEqual("Test2", reader.GetString(1));
                 Assert.AreEqual(DBNull.Value, reader.GetValue(2));
                 try
                 {
@@ -406,19 +410,19 @@ namespace MySql.Data.MySqlClient.Tests
                 }
                 catch (Exception) { }
                 Assert.IsFalse(reader.Read());
-				Assert.IsFalse(reader.NextResult());
-			}
-			catch (Exception ex) 
-			{
-				Assert.Fail(ex.Message);
-			}
-			finally 
-			{
-				if (reader != null) reader.Close();
-			}
-		}
+                Assert.IsFalse(reader.NextResult());
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
+        }
 
-		[Test()]
+		[Test]
 		public void HungDataReader() 
 		{
 			MySqlCommand cmd = new MySqlCommand("USE test; SHOW TABLES", conn);
@@ -433,7 +437,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 			finally 
 			{
@@ -441,10 +445,10 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		/// <summary>
-		/// Added test for IsDBNull from bug# 7399
+ 		/// <summary>
+ 		/// Added test for IsDBNull from bug# 7399
 		/// </summary>
-		[Test()]
+		[Test]
 		public void SequentialAccessBehavior() 
 		{
 			execSQL("INSERT INTO Test(id,name) VALUES(1,'test1')");
@@ -453,22 +457,22 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlDataReader reader = null;
 			try 
 			{
-				reader = cmd.ExecuteReader( CommandBehavior.SequentialAccess );
-				Assert.IsTrue( reader.Read() );
-				Assert.IsFalse( reader.IsDBNull(0));
-				int i = reader.GetInt32(0);
+				reader = cmd.ExecuteReader(CommandBehavior.SequentialAccess);
+				Assert.IsTrue(reader.Read());
+                Assert.IsFalse(reader.IsDBNull(0));
+                int i = reader.GetInt32(0);
 				string s = reader.GetString(1);
-				Assert.AreEqual(1, i);
+                Assert.AreEqual(1, i);
 				Assert.AreEqual("test1", s);
 
 				// this next line should throw an exception
-				i = reader.GetInt32( 0 );
-				Assert.Fail( "This line should not execute" );
+				i = reader.GetInt32(0);
+				Assert.Fail("This line should not execute");
 			}
 			catch (MySqlException) { }
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 			finally 
 			{
@@ -823,7 +827,7 @@ namespace MySql.Data.MySqlClient.Tests
                 string s = reader.GetString(reader.GetOrdinal("Sub_part"));
                 Assert.Fail("We should not get here");
             }
-            catch (System.Data.SqlTypes.SqlNullValueException ex1)
+            catch (System.Data.SqlTypes.SqlNullValueException)
             {
             }
             catch (Exception ex)

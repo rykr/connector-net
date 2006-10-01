@@ -148,7 +148,7 @@ namespace MySql.Data.MySqlClient
 			
 			// if we have already configured this driver and we are supposed
 			// to cache server config, then exit
-			if (serverProps != null && connectionString.CacheServerConfig)
+			if (serverProps != null)
 				return;
 
 			// load server properties

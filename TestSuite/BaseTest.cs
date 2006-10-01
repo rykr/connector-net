@@ -37,14 +37,13 @@ namespace MySql.Data.MySqlClient.Tests
 		protected string			host;
 		protected string			user;
 		protected string			password;
-		protected string			otherkeys;
 
 		public BaseTest() 
 		{
 			csAdditions = ";pooling=false";
             user = "root";
             password = "";
-            otherkeys = ConfigurationSettings.AppSettings["otherkeys"];
+            host = "localhost";
         }
 
         protected virtual string GetConnectionInfo()
@@ -55,20 +54,19 @@ namespace MySql.Data.MySqlClient.Tests
 		protected string GetConnectionString(bool includedb)
 		{
             string connStr = String.Format("server={0};user id={1};password={2};" +
-                "persist security info=true;{3}{4}", host, user, password,
-                otherkeys, csAdditions);
+                "persist security info=true;{3}", host, user, password, csAdditions);
             if (includedb)
                 connStr += ";database=test";
             connStr += GetConnectionInfo();
             return connStr;
-        }
+		}
 
 		protected void Open()
 		{
 			try 
 			{
 				string connString = GetConnectionString(true);
-				conn = new MySqlConnection( connString );
+				conn = new MySqlConnection(connString);
 				conn.Open();
 			}
 			catch (Exception ex)
@@ -98,8 +96,8 @@ namespace MySql.Data.MySqlClient.Tests
 		{ 
 			get 
             {
-                string ver = conn.ServerVersion;
-                return ver.StartsWith("5.0") || ver.StartsWith("5.1");
+                string v = conn.ServerVersion;
+                return v.StartsWith("5.0") || v.StartsWith("5.1");
             }
 		}
 
@@ -122,7 +120,7 @@ namespace MySql.Data.MySqlClient.Tests
 				bool exists = reader.Read();
 				reader.Close();
 				if (exists)
-					execSQL( "TRUNCATE TABLE Test" );
+					execSQL("TRUNCATE TABLE Test");
 				if (Is50) 
 				{
 					execSQL("DROP PROCEDURE IF EXISTS spTest");
@@ -131,7 +129,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 		}
 
@@ -148,8 +146,15 @@ namespace MySql.Data.MySqlClient.Tests
 		protected void KillConnection(MySqlConnection c) 
 		{
 			int threadId = c.ServerThread;
-			MySqlCommand cmd = new MySqlCommand("KILL " + threadId, c);
-			cmd.ExecuteNonQuery();
+			MySqlCommand cmd = new MySqlCommand("KILL " + threadId, conn);
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
 			c.Ping();  // this final ping will cause MySQL to clean up the killed thread
 		}
 

@@ -43,7 +43,7 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
-		[category("4.1")]
+		[Category("4.1")]
 		public void Unicode()
 		{
 			execSQL( "DROP TABLE IF EXISTS Test" );

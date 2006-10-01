@@ -37,9 +37,6 @@ namespace MySql.Data.MySqlClient.Tests
 		public void TestFixtureSetUp()
 		{
 			Open();
-
-			execSQL("DROP TABLE IF EXISTS Test");
-			execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME, d DATE, t TIME, ts TIMESTAMP, PRIMARY KEY(id))");
 		}
 
 		[TestFixtureTearDown]
@@ -55,11 +52,12 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME, d DATE, " +
                 "t TIME, ts TIMESTAMP, PRIMARY KEY(id))");
         }
-        
+
 		[Test]
 		public void ConvertZeroDateTime()
 		{
-			execSQL("INSERT INTO Test VALUES(1, '0000-00-00', '0000-00-00', '00:00:00', NULL)");
+			execSQL("INSERT INTO Test VALUES(1, '0000-00-00', '0000-00-00', " +
+                "'00:00:00', NULL)");
 
 			MySqlConnection c;
 			MySqlDataReader reader = null;
@@ -92,6 +90,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void TestNotAllowZerDateAndTime() 
 		{
+            execSQL("SET SQL_MODE=''");
 			execSQL("INSERT INTO Test VALUES(1, 'Test', '0000-00-00', '0000-00-00', '00:00:00')");
 			execSQL("INSERT INTO Test VALUES(2, 'Test', '2004-11-11', '2004-11-11', '06:06:06')");
 
@@ -103,12 +102,12 @@ namespace MySql.Data.MySqlClient.Tests
 				Assert.IsTrue(reader.Read());
 
 				MySqlDateTime testDate = reader.GetMySqlDateTime(2);
-				Assert.IsFalse(testDate.IsValidDateTime, "IsZero is false" );
+                Assert.IsFalse(testDate.IsValidDateTime, "IsZero is false");
 
 				try 
 				{
-					reader.GetValue(2);
-					Assert.Fail("This should not work");
+                    reader.GetValue(2);
+                    Assert.Fail("This should not work");
 				}
 				catch (MySqlConversionException) { }
 
@@ -131,21 +130,22 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void DateAdd() 
 		{
-			MySqlCommand cmd = new MySqlCommand( "select date_add(?someday, interval 1 hour)", conn);
+			MySqlCommand cmd = new MySqlCommand( "select date_add(?someday, interval 1 hour)", 
+                conn);
 			DateTime now = DateTime.Now;
 			DateTime later = now.AddHours(1);
-			later = later.AddMilliseconds( later.Millisecond * -1 );
+			later = later.AddMilliseconds(later.Millisecond * -1);
 			cmd.Parameters.Add("?someday", now );
 			MySqlDataReader reader = null;
 			try 
 			{
 				reader = cmd.ExecuteReader();
-				Assert.IsTrue( reader.Read() );
+				Assert.IsTrue(reader.Read());
 				DateTime dt = reader.GetDateTime(0);
-				Assert.AreEqual( later.Date, dt.Date );
-				Assert.AreEqual( later.Hour, dt.Hour );
-				Assert.AreEqual( later.Minute, dt.Minute );
-				Assert.AreEqual( later.Second, dt.Second );
+				Assert.AreEqual(later.Date, dt.Date);
+				Assert.AreEqual(later.Hour, dt.Hour);
+				Assert.AreEqual(later.Minute, dt.Minute);
+				Assert.AreEqual(later.Second, dt.Second);
 			}
 			catch (Exception ex) 
 			{
@@ -161,33 +161,33 @@ namespace MySql.Data.MySqlClient.Tests
         /// Bug #9619 Cannot update row using DbDataAdapter when row contains an invalid date 
         /// Bug #15112 MySqlDateTime Constructor 
         /// </summary>
-        [Test]
-        public void TestAllowZeroDateTime()
-        {
-            execSQL("INSERT INTO Test (id, d, dt) VALUES (1, '0000-00-00', '0000-00-00 00:00:00')");
+		[Test]
+		public void TestAllowZeroDateTime()
+		{
+			execSQL("INSERT INTO Test (id, d, dt) VALUES (1, '0000-00-00', '0000-00-00 00:00:00')");
 
-            MySqlConnection c = new MySqlConnection(
-                conn.ConnectionString + ";pooling=false;AllowZeroDatetime=true");
-            c.Open();
-            MySqlDataReader reader = null;
-            try
-            {
-                MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", c);
-                reader = cmd.ExecuteReader();
-                reader.Read();
+			MySqlConnection c = new MySqlConnection(
+				conn.ConnectionString + ";pooling=false;AllowZeroDatetime=true");
+			c.Open();
+			MySqlDataReader reader = null;
+			try 
+			{
+				MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", c);
+				reader = cmd.ExecuteReader();
+				reader.Read();
 
-                Assert.IsTrue(reader.GetValue(1) is MySqlDateTime);
-                Assert.IsTrue(reader.GetValue(2) is MySqlDateTime);
+				Assert.IsTrue(reader.GetValue(1) is MySqlDateTime);
+				Assert.IsTrue(reader.GetValue(2) is MySqlDateTime);
 
-                Assert.IsFalse(reader.GetMySqlDateTime(1).IsValidDateTime);
-                Assert.IsFalse(reader.GetMySqlDateTime(2).IsValidDateTime);
+				Assert.IsFalse(reader.GetMySqlDateTime(1).IsValidDateTime);
+				Assert.IsFalse(reader.GetMySqlDateTime(2).IsValidDateTime);
 
-                try
-                {
-                    reader.GetDateTime(1);
-                    Assert.Fail("This should not succeed");
-                }
-                catch (MySqlConversionException) { }
+				try 
+				{
+					reader.GetDateTime(1);
+					Assert.Fail("This should not succeed");
+				}
+				catch (MySqlConversionException) {}
                 reader.Close();
                 reader = null;
 
@@ -211,28 +211,28 @@ namespace MySql.Data.MySqlClient.Tests
                 Assert.AreEqual(2003, date.Year);
                 Assert.AreEqual(9, date.Month);
                 Assert.AreEqual(24, date.Day);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                if (reader != null) reader.Close();
-                c.Close();
-            }
-        }
+			}
+			catch (Exception ex) 
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally 
+			{
+				if (reader != null) reader.Close();
+				c.Close();
+			}
+		}
 
 		[Test]
 		public void InsertDateTimeValue()
 		{
-			MySqlConnection c = new MySqlConnection( conn.ConnectionString + ";allow zero datetime=yes");
+			MySqlConnection c = new MySqlConnection( conn.ConnectionString + 
+                ";allow zero datetime=yes");
 			try 
 			{
 				c.Open();
 				MySqlDataAdapter da = new MySqlDataAdapter("SELECT id, dt FROM Test", c);
 				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
-				cb.ToString();  // keep the compiler happy
 
 				DataTable dt = new DataTable();
 				dt.Columns.Add(new DataColumn("id", typeof(int)));
@@ -324,7 +324,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Bug #8929  	Timestamp values with a date > 10/29/9997 cause problems
 		/// </summary>
 		[Test]
@@ -436,7 +436,7 @@ namespace MySql.Data.MySqlClient.Tests
                     reader.Close();
             }
         }
-
+        
         [Test]
         public void DateTimeInDataTable()
         {
@@ -473,7 +473,7 @@ namespace MySql.Data.MySqlClient.Tests
                 if (c != null)
                     c.Close();
             }
-        }
+        }        
 	}
 
 }

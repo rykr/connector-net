@@ -22,11 +22,15 @@ using System;
 using System.Data;
 using System.IO;
 using NUnit.Framework;
+#if NET20
+using System.Transactions;
+using System.Data.Common;
+#endif
 
 namespace MySql.Data.MySqlClient.Tests
 {
 	[TestFixture]
-	public class Transactions : BaseTest
+	public class SimpleTransactions : BaseTest
 	{
 		[TestFixtureSetUp]
 		public void FixtureSetup()
@@ -34,7 +38,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Open();
 
 			execSQL("DROP TABLE IF EXISTS Test");
-			createTable( "CREATE TABLE Test (key2 VARCHAR(1), name VARCHAR(100), name2 VARCHAR(100))", "INNODB" );
+			createTable("CREATE TABLE Test (key2 VARCHAR(1), name VARCHAR(100), name2 VARCHAR(100))", "INNODB");
 		}
 
 		[TestFixtureTearDown]
@@ -76,6 +80,7 @@ namespace MySql.Data.MySqlClient.Tests
         /// <summary>
         /// Bug #22400 Nested transactions 
         /// </summary>
+        [Category("NotWorking")]
         [Test]
         public void NestedTransactions()
         {
@@ -93,10 +98,11 @@ namespace MySql.Data.MySqlClient.Tests
             {
                 Assert.Fail(ex.Message);
             }
-            finally
+            finally 
             {
                 t1.Rollback();
             }
         }
+
 	}
 }

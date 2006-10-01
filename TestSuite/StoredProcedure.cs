@@ -17,6 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+
 using System;
 using System.Data;
 using MySql.Data.MySqlClient;
@@ -31,7 +32,7 @@ namespace MySql.Data.MySqlClient.Tests
 	/// Summary description for StoredProcedure.
 	/// </summary>
 	[Category("5.0")]
-	[TestFixture]
+    [TestFixture]
 	public class StoredProcedure : BaseTest
 	{
 		private static string fillError = null;
@@ -41,7 +42,6 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			csAdditions = ";pooling=false;procedure cache size=0";
 			Open();
-			execSQL("DROP TABLE IF EXISTS Test; CREATE TABLE Test (id INT, name VARCHAR(100))");
 		}
 
 		[TestFixtureTearDown]
@@ -64,7 +64,7 @@ namespace MySql.Data.MySqlClient.Tests
 		public void ReturningResultset() 
 		{
 			// create our procedure
-			execSQL( "CREATE PROCEDURE spTest(val decimal(10,3)) begin select val; end");
+			execSQL("CREATE PROCEDURE spTest(val decimal(10,3)) begin select val; end");
 			
 			using (MySqlCommand cmd = new MySqlCommand("spTest", conn))
 			{
@@ -76,7 +76,7 @@ namespace MySql.Data.MySqlClient.Tests
 				p.Value = 21;
 
 				decimal id = (decimal)cmd.ExecuteScalar();
-				Assert.AreEqual( 21, id );
+				Assert.AreEqual(21, id);
 			}
 		}
 
@@ -122,12 +122,12 @@ namespace MySql.Data.MySqlClient.Tests
 		public void OutputParameters()
 		{
 			// create our procedure
-			execSQL( "DROP PROCEDURE IF EXISTS spCount" );
-			execSQL( "CREATE PROCEDURE spCount(out value VARCHAR(50), OUT intVal INT, " +
+			execSQL("DROP PROCEDURE IF EXISTS spCount");
+			execSQL("CREATE PROCEDURE spCount(out value VARCHAR(50), OUT intVal INT, " +
                 "OUT dateVal TIMESTAMP, OUT floatVal FLOAT, OUT noTypeVarChar VARCHAR(20), " +
                 "OUT noTypeInt INT) " + 
 				"BEGIN  SET value='42';  SET intVal=33; SET dateVal='2004-06-05 07:58:09'; " +
-                "SET floatVal = 1.2; SET noTypeVarChar='test'; SET noTypeInt=66; END" );
+                "SET floatVal = 1.2; SET noTypeVarChar='test'; SET noTypeInt=66; END");
 
 			MySqlCommand cmd = new MySqlCommand("spCount", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
@@ -171,7 +171,7 @@ namespace MySql.Data.MySqlClient.Tests
 				cmd.ExecuteNonQuery();
 				Assert.Fail("Should have thrown an exception");
 			}
-			catch (MySqlException) 
+			catch (Exception) 
 			{
 			}
 		}
@@ -179,17 +179,18 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void WrongParameters()
 		{
-			try 
-			{
-				MySqlCommand cmd = new MySqlCommand("spTest", conn);
-				cmd.CommandType = CommandType.StoredProcedure;
-				cmd.Parameters.Add( "?p2", 1 );
-				cmd.ExecuteNonQuery();
-				Assert.Fail("Should have thrown an exception");
-			}
-			catch (MySqlException) 
-			{
-			}
+            execSQL("CREATE PROCEDURE spTest(p1 INT) BEGIN SELECT 1; END");
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand("spTest", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("?p2", 1);
+                cmd.ExecuteNonQuery();
+                Assert.Fail("Should have thrown an exception");
+            }
+            catch (Exception)
+            {
+            }
 		}
 
 		[Test]
@@ -276,24 +277,24 @@ namespace MySql.Data.MySqlClient.Tests
             Assert.IsTrue(result is Int32);
         }
 
-        [Test]
-        public void ExecuteReader()
-        {
-            // create our procedure
-            execSQL("CREATE PROCEDURE spTest(OUT p INT) " +
-                "BEGIN  SELECT * FROM mysql.db; SET p=2; END");
+		[Test]
+		public void ExecuteReader()
+		{
+			// create our procedure
+			execSQL( "CREATE PROCEDURE spTest(OUT p INT) " +
+				"BEGIN  SELECT * FROM mysql.db; SET p=2; END" );
 
-            MySqlCommand cmd = new MySqlCommand("spTest", conn);
+			MySqlCommand cmd = new MySqlCommand("spTest", conn);
             cmd.Parameters.Add("?p", MySqlDbType.Int32);
             cmd.Parameters[0].Direction = ParameterDirection.Output;
-            cmd.CommandType = CommandType.StoredProcedure;
-            MySqlDataReader reader = cmd.ExecuteReader();
-            Assert.AreEqual(true, reader.Read());
-            Assert.AreEqual(false, reader.NextResult());
-            Assert.AreEqual(false, reader.Read());
-            reader.Close();
+			cmd.CommandType = CommandType.StoredProcedure;
+			MySqlDataReader reader = cmd.ExecuteReader();
+			Assert.AreEqual(true, reader.Read());
+			Assert.AreEqual(false, reader.NextResult());
+			Assert.AreEqual(false, reader.Read());
+			reader.Close();
             Assert.AreEqual(2, cmd.Parameters[0].Value);
-        }
+		}
 
 		[Test]
 		public void MultipleResultsets() 
@@ -401,11 +402,11 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #9722 Connector does not recognize parameters separated by a linefeed 
 		/// </summary>
 		[Test]
-=		public void OtherProcSigs() 
+		public void OtherProcSigs() 
 		{
 			// create our procedure
-			execSQL( "CREATE PROCEDURE spTest(IN \r\nvalin DECIMAL(10,2),\nIN val2 INT) " +
-				"SQL SECURITY INVOKER BEGIN  SELECT valin; END" );
+			execSQL("CREATE PROCEDURE spTest(IN \r\nvalin DECIMAL(10,2),\nIN val2 INT) " +
+				"SQL SECURITY INVOKER BEGIN  SELECT valin; END");
 
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
@@ -433,7 +434,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			execSQL("CREATE FUNCTION fnTest(valin int) RETURNS INT BEGIN return valin * 2; END");
 			MySqlCommand cmd = new MySqlCommand("fnTest", conn);
-			cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandType = CommandType.StoredProcedure;
 			cmd.Parameters.Add("?valin", 22);
 			cmd.Parameters.Add("retval", MySqlDbType.Int32);
 			cmd.Parameters[1].Direction = ParameterDirection.ReturnValue;
@@ -488,7 +489,7 @@ namespace MySql.Data.MySqlClient.Tests
 		public void TestSelectingInts()
 		{
 			execSQL("CREATE PROCEDURE spTest() BEGIN DECLARE myVar INT; " +
-				"SET MyVar := 1; SELECT CAST(myVar as INT); END");
+				"SET MyVar := 1; SELECT CAST(myVar as SIGNED); END");
 			
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
@@ -677,10 +678,11 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #13927  	Multiple Records to same Table in Transaction Problem
 		/// </summary>
 		[Test]
-		public void MultileRecords()
+		public void MultipleRecords()
 		{
 			execSQL("DROP PROCEDURE IF EXISTS spTest");
-			execSQL("CREATE PROCEDURE spTest(id int, str VARCHAR(45)) BEGIN INSERT INTO test VALUES(id, str); END");
+			execSQL("CREATE PROCEDURE spTest(id int, str VARCHAR(45)) " +
+                "BEGIN INSERT INTO test VALUES(id, str); END");
 
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
@@ -762,7 +764,14 @@ namespace MySql.Data.MySqlClient.Tests
 
             DataSet ds = new DataSet();
             MySqlDataAdapter da = new MySqlDataAdapter(cmd);
-            da.Fill(ds);
+            try
+            {
+                da.Fill(ds);
+            }
+            catch (MySqlException)
+            {
+                // on 5.1 this throws an exception that no rows were returned.
+            }
         }
 
         [Test]

@@ -35,7 +35,6 @@ namespace MySql.Data.MySqlClient.Tests
 		public void SetUp()
 		{
 			Open();
-			execSQL("DROP TABLE IF EXISTS Test; CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME, ts TIMESTAMP, PRIMARY KEY(id))");
 		}
 
 		[TestFixtureTearDown]
@@ -50,7 +49,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("DROP TABLE IF EXISTS Test");
             execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME, ts TIMESTAMP, PRIMARY KEY(id))");
         }
-        
+
 		[Test]
 		public void TestUserVariables()
 		{
@@ -181,35 +180,37 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void NestedQuoting() 
 		{
-			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, name) VALUES(1, 'this is ?\"my value\"')", conn);
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, name) " +
+                "VALUES(1, 'this is ?\"my value\"')", conn);
 			int count = cmd.ExecuteNonQuery();
-			Assert.AreEqual( 1, count );
+			Assert.AreEqual(1, count);
 		}
 
-		[Test]
-		public void SetDbType() 
-		{
-			try 
-			{
-				IDbCommand cmd = conn.CreateCommand();
-				IDbDataParameter prm = cmd.CreateParameter();
-				prm.DbType = DbType.Int64;
-				Assert.AreEqual(DbType.Int64, prm.DbType);
-				prm.Value = 3;
-				Assert.AreEqual(DbType.Int64, prm.DbType);
+        [Test]
+        public void SetDbType()
+        {
+            try
+            {
+                IDbConnection conn2 = (IDbConnection)conn;
+                IDbCommand cmd = conn.CreateCommand();
+                IDbDataParameter prm = cmd.CreateParameter();
+                prm.DbType = DbType.Int64;
+                Assert.AreEqual(DbType.Int64, prm.DbType);
+                prm.Value = 3;
+                Assert.AreEqual(DbType.Int64, prm.DbType);
 
-				MySqlParameter p = new MySqlParameter("name", MySqlDbType.Int64);
-				Assert.AreEqual(DbType.Int64, p.DbType);
-				Assert.AreEqual(MySqlDbType.Int64, p.MySqlDbType);
-				p.Value = 3;
-				Assert.AreEqual(DbType.Int64, p.DbType);
-				Assert.AreEqual(MySqlDbType.Int64, p.MySqlDbType);
-			}
-			catch (Exception ex) 
-			{
-				Assert.Fail( ex.Message );
-			}
-		}
+                MySqlParameter p = new MySqlParameter("name", MySqlDbType.Int64);
+                Assert.AreEqual(DbType.Int64, p.DbType);
+                Assert.AreEqual(MySqlDbType.Int64, p.MySqlDbType);
+                p.Value = 3;
+                Assert.AreEqual(DbType.Int64, p.DbType);
+                Assert.AreEqual(MySqlDbType.Int64, p.MySqlDbType);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
 
 		[Test]
 		public void UseOldSyntax() 
@@ -243,7 +244,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		[ExpectedException(typeof(ArgumentException))]
 		public void NullParameterObject() 
 		{

@@ -36,46 +36,45 @@ namespace MySql.Data.MySqlClient.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-            Open();
-            execSQL("DROP TABLE IF EXISTS Test");
-            execSQL("CREATE TABLE Test (id INT NOT NULL, name varchar(100), blob1 LONGBLOB, text1 TEXT, " +
-                "PRIMARY KEY(id))");
-        }
+			Open();
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (id INT NOT NULL, name varchar(100), blob1 LONGBLOB, text1 TEXT, " +
+				"PRIMARY KEY(id))");
+		}
 
 		[TestFixtureTearDown]
 		public void FixtureTearDown()
 		{
-            Close();
-        }
+			Close();
+		}
 
 		[Test]
 		public void TestMultiPacket()
 		{
-            int len = 20000000;
+			int len = 20000000;
 
 			// currently do not test this with compression
 			if (conn.UseCompression) return;
 
 			execSQL("set @@global.max_allowed_packet=35000000");
 
-			MySqlConnection c = new MySqlConnection( conn.ConnectionString + ";pooling=false" );
+			MySqlConnection c = new MySqlConnection(conn.ConnectionString + ";pooling=false");
 			c.Open();
 
-			byte[] dataIn = Utils.CreateBlob( len );
-			byte[] dataIn2 = Utils.CreateBlob( len );
+			byte[] dataIn = Utils.CreateBlob(len);
+			byte[] dataIn2 = Utils.CreateBlob(len);
 
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?id, NULL, ?blob, NULL )", c);
-			cmd.Parameters.Add( new MySqlParameter("?id", 1));
-			cmd.Parameters.Add( new MySqlParameter("?blob", dataIn));
+			cmd.Parameters.Add(new MySqlParameter("?id", 1));
+			cmd.Parameters.Add(new MySqlParameter("?blob", dataIn));
 			try 
 			{
 				cmd.ExecuteNonQuery();
 			}
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
-
 
 			cmd.Parameters[0].Value = 2;
 			cmd.Parameters[1].Value = dataIn2;
@@ -90,22 +89,22 @@ namespace MySql.Data.MySqlClient.Tests
 				reader = cmd.ExecuteReader();
 				reader.Read();
 				byte[] dataOut = new byte[ len ];
-				long count = reader.GetBytes( 2, 0, dataOut, 0, len );
-				Assert.AreEqual( len, count );
+				long count = reader.GetBytes(2, 0, dataOut, 0, len);
+				Assert.AreEqual(len, count);
 
 				for (int i=0; i < len; i++)
-					Assert.AreEqual( dataIn[i], dataOut[i] );
+					Assert.AreEqual(dataIn[i], dataOut[i]);
 
 				reader.Read();
-				count = reader.GetBytes( 2, 0, dataOut, 0, len );
-				Assert.AreEqual( len, count );
+				count = reader.GetBytes(2, 0, dataOut, 0, len);
+				Assert.AreEqual(len, count);
 
 				for (int i=0; i < len; i++)
-					Assert.AreEqual( dataIn2[i], dataOut[i] );
+					Assert.AreEqual(dataIn2[i], dataOut[i]);
 			}
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 			finally 
 			{
@@ -175,8 +174,8 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
-	[Category("Compressed")]
-	[Category("Pipe")]
+    [Category("Compressed")]
+    [Category("Pipe")]
     public class StressTestsPipeCompressed : StressTests
     {
         protected override string GetConnectionInfo()
@@ -185,7 +184,7 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
-	[Category("SharedMemory")]
+    [Category("SharedMemory")]
     public class StressTestsSharedMemory : StressTests
     {
         protected override string GetConnectionInfo()
@@ -194,8 +193,8 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
-	[Category("Compressed")]
-	[Category("SharedMemory")]
+    [Category("Compressed")]
+    [Category("SharedMemory")]
     public class StressTestsSharedMemoryCompressed : StressTests
     {
         protected override string GetConnectionInfo()
@@ -205,4 +204,5 @@ namespace MySql.Data.MySqlClient.Tests
     }
 
     #endregion
+
 }

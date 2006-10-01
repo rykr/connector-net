@@ -57,7 +57,7 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				reader = MySqlHelper.ExecuteReader(this.GetConnectionString(true),
-					"SELECT * FROM mysql.host WHERE TIME('06/21/2005')");
+					"SELECT * FROM mysql.host WHERE TIME('2005/6/21')");
 			}
 			catch (Exception ex)
 			{

@@ -66,21 +66,21 @@ namespace MySql.Data.MySqlClient.Tests
 			CultureInfo c = new CultureInfo("de-DE");
 			Thread.CurrentThread.CurrentCulture = c;
 			Thread.CurrentThread.CurrentUICulture = c;
-
-			execSQL( "DROP TABLE IF EXISTS Test" );
-			execSQL( "CREATE TABLE Test (fl FLOAT, db DOUBLE, dec1 DECIMAL(5,2))" );
+            
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (fl FLOAT, db DOUBLE, dec1 DECIMAL(5,2))");
 
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?fl, ?db, ?dec)", conn);
-			cmd.Parameters.Add( "?fl", MySqlDbType.Float );
-			cmd.Parameters.Add( "?db", MySqlDbType.Double );
-			cmd.Parameters.Add( "?dec", MySqlDbType.Decimal );
+			cmd.Parameters.Add("?fl", MySqlDbType.Float);
+			cmd.Parameters.Add("?db", MySqlDbType.Double);
+			cmd.Parameters.Add("?dec", MySqlDbType.Decimal);
 			cmd.Parameters[0].Value = 2.3;
 			cmd.Parameters[1].Value = 4.6;
 			cmd.Parameters[2].Value = 23.82;
 			if (prepared)
 				cmd.Prepare();
 			int count = cmd.ExecuteNonQuery();
-			Assert.AreEqual( 1, count );
+			Assert.AreEqual(1, count);
 
 			MySqlDataReader reader = null;
 			try 
@@ -89,13 +89,13 @@ namespace MySql.Data.MySqlClient.Tests
 				if (prepared) cmd.Prepare();
 				reader = cmd.ExecuteReader();
 				reader.Read();
-				Assert.AreEqual( 2.3, reader.GetFloat(0) );
-				Assert.AreEqual( 4.6, reader.GetDouble(1) );
-				Assert.AreEqual( 23.82, reader.GetDecimal(2) );
+				Assert.AreEqual(2.3, reader.GetFloat(0));
+				Assert.AreEqual(4.6, reader.GetDouble(1));
+				Assert.AreEqual(23.82, reader.GetDecimal(2));
 			}
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 			finally 
 			{

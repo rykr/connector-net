@@ -53,14 +53,14 @@ namespace MySql.Data.MySqlClient.Tests
 			try 
 			{
 				reader = cmd.ExecuteReader();
-				Assert.IsTrue( reader.Read() );
-				Assert.AreEqual( 1, reader.GetInt32(0) );
-				Assert.AreEqual( 345.12, reader.GetDecimal(1) );
-				Assert.AreEqual( "abcd", reader.GetString(2) );
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual(1, reader.GetInt32(0));
+				Assert.AreEqual(345.12, reader.GetDecimal(1));
+				Assert.AreEqual("abcd", reader.GetString(2));
 			}
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 			finally 
 			{
@@ -559,6 +559,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[Category("4.1")]
 		public void ParameterLengths()
 		{
+            execSQL("DROP TABLE test");
 			execSQL("CREATE TABLE test (id int, name VARCHAR(255))");
 
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (?id, ?name)", conn);
@@ -694,9 +695,9 @@ namespace MySql.Data.MySqlClient.Tests
         public void CompoundStatements()
         {
             execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE IF NOT EXISTS test (" +
-                "id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT," +
-                "test1 INT UNSIGNED, test2 INT UNSIGNED)");
+            execSQL("CREATE TABLE IF NOT EXISTS test ("+
+	            "id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT," +
+	            "test1 INT UNSIGNED, test2 INT UNSIGNED)");
 
             try
             {
@@ -716,7 +717,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     #region Configs
 
-	[Category("Compressed")]
+    [Category("Compressed")]
     public class PreparedStatementsSocketCompressed : PreparedStatements
     {
         protected override string GetConnectionInfo()
@@ -725,7 +726,7 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
-	[Category("Pipe")]
+    [Category("Pipe")]
     public class PreparedStatementsPipe : PreparedStatements
     {
         protected override string GetConnectionInfo()
@@ -734,8 +735,8 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
-	[Category("Compressed")]
-	[Category("Pipe")]
+    [Category("Compressed")]
+    [Category("Pipe")]
     public class PreparedStatementsPipeCompressed : PreparedStatements
     {
         protected override string GetConnectionInfo()
@@ -744,7 +745,7 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
-	[Category("SharedMemory")]
+    [Category("SharedMemory")]
     public class PreparedStatementsSharedMemory : PreparedStatements
     {
         protected override string GetConnectionInfo()
@@ -753,8 +754,8 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
-	[Category("Compressed")]
-	[Category("SharedMemory")]
+    [Category("Compressed")]
+    [Category("SharedMemory")]
     public class PreparedStatementsSharedMemoryCompressed : PreparedStatements
     {
         protected override string GetConnectionInfo()
@@ -764,4 +765,5 @@ namespace MySql.Data.MySqlClient.Tests
     }
 
     #endregion
+
 }

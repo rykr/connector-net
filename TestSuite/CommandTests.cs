@@ -22,6 +22,7 @@ using System;
 using System.Data;
 using MySql.Data.MySqlClient;
 using NUnit.Framework;
+using System.Threading;
 
 namespace MySql.Data.MySqlClient.Tests
 {
@@ -33,8 +34,6 @@ namespace MySql.Data.MySqlClient.Tests
 		public void TestFixtureSetUp()
 		{
 			Open();
-			execSQL("DROP TABLE IF EXISTS Test");
-			execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
 		}
 
 		[TestFixtureTearDown]
@@ -42,7 +41,6 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			Close();
 		}
-
 
         protected override void Setup()
         {
@@ -96,35 +94,35 @@ namespace MySql.Data.MySqlClient.Tests
 				// do the update
 				MySqlCommand cmd = new MySqlCommand("UPDATE Test SET name='Test3' WHERE id=10 OR id=11", conn);
 				MySqlConnection c = cmd.Connection;
-				Assert.AreEqual( conn, c );
+				Assert.AreEqual(conn, c);
 				int cnt = cmd.ExecuteNonQuery();
-				Assert.AreEqual( 2, cnt );
+				Assert.AreEqual(2, cnt);
 
 				// make sure we get the right value back out
 				cmd.CommandText = "SELECT name FROM Test WHERE id=10";
 				string name = (string)cmd.ExecuteScalar();
-				Assert.AreEqual( "Test3", name );
+				Assert.AreEqual("Test3", name);
 			
 				cmd.CommandText = "SELECT name FROM Test WHERE id=11";
 				name = (string)cmd.ExecuteScalar();
-				Assert.AreEqual( "Test3", name );
+				Assert.AreEqual("Test3", name);
 
 				// now do the update with parameters
 				cmd.CommandText = "UPDATE Test SET name=?name WHERE id=?id";
 				cmd.Parameters.Add( new MySqlParameter("?id", 11));
 				cmd.Parameters.Add( new MySqlParameter("?name", "Test5"));
 				cnt = cmd.ExecuteNonQuery();
-				Assert.AreEqual( 1, cnt, "Update with Parameters Count" );
+				Assert.AreEqual(1, cnt, "Update with Parameters Count");
 
 				// make sure we get the right value back out
 				cmd.Parameters.Clear();
 				cmd.CommandText = "SELECT name FROM Test WHERE id=11";
 				name = (string)cmd.ExecuteScalar();
-				Assert.AreEqual( "Test5", name );
+				Assert.AreEqual("Test5", name);
 			}
 			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 		}
 
@@ -139,16 +137,16 @@ namespace MySql.Data.MySqlClient.Tests
 				// make sure we get the right value back out
 				MySqlCommand cmd = new MySqlCommand("DELETE FROM Test WHERE id=1 or id=2", conn);
 				int delcnt = cmd.ExecuteNonQuery();
-				Assert.AreEqual( 2, delcnt );
+				Assert.AreEqual(2, delcnt);
 			
 				// find out how many rows we have now
 				cmd.CommandText = "SELECT COUNT(*) FROM Test";
 				object after_cnt = cmd.ExecuteScalar();
-				Assert.AreEqual( 0, after_cnt );
+				Assert.AreEqual(0, after_cnt);
 			}
 			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 		}
 
@@ -158,11 +156,11 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlTransaction txn = conn.BeginTransaction();
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", conn);
 
-			MySqlCommand clone = new MySqlCommand( cmd.CommandText, (MySqlConnection)cmd.Connection, 
-				(MySqlTransaction)cmd.Transaction );
-			clone.Parameters.Add( "?test", 1 );
-			txn.Rollback();
-		}
+            MySqlCommand clone = new MySqlCommand(cmd.CommandText, (MySqlConnection)cmd.Connection,
+                (MySqlTransaction)cmd.Transaction);
+            clone.Parameters.Add("?test", 1);
+            txn.Rollback();
+        }
 
 		[Test]
 		public void CloneCommand() 
@@ -223,7 +221,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 			finally 
 			{
@@ -297,44 +295,46 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		/// <summary>
-		/// Bug# 8119.  Unable to reproduce but left in anyway
-		/// </summary>
-		[Test]
-		public void ReallyBigCommandString() 
-		{
-			System.Text.StringBuilder sql = new System.Text.StringBuilder();
+        /// <summary>
+        /// Bug# 8119.  Unable to reproduce but left in anyway
+        /// </summary>
+        [Category("NotWorking")]
+        [Test]
+        public void ReallyBigCommandString()
+        {
+            System.Text.StringBuilder sql = new System.Text.StringBuilder();
 
-			for (int i=0; i < 10; i++) 
-				sql.Append("DROP TABLE IF EXISTS idx" + i + ";CREATE TABLE idx" + i + "(aa int not null auto_increment primary key, a int, b varchar(50), c int);");
+            for (int i = 0; i < 10; i++)
+                sql.Append("DROP TABLE IF EXISTS idx" + i + ";CREATE TABLE idx" + i + "(aa int not null auto_increment primary key, a int, b varchar(50), c int);");
 
-			int c = 0;
-			for (int z=0; z < 600; z++)
-				for (int x=0; x < 10; x++, c++) 
-				{
-					string s = String.Format("INSERT INTO idx{0} (a, b, c) values ({1}, 'field{1}', {2});",
-						x, z, c);
-					sql.Append(s);
-				}
+            int c = 0;
+            for (int z = 0; z < 100; z++) 
+                for (int x = 0; x < 10; x++, c++)
+                {
+                    string s = String.Format("INSERT INTO idx{0} (a, b, c) values ({1}, 'field{1}', {2});",
+                        x, z, c);
+                    sql.Append(s);
+                }
 
-			try 
-			{
-				MySqlCommand cmd = new MySqlCommand(sql.ToString(), conn);
-				cmd.ExecuteNonQuery();
-				
-				for (int i=0; i < 10; i++) 
-				{
-					cmd.CommandText = "SELECT COUNT(*) FROM idx" + i;
-					object count = cmd.ExecuteScalar();
-					Assert.AreEqual( 600, count );
-					execSQL("DROP TABLE IF EXISTS idx" + i );
-				}
-			}
-			catch (Exception ex) 
-			{
-				Assert.Fail( ex.Message );
-			}
-		}
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand(sql.ToString(), conn);
+                cmd.ExecuteNonQuery();
+
+                for (int i = 0; i < 10; i++)
+                {
+                    cmd.CommandText = "SELECT COUNT(*) FROM idx" + i;
+                    object count = cmd.ExecuteScalar();
+                    Assert.AreEqual(100, count);
+                    execSQL("DROP TABLE IF EXISTS idx" + i);
+                }
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+
+        }
 
         /// <summary>
         /// Bug #7248 There is already an open DataReader associated with this Connection which must 
@@ -369,7 +369,7 @@ namespace MySql.Data.MySqlClient.Tests
             {
                 object o = cmd.ExecuteScalar();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
 
@@ -384,9 +384,10 @@ namespace MySql.Data.MySqlClient.Tests
         }
 	}
 
+
     #region Configs
 
-	[Category("Compressed")]
+    [Category("Compressed")]
     public class CommandTestsSocketCompressed : CommandTests
     {
         protected override string GetConnectionInfo()
@@ -404,8 +405,8 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
-	[Category("Compressed")]
-	[Category("Pipe")]
+    [Category("Compressed")]
+    [Category("Pipe")]
     public class CommandTestsPipeCompressed : CommandTests
     {
         protected override string GetConnectionInfo()
@@ -414,7 +415,7 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
-	[Category("SharedMemory")]
+    [Category("SharedMemory")]
     public class CommandTestsSharedMemory : CommandTests
     {
         protected override string GetConnectionInfo()
@@ -423,8 +424,8 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
-	[Category("Compressed")]
-	[Category("SharedMemory")]
+    [Category("Compressed")]
+    [Category("SharedMemory")]
     public class CommandTestsSharedMemoryCompressed : CommandTests
     {
         protected override string GetConnectionInfo()
