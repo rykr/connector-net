@@ -157,6 +157,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     #region Configs
 
+	[Category("Compressed")]
     public class StressTestsSocketCompressed : StressTests
     {
         protected override string GetConnectionInfo()
@@ -165,6 +166,7 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
+	[Category("Pipe")]
     public class StressTestsPipe : StressTests
     {
         protected override string GetConnectionInfo()
@@ -173,6 +175,8 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
+	[Category("Compressed")]
+	[Category("Pipe")]
     public class StressTestsPipeCompressed : StressTests
     {
         protected override string GetConnectionInfo()
@@ -181,6 +185,7 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
+	[Category("SharedMemory")]
     public class StressTestsSharedMemory : StressTests
     {
         protected override string GetConnectionInfo()
@@ -189,6 +194,8 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
+	[Category("Compressed")]
+	[Category("SharedMemory")]
     public class StressTestsSharedMemoryCompressed : StressTests
     {
         protected override string GetConnectionInfo()

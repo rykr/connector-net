@@ -25,7 +25,7 @@ using NUnit.Framework;
 
 namespace MySql.Data.MySqlClient.Tests
 {
-	[TestFixture()]
+	[TestFixture]
 	public class Syntax : BaseTest
 	{
 		[TestFixtureSetUp]
@@ -49,7 +49,7 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 
-		[Test()]
+		[Test]
 		public void ShowCreateTable()
 		{
 			MySqlDataAdapter da = new MySqlDataAdapter("SHOW CREATE TABLE test", conn);
@@ -60,7 +60,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( 2, dt.Columns.Count );
 		}
 
-		[Test()]
+		[Test]
 		[Category("4.1")]
 		public void ProblemCharsInSQL()
 		{
@@ -96,7 +96,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void LoadDataLocalInfile() 
 		{
 			execSQL("set @@global.max_allowed_packet=250000000");
@@ -134,7 +134,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("set @@global.max_allowed_packet=1047256");
 		}
 
-		[Test()]
+		[Test]
 		public void ShowTablesInNonExistentDb() 
 		{
 			MySqlCommand cmd = new MySqlCommand("SHOW TABLES FROM dummy", conn);
@@ -158,7 +158,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void Bug6135() 
 		{
 			execSQL("DROP TABLE IF EXISTS KLANT");
@@ -259,11 +259,10 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
+		[Category("4.1")]
 		[Test]
 		public void ForceWarnings() 
 		{
-			if (! Is41 && ! Is50) return;
-
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test; DROP TABLE IF EXISTS test2; SELECT * FROM test", conn);
 			MySqlDataReader reader = null; 
 			try 

@@ -27,7 +27,7 @@ using NUnit.Framework;
 
 namespace MySql.Data.MySqlClient.Tests
 {
-	[TestFixture()]
+	[TestFixture]
 	public class CultureTests : BaseTest
 	{
 		[TestFixtureSetUp]
@@ -50,7 +50,12 @@ namespace MySql.Data.MySqlClient.Tests
 		public void TestFloats() 
 		{
 			InternalTestFloats(false);
-			if (! Is41 && ! Is50) return;
+        }
+
+        [Category("4.1")]
+        [Test]
+        public void TestFloatsPrepared()
+        {
 			InternalTestFloats(true);
 		}
 

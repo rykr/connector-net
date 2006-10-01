@@ -25,7 +25,7 @@ using NUnit.Framework;
 
 namespace MySql.Data.MySqlClient.Tests
 {
-	[TestFixture()]
+	[TestFixture]
 	public class Transactions : BaseTest
 	{
 		[TestFixtureSetUp]
@@ -43,7 +43,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
-		[Test()]
+		[Test]
 		public void TestReader() 
 		{
 			execSQL("INSERT INTO Test VALUES('P', 'Test1', 'Test2')");

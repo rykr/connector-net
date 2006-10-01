@@ -44,7 +44,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
-		[Test()]
+		[Test]
 		public void TestConnectionStrings()
 		{
 			MySqlConnection c = new MySqlConnection();
@@ -78,7 +78,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( System.Data.ConnectionState.Closed, c.State, "State" );
 		}
 
-		[Test()]
+		[Test]
 		[ExpectedException(typeof(MySqlException))]
 		public void TestConnectingSocketBadUserName()
 		{

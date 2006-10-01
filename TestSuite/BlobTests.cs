@@ -130,9 +130,14 @@ namespace MySql.Data.MySqlClient.Tests
 		public void GetChars() 
 		{
 			InternalGetChars(false);
-			if (!Is41 && !Is50) return;
-			InternalGetChars(true);
 		}
+
+        [Test]
+        [Category("4.1")]
+        public void GetCharsPrepared()
+        {
+            InternalGetChars(true);
+        }
 
 		private void InternalGetChars( bool prepare ) 
 		{
@@ -188,9 +193,14 @@ namespace MySql.Data.MySqlClient.Tests
 		public void InsertText() 
 		{
 			InternalInsertText(false);
-			if (!Is41 && !Is50) return;
-			InternalInsertText(true);
 		}
+
+        [Test]
+        [Category("4.1")]
+        public void InsertTextPrepared()
+        {
+            InternalInsertText(true);
+        }
 
 		private void InternalInsertText(bool prepare) 
 		{
@@ -383,6 +393,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     #region Configs
 
+    [Category("Compressed")]
     public class BlobTestsSocketCompressed : BlobTests
     {
         protected override string GetConnectionInfo()
@@ -391,6 +402,7 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
+	[Category("Pipe")]
     public class BlobTestsPipe : BlobTests
     {
         protected override string GetConnectionInfo()
@@ -399,6 +411,8 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
+	[Category("Compressed")]
+	[Category("Pipe")]
     public class BlobTestsPipeCompressed : BlobTests
     {
         protected override string GetConnectionInfo()
@@ -407,6 +421,7 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
+	[Category("SharedMemory")]
     public class BlobTestsSharedMemory : BlobTests
     {
         protected override string GetConnectionInfo()
@@ -415,6 +430,8 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
+	[Category("Compressed")]
+	[Category("SharedMemory")]
     public class BlobTestsSharedMemoryCompressed : BlobTests
     {
         protected override string GetConnectionInfo()

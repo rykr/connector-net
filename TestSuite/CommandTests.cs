@@ -25,7 +25,7 @@ using NUnit.Framework;
 
 namespace MySql.Data.MySqlClient.Tests
 {
-	[TestFixture()]
+	[TestFixture]
 	public class CommandTests : BaseTest
 	{
 
@@ -43,7 +43,15 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
-		[Test()]
+
+        protected override void Setup()
+        {
+            base.Setup();
+            execSQL("DROP TABLE IF EXISTS Test");
+            execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
+        }
+
+		[Test]
 		public void InsertTest()
 		{
 			try 
@@ -77,7 +85,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void UpdateTest()
 		{
 			try 
@@ -120,7 +128,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void DeleteTest()
 		{
 			try 
@@ -227,6 +235,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// <summary>
 		/// Bug #12245  	using Prepare() on an insert command causes null parameters to convert to "0"
 		/// </summary>
+		[Category("4.1")]
 		[Test]
 		public void InsertingPreparedNulls()
 		{
@@ -259,6 +268,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// <summary>
 		/// MySQL Bugs: #12163: Insert using prepared statement causes double insert
 		/// </summary>
+		[Category("4.1")]
 		[Test]
 		public void PreparedInsertUsingReader()
 		{
@@ -376,6 +386,7 @@ namespace MySql.Data.MySqlClient.Tests
 
     #region Configs
 
+	[Category("Compressed")]
     public class CommandTestsSocketCompressed : CommandTests
     {
         protected override string GetConnectionInfo()
@@ -384,6 +395,7 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
+    [Category("Pipe")]
     public class CommandTestsPipe : CommandTests
     {
         protected override string GetConnectionInfo()
@@ -392,6 +404,8 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
+	[Category("Compressed")]
+	[Category("Pipe")]
     public class CommandTestsPipeCompressed : CommandTests
     {
         protected override string GetConnectionInfo()
@@ -400,6 +414,7 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
+	[Category("SharedMemory")]
     public class CommandTestsSharedMemory : CommandTests
     {
         protected override string GetConnectionInfo()
@@ -408,6 +423,8 @@ namespace MySql.Data.MySqlClient.Tests
         }
     }
 
+	[Category("Compressed")]
+	[Category("SharedMemory")]
     public class CommandTestsSharedMemoryCompressed : CommandTests
     {
         protected override string GetConnectionInfo()

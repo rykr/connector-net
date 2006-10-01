@@ -44,7 +44,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
-		[SetUp()]
+		[SetUp]
 		protected override void Setup() 
 		{
 			base.Setup();
@@ -66,7 +66,7 @@ namespace MySql.Data.MySqlClient.Tests
             InternalBytesAndBooleans(true);
         }
 
-		private void InternalBytesAndBooleans( bool prepare ) 
+		private void InternalBytesAndBooleans(bool prepare) 
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id TINYINT, idu TINYINT UNSIGNED, i INT UNSIGNED)");
@@ -104,17 +104,22 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
-		public void TestFloats() 
+		public void TestFloat() 
 		{
 			InternalTestFloats(false);
-			if (! Is41 && ! Is50) return;
-			InternalTestFloats(true);
 		}
+
+        [Test]
+        [Category("4.1")]
+        public void TestFloatPrepared()
+        {
+            InternalTestFloats(true);
+        }
 
 		private void InternalTestFloats(bool prepared)
 		{
-			execSQL( "DROP TABLE IF EXISTS Test" );
-			execSQL( "CREATE TABLE Test (fl FLOAT, db DOUBLE, dec1 DECIMAL(5,2))" );
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (fl FLOAT, db DOUBLE, dec1 DECIMAL(5,2))");
 
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?fl, ?db, ?dec)", conn);
 			cmd.Parameters.Add( "?fl", MySqlDbType.Float );
@@ -221,7 +226,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void TestTime()
 		{
 			MySqlDataReader reader = null;
@@ -265,7 +270,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void YearType() 
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
@@ -299,7 +304,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void TypeCoercion()
 		{
 			MySqlParameter p = new MySqlParameter("?test", 1);

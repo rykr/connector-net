@@ -44,7 +44,14 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
-		[Test()]
+        protected override void Setup()
+        {
+            base.Setup();
+            execSQL("DROP TABLE IF EXISTS Test");
+            execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME, ts TIMESTAMP, PRIMARY KEY(id))");
+        }
+        
+		[Test]
 		public void TestUserVariables()
 		{
 			MySqlCommand cmd = new MySqlCommand("SET @myvar = 'test'", conn);
@@ -67,7 +74,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void TestQuoting()
 		{
 			MySqlCommand cmd = new MySqlCommand("", conn);
@@ -118,7 +125,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void TestDateTimeParameter()
 		{
 			MySqlCommand cmd = new MySqlCommand("", conn);
@@ -271,7 +278,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( "test", cmd.ExecuteScalar());
 		}
 
-		[Test()]
+		[Test]
 		public void NullParameterValue() 
 		{
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, name) VALUES (1, ?name)", conn);

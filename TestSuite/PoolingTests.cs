@@ -168,7 +168,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
+		[Test]
 		public void TestUserReset()
 		{
 			execSQL("SET @testvar='5'");

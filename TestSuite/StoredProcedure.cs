@@ -30,6 +30,7 @@ namespace MySql.Data.MySqlClient.Tests
 	/// <summary>
 	/// Summary description for StoredProcedure.
 	/// </summary>
+	[Category("5.0")]
 	[TestFixture]
 	public class StoredProcedure : BaseTest
 	{
@@ -49,11 +50,17 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
+        protected override void Setup()
+        {
+           base.Setup();
+           execSQL("DROP TABLE IF EXISTS Test");
+           execSQL("CREATE TABLE Test (id INT, name VARCHAR(100))");
+        }
+
 		/// <summary>
 		/// Bug #7623  	Adding MySqlParameter causes error if MySqlDbType is Decimal
 		/// </summary>
 		[Test]
-		[Category("5.0")]
 		public void ReturningResultset() 
 		{
 			// create our procedure
@@ -74,7 +81,6 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
-		[Category("5.0")]
 		public void NonQuery()
 		{
 			execSQL("CREATE PROCEDURE spTest(IN value INT) BEGIN INSERT INTO Test VALUES(value, 'Test'); END" );
@@ -113,7 +119,6 @@ namespace MySql.Data.MySqlClient.Tests
         /// Bug #17814  	Stored procedure fails unless DbType set explicitly
         /// </summary>
 		[Test]
-		[Category("5.0")]
 		public void OutputParameters()
 		{
 			// create our procedure
@@ -156,8 +161,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("DROP PROCEDURE spCount");
 		}
 
-		[Test()]
-		[Category("5.0")]
+		[Test]
 		public void NoBatch()
 		{
 			try 
@@ -172,8 +176,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-		[Test()]
-		[Category("5.0")]
+		[Test]
 		public void WrongParameters()
 		{
 			try 
@@ -190,7 +193,6 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
-		[Category("5.0")]
 		public void NoInOutMarker() 
 		{
 			// create our procedure
@@ -203,8 +205,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( "myvalue", val );
 		}
 
-		[Test()]
-		[Category("5.0")]
+		[Test]
 		public void InputOutputParameters()
 		{
 			// create our procedure
@@ -226,8 +227,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(99, cmd.Parameters[2].Value);
 		}
 
-		[Test()]
-		[Category("5.0")]
+		[Test]
 		public void NoSPOnPre50() 
 		{
 			try 
@@ -243,7 +243,6 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
-		[Category("5.0")]
 		public void ExecuteScalar() 
 		{
 			// create our procedure
@@ -264,7 +263,6 @@ namespace MySql.Data.MySqlClient.Tests
         /// Bug #13590  	ExecuteScalar returns only Int64 regardless of actual SQL type
         /// </summary>
         [Test]
-        [Category("5.0")]
         public void ExecuteScalar2()
         {
             // create our procedure
@@ -279,7 +277,6 @@ namespace MySql.Data.MySqlClient.Tests
         }
 
         [Test]
-        [Category("5.0")]
         public void ExecuteReader()
         {
             // create our procedure
@@ -298,12 +295,11 @@ namespace MySql.Data.MySqlClient.Tests
             Assert.AreEqual(2, cmd.Parameters[0].Value);
         }
 
-		[Test()]
-		[Category("5.0")]
+		[Test]
 		public void MultipleResultsets() 
 		{
 			MultipleResultsetsImpl(false);
-//			MultipleResultsetsImpl(true);
+			MultipleResultsetsImpl(true);
 		}
 
 		private void MultipleResultsetsImpl(bool prepare)
@@ -344,8 +340,7 @@ namespace MySql.Data.MySqlClient.Tests
 			e.Continue = true;
 		}
 
-		[Test()]
-		[Category("5.0")]
+		[Test]
 		public void FunctionNoParams() 
 		{
 			execSQL( "CREATE FUNCTION fnTest() RETURNS CHAR(50)" +
@@ -357,8 +352,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( "Test", result );
 		}
 
-		[Test()]
-		[Category("5.0")]
+		[Test]
 		public void FunctionParams() 
 		{
 			execSQL( "CREATE FUNCTION fnTest( val1 INT, val2 CHAR(40) ) RETURNS INT " +
@@ -370,8 +364,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual( 26, result);
 		}
 
-		[Test()]
-		[Category("5.0")]
+		[Test]
 		public void UseOldSyntax() 
 		{
 			// create our procedure
@@ -393,7 +386,6 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
-		[Category("5.0")]
 		public void ExecuteWithCreate() 
 		{
 			// create our procedure
@@ -409,8 +401,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #9722 Connector does not recognize parameters separated by a linefeed 
 		/// </summary>
 		[Test]
-		[Category("5.0")]
-		public void OtherProcSigs() 
+=		public void OtherProcSigs() 
 		{
 			// create our procedure
 			execSQL( "CREATE PROCEDURE spTest(IN \r\nvalin DECIMAL(10,2),\nIN val2 INT) " +
@@ -438,7 +429,6 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #10644 Cannot call a stored function directly from Connector/Net 
 		/// </summary>
 		[Test]
-		[Category("5.0")]
 		public void CallingStoredFunctionasProcedure()
 		{
 			execSQL("CREATE FUNCTION fnTest(valin int) RETURNS INT BEGIN return valin * 2; END");
@@ -455,7 +445,6 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #11450  	Connector/Net, current database and stored procedures
 		/// </summary>
 		[Test]
-		[Category("5.0")]
 		public void NoDefaultDatabase()
 		{
 			// create our procedure
@@ -513,7 +502,6 @@ namespace MySql.Data.MySqlClient.Tests
         /// Bug #15077  	Error MySqlCommandBuilder.DeriveParameters for sp without parameters.
         /// Bug #19515  	DiscoverParameters fails on numeric datatype
 		/// </summary>
-		[Category("5.0")]
 		[Test]
 		public void DeriveParameters()
 		{
@@ -584,7 +572,6 @@ namespace MySql.Data.MySqlClient.Tests
 		/// <summary>
 		/// Bug #13632  	the MySQLCommandBuilder.deriveparameters has not been updated for MySQL 5
 		/// </summary>
-		[Category("5.0")]
 		[Test]
 		public void DeriveParametersForFunction()
 		{
@@ -616,7 +603,6 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #11386  	Numeric parameters with Precision and Scale not taken into account by Connector
 		/// </summary>
 		[Test]
-		[Category("5.0")]
 		public void DecimalAsParameter()
 		{
 			execSQL("CREATE PROCEDURE spTest(IN d DECIMAL(19,4)) BEGIN SELECT d; END");
@@ -632,7 +618,6 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #6902  	Errors in parsing stored procedure parameters
 		/// </summary>
 		[Test]
-		[Category("5.0")]
 		public void ParmWithCharacterSet()
 		{
 			execSQL("CREATE PROCEDURE spTest(P longtext character set utf8) " +
@@ -649,7 +634,6 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #13753  	Exception calling stored procedure with special characters in parameters
 		/// </summary>
 		[Test]
-		[Category("5.0")]
 		public void SpecialCharacters()
 		{
 			execSQL("SET sql_mode=ANSI_QUOTES");
@@ -675,7 +659,6 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
-		[Category("NotWorking")]
 		public void CallingSPWithPrepare()
 		{
 			execSQL("DROP PROCEDURE IF EXISTS spTest");
@@ -694,7 +677,6 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #13927  	Multiple Records to same Table in Transaction Problem
 		/// </summary>
 		[Test]
-		[Category("5.0")]
 		public void MultileRecords()
 		{
 			execSQL("DROP PROCEDURE IF EXISTS spTest");
@@ -725,7 +707,6 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #16788 Only byte arrays and strings can be serialized by MySqlBinary 
 		/// </summary>
 		[Test]
-		[Category("5.0")]
 		public void Bug16788()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
@@ -753,7 +734,6 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
         [Test]
-        [Category("5.0")]
         public void ReturningEmptyResultSet()
         {
             execSQL("DROP PROCEDURE IF EXISTS spTest");
@@ -785,7 +765,6 @@ namespace MySql.Data.MySqlClient.Tests
             da.Fill(ds);
         }
 
-        [Category("5.0")]
         [Test]
         public void ProcedureCache()
         {
@@ -865,6 +844,46 @@ namespace MySql.Data.MySqlClient.Tests
             }
         }
 
+        /// <summary>
+        /// Bug #17046 Null pointer access when stored procedure is used 
+        /// </summary>
+        [Test]
+        public void PreparedReader()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE  test (id int(10) unsigned NOT NULL default '0', " +
+                "val int(10) unsigned default NULL, PRIMARY KEY (id)) " +
+                "ENGINE=InnoDB DEFAULT CHARSET=utf8");
+            execSQL("CREATE PROCEDURE spTest (IN pp INTEGER) " +
+                    "select * from test where id > pp ");
+
+            MySqlCommand c = new MySqlCommand("spTest", conn);
+            c.CommandType = CommandType.StoredProcedure;
+            IDataParameter p = c.CreateParameter();
+            p.ParameterName = "pp";
+            p.Value = 10;
+            c.Parameters.Add(p);
+            c.Prepare();
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = c.ExecuteReader();
+                while (reader.Read())
+                {
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
+        }
+
         [Test]
         public void UnsignedOutputParameters()
         {
@@ -887,7 +906,6 @@ namespace MySql.Data.MySqlClient.Tests
         /// <summary>
         /// Bug #22452 MySql.Data.MySqlClient.MySqlException: 
         /// </summary>
-        [Category("5.0")]
         [Test]
         public void TurkishStoredProcs()
         {

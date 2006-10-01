@@ -48,6 +48,14 @@ namespace MySql.Data.MySqlClient.Tests
 			Close();
 		}
 
+        protected override void Setup()
+        {
+            base.Setup();
+            execSQL("DROP TABLE IF EXISTS Test");
+            execSQL("CREATE TABLE Test (id INT NOT NULL, dt DATETIME, d DATE, " +
+                "t TIME, ts TIMESTAMP, PRIMARY KEY(id))");
+        }
+        
 		[Test]
 		public void ConvertZeroDateTime()
 		{
