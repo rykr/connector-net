@@ -22,6 +22,9 @@ using System;
 using System.Data;
 using System.Collections;
 using System.ComponentModel;
+using System.Globalization;
+using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace MySql.Data.MySqlClient
 {
@@ -36,6 +39,19 @@ namespace MySql.Data.MySqlClient
 	{
 		private ArrayList	_parms = new ArrayList();
 		private char		paramMarker = '?';
+    private Hashtable ciHash;
+    private Hashtable hash;
+
+    public MySqlParameterCollection()
+    {
+      hash = new Hashtable();
+#if NET20
+      ciHash = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+#else
+      ciHash = new Hashtable(new CaseInsensitiveHashCodeProvider(),
+        new CaseInsensitiveComparer());
+#endif
+    }
 
 		internal char ParameterMarker 
 		{
@@ -90,6 +106,8 @@ namespace MySql.Data.MySqlClient
 		public void Clear()
 		{
 			_parms.Clear();
+      hash.Clear();
+      ciHash.Clear();
 		}
 
 		/// <summary>
@@ -121,7 +139,7 @@ namespace MySql.Data.MySqlClient
 		/// <param name="value"></param>
 		public void Insert(int index, object value)
 		{
-			_parms.Insert( index, value );
+			_parms.Insert(index, value);
 		}
 
 		bool IList.IsFixedSize
@@ -138,9 +156,9 @@ namespace MySql.Data.MySqlClient
 		/// Removes the specified MySqlParameter from the collection.
 		/// </summary>
 		/// <param name="value"></param>
-		public void Remove( object value )
+		public void Remove(object value)
 		{
-			_parms.Remove( value );
+			_parms.Remove(value);
 		}
 
 		/// <summary>
@@ -148,9 +166,9 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		/// <param name="index">The zero-based index of the parameter. </param>
 		/// <overloads>Removes the specified <see cref="MySqlParameter"/> from the collection.</overloads>
-		public void RemoveAt( int index )
+		public void RemoveAt(int index)
 		{
-			_parms.RemoveAt( index );
+			_parms.RemoveAt(index);
 		}
 
 		object IList.this[int index] 
@@ -168,7 +186,7 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		/// <param name="value">The <see cref="MySqlParameter"/> to add to the collection.</param>
 		/// <returns>The index of the new <see cref="MySqlParameter"/> object.</returns>
-		public int Add( object value )
+		public int Add(object value)
 		{
 			if (! (value is MySqlParameter)) 
 				throw new MySqlException("Only MySqlParameter objects may be stored");
@@ -202,18 +220,12 @@ namespace MySql.Data.MySqlClient
 		/// <returns>The zero-based location of the <see cref="MySqlParameter"/> in the collection.</returns>
 		public int IndexOf(string parameterName)
 		{
-			if (parameterName[0] == paramMarker)
-				parameterName = parameterName.Substring(1, parameterName.Length-1);
-			parameterName = parameterName.ToLower();
-			for (int x=0; x < _parms.Count; x++) 
-			{
-				MySqlParameter p = (MySqlParameter)_parms[x];
-				string listName = p.ParameterName;
-				if (listName[0] == paramMarker)
-					listName = listName.Substring(1, listName.Length-1);
-				if (listName.ToLower() == parameterName) return x;
-			}
-			return -1;
+      object o = hash[parameterName];
+      if (o == null)
+        o = ciHash[parameterName];
+      if (o == null)
+        return -1;
+      return (int)o;
 		}
 
 		/// <summary>
@@ -262,8 +274,8 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		public MySqlParameter this[string name]
 		{
-			get { return (MySqlParameter)_parms[ InternalIndexOf( name ) ]; }
-			set { _parms[ InternalIndexOf( name ) ] = value; }
+			get { return (MySqlParameter)_parms[InternalIndexOf(name)]; }
+			set { _parms[InternalIndexOf(name)] = value; }
 		}
 
 		/// <summary>
@@ -296,7 +308,9 @@ namespace MySql.Data.MySqlClient
 				}
 			}
 
-			_parms.Add(value);
+			int index = _parms.Add(value);
+      hash.Add(value.ParameterName, index);
+      ciHash.Add(value.ParameterName, index);
 			return value;
 		}
 
