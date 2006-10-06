@@ -422,7 +422,8 @@ namespace MySql.Data.MySqlClient.Tests
 		public void DefaultValues() 
 		{
 			execSQL("DROP TABLE IF EXISTS test");
-			execSQL("CREATE TABLE test (id int, name VARCHAR(20) NOT NULL DEFAULT 'abc', dt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)");
+			execSQL("CREATE TABLE test (id int, name VARCHAR(20) NOT NULL DEFAULT 'abc', " +
+				    "dt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)");
 			
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
 			MySqlCommand insCmd = new MySqlCommand("INSERT INTO test VALUES (?id, ?name, ?dt)", conn);

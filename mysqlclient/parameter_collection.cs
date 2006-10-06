@@ -39,19 +39,19 @@ namespace MySql.Data.MySqlClient
 	{
 		private ArrayList	_parms = new ArrayList();
 		private char		paramMarker = '?';
-    private Hashtable ciHash;
-    private Hashtable hash;
+		private Hashtable ciHash;
+		private Hashtable hash;
 
-    public MySqlParameterCollection()
-    {
-      hash = new Hashtable();
-#if NET20
-      ciHash = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-#else
-      ciHash = new Hashtable(new CaseInsensitiveHashCodeProvider(),
-        new CaseInsensitiveComparer());
-#endif
-    }
+		public MySqlParameterCollection()
+		{
+			hash = new Hashtable();
+	#if NET20
+			ciHash = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+	#else
+			ciHash = new Hashtable(new CaseInsensitiveHashCodeProvider(),
+				new CaseInsensitiveComparer());
+	#endif
+		}
 
 		internal char ParameterMarker 
 		{
@@ -106,8 +106,8 @@ namespace MySql.Data.MySqlClient
 		public void Clear()
 		{
 			_parms.Clear();
-      hash.Clear();
-      ciHash.Clear();
+			hash.Clear();
+			ciHash.Clear();
 		}
 
 		/// <summary>
@@ -196,7 +196,8 @@ namespace MySql.Data.MySqlClient
 			if (p.ParameterName == null || p.ParameterName == String.Empty)
 				throw new MySqlException("Parameters must be named");
 
-			return _parms.Add(value);
+			p = Add(p);
+			return IndexOf(p);
 		}
 
 		#endregion
@@ -220,12 +221,12 @@ namespace MySql.Data.MySqlClient
 		/// <returns>The zero-based location of the <see cref="MySqlParameter"/> in the collection.</returns>
 		public int IndexOf(string parameterName)
 		{
-      object o = hash[parameterName];
-      if (o == null)
-        o = ciHash[parameterName];
-      if (o == null)
-        return -1;
-      return (int)o;
+			object o = hash[parameterName];
+			if (o == null)
+				o = ciHash[parameterName];
+			if (o == null)
+				return -1;
+			return (int)o;
 		}
 
 		/// <summary>
@@ -309,8 +310,8 @@ namespace MySql.Data.MySqlClient
 			}
 
 			int index = _parms.Add(value);
-      hash.Add(value.ParameterName, index);
-      ciHash.Add(value.ParameterName, index);
+			hash.Add(value.ParameterName, index);
+			ciHash.Add(value.ParameterName, index);
 			return value;
 		}
 
@@ -335,7 +336,7 @@ namespace MySql.Data.MySqlClient
         /// <returns>The newly added <see cref="MySqlParameter"/> object.</returns>
         public MySqlParameter Add(string parameterName, object value)
 		{
-			return Add( new MySqlParameter( parameterName, value ) );
+			return Add(new MySqlParameter(parameterName, value));
 		}
 
 		/// <summary>
@@ -358,7 +359,7 @@ namespace MySql.Data.MySqlClient
 		/// <returns>The newly added <see cref="MySqlParameter"/> object.</returns>
 		public MySqlParameter Add(string parameterName, MySqlDbType dbType, int size)
 		{
-			return Add(new MySqlParameter(parameterName, dbType, size ));
+			return Add(new MySqlParameter(parameterName, dbType, size));
 		}
 
 		/// <summary>
