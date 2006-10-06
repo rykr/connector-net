@@ -381,24 +381,28 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("DROP TABLE IF EXISTS test");
             execSQL("CREATE TABLE test (id INT(10), image BLOB)");
 
+            MySqlConnection c = new MySqlConnection(GetConnectionString(true));
             try
             {
+              c.Open();
                 byte[] image = Utils.CreateBlob(1000000);
-                MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES(NULL, ?image)", conn);
+                MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES(NULL, ?image)", c);
                 cmd.Parameters.Add("?image", image);
                 cmd.ExecuteNonQuery();
                 Assert.Fail("This should have thrown an exception");
             }
             catch (Exception)
             {
-                Assert.AreEqual(ConnectionState.Open, conn.State);
+                Assert.AreEqual(ConnectionState.Open, c.State);
             }
             finally
             {
-                execSQL("set @@global.max_allowed_packet=1000000");
+              if (c != null)
+                c.Close();
+                execSQL("set @@global.max_allowed_packet=2000000");
             }
         }
-     }
+  }
 
     #region Configs
 

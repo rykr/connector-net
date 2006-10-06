@@ -275,15 +275,17 @@ namespace MySql.Data.MySqlClient
 		private MySqlParameter CreateParameter(DataRow row, bool Original)
 		{
 			MySqlParameter p;
-			string colName = GetParameterName( row["ColumnName"].ToString() );
+			string colName = GetParameterName(row["ColumnName"].ToString());
 			MySqlDbType type = (MySqlDbType)row["ProviderType"];
 
 			if (Original)
-				p = new MySqlParameter( "Original_" + colName, type, ParameterDirection.Input, 
-					(string)row["ColumnName"], DataRowVersion.Original, DBNull.Value );
+				p = new MySqlParameter(String.Format("{0}Original_{1}", marker, colName), type, 
+          ParameterDirection.Input, (string)row["ColumnName"], DataRowVersion.Original, 
+          DBNull.Value);
 			else
-				p = new MySqlParameter( colName, type, ParameterDirection.Input, 
-					(string)row["ColumnName"], DataRowVersion.Current, DBNull.Value );
+				p = new MySqlParameter(String.Format("{0}{1}", marker, colName), type, 
+          ParameterDirection.Input, (string)row["ColumnName"], DataRowVersion.Current, 
+          DBNull.Value);
 			return p;
 		}
 
@@ -336,7 +338,7 @@ namespace MySql.Data.MySqlClient
 					if ((bool)row["IsAutoIncrement"])
 						where.Append("last_insert_id()");
 					else if ((bool)row["IsKey"])
-						where.Append( marker + parmName);
+						where.Append(marker + parmName);
 				}
 				else 
 				{
@@ -374,7 +376,7 @@ namespace MySql.Data.MySqlClient
 				MySqlParameter op = CreateParameter(row, true);
 				cmd.Parameters.Add(op);
 
-				wherestr.Append( colname + " <=> " + marker + op.ParameterName + " AND ");
+				wherestr.Append(colname + " <=> " + op.ParameterName + " AND ");
 //				if ((bool)row["AllowDBNull"] == true) 
 //					wherestr.Append( " or (" + colname + " IS NULL and ?" + op.ParameterName + " IS NULL)");
 				//wherestr.Append(")");
@@ -408,7 +410,7 @@ namespace MySql.Data.MySqlClient
 				MySqlParameter p = CreateParameter(schemaRow, false);
 				cmd.Parameters.Add(p);
 
-				setstr.Append( colname + "=" + marker + p.ParameterName );
+				setstr.Append(colname + "=" + p.ParameterName);
 			}
 
 			cmd.CommandText = "UPDATE " + TableName + " SET " + setstr.ToString() + 
@@ -447,8 +449,8 @@ namespace MySql.Data.MySqlClient
 				MySqlParameter p = CreateParameter(schemaRow, false);
 				cmd.Parameters.Add(p);
 
-				setstr.Append( colname );
-				valstr.Append( marker + p.ParameterName );
+				setstr.Append(colname);
+				valstr.Append(p.ParameterName);
 			}
 
 			cmd.CommandText = "INSERT INTO " + TableName + " (" + setstr.ToString() + ") " +

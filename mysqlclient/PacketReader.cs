@@ -98,7 +98,7 @@ namespace MySql.Data.MySqlClient
 			int b3 = stream.ReadByte();
 			int seq = stream.ReadByte();
 			if (b1 == -1 || b2 == -1 || b3 == -1 || seq == -1)
-				throw new MySqlException( "Connection unexpectedly terminated", true, null );
+				throw new MySqlException("Connection unexpectedly terminated", true, null);
 
 			packetLength = b1 + (b2 << 8) + (b3 << 16);
 			bytesLeft = packetLength;
@@ -108,7 +108,7 @@ namespace MySql.Data.MySqlClient
 			{
 				firstByte = stream.ReadByte();
 				if (firstByte == -1)
-					throw new MySqlException( "Connection unexpectedly terminated", true, null );
+					throw new MySqlException("Connection unexpectedly terminated", true, null);
 			}
 
 			encoding = driver.Encoding;

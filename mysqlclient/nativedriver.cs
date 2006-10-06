@@ -85,16 +85,16 @@ namespace MySql.Data.MySqlClient
 			}
 		}
 
-		private void ExecuteCommand( DBCmd cmd, byte[] bytes, int length ) 
+		private void ExecuteCommand(DBCmd cmd, byte[] bytes, int length) 
 		{
 			SequenceByte = 0;
 			int len = 1;
 			if (bytes != null)
 				len += length;
-			writer.StartPacket( len );
-			writer.WriteByte( (byte)cmd );
+			writer.StartPacket(len);
+			writer.WriteByte((byte)cmd);
 			if (bytes != null)
-				writer.Write( bytes, 0, length );
+				writer.Write(bytes, 0, length);
 			writer.Flush();
 		}
 
@@ -141,7 +141,7 @@ namespace MySql.Data.MySqlClient
 					if (Settings.Protocol != ConnectionProtocol.NamedPipe)
 						pipeName = null;
 					StreamCreator sc = new StreamCreator( Settings.Server, Settings.Port, pipeName );
-					stream = sc.GetStream( Settings.ConnectionTimeout );
+					stream = sc.GetStream((uint)Settings.ConnectionTimeout);
 				}
 			}
 			catch (Exception ex)
@@ -314,18 +314,18 @@ namespace MySql.Data.MySqlClient
 		{
 			SequenceByte = 0;
 			writer.StartPacket(0);
-			writer.WriteByte( (byte)DBCmd.CHANGE_USER );
+			writer.WriteByte((byte)DBCmd.CHANGE_USER);
 			Authenticate();
 		}
 
 		public override CommandResult SendQuery( byte[] bytes, int length, bool consume ) 
 		{
 			if (Settings.Logging)
-				Logger.LogCommand( DBCmd.QUERY, encoding.GetString( bytes, 0, length ) );
+				Logger.LogCommand(DBCmd.QUERY, encoding.GetString(bytes, 0, length));
 
-			ExecuteCommand( DBCmd.QUERY, bytes, length );
+			ExecuteCommand(DBCmd.QUERY, bytes, length);
 
-			CommandResult rs = new CommandResult( this, false );
+			CommandResult rs = new CommandResult(this, false);
 			return rs;
 		}
 

@@ -4,6 +4,8 @@
     Changed how stored procedure metadata is retrieved to allow users without select privs
     on mysql.proc to use them
     Fixed shared memory connections
+    Increased speed of MySqlParameterCollection.IndexOf(string) orders of magnitude
+         (parameter name lookups are now strict on use of parameter marker)
     
     Bugs fixed or addressed
     -----------------------

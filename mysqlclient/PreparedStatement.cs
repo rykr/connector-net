@@ -69,25 +69,25 @@ namespace MySql.Data.MySqlClient
 
 			//TODO: support long data here
 			// create our null bitmap
-			BitArray nullMap = new BitArray( parameters.Count ); //metaData.Length );
+			BitArray nullMap = new BitArray(parameters.Count); //metaData.Length );
 
-            // now we run through the parameters that PREPARE sent back and use
-            // those names to index into the parameters the user gave us.
-            // if the user set that parameter to NULL, then we set the null map
-            // accordingly
-            for (int x=0; x < paramList.Length; x++)
+      // now we run through the parameters that PREPARE sent back and use
+      // those names to index into the parameters the user gave us.
+      // if the user set that parameter to NULL, then we set the null map
+      // accordingly
+      for (int x=0; x < paramList.Length; x++)
 			{
                 MySqlParameter p = parameters[paramList[x].ColumnName];
 				if (p.Value == DBNull.Value || p.Value == null)
 					nullMap[x] = true;
 			}
-			byte[] nullMapBytes = new byte[ (parameters.Count + 7)/8 ];
-			nullMap.CopyTo( nullMapBytes, 0 );
+			byte[] nullMapBytes = new byte[(parameters.Count + 7)/8];
+			nullMap.CopyTo(nullMapBytes, 0);
 
 			// start constructing our packet
-			packet.WriteInteger( StatementId, 4 );
-			packet.WriteByte( 0 );          // flags; always 0 for 4.1
-			packet.WriteInteger( 1, 4 );    // interation count; 1 for 4.1
+			packet.WriteInteger(StatementId, 4);
+			packet.WriteByte(0);          // flags; always 0 for 4.1
+			packet.WriteInteger(1, 4);    // interation count; 1 for 4.1
 			packet.Write( nullMapBytes );
 			//if (parameters != null && parameters.Count > 0)
 				packet.WriteByte( 1 );			// rebound flag
