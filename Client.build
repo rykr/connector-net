@@ -74,21 +74,21 @@
 
 	<!-- core managed driver target 1.0 -->	
 	<target name="net-1.0" description="1.0 .NET target">
-		<property name="nunit-lib" value="${nunit}/bin"/>
+		<property name="nunit-lib" value="${nunit.dir}/bin"/>
 		<property name="framework" value="net-1.0"/>
 		<call target="client"/>
 	</target>
 	
 	<!-- core managed driver target 1.1 -->
 	<target name="net-1.1" description="1.1 .NET target">
-		<property name="nunit-lib" value="${nunit}/bin"/>
+		<property name="nunit-lib" value="${nunit.dir}/bin"/>
 		<property name="framework" value="net-1.1"/>
 		<call target="client"/>
 	</target>
 
 	<!-- core managed driver target 2.0 -->
 	<target name="net-2.0" description="2.0 .NET target">
-		<property name="nunit-lib" value="${nunit}/bin"/>
+		<property name="nunit-lib" value="${nunit.dir}/bin"/>
 		<property name="framework" value="net-2.0"/>
 		<call target="client"/>
 	</target>
@@ -179,8 +179,8 @@
 	<target name="testdb" description="Target to test a database with all possible configurations">
 		<copy file="testsuite/configs/${config}.config" tofile="bin/${framework}/${buildType}/MySql.Data.Tests.dll.config"/>
 		
-		<property name="nunit-exe" value="${nunit}/bin/nunit-console.exe"/>
-		<property name="nunit-exe" value="${nunit}/mono/bin/nunit-console.exe" if="${string::contains(framework, 'mono')}"/>
+		<property name="nunit-exe" value="${nunit.dir}/bin/nunit-console.exe"/>
+		<property name="nunit-exe" value="${nunit.dir}/mono/bin/nunit-console.exe" if="${string::contains(framework, 'mono')}"/>
 		
 		<exec unless="${doCoverage}" program="${nunit-exe}"
 		      commandline="/exclude=${excludes} /xml=../../../results/nunit-${framework}-${buildType}.xml bin/${framework}/${buildType}/MySql.Data.Tests.dll"
