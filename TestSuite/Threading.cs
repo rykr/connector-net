@@ -84,7 +84,9 @@ namespace MySql.Data.MySqlClient.Tests
 		{
         }
 
-        private void MultipleThreadsWorker(object ev)
+		private ManualResetEvent ev;
+
+        private void MultipleThreadsWorker()
         {
             (ev as ManualResetEvent).WaitOne();
 
@@ -107,16 +109,15 @@ namespace MySql.Data.MySqlClient.Tests
         public void MultipleThreads()
         {
             GenericListener myListener = new GenericListener();
-            ManualResetEvent ev = new ManualResetEvent(false);
+            ev = new ManualResetEvent(false);
             ArrayList threads = new ArrayList();
             System.Diagnostics.Trace.Listeners.Add(myListener);
 
             for (int i=0; i < 20; i++)
             {
-                ParameterizedThreadStart ts = new ParameterizedThreadStart(MultipleThreadsWorker);
-                Thread t = new Thread(ts);
+					 Thread t = new Thread(new ThreadStart(MultipleThreadsWorker));
                 threads.Add(t);
-                t.Start(ev);
+                t.Start();
             }
             // now let the threads go
             ev.Set();
