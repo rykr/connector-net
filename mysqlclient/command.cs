@@ -545,7 +545,7 @@ namespace MySql.Data.MySqlClient
 			{
 				if (storedProcedure == null)
 					storedProcedure = new StoredProcedure(connection);
-				sql = storedProcedure.Prepare( this );
+				sql = storedProcedure.Prepare(this);
 			}
 
 			// tokenize the SQL

@@ -36,6 +36,12 @@ namespace MySql.Data.Common
             this.escapeBackslash = escapeBackslash;
 		}
 
+		public string ContextMarkers
+		{
+			get { return contextMarkers; }
+			set { contextMarkers = value; }
+		}
+
         public int IndexOf(string src, char target)
         {
             char contextMarker = Char.MinValue;
@@ -67,7 +73,7 @@ namespace MySql.Data.Common
 		{
 			ArrayList parts = new ArrayList();
 			StringBuilder sb = new StringBuilder();
-            bool escaped = false;
+			bool escaped = false;
 
 			char contextMarker = Char.MinValue;
 
@@ -86,13 +92,16 @@ namespace MySql.Data.Common
 						}
 					}
 				}
-                else if (c == '\\' && escapeBackslash)
-                    escaped = !escaped;
+				else if (c == '\\' && escapeBackslash)
+				  escaped = !escaped;
 				else 
 				{
 					int contextIndex = contextMarkers.IndexOf(c);
-                    if (contextIndex > -1 && contextMarker != Char.MinValue)
-                        contextIndex++;
+
+					// if we already have a context marker but we match with the first of a pair
+					// then both markers must be the same.
+					if ((contextIndex % 2) == 0 && contextMarker != Char.MinValue)
+						contextIndex++;
 
 					// if we have found the closing marker for our open marker, then close the context
 					if ((contextIndex % 2) == 1 && contextMarker == contextMarkers[contextIndex-1] && !escaped)

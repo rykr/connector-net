@@ -140,16 +140,16 @@ namespace MySql.Data.MySqlClient
 					"prior to 5.0");
 			StoredProcedure sp = new StoredProcedure(command.Connection);
 
-            string spName = command.CommandText;
-            int dotIndex = spName.IndexOf('.');
-            if (dotIndex == -1)
-                spName = command.Connection.Database + "." + spName;
+			string spName = command.CommandText;
+			int dotIndex = spName.IndexOf('.');
+			if (dotIndex == -1)
+				 spName = command.Connection.Database + "." + spName;
 
-            ArrayList parameters = sp.DiscoverParameters(spName);
+			ArrayList parameters = sp.DiscoverParameters(spName);
 
-            command.Parameters.Clear();
-            foreach (MySqlParameter p in parameters)
-                command.Parameters.Add(p);
+			command.Parameters.Clear();
+			foreach (MySqlParameter p in parameters)
+				 command.Parameters.Add(p);
         }
 
 		/// <include file='docs/MySqlCommandBuilder.xml' path='docs/GetDeleteCommand/*'/>

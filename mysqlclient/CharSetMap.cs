@@ -22,6 +22,7 @@ using System;
 using System.Text;
 using System.Collections;
 using MySql.Data.Common;
+using System.Collections.Generic;
 
 namespace MySql.Data.MySqlClient
 {
@@ -30,14 +31,18 @@ namespace MySql.Data.MySqlClient
 	/// </summary>
 	internal class CharSetMap
 	{
-		private static Hashtable	mapping;
+#if NET20
+      private static Dictionary<string, string> mapping;
+#else
+      private static StringDictionary mapping;
+#endif
 
         // we use a static constructor here since we only want to init
         // the mapping once
 		static CharSetMap() 
 		{
             InitializeMapping();
-        }
+      }
 
 		/// <summary>
 		/// Returns the text encoding for a given MySQL character set name
@@ -45,23 +50,15 @@ namespace MySql.Data.MySqlClient
 		/// <param name="version">Version of the connection requesting the encoding</param>
 		/// <param name="CharSetName">Name of the character set to get the encoding for</param>
 		/// <returns>Encoding object for the given character set name</returns>
-		public static Encoding GetEncoding( DBVersion version, string CharSetName ) 
+		public static Encoding GetEncoding(DBVersion version, string CharSetName) 
 		{
 			try 
 			{
-				if (! mapping.Contains( CharSetName ))
+				string encodingName = mapping[CharSetName];
+            if (encodingName == null)
 					throw new MySqlException("Character set '" + CharSetName + "' is not supported");
 
-				object value = mapping[ CharSetName ];
-
-				// if we are 4.0 or earlier and we are requesting latin1, then just return latin1 directly
-				if (value.Equals("latin1") && version.isAtLeast(4,1,0))
-					value = 1252;
-
-				if (value is string)
-					return Encoding.GetEncoding( (string)value );
-
-				return Encoding.GetEncoding( (int)value );
+            return Encoding.GetEncoding(encodingName);
 			}
 			catch (System.NotSupportedException) 
 			{
@@ -78,11 +75,15 @@ namespace MySql.Data.MySqlClient
 		}
 
 		private static void LoadCharsetMap()
-		{
-			mapping = new Hashtable();
+      {
+#if NET20
+         mapping = new Dictionary<string, string>();
+#else
+         mapping = new StringDictionary();
+#endif
 
-			mapping.Add("big5", "big5");		// Traditional Chinese
-			mapping.Add("sjis", "sjis");		// Shift-JIS
+			mapping.Add("big5", "big5");		
+			mapping.Add("sjis", "sjis");		
 			mapping.Add("gb2312", "gb2312");
 			mapping.Add("latin1", "latin1");
 			mapping.Add("latin2", "latin2");
@@ -93,46 +94,43 @@ namespace MySql.Data.MySqlClient
 			mapping.Add("hebrew", "hebrew");
 			mapping.Add("utf8", "utf-8");
 			mapping.Add("ucs2", "UTF-16BE");
-			mapping.Add("cp1251", 1251);
-			mapping.Add("tis620", 874);
-			mapping.Add("binary", "latin1");
-			mapping.Add("cp1250", 1250);
-			mapping.Add("cp932", 932);
-
-			// relatively sure about
-/*			mapping.Add( "default", 0 );
-			mapping.Add( "cp1251", 1251 );		// Russian
-			mapping.Add( "win1251", 1251 );
-			mapping.Add( "gbk", 936 );			// Simplified Chinese
-			mapping.Add( "cp866", 866 );
-			mapping.Add( "euc_kr", 949 );
-
-			// maybe, maybe not...
-			mapping.Add( "win1250", 1250 );		// Central Eurpoe
-			mapping.Add( "win1251ukr", 1251 );
-			mapping.Add( "latin1_de", 1252 );	// Latin1 German
-			mapping.Add( "german1", 1252 );		// German
-			mapping.Add( "danish", 1252 );		// Danish
-			mapping.Add( "dos", 437 );			// Dos
-			mapping.Add( "pclatin2", 852 );		
-			mapping.Add( "win1250ch", 1250 );
-			mapping.Add( "cp1257", 1257 );
-			mapping.Add( "usa7", 646 );
-			mapping.Add( "czech", 912 );
-			mapping.Add( "hungarian", 912 );
-			mapping.Add( "croat", 912 ); */
-
-			/*			("gb2312", "EUC_CN");
-						("ujis", "EUC_JP");
-						("latvian", "ISO8859_13");
-						("latvian1", "ISO8859_13");
-						("estonia", "ISO8859_13");
-						("koi8_ru", "KOI8_R");
-						("tis620", "TIS620");
-						("macroman", "MacRoman");
-						("macce", "MacCentralEurope");
-			*/
-
+			mapping.Add("cp1251", "cp1251");
+			mapping.Add("tis620", "windows-874");
+			mapping.Add("cp1250", "windows-1250");
+			mapping.Add("cp932", "cp932");
+         mapping.Add("win1250", "windows-1250");
+         mapping.Add("cp1256", "cp1256");
+         mapping.Add("latin1_de", "iso-8859-1");
+         mapping.Add("german1", "iso-8859-1");
+         mapping.Add("danish", "iso-8859-1");
+         mapping.Add("czech", "iso-8859-2");
+         mapping.Add("hungarian", "iso-8859-2");
+         mapping.Add("croat", "iso-8859-2");
+         mapping.Add("latin7", "iso-8859-7");
+         mapping.Add("latvian", "iso-8859-13");
+         mapping.Add("latvian1", "iso-8859-13");
+         mapping.Add("estonia", "iso-8859-13");
+         mapping.Add("euckr", "euc-kr");
+         mapping.Add("euc_kr", "euc-kr");
+         mapping.Add("cp866", "cp866");
+         mapping.Add("Cp852", "ibm852");
+         mapping.Add("Cp850", "ibm850");
+         mapping.Add("win1251ukr", "windows-1251");
+         mapping.Add("cp1251csas", "windows-1251");
+         mapping.Add("cp1251cias", "windows-1251");
+         mapping.Add("win1251", "windows-1251");
+         mapping.Add("cp1257", "windows-1257");
+         mapping.Add("gbk", "gb2312");
+         mapping.Add("koi8_ru", "koi8-u");
+         mapping.Add("koi8r", "koi8-u");
+         mapping.Add("dos", "ibm437");
+         mapping.Add("ujis", "EUC-JP");
+         mapping.Add("eucjpms", "EUC-JP");
+         mapping.Add("ascii", "us-ascii");
+         mapping.Add("usa7", "us-ascii");
+         mapping.Add("binary", "us-ascii");
+         mapping.Add("macroman", "x-mac-romanian");
+         mapping.Add("macce", "x-mac-ce");
 		}
 	}
 }
