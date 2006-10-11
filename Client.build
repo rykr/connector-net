@@ -8,6 +8,7 @@
 	<fileset id="Source">
 		<include name="mysqlclient/common/*.cs"/>
 		<include name="mysqlclient/Types/*.cs"/>
+		<include name="mysqlclient/zlib/*.cs"/>
 		<include name="mysqlclient/*.cs"/>
 	</fileset>
 
@@ -33,7 +34,7 @@
 	</if>
 
 	<!-- builds the client on all supported frameworks -->
-	<target name="allframeworks" depends="net-1.1, net-2.0, mono-1.0">
+	<target name="allframeworks" depends="net-1.0, net-1.1, net-2.0">
 		<call target="Docs"/>
 	</target>
 
@@ -43,16 +44,15 @@
 		<property name="outdir" value="bin/${framework}/${buildType}"/>
 		
 		<mkdir dir="${outdir}" failonerror="false"/>
-		<resgen input="mysqlclient/Strings.resx" output="mysqlclient/Strings.resources"/>
+		<resgen input="mysqlclient/Resources.resx" output="mysqlclient/Resources.resources"/>
 		<csc output="${outdir}/MySql.Data.dll" target="library" 
 			define="${defines}" debug="${debug}" optimize="${opt}"
 			doc="${outdir}/MySql.Data.xml">
 			<arg value="/nowarn:0679"/>
 			<resources prefix="MySql.Data.MySqlClient" dynamicprefix="true">
-				<include name="mysqlclient/Strings.resources"/>
+				<include name="mysqlclient/Resources.resources"/>
 			</resources>
 			<references>
-				<include name="ICSharpCode.SharpZipLib.dll"/>
 				<include name="System.Data.dll"/>		
 				<include name="System.Drawing.dll"/>
 			</references>
@@ -74,21 +74,21 @@
 
 	<!-- core managed driver target 1.0 -->	
 	<target name="net-1.0" description="1.0 .NET target">
-		<property name="nunit-lib" value="${nunit.dir}/bin"/>
+		<property name="nunit-lib" value="${nunit1.dir}/bin"/>
 		<property name="framework" value="net-1.0"/>
 		<call target="client"/>
 	</target>
 	
 	<!-- core managed driver target 1.1 -->
 	<target name="net-1.1" description="1.1 .NET target">
-		<property name="nunit-lib" value="${nunit.dir}/bin"/>
+		<property name="nunit-lib" value="${nunit1.dir}/bin"/>
 		<property name="framework" value="net-1.1"/>
 		<call target="client"/>
 	</target>
 
 	<!-- core managed driver target 2.0 -->
 	<target name="net-2.0" description="2.0 .NET target">
-		<property name="nunit-lib" value="${nunit.dir}/bin"/>
+		<property name="nunit-lib" value="${nunit2.dir}/bin"/>
 		<property name="framework" value="net-2.0"/>
 		<call target="client"/>
 	</target>

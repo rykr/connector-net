@@ -23,8 +23,11 @@ using System.Data;
 using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
-using System.Collections.Specialized;
+#if NET20
 using System.Collections.Generic;
+#else
+using System.Collections.Specialized;
+#endif
 
 namespace MySql.Data.MySqlClient
 {

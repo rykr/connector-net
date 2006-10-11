@@ -22,7 +22,11 @@ using System;
 using System.Text;
 using System.Collections;
 using MySql.Data.Common;
+#if NET20
 using System.Collections.Generic;
+#else
+using System.Collections.Specialized;
+#endif
 
 namespace MySql.Data.MySqlClient
 {
