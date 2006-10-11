@@ -135,18 +135,11 @@
 		<mkdir dir="results"/>
 		<echo message="Stopping all services"/>
 		<property name="doCoverage" value="false"/>
-		<servicecontroller action="Stop" service="MySql4.0"/>
 		<servicecontroller action="Stop" service="MySql4.1"/>
 		<servicecontroller action="Stop" service="MySql5.0"/>
+    <servicecontroller action="Stop" service="MySql5.1"/>
 
-		<!-- test 4.0 -->		
-		<echo message="Testing MySQL 4.0"/>
-		<property name="excludes" value="4.1,5.0,NotWorking"/>
-		<servicecontroller action="Start" service="MySql4.0"/>
-		<call target="testdb"/>  
-
-		<echo message="Testing MySQL 4.1"/>
-		<servicecontroller action="Stop" service="MySql4.0"/>
+    <echo message="Testing MySQL 4.1"/>
 		<servicecontroller action="Start" service="MySql4.1"/>
 		<property name="excludes" value="5.0,NotWorking"/>
 		<call target="testdb"/>  
@@ -156,9 +149,14 @@
 		<servicecontroller action="Start" service="MySql5.0"/>
 		<property name="excludes" value="NotWorking"/>
 		<!--<property name="doCoverage" value="true"/>-->
-		<call target="testdb"/>  
-		
-	</target>
+		<call target="testdb"/>
+
+    <echo message="Testing MySQL 5.1"/>
+    <servicecontroller action="Stop" service="MySql5.0"/>
+    <servicecontroller action="Start" service="MySql5.1"/>
+    <property name="excludes" value="NotWorking"/>
+    <call target="testdb"/>
+  </target>
 
 	<!-- 
 	execute the test suite against a single database instance, possibly using
