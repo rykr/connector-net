@@ -36,18 +36,14 @@ namespace MySql.Data.Types
 			mySqlDbType = type;
 		}
 
-		private static string EscapeString(string s)
+		private string EscapeString(string s)
 		{
 			s = s.Replace("\\", "\\\\");
 			s = s.Replace("\'", "\\\'");
 			s = s.Replace("\"", "\\\"");
 			s = s.Replace("`", "\\`");
-//			s = s.Replace("", "\\");
-//			s = s.Replace("", "\\");
-//			s = s.Replace("", "\\");
 			return s;
 		}
-
 
 		internal override void Serialize(PacketWriter writer, bool binary, object value, int length)
 		{

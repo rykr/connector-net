@@ -156,11 +156,11 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlTransaction txn = conn.BeginTransaction();
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", conn);
 
-            MySqlCommand clone = new MySqlCommand(cmd.CommandText, (MySqlConnection)cmd.Connection,
-                (MySqlTransaction)cmd.Transaction);
-            clone.Parameters.Add("?test", 1);
-            txn.Rollback();
-        }
+			MySqlCommand clone = new MySqlCommand(cmd.CommandText, (MySqlConnection)cmd.Connection,
+				(MySqlTransaction)cmd.Transaction);
+			clone.Parameters.Add("?test", 1);
+			txn.Rollback();
+		}
 
 		[Test]
 		public void CloneCommand() 
@@ -376,6 +376,7 @@ namespace MySql.Data.MySqlClient.Tests
             try
             {
                 IDbTransaction trans = conn.BeginTransaction();
+					 trans.Rollback();
             }
             catch (Exception ex)
             {

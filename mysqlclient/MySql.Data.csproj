@@ -138,11 +138,7 @@
     <Compile Include="parameter_collection.cs" />
     <Compile Include="PreparedStatement.cs" />
     <Compile Include="ProcedureCache.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
+    <Compile Include="Resources.Designer.cs" />
     <Compile Include="StoredProcedure.cs" />
     <Compile Include="transaction.cs" />
     <Compile Include="Types\MySqlBinary.cs" />
@@ -179,8 +175,6 @@
     <Compile Include="zlib\ZStreamException.cs" />
     <EmbeddedResource Include="Resources.resx">
       <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

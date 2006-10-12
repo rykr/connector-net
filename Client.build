@@ -40,8 +40,9 @@
 
 	<!-- core managed driver target -->	
 	<target name="client" description="Core client target">
+		<property name="nunit-lib" value="${nunit.dir}/bin"/>
 		<property name="nant.settings.currentframework" value="${framework}"/>
-		<property name="outdir" value="bin/${framework}/${buildType}"/>
+		<property name="outdir" value="mysqlclient/bin/${framework}/${buildType}"/>
 		
 		<mkdir dir="${outdir}" failonerror="false"/>
 		<resgen input="mysqlclient/Resources.resx" output="mysqlclient/Resources.resources"/>
@@ -49,7 +50,7 @@
 			define="${defines}" debug="${debug}" optimize="${opt}"
 			doc="${outdir}/MySql.Data.xml">
 			<arg value="/nowarn:0679"/>
-			<resources prefix="MySql.Data.MySqlClient" dynamicprefix="true">
+			<resources prefix="MySql.Data.MySqlClient" dynamicprefix="false">
 				<include name="mysqlclient/Resources.resources"/>
 			</resources>
 			<references>
@@ -74,21 +75,24 @@
 
 	<!-- core managed driver target 1.0 -->	
 	<target name="net-1.0" description="1.0 .NET target">
-		<property name="nunit-lib" value="${nunit1.dir}/bin"/>
+		<echo message="setting 1.0 dir = ${nunit1.dir}"/>
+		<property name="nunit.dir" value="${nunit1.dir}"/>
 		<property name="framework" value="net-1.0"/>
 		<call target="client"/>
 	</target>
 	
 	<!-- core managed driver target 1.1 -->
 	<target name="net-1.1" description="1.1 .NET target">
-		<property name="nunit-lib" value="${nunit1.dir}/bin"/>
+		<echo message="setting 1.1 dir to ${nunit1.dir}"/>
+		<property name="nunit.dir" value="${nunit1.dir}"/>
 		<property name="framework" value="net-1.1"/>
 		<call target="client"/>
 	</target>
 
 	<!-- core managed driver target 2.0 -->
 	<target name="net-2.0" description="2.0 .NET target">
-		<property name="nunit-lib" value="${nunit2.dir}/bin"/>
+		<echo message="setting 2.0 dir = ${nunit2.dir}"/>
+		<property name="nunit.dir" value="${nunit2.dir}"/>
 		<property name="framework" value="net-2.0"/>
 		<call target="client"/>
 	</target>
@@ -105,17 +109,20 @@
 	</target>
 	
 	<target name="test-net-1.1" depends="net-1.1">
+		<property name="nunit.dir" value="${nunit1.dir}"/>
 		<property name="framework" value="net-1.1"/>
 		<call target="testclient"/>
 		<call target="fxcop"/>
 	</target>
 
 	<target name="test-net-2.0" depends="net-2.0">
+		<property name="nunit.dir" value="${nunit2.dir}"/>
 		<property name="framework" value="net-2.0"/>
 		<call target="testclient"/>
 	</target>
 
 	<target name="test-net-1.0" depends="net-1.0">
+		<property name="nunit.dir" value="${nunit1.dir}"/>
 		<property name="framework" value="net-1.0"/>
 		<call target="testclient"/>
 	</target>
@@ -134,6 +141,7 @@
 	<target name="testclient" description="Target to run NUnit tests">
 		<mkdir dir="results"/>
 		<echo message="Stopping all services"/>
+		<property name="nunit-lib" value="${nunit.dir}/bin"/>
 		<property name="doCoverage" value="false"/>
 		<servicecontroller action="Stop" service="MySql4.1"/>
 		<servicecontroller action="Stop" service="MySql5.0"/>
@@ -163,8 +171,6 @@
 	coverage
 	-->
 	<target name="testdb" description="Target to test a database with all possible configurations">
-		<copy file="testsuite/configs/${config}.config" tofile="bin/${framework}/${buildType}/MySql.Data.Tests.dll.config"/>
-		
 		<property name="nunit-exe" value="${nunit.dir}/bin/nunit-console.exe"/>
 		<property name="nunit-exe" value="${nunit.dir}/mono/bin/nunit-console.exe" if="${string::contains(framework, 'mono')}"/>
 

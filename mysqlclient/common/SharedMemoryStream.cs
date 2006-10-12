@@ -41,10 +41,10 @@ namespace MySql.Data.MySqlClient
 		private int				position;
 		private int				connectNumber;
 
-        private uint SYNCHRONIZE = 0x00100000;
-        private uint READ_CONTROL = 0x00020000;
-        private uint EVENT_MODIFY_STATE = 0x2; 
-        private uint EVENT_ALL_ACCESS = 0x001F0003;
+		private uint SYNCHRONIZE = 0x00100000;
+		private uint READ_CONTROL = 0x00020000;
+		private uint EVENT_MODIFY_STATE = 0x2; 
+		private uint EVENT_ALL_ACCESS = 0x001F0003;
 		private uint	FILE_MAP_WRITE = 0x2;
 		private int		BUFFERLENGTH = 16004;
 
@@ -69,24 +69,24 @@ namespace MySql.Data.MySqlClient
 		{
 			AutoResetEvent connectRequest = new AutoResetEvent(false);
             connectRequest.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
-                false, memoryName + "_" + "CONNECT_REQUEST" );
+                false, memoryName + "_" + "CONNECT_REQUEST");
 
 			AutoResetEvent connectAnswer = new AutoResetEvent(false);
             connectAnswer.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
-                false, memoryName + "_" + "CONNECT_ANSWER" );
+                false, memoryName + "_" + "CONNECT_ANSWER");
 
-			IntPtr connectFileMap = OpenFileMapping( FILE_MAP_WRITE, false,
-				memoryName + "_" + "CONNECT_DATA" );
-			IntPtr connectView = MapViewOfFile( connectFileMap, FILE_MAP_WRITE,
-				0, 0, (UIntPtr)4 );
+			IntPtr connectFileMap = OpenFileMapping(FILE_MAP_WRITE, false,
+				memoryName + "_" + "CONNECT_DATA");
+			IntPtr connectView = MapViewOfFile(connectFileMap, FILE_MAP_WRITE,
+				0, 0, (UIntPtr)4);
 
 			// now start the connection
 			if (! connectRequest.Set())
-				throw new MySqlException( "Failed to open shared memory connection " );
+				throw new MySqlException("Failed to open shared memory connection ");
 
-			connectAnswer.WaitOne( timeOut*1000, false );
+			connectAnswer.WaitOne(timeOut*1000, false);
 
-			connectNumber = Marshal.ReadInt32( connectView );
+			connectNumber = Marshal.ReadInt32(connectView);
 		}
 
 		private void SetupEvents()
@@ -98,19 +98,19 @@ namespace MySql.Data.MySqlClient
 
 			serverWrote = new AutoResetEvent(false);
             serverWrote.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
-                false, dataMemoryName + "_SERVER_WROTE" );
+                false, dataMemoryName + "_SERVER_WROTE");
 
 			serverRead = new AutoResetEvent(false);
             serverRead.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
-                false, dataMemoryName + "_SERVER_READ" );
+                false, dataMemoryName + "_SERVER_READ");
 
 			clientWrote = new AutoResetEvent(false);
             clientWrote.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
-                false, dataMemoryName + "_CLIENT_WROTE" );
+                false, dataMemoryName + "_CLIENT_WROTE");
 
 			clientRead = new AutoResetEvent(false);
             clientRead.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
-                false, dataMemoryName + "_CLIENT_READ" );
+                false, dataMemoryName + "_CLIENT_READ");
 
 			// tell the server we are ready
 			serverRead.Set();

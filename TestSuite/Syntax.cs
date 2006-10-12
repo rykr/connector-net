@@ -62,14 +62,53 @@ namespace MySql.Data.MySqlClient.Tests
 
 		[Test]
 		[Category("4.1")]
+		public void ProblemCharsInSQLUTF8()
+		{
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), mt MEDIUMTEXT, " +
+					  "PRIMARY KEY(id)) CHAR SET utf8");
+
+			MySqlConnection c = new MySqlConnection(GetConnectionString(true) + ";charset=utf8");
+			c.Open();
+
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?id, ?text, ?mt)", c);
+			cmd.Parameters.Add("?id", 1);
+			cmd.Parameters.Add("?text", "This is my;test ? string–’‘’“”…");
+			cmd.Parameters.Add("?mt", "My MT string: £");
+			cmd.ExecuteNonQuery();
+
+			cmd.CommandText = "SELECT * FROM Test";
+			MySqlDataReader reader = null;
+			try
+			{
+				reader = cmd.ExecuteReader();
+				Assert.IsTrue(reader.Read());
+				Assert.AreEqual(1, reader.GetInt32(0));
+				Assert.AreEqual("This is my;test ? string–’‘’“”…", reader.GetString(1));
+				Assert.AreEqual("My MT string: £", reader.GetString(2));
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				if (reader != null) reader.Close();
+				if (c != null) c.Close();
+			}
+		}
+
+
+		[Test]
 		public void ProblemCharsInSQL()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
-			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), mt MEDIUMTEXT, PRIMARY KEY(id)) CHAR SET utf8");
+			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), mt MEDIUMTEXT, " +
+				     "PRIMARY KEY(id))");
 
-			MySqlCommand cmd = new MySqlCommand( "INSERT INTO Test VALUES (?id, ?text, ?mt)", conn);
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?id, ?text, ?mt)", conn);
 			cmd.Parameters.Add("?id", 1);
-			cmd.Parameters.Add("?text", "This is my;test ? string–’‘’“”…");
+			cmd.Parameters.Add("?text", "This is my;test ? string-'''\"\".");
 			cmd.Parameters.Add("?mt", "My MT string: £");
 			cmd.ExecuteNonQuery();
 
@@ -80,10 +119,7 @@ namespace MySql.Data.MySqlClient.Tests
 				reader = cmd.ExecuteReader();
 				Assert.IsTrue(reader.Read());
 				Assert.AreEqual(1, reader.GetInt32(0));
-				if (Is40)
-					Assert.AreEqual("This is my;test ? string-'''\"\".", reader.GetString(1));
-				else
-					Assert.AreEqual("This is my;test ? string–’‘’“”…", reader.GetString(1));
+				Assert.AreEqual("This is my;test ? string-'''\"\".", reader.GetString(1));
 				Assert.AreEqual("My MT string: £", reader.GetString(2));
 			}
 			catch (Exception ex) 

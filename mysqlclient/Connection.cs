@@ -213,8 +213,8 @@ namespace MySql.Data.MySqlClient
 			if (state != ConnectionState.Open)
 				throw new InvalidOperationException(Resources.ConnectionNotOpen);
 
-            if (activeLegacyTransaction != null)
-                throw new NotSupportedException(Resources.NoNestedTransactions);
+         if (activeLegacyTransaction != null)
+             throw new NotSupportedException(Resources.NoNestedTransactions);
 
 			MySqlTransaction t = new MySqlTransaction(this, iso);
 
@@ -346,6 +346,7 @@ namespace MySql.Data.MySqlClient
 				dataReader.Close();
 
 			Terminate();
+			activeLegacyTransaction = null;
 		}
 
 		IDbCommand IDbConnection.CreateCommand()

@@ -79,15 +79,15 @@ namespace MySql.Data.MySqlClient
 		}
 
 		private static void LoadCharsetMap()
-      {
+		{
 #if NET20
-         mapping = new Dictionary<string, string>();
+			mapping = new Dictionary<string, string>();
 #else
          mapping = new StringDictionary();
 #endif
 
-			mapping.Add("big5", "big5");		
-			mapping.Add("sjis", "sjis");		
+			mapping.Add("big5", "big5");
+			mapping.Add("sjis", "sjis");
 			mapping.Add("gb2312", "gb2312");
 			mapping.Add("latin1", "latin1");
 			mapping.Add("latin2", "latin2");
@@ -98,43 +98,43 @@ namespace MySql.Data.MySqlClient
 			mapping.Add("hebrew", "hebrew");
 			mapping.Add("utf8", "utf-8");
 			mapping.Add("ucs2", "UTF-16BE");
-			mapping.Add("cp1251", "cp1251");
+			mapping.Add("cp1251", "windows-1251");
 			mapping.Add("tis620", "windows-874");
 			mapping.Add("cp1250", "windows-1250");
-			mapping.Add("cp932", "cp932");
-         mapping.Add("win1250", "windows-1250");
-         mapping.Add("cp1256", "cp1256");
-         mapping.Add("latin1_de", "iso-8859-1");
-         mapping.Add("german1", "iso-8859-1");
-         mapping.Add("danish", "iso-8859-1");
-         mapping.Add("czech", "iso-8859-2");
-         mapping.Add("hungarian", "iso-8859-2");
-         mapping.Add("croat", "iso-8859-2");
-         mapping.Add("latin7", "iso-8859-7");
-         mapping.Add("latvian", "iso-8859-13");
-         mapping.Add("latvian1", "iso-8859-13");
-         mapping.Add("estonia", "iso-8859-13");
-         mapping.Add("euckr", "euc-kr");
-         mapping.Add("euc_kr", "euc-kr");
-         mapping.Add("cp866", "cp866");
-         mapping.Add("Cp852", "ibm852");
-         mapping.Add("Cp850", "ibm850");
-         mapping.Add("win1251ukr", "windows-1251");
-         mapping.Add("cp1251csas", "windows-1251");
-         mapping.Add("cp1251cias", "windows-1251");
-         mapping.Add("win1251", "windows-1251");
-         mapping.Add("cp1257", "windows-1257");
-         mapping.Add("gbk", "gb2312");
-         mapping.Add("koi8_ru", "koi8-u");
-         mapping.Add("koi8r", "koi8-u");
-         mapping.Add("dos", "ibm437");
-         mapping.Add("ujis", "EUC-JP");
-         mapping.Add("eucjpms", "EUC-JP");
-         mapping.Add("ascii", "us-ascii");
-         mapping.Add("usa7", "us-ascii");
-         mapping.Add("binary", "us-ascii");
-         mapping.Add("macroman", "x-mac-romanian");
-         mapping.Add("macce", "x-mac-ce");
+			mapping.Add("cp932", "sjis");
+			mapping.Add("win1250", "windows-1250");
+			mapping.Add("cp1256", "cp1256");
+			mapping.Add("latin1_de", "iso-8859-1");
+			mapping.Add("german1", "iso-8859-1");
+			mapping.Add("danish", "iso-8859-1");
+			mapping.Add("czech", "iso-8859-2");
+			mapping.Add("hungarian", "iso-8859-2");
+			mapping.Add("croat", "iso-8859-2");
+			mapping.Add("latin7", "iso-8859-7");
+			mapping.Add("latvian", "iso-8859-13");
+			mapping.Add("latvian1", "iso-8859-13");
+			mapping.Add("estonia", "iso-8859-13");
+			mapping.Add("euckr", "euc-kr");
+			mapping.Add("euc_kr", "euc-kr");
+			mapping.Add("cp866", "cp866");
+			mapping.Add("Cp852", "ibm852");
+			mapping.Add("Cp850", "ibm850");
+			mapping.Add("win1251ukr", "windows-1251");
+			mapping.Add("cp1251csas", "windows-1251");
+			mapping.Add("cp1251cias", "windows-1251");
+			mapping.Add("win1251", "windows-1251");
+			mapping.Add("cp1257", "windows-1257");
+			mapping.Add("gbk", "gb2312");
+			mapping.Add("koi8_ru", "koi8-u");
+			mapping.Add("koi8r", "koi8-u");
+			mapping.Add("dos", "ibm437");
+			mapping.Add("ujis", "EUC-JP");
+			mapping.Add("eucjpms", "EUC-JP");
+			mapping.Add("ascii", "us-ascii");
+			mapping.Add("usa7", "us-ascii");
+			mapping.Add("binary", "us-ascii");
+			mapping.Add("macroman", "x-mac-romanian");
+			mapping.Add("macce", "x-mac-ce");
 		}
 	}
 }
