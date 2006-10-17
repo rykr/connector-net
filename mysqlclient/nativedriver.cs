@@ -153,8 +153,8 @@ namespace MySql.Data.MySqlClient
 			if (stream == null) 
 				throw new MySqlException("Unable to connect to any of the specified MySQL hosts");
 
-			reader = new PacketReader( new BufferedStream(stream), this );
-			writer = new PacketWriter( new BufferedStream(stream), this );
+			reader = new PacketReader(new BufferedStream(stream), this);
+			writer = new PacketWriter(new BufferedStream(stream), this);
 			writer.Encoding = encoding;
 
 			// read off the welcome packet and parse out it's values
@@ -178,8 +178,8 @@ namespace MySql.Data.MySqlClient
 			SetConnectionFlags();
 
 			writer.StartPacket(0);
-			writer.WriteInteger( (int)connectionFlags, version.isAtLeast(4,1,0) ? 4 : 2 );
-			writer.WriteInteger( MaxSinglePacket, version.isAtLeast(4,1,0) ? 4 : 3 );
+			writer.WriteInteger((int)connectionFlags, version.isAtLeast(4,1,0) ? 4 : 2);
+			writer.WriteInteger(MaxSinglePacket, version.isAtLeast(4,1,0) ? 4 : 3);
 
 			// 4.1.1 included some new server status info
 			if ( version.isAtLeast(4,1,1))
@@ -187,13 +187,13 @@ namespace MySql.Data.MySqlClient
 				/* New protocol with 16 bytes to describe server characteristics */
 				serverLanguage = reader.ReadInteger(1);
 				serverStatus = (ServerStatusFlags)reader.ReadInteger(2);
-				reader.Skip( 13 );
+				reader.Skip(13);
 
 				string seedPart2 = reader.ReadString();
 				encryptionSeed += seedPart2;
 
-				writer.WriteByte( 8 );
-				writer.Write( new byte[23], 0, 23 );
+				writer.WriteByte(8);
+				writer.Write(new byte[23], 0, 23);
 			}
 
 			Authenticate();
@@ -203,9 +203,9 @@ namespace MySql.Data.MySqlClient
 			if ((connectionFlags & ClientFlags.COMPRESS) != 0)
 			{
 				//stream = new CompressedStream( stream, MaxSinglePacket );
-				writer = new PacketWriter( new CompressedStream( new BufferedStream( stream ) ), this  );
+				writer = new PacketWriter(new BufferedStream(new CompressedStream(stream)), this);
 				writer.Encoding = encoding;
-				reader = new PacketReader( new CompressedStream( new BufferedStream( stream ) ), this );
+				reader = new PacketReader(new BufferedStream(new CompressedStream(stream)), this);
 			}
 
 			isOpen = true;

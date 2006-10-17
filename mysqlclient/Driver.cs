@@ -184,13 +184,12 @@ namespace MySql.Data.MySqlClient
 			{
 				if (! version.isAtLeast(4,1,0))
 				{
-					if (serverProps.Contains( "character_set" ))
+					if (serverProps.Contains("character_set"))
 						charSet = serverProps["character_set"].ToString();
 				}
 				else 
 				{
-					charSet = (string)charSets[ serverLanguage ];
-
+					charSet = (string)charSets[serverLanguage];
 				}
 			}
 
@@ -210,9 +209,9 @@ namespace MySql.Data.MySqlClient
 			}
 
 			if (charSet != null)
-				Encoding = CharSetMap.GetEncoding( version, charSet );
+				Encoding = CharSetMap.GetEncoding(version, charSet);
 			else
-				Encoding = CharSetMap.GetEncoding( version, "latin1" );
+				Encoding = CharSetMap.GetEncoding(version, "latin1");
 		}
 
 		/// <summary>
@@ -233,7 +232,7 @@ namespace MySql.Data.MySqlClient
 				charSets = new Hashtable();
 				while (reader.Read()) 
 				{
-					charSets[ Convert.ToInt32(reader["id"], System.Globalization.NumberFormatInfo.InvariantInfo) ] = 
+					charSets[Convert.ToInt32(reader["id"], System.Globalization.NumberFormatInfo.InvariantInfo)] = 
 						reader.GetString(reader.GetOrdinal("charset"));
 				}
 			}

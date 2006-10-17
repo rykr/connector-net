@@ -30,7 +30,7 @@ namespace MySql.Data.MySqlClient
 	/// </summary>
 	internal class PacketWriter
 	{
-		private Stream			stream;
+		private Stream          stream;
 		private MemoryStream	buffStream;
 		private Stream			nativeStream;
 		private Encoding		encoding;
@@ -49,10 +49,6 @@ namespace MySql.Data.MySqlClient
 		{
 			this.driver = driver;
 			nativeStream = stream;
-			if (stream is CompressedStream)
-				Buffering = true;
-			else
-				Buffering = false;
 		}
 
 		public DBVersion Version 
@@ -108,9 +104,9 @@ namespace MySql.Data.MySqlClient
 			}
 			else 
 			{
-        if (len > driver.MaxPacketSize)
-          throw new MySqlException(Resources.QueryTooLarge, (int)MySqlErrorCode.PacketTooLarge);
-        WriteStartBlock(len);
+				if (len > driver.MaxPacketSize)
+					throw new MySqlException(Resources.QueryTooLarge, (int)MySqlErrorCode.PacketTooLarge);
+				WriteStartBlock(len);
 				leftToWrite = len;
 			}
 		}
@@ -121,10 +117,10 @@ namespace MySql.Data.MySqlClient
 			byte[] bytes = buffStream.GetBuffer();
 			long pos = 0;
 
-      if (len > driver.MaxPacketSize)
-        throw new MySqlException(Resources.QueryTooLarge, (int)MySqlErrorCode.PacketTooLarge);
+			if (len > driver.MaxPacketSize)
+				throw new MySqlException(Resources.QueryTooLarge, (int)MySqlErrorCode.PacketTooLarge);
 
-      while (len > 0) 
+			while (len > 0) 
 			{
 				int toWrite = Math.Min(driver.MaxSinglePacket, (int)len);
 

@@ -509,7 +509,10 @@ namespace MySql.Data.MySqlClient
 				DataRow r = dataTableSchema.NewRow();
 				r["ColumnName"] = f.ColumnName;
 				r["ColumnOrdinal"] = ord++;
-                int maxByteCount = f.Encoding.GetMaxByteCount(1) >> 1;
+                int maxByteCount = f.Encoding.GetMaxByteCount(1);
+#if NET20
+				maxByteCount >>= 1;
+#endif
                 r["ColumnSize"] = f.IsTextField ? f.ColumnLength / maxByteCount : f.ColumnLength;
 				int prec = f.Precision;
 				int pscale = f.Scale;
