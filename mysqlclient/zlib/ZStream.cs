@@ -93,7 +93,6 @@ namespace zlib
 		{
 			return inflateInit(DEF_WBITS);
 		}
-
 		public int inflateInit(int w)
 		{
 			istate = new Inflate();
@@ -106,7 +105,6 @@ namespace zlib
 				return Z_STREAM_ERROR;
 			return istate.inflate(this, f);
 		}
-
 		public int inflateEnd()
 		{
 			if (istate == null)
@@ -115,14 +113,12 @@ namespace zlib
 			istate = null;
 			return ret;
 		}
-
 		public int inflateSync()
 		{
 			if (istate == null)
 				return Z_STREAM_ERROR;
 			return istate.inflateSync(this);
 		}
-
 		public int inflateSetDictionary(byte[] dictionary, int dictLength)
 		{
 			if (istate == null)
@@ -134,13 +130,11 @@ namespace zlib
 		{
 			return deflateInit(level, MAX_WBITS);
 		}
-
 		public int deflateInit(int level, int bits)
 		{
 			dstate = new Deflate();
 			return dstate.deflateInit(this, level, bits);
 		}
-
 		public int deflate(int flush)
 		{
 			if (dstate == null)
@@ -149,7 +143,6 @@ namespace zlib
 			}
 			return dstate.deflate(this, flush);
 		}
-
 		public int deflateEnd()
 		{
 			if (dstate == null)
@@ -158,14 +151,12 @@ namespace zlib
 			dstate = null;
 			return ret;
 		}
-
 		public int deflateParams(int level, int strategy)
 		{
 			if (dstate == null)
 				return Z_STREAM_ERROR;
 			return dstate.deflateParams(this, level, strategy);
 		}
-
 		public int deflateSetDictionary(byte[] dictionary, int dictLength)
 		{
 			if (dstate == null)
