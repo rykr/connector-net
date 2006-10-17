@@ -126,7 +126,7 @@ namespace MySql.Data.MySqlClient
                 if (zInStream != null)
                     countRead = zInStream.read(buffer, offset, countToRead);
                 else
-                    countRead =baseStream.Read(buffer, offset, countToRead);
+                    countRead = baseStream.Read(buffer, offset, countToRead);
                 offset += countRead;
                 count -= countRead;
                 inPos += countRead;
@@ -248,11 +248,13 @@ namespace MySql.Data.MySqlClient
 		public override void WriteByte(byte value)
 		{
 			cache.WriteByte(value);
+			Flush();
 		}
 
 		public override void Write(byte[] buffer, int offset, int count)
 		{
             cache.Write(buffer, offset, count);
+			Flush();
 		}
 
 		public override long Seek(long offset, SeekOrigin origin)
