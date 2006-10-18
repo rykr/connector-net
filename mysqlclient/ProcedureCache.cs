@@ -31,81 +31,81 @@ using System.Collections.Generic;
 
 namespace MySql.Data.MySqlClient
 {
-    class ProcedureCache
-    {
-        private Hashtable procHash;
+	class ProcedureCache
+	{
+		private Hashtable procHash;
 #if NET20
-        private Queue<int> hashQueue;
+		private Queue<int> hashQueue;
 #else
         private Queue hashQueue;
 #endif
-        private int maxSize;
+		private int maxSize;
 
-        public ProcedureCache(int size)
-        {
-            maxSize = size;
+		public ProcedureCache(int size)
+		{
+			maxSize = size;
 #if NET20
-            hashQueue = new Queue<int>(maxSize);
+			hashQueue = new Queue<int>(maxSize);
 #else
             hashQueue = new Queue(maxSize);
 #endif
-            procHash = new Hashtable(maxSize);
-        }
+			procHash = new Hashtable(maxSize);
+		}
 
-        public ArrayList GetProcedure(MySqlConnection conn, string spName)
-        {
-            int dotIndex = spName.IndexOf('.');
-            if (dotIndex == -1)
-                spName = conn.Database + "." + spName;
+		public ArrayList GetProcedure(MySqlConnection conn, string spName)
+		{
+			int dotIndex = spName.IndexOf('.');
+			if (dotIndex == -1)
+				spName = conn.Database + "." + spName;
 
-            int hash = spName.GetHashCode();
-            ArrayList array = (ArrayList)procHash[hash];
-            if (array == null)
-            {
-                if (conn.Settings.Logging)
-                    Logger.LogInformation(String.Format(
-                        "Retrieving procedure metadata for {0} from server.",
-                        spName));
-                array = AddNew(conn, spName);
-            }
-            else
-                if (conn.Settings.Logging)
-                    Logger.LogInformation(String.Format(
-                        "Retrieving procedure metadata for {0} from procedure cache.",
-                        spName));
-            return array;
-        }
+			int hash = spName.GetHashCode();
+			ArrayList array = (ArrayList)procHash[hash];
+			if (array == null)
+			{
+				if (conn.Settings.Logging)
+					Logger.LogInformation(String.Format(
+						 "Retrieving procedure metadata for {0} from server.",
+						 spName));
+				array = AddNew(conn, spName);
+			}
+			else
+				if (conn.Settings.Logging)
+					Logger.LogInformation(String.Format(
+						 "Retrieving procedure metadata for {0} from procedure cache.",
+						 spName));
+			return array;
+		}
 
-        private ArrayList AddNew(MySqlConnection connection, string spName)
-        {
-            ArrayList procData = GetProcData(connection, spName);
-            if (maxSize > 0)
-            {
-                if (procHash.Keys.Count == maxSize)
-                    TrimHash();
-                int hash = spName.GetHashCode();
-                procHash.Add(hash, procData);
-                hashQueue.Enqueue(hash);
-            }
-            return procData;
-        }
+		private ArrayList AddNew(MySqlConnection connection, string spName)
+		{
+			ArrayList procData = GetProcData(connection, spName);
+			if (maxSize > 0)
+			{
+				if (procHash.Keys.Count == maxSize)
+					TrimHash();
+				int hash = spName.GetHashCode();
+				procHash.Add(hash, procData);
+				hashQueue.Enqueue(hash);
+			}
+			return procData;
+		}
 
-        private void TrimHash()
-        {
+		private void TrimHash()
+		{
 #if NET20
-            int oldestHash = hashQueue.Dequeue();
+			int oldestHash = hashQueue.Dequeue();
 #else
             int oldestHash = (int)hashQueue.Dequeue();
 #endif
-            procHash.Remove(oldestHash);
-        }
+			procHash.Remove(oldestHash);
+		}
 
-        private ArrayList GetProcData(MySqlConnection connection, string spName)
-        {
-            MySqlCommand cmd = new MySqlCommand(spName, connection);
-            cmd.CommandType = CommandType.StoredProcedure;
-            StoredProcedure sp = new StoredProcedure(connection);
-            return sp.DiscoverParameters(spName);
-        }
-    }
+		private ArrayList GetProcData(MySqlConnection connection, string spName)
+		{
+			MySqlCommand cmd = new MySqlCommand(spName, connection);
+			cmd.CommandType = CommandType.StoredProcedure;
+			StoredProcedure sp = new StoredProcedure(connection);
+			return sp.DiscoverParameters(spName);
+		}
+	}
 }

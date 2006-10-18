@@ -298,7 +298,6 @@ namespace MySql.Data.MySqlClient.Tests
 		/// <summary>
 		/// Bug# 8119.  Unable to reproduce but left in anyway
 		/// </summary>
-		[Category("NotWorking")]
 		[Test]
 		public void ReallyBigCommandString()
 		{

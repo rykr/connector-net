@@ -28,12 +28,12 @@ namespace MySql.Data.MySqlClient
 	/// </summary>
 	internal class PreparedStatement
 	{
-		private Driver				driver;
-		private int					statementId;
-		private MySqlField[]		paramList;
-		private int					executionCount;
+		private Driver driver;
+		private int statementId;
+		private MySqlField[] paramList;
+		private int executionCount;
 
-		public PreparedStatement(Driver driver, int statementId, MySqlField[] paramList )
+		public PreparedStatement(Driver driver, int statementId, MySqlField[] paramList)
 		{
 			this.paramList = new MySqlField[0];
 			this.driver = driver;
@@ -44,17 +44,17 @@ namespace MySql.Data.MySqlClient
 
 		#region Properties
 
-		public int StatementId 
+		public int StatementId
 		{
 			get { return statementId; }
 		}
 
-		public int NumParameters 
+		public int NumParameters
 		{
 			get { return paramList.Length; }
 		}
 
-		public int ExecutionCount 
+		public int ExecutionCount
 		{
 			get { return executionCount; }
 			set { executionCount = value; }
@@ -71,39 +71,39 @@ namespace MySql.Data.MySqlClient
 			// create our null bitmap
 			BitArray nullMap = new BitArray(parameters.Count); //metaData.Length );
 
-      // now we run through the parameters that PREPARE sent back and use
-      // those names to index into the parameters the user gave us.
-      // if the user set that parameter to NULL, then we set the null map
-      // accordingly
-      for (int x=0; x < paramList.Length; x++)
+			// now we run through the parameters that PREPARE sent back and use
+			// those names to index into the parameters the user gave us.
+			// if the user set that parameter to NULL, then we set the null map
+			// accordingly
+			for (int x = 0; x < paramList.Length; x++)
 			{
-                MySqlParameter p = parameters[paramList[x].ColumnName];
+				MySqlParameter p = parameters[paramList[x].ColumnName];
 				if (p.Value == DBNull.Value || p.Value == null)
 					nullMap[x] = true;
 			}
-			byte[] nullMapBytes = new byte[(parameters.Count + 7)/8];
+			byte[] nullMapBytes = new byte[(parameters.Count + 7) / 8];
 			nullMap.CopyTo(nullMapBytes, 0);
 
 			// start constructing our packet
 			packet.WriteInteger(StatementId, 4);
 			packet.WriteByte(0);          // flags; always 0 for 4.1
 			packet.WriteInteger(1, 4);    // interation count; 1 for 4.1
-			packet.Write( nullMapBytes );
+			packet.Write(nullMapBytes);
 			//if (parameters != null && parameters.Count > 0)
-				packet.WriteByte( 1 );			// rebound flag
+			packet.WriteByte(1);			// rebound flag
 			//else
 			//	packet.WriteByte( 0 );
 			//TODO:  only send rebound if parms change
 
 			// write out the parameter types
-			foreach ( MySqlField param in paramList )
+			foreach (MySqlField param in paramList)
 			{
-				MySqlParameter parm = parameters[ param.ColumnName ];
+				MySqlParameter parm = parameters[param.ColumnName];
 				packet.WriteInteger((long)parm.GetPSType(), 2);
 			}
 
 			// now write out all non-null values
-			foreach ( MySqlField param in paramList )
+			foreach (MySqlField param in paramList)
 			{
 				int index = parameters.IndexOf(param.ColumnName);
 				if (index == -1)
@@ -113,12 +113,12 @@ namespace MySql.Data.MySqlClient
 				if (parm.Value == DBNull.Value || parm.Value == null) continue;
 
 				packet.Encoding = param.Encoding;
-				parm.Serialize( packet, true );
+				parm.Serialize(packet, true);
 			}
 
-			executionCount ++;
+			executionCount++;
 			// send the data packet and return the CommandResult
-			return driver.ExecuteStatement( ((System.IO.MemoryStream)packet.Stream).ToArray() );
+			return driver.ExecuteStatement(((System.IO.MemoryStream)packet.Stream).ToArray());
 		}
 
 	}

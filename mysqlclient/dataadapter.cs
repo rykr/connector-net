@@ -26,18 +26,18 @@ using System.ComponentModel;
 namespace MySql.Data.MySqlClient
 {
 	/// <include file='docs/MySqlDataAdapter.xml' path='docs/class/*'/>
-	[System.Drawing.ToolboxBitmap( typeof(MySqlDataAdapter), "MySqlClient.resources.dataadapter.bmp")]
+	[System.Drawing.ToolboxBitmap(typeof(MySqlDataAdapter), "MySqlClient.resources.dataadapter.bmp")]
 	[System.ComponentModel.DesignerCategory("Code")]
 	[Designer("MySql.Data.MySqlClient.Design.MySqlDataAdapterDesigner,MySqlClient.Design")]
 	public sealed class MySqlDataAdapter : DbDataAdapter, IDbDataAdapter
 	{
-		private MySqlCommand	m_selectCommand;
-		private MySqlCommand	m_insertCommand;
-		private MySqlCommand	m_updateCommand;
-		private MySqlCommand	m_deleteCommand;
-//		private string			savedSql;
-		private bool			loadingDefaults;
-//		private bool			mayUseDefault;
+		private MySqlCommand m_selectCommand;
+		private MySqlCommand m_insertCommand;
+		private MySqlCommand m_updateCommand;
+		private MySqlCommand m_deleteCommand;
+		//		private string			savedSql;
+		private bool loadingDefaults;
+		//		private bool			mayUseDefault;
 
 		/*
 			* Inherit from Component through DbDataAdapter. The event
@@ -45,8 +45,8 @@ namespace MySql.Data.MySqlClient
 			* property. These variables are the keys used to find the
 			* events in the components list of events.
 			*/
-		static private readonly object EventRowUpdated = new object(); 
-		static private readonly object EventRowUpdating = new object(); 
+		static private readonly object EventRowUpdated = new object();
+		static private readonly object EventRowUpdating = new object();
 
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/Ctor/*'/>
@@ -56,35 +56,38 @@ namespace MySql.Data.MySqlClient
 		}
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/Ctor1/*'/>
-		public MySqlDataAdapter(MySqlCommand selectCommand) : this()
+		public MySqlDataAdapter(MySqlCommand selectCommand)
+			: this()
 		{
 			SelectCommand = selectCommand;
 		}
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/Ctor2/*'/>
-		public MySqlDataAdapter(string selectCommandText, MySqlConnection connection) : this()
+		public MySqlDataAdapter(string selectCommandText, MySqlConnection connection)
+			: this()
 		{
 			SelectCommand = new MySqlCommand(selectCommandText, connection);
 		}
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/Ctor3/*'/>
-		public MySqlDataAdapter(string selectCommandText, string selectConnString) : this()
+		public MySqlDataAdapter(string selectCommandText, string selectConnString)
+			: this()
 		{
-			SelectCommand = new MySqlCommand(selectCommandText, 
-				new MySqlConnection(selectConnString) );
+			SelectCommand = new MySqlCommand(selectCommandText,
+				new MySqlConnection(selectConnString));
 		}
 
 		#region Properties
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/DeleteCommand/*'/>
 		[Description("Used during Update for deleted rows in Dataset.")]
-		public MySqlCommand DeleteCommand 
+		public MySqlCommand DeleteCommand
 		{
 			get { return m_deleteCommand; }
 			set { m_deleteCommand = value; }
 		}
 
-		IDbCommand IDbDataAdapter.DeleteCommand 
+		IDbCommand IDbDataAdapter.DeleteCommand
 		{
 			get { return m_deleteCommand; }
 			set { m_deleteCommand = (MySqlCommand)value; }
@@ -92,13 +95,13 @@ namespace MySql.Data.MySqlClient
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/InsertCommand/*'/>
 		[Description("Used during Update for new rows in Dataset.")]
-		public MySqlCommand InsertCommand 
+		public MySqlCommand InsertCommand
 		{
 			get { return m_insertCommand; }
 			set { m_insertCommand = value; }
 		}
 
-		IDbCommand IDbDataAdapter.InsertCommand 
+		IDbCommand IDbDataAdapter.InsertCommand
 		{
 			get { return m_insertCommand; }
 			set { m_insertCommand = (MySqlCommand)value; }
@@ -107,13 +110,13 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/SelectCommand/*'/>
 		[Description("Used during Fill/FillSchema")]
 		[Category("Fill")]
-		public MySqlCommand SelectCommand 
+		public MySqlCommand SelectCommand
 		{
 			get { return m_selectCommand; }
 			set { m_selectCommand = value; }
 		}
 
-		IDbCommand IDbDataAdapter.SelectCommand 
+		IDbCommand IDbDataAdapter.SelectCommand
 		{
 			get { return m_selectCommand; }
 			set { m_selectCommand = (MySqlCommand)value; }
@@ -121,19 +124,19 @@ namespace MySql.Data.MySqlClient
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/UpdateCommand/*'/>
 		[Description("Used during Update for modified rows in Dataset.")]
-		public MySqlCommand UpdateCommand 
+		public MySqlCommand UpdateCommand
 		{
 			get { return m_updateCommand; }
 			set { m_updateCommand = value; }
 		}
 
-		IDbCommand IDbDataAdapter.UpdateCommand 
+		IDbCommand IDbDataAdapter.UpdateCommand
 		{
 			get { return m_updateCommand; }
 			set { m_updateCommand = (MySqlCommand)value; }
 		}
 
-		internal bool LoadDefaults 
+		internal bool LoadDefaults
 		{
 			get { return loadingDefaults; }
 			set { loadingDefaults = value; }
@@ -142,7 +145,7 @@ namespace MySql.Data.MySqlClient
 		#endregion
 
 
-/*		protected override int Fill(DataTable dataTable, IDataReader dataReader)
+		/*		protected override int Fill(DataTable dataTable, IDataReader dataReader)
 		{
 			int result = base.Fill (dataTable, dataReader);
 			//LoadDefaultValues(dataTable, dataReader);
@@ -157,58 +160,58 @@ namespace MySql.Data.MySqlClient
 		}
 
 */
-/*		private void LoadDefaultValues(DataTable dataTable, IDataReader reader)
-		{
-			if (! loadingDefaults) return;
-			if (dataTable.ExtendedProperties["DefaultsChecked"] != null) return;
-			if (this.MissingSchemaAction != MissingSchemaAction.Add &&
-				this.MissingSchemaAction != MissingSchemaAction.AddWithKey) return;
-			
-			DataTable schemaTable = reader.GetSchemaTable();
-			reader.Close();
-
-			DatabaseMetaData dmd = new DatabaseMetaData(this.SelectCommand.Connection);
-
-			foreach (DataRow row in schemaTable.Rows)
-			{
-				DataRow dmdRow = dmd.GetColumn(row["BaseCatalogName"].ToString(), 
-					null, row["BaseTableName"].ToString(), row["BaseColumnName"].ToString() );
-				object defaultVal = dmdRow["COLUMN_DEFAULT"];
-				DataColumn col = dataTable.Columns[row["ColumnName"].ToString()];
-				if (defaultVal != System.DBNull.Value)
+		/*		private void LoadDefaultValues(DataTable dataTable, IDataReader reader)
 				{
-					if (! col.AllowDBNull) col.ExtendedProperties.Add("UseDefault", true);
-					col.AllowDBNull = true;
-					mayUseDefault = true;
+					if (! loadingDefaults) return;
+					if (dataTable.ExtendedProperties["DefaultsChecked"] != null) return;
+					if (this.MissingSchemaAction != MissingSchemaAction.Add &&
+						this.MissingSchemaAction != MissingSchemaAction.AddWithKey) return;
+			
+					DataTable schemaTable = reader.GetSchemaTable();
+					reader.Close();
+
+					DatabaseMetaData dmd = new DatabaseMetaData(this.SelectCommand.Connection);
+
+					foreach (DataRow row in schemaTable.Rows)
+					{
+						DataRow dmdRow = dmd.GetColumn(row["BaseCatalogName"].ToString(), 
+							null, row["BaseTableName"].ToString(), row["BaseColumnName"].ToString() );
+						object defaultVal = dmdRow["COLUMN_DEFAULT"];
+						DataColumn col = dataTable.Columns[row["ColumnName"].ToString()];
+						if (defaultVal != System.DBNull.Value)
+						{
+							if (! col.AllowDBNull) col.ExtendedProperties.Add("UseDefault", true);
+							col.AllowDBNull = true;
+							mayUseDefault = true;
+						}
+					}
+
+					dataTable.ExtendedProperties.Add("DefaultsChecked", true);
 				}
-			}
 
-			dataTable.ExtendedProperties.Add("DefaultsChecked", true);
-		}
+		*/
 
-*/
+		/*		private void FixupStatementDefaults(RowUpdatingEventArgs args)
+				{
+					DataTable table = args.Row.Table;
+					DataRow row = args.Row;
 
-/*		private void FixupStatementDefaults(RowUpdatingEventArgs args)
-		{
-			DataTable table = args.Row.Table;
-			DataRow row = args.Row;
+					savedSql = args.Command.CommandText;
+					string newSql = savedSql;
 
-			savedSql = args.Command.CommandText;
-			string newSql = savedSql;
+					if (mayUseDefault)
+						this.InsertCommand.Unprepare();
 
-			if (mayUseDefault)
-				this.InsertCommand.Unprepare();
-
-			foreach (IDataParameter p in args.Command.Parameters)
-			{
-				if (row[p.SourceColumn] != DBNull.Value) continue;
-				DataColumn col = table.Columns[p.SourceColumn];
-				if (! col.ExtendedProperties.ContainsKey("UseDefault")) continue;
-				newSql = newSql.Replace("?"+p.ParameterName, "DEFAULT");
-			}
-			args.Command.CommandText = newSql;
-		}
-*/		
+					foreach (IDataParameter p in args.Command.Parameters)
+					{
+						if (row[p.SourceColumn] != DBNull.Value) continue;
+						DataColumn col = table.Columns[p.SourceColumn];
+						if (! col.ExtendedProperties.ContainsKey("UseDefault")) continue;
+						newSql = newSql.Replace("?"+p.ParameterName, "DEFAULT");
+					}
+					args.Command.CommandText = newSql;
+				}
+		*/
 		/*
 		* Implement abstract methods inherited from DbDataAdapter.
 		*/
@@ -246,10 +249,10 @@ namespace MySql.Data.MySqlClient
 		{
 			MySqlRowUpdatingEventArgs margs = (value as MySqlRowUpdatingEventArgs);
 			//			if (args.StatementType == StatementType.Insert)
-//				FixupStatementDefaults(args);
+			//				FixupStatementDefaults(args);
 
-			MySqlRowUpdatingEventHandler handler = (MySqlRowUpdatingEventHandler) Events[EventRowUpdating];
-			if ((null != handler) && (margs != null)) 
+			MySqlRowUpdatingEventHandler handler = (MySqlRowUpdatingEventHandler)Events[EventRowUpdating];
+			if ((null != handler) && (margs != null))
 			{
 				handler(this, margs);
 			}
@@ -264,7 +267,7 @@ namespace MySql.Data.MySqlClient
 			MySqlRowUpdatedEventArgs margs = (value as MySqlRowUpdatedEventArgs);
 			//args.Command.CommandText = savedSql;
 
-			MySqlRowUpdatedEventHandler handler = (MySqlRowUpdatedEventHandler) Events[EventRowUpdated];
+			MySqlRowUpdatedEventHandler handler = (MySqlRowUpdatedEventHandler)Events[EventRowUpdated];
 			if ((null != handler) && (margs != null))
 			{
 				handler(this, margs);
@@ -312,8 +315,8 @@ namespace MySql.Data.MySqlClient
 		/// <param name="command">The <see cref="IDbCommand"/> to execute during <see cref="DbDataAdapter.Update"/>.</param>
 		/// <param name="statementType">One of the <see cref="StatementType"/> values that specifies the type of query executed.</param>
 		/// <param name="tableMapping">The <see cref="DataTableMapping"/> sent through an <see cref="DbDataAdapter.Update"/>.</param>
-		public MySqlRowUpdatingEventArgs(DataRow row, IDbCommand command, StatementType statementType, DataTableMapping tableMapping) 
-			: base(row, command, statementType, tableMapping) 
+		public MySqlRowUpdatingEventArgs(DataRow row, IDbCommand command, StatementType statementType, DataTableMapping tableMapping)
+			: base(row, command, statementType, tableMapping)
 		{
 		}
 
@@ -322,8 +325,8 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		new public MySqlCommand Command
 		{
-			get  { return (MySqlCommand)base.Command; }
-			set  { base.Command = value; }
+			get { return (MySqlCommand)base.Command; }
+			set { base.Command = value; }
 		}
 	}
 
@@ -340,7 +343,7 @@ namespace MySql.Data.MySqlClient
 		/// <param name="statementType">One of the <see cref="StatementType"/> values that specifies the type of query executed.</param>
 		/// <param name="tableMapping">The <see cref="DataTableMapping"/> sent through an <see cref="DbDataAdapter.Update"/>.</param>
 		public MySqlRowUpdatedEventArgs(DataRow row, IDbCommand command, StatementType statementType, DataTableMapping tableMapping)
-			: base(row, command, statementType, tableMapping) 
+			: base(row, command, statementType, tableMapping)
 		{
 		}
 
@@ -349,7 +352,7 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		new public MySqlCommand Command
 		{
-			get  { return (MySqlCommand)base.Command; }
+			get { return (MySqlCommand)base.Command; }
 		}
 	}
 }

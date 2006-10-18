@@ -30,34 +30,35 @@ namespace MySql.Data.MySqlClient
 	/// </summary>
 	internal class PacketWriter
 	{
-		private Stream          stream;
-		private MemoryStream	buffStream;
-		private Stream			nativeStream;
-		private Encoding		encoding;
-		private NativeDriver	driver;
-		private long			leftThisPacket=0;
-		private long 			leftToWrite = 0;
-		private DBVersion		version;
+		private Stream stream;
+		private MemoryStream buffStream;
+		private Stream nativeStream;
+		private Encoding encoding;
+		private NativeDriver driver;
+		private long leftThisPacket = 0;
+		private long leftToWrite = 0;
+		private DBVersion version;
 
-		public PacketWriter() 
+		public PacketWriter()
 		{
 			buffStream = new MemoryStream();
 			Buffering = true;
 		}
 
-		public PacketWriter(Stream stream, NativeDriver driver) : this()
+		public PacketWriter(Stream stream, NativeDriver driver)
+			: this()
 		{
 			this.driver = driver;
 			nativeStream = stream;
 		}
 
-		public DBVersion Version 
+		public DBVersion Version
 		{
 			get { return version; }
 			set { version = value; }
 		}
 
-		public NativeDriver Driver 
+		public NativeDriver Driver
 		{
 			get { return driver; }
 			set { driver = value; }
@@ -69,18 +70,18 @@ namespace MySql.Data.MySqlClient
 			set { stream = value ? buffStream : nativeStream; }
 		}
 
-		public Stream Stream 
+		public Stream Stream
 		{
 			get { return stream; }
 		}
 
-		public Encoding Encoding 
-		{ 
+		public Encoding Encoding
+		{
 			get { return encoding; }
 			set { encoding = value; }
 		}
 
-		private void WriteStartBlock(long len) 
+		private void WriteStartBlock(long len)
 		{
 			long maxSinglePacket = driver.MaxSinglePacket;
 			if (stream is CompressedStream)
@@ -91,18 +92,18 @@ namespace MySql.Data.MySqlClient
 			stream.WriteByte((byte)(leftThisPacket & 0xff));
 			stream.WriteByte((byte)((leftThisPacket >> 8) & 0xff));
 			stream.WriteByte((byte)((leftThisPacket >> 16) & 0xff));
-			stream.WriteByte(driver.SequenceByte++ );
+			stream.WriteByte(driver.SequenceByte++);
 		}
 
 
-		public void StartPacket(long len) 
+		public void StartPacket(long len)
 		{
 			Buffering = (len == 0);
-			if (Buffering) 
+			if (Buffering)
 			{
 				buffStream.SetLength(0);
 			}
-			else 
+			else
 			{
 				if (len > driver.MaxPacketSize)
 					throw new MySqlException(Resources.QueryTooLarge, (int)MySqlErrorCode.PacketTooLarge);
@@ -111,7 +112,7 @@ namespace MySql.Data.MySqlClient
 			}
 		}
 
-		private void FlushBuffer() 
+		private void FlushBuffer()
 		{
 			long len = buffStream.Length;
 			byte[] bytes = buffStream.GetBuffer();
@@ -120,7 +121,7 @@ namespace MySql.Data.MySqlClient
 			if (len > driver.MaxPacketSize)
 				throw new MySqlException(Resources.QueryTooLarge, (int)MySqlErrorCode.PacketTooLarge);
 
-			while (len > 0) 
+			while (len > 0)
 			{
 				int toWrite = Math.Min(driver.MaxSinglePacket, (int)len);
 
@@ -136,35 +137,35 @@ namespace MySql.Data.MySqlClient
 			Buffering = true;
 		}
 
-		public void Flush() 
+		public void Flush()
 		{
-			if (Buffering) 
+			if (Buffering)
 			{
 				if (buffStream.Length > driver.MaxPacketSize)
-					throw new MySqlException("Packet size too large.  This MySQL server cannot accept rows larger than " + 
+					throw new MySqlException("Packet size too large.  This MySQL server cannot accept rows larger than " +
 						driver.MaxPacketSize + " bytes.");
-					
+
 				FlushBuffer();
 			}
 
 			nativeStream.Flush();
 		}
 
-		public void WriteByte(byte b) 
+		public void WriteByte(byte b)
 		{
 			stream.WriteByte(b);
-			leftToWrite --;
-			leftThisPacket --;
+			leftToWrite--;
+			leftThisPacket--;
 		}
 
-		public void Write(byte[] buffer) 
+		public void Write(byte[] buffer)
 		{
 			Write(buffer, 0, buffer.Length);
 		}
 
-		public void WriteChunk(byte[] buf, int offset, int length) 
+		public void WriteChunk(byte[] buf, int offset, int length)
 		{
-			while (length > 0) 
+			while (length > 0)
 			{
 				long toWrite = Math.Min(leftThisPacket, Math.Min((long)length, leftToWrite));
 				stream.Write(buf, (int)offset, (int)toWrite);
@@ -178,11 +179,11 @@ namespace MySql.Data.MySqlClient
 			}
 		}
 
-		public void Write(byte[] buffer, int offset, int count) 
+		public void Write(byte[] buffer, int offset, int count)
 		{
-			try 
+			try
 			{
-				if (! Buffering)
+				if (!Buffering)
 					WriteChunk(buffer, offset, count);
 				else
 					stream.Write(buffer, offset, count);
@@ -194,7 +195,7 @@ namespace MySql.Data.MySqlClient
 			}
 		}
 
-		public void WriteLength(long length) 
+		public void WriteLength(long length)
 		{
 			if (length < 251)
 				WriteByte((byte)length);
@@ -208,7 +209,7 @@ namespace MySql.Data.MySqlClient
 				WriteByte(253);
 				WriteInteger(length, 3);
 			}
-			else 
+			else
 			{
 				WriteByte(254);
 				WriteInteger(length, 4);
@@ -224,12 +225,12 @@ namespace MySql.Data.MySqlClient
 		{
 			long val = v;
 
-			if (numbytes < 1 || numbytes > 4) 
+			if (numbytes < 1 || numbytes > 4)
 				throw new ArgumentOutOfRangeException("Wrong byte count for WriteInteger");
 
-			for (int x=0; x < numbytes; x++)
+			for (int x = 0; x < numbytes; x++)
 			{
-				stream.WriteByte((byte)(val&0xff));
+				stream.WriteByte((byte)(val & 0xff));
 				val >>= 8;
 			}
 			leftToWrite -= numbytes;
@@ -239,7 +240,7 @@ namespace MySql.Data.MySqlClient
 		{
 			byte[] bytes = encoding.GetBytes(s);
 			WriteLength(bytes.Length);
-			stream.Write(bytes, 0,bytes.Length);
+			stream.Write(bytes, 0, bytes.Length);
 		}
 
 		public void WriteString(string v)
@@ -247,7 +248,7 @@ namespace MySql.Data.MySqlClient
 			WriteStringNoNull(v);
 			stream.WriteByte(0);
 		}
- 
+
 		public void WriteStringNoNull(string v)
 		{
 			byte[] bytes = encoding.GetBytes(v);

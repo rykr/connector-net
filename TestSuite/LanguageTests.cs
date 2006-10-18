@@ -46,30 +46,30 @@ namespace MySql.Data.MySqlClient.Tests
 		[Category("4.1")]
 		public void Unicode()
 		{
-			execSQL( "DROP TABLE IF EXISTS Test" );
-			execSQL( "CREATE TABLE Test (u2 varchar(255) CHARACTER SET ucs2)");
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (u2 varchar(255) CHARACTER SET ucs2)");
 
-			MySqlConnection c = new MySqlConnection( conn.ConnectionString + ";charset=utf8" );
+			MySqlConnection c = new MySqlConnection(conn.ConnectionString + ";charset=utf8");
 			c.Open();
-			
-			MySqlCommand cmd = new MySqlCommand( "INSERT INTO Test VALUES ( CONVERT('困巫忘否役' using ucs2))", c);
+
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES ( CONVERT('困巫忘否役' using ucs2))", c);
 			cmd.ExecuteNonQuery();
 
 			cmd.CommandText = "SELECT * FROM Test";
 			MySqlDataReader reader = null;
-			
-			try 
+
+			try
 			{
 				reader = cmd.ExecuteReader();
 				reader.Read();
 				string s1 = reader.GetString(0);
-				Assert.AreEqual( "困巫忘否役", s1 );
+				Assert.AreEqual("困巫忘否役", s1);
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 				c.Close();
@@ -85,17 +85,17 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlConnection c = new MySqlConnection(GetConnectionString(true) + ";charset=cp932");
 			c.Open();
 
-			try 
+			try
 			{
 				MySqlCommand cmd = new MySqlCommand("SELECT '涯割晦叶角'", c);
 				string s = (string)cmd.ExecuteScalar();
 				Assert.AreEqual("涯割晦叶角", s);
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (c != null)
 					c.Close();
@@ -104,15 +104,15 @@ namespace MySql.Data.MySqlClient.Tests
 
 		[Test]
 		[Category("4.1")]
-		public void UTF8() 
+		public void UTF8()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id int, name VARCHAR(200) CHAR SET utf8)");
 
-			MySqlConnection c = new MySqlConnection( conn.ConnectionString + ";charset=utf8" );
+			MySqlConnection c = new MySqlConnection(conn.ConnectionString + ";charset=utf8");
 			c.Open();
-			
-			MySqlCommand cmd = new MySqlCommand( "INSERT INTO Test VALUES(1, 'ЁЄЉҖҚ')", c); //russian
+
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(1, 'ЁЄЉҖҚ')", c); //russian
 			cmd.ExecuteNonQuery();
 
 			cmd.CommandText = "INSERT INTO Test VALUES(2, '兣冘凥凷冋')";	// simplified Chinese
@@ -135,34 +135,34 @@ namespace MySql.Data.MySqlClient.Tests
 
 			cmd.CommandText = "INSERT INTO Test VALUES(8, 'ฅๆษ')";			// Thai
 			cmd.ExecuteNonQuery();
-			
+
 			cmd.CommandText = "SELECT * FROM Test";
 			MySqlDataReader reader = null;
-			try 
+			try
 			{
 				reader = cmd.ExecuteReader();
 				reader.Read();
-				Assert.AreEqual( "ЁЄЉҖҚ", reader.GetString(1) );
+				Assert.AreEqual("ЁЄЉҖҚ", reader.GetString(1));
 				reader.Read();
-				Assert.AreEqual( "兣冘凥凷冋", reader.GetString(1) );
+				Assert.AreEqual("兣冘凥凷冋", reader.GetString(1));
 				reader.Read();
-				Assert.AreEqual( "困巫忘否役", reader.GetString(1) );
+				Assert.AreEqual("困巫忘否役", reader.GetString(1));
 				reader.Read();
-				Assert.AreEqual( "涯割晦叶角", reader.GetString(1) );
+				Assert.AreEqual("涯割晦叶角", reader.GetString(1));
 				reader.Read();
-				Assert.AreEqual( "ברחפע", reader.GetString(1) );
+				Assert.AreEqual("ברחפע", reader.GetString(1));
 				reader.Read();
-				Assert.AreEqual( "ψόβΩΞ", reader.GetString(1) );
+				Assert.AreEqual("ψόβΩΞ", reader.GetString(1));
 				reader.Read();
-				Assert.AreEqual( "þðüçöÝÞÐÜÇÖ", reader.GetString(1) );
+				Assert.AreEqual("þðüçöÝÞÐÜÇÖ", reader.GetString(1));
 				reader.Read();
-				Assert.AreEqual( "ฅๆษ", reader.GetString(1) );
+				Assert.AreEqual("ฅๆษ", reader.GetString(1));
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 				c.Close();
@@ -171,15 +171,15 @@ namespace MySql.Data.MySqlClient.Tests
 
 		[Test]
 		[Category("4.1")]
-		public void UTF8PreparedAndUsingParameters() 
+		public void UTF8PreparedAndUsingParameters()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (name VARCHAR(200) CHAR SET utf8)");
 
-			MySqlConnection c = new MySqlConnection( conn.ConnectionString + ";charset=utf8" );
+			MySqlConnection c = new MySqlConnection(conn.ConnectionString + ";charset=utf8");
 			c.Open();
-			
-			MySqlCommand cmd = new MySqlCommand( "INSERT INTO Test VALUES(?val)", c); 
+
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(?val)", c);
 			cmd.Parameters.Add("?val", MySqlDbType.VarChar);
 			cmd.Prepare();
 
@@ -206,10 +206,10 @@ namespace MySql.Data.MySqlClient.Tests
 
 			cmd.Parameters[0].Value = "ฅๆษ";				// Thai
 			cmd.ExecuteNonQuery();
-			
+
 			cmd.CommandText = "SELECT * FROM Test";
 			MySqlDataReader reader = null;
-			try 
+			try
 			{
 				reader = cmd.ExecuteReader();
 				reader.Read();
@@ -229,11 +229,11 @@ namespace MySql.Data.MySqlClient.Tests
 				reader.Read();
 				Assert.AreEqual("ฅๆษ", reader.GetString(0));
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 				c.Close();
@@ -242,31 +242,31 @@ namespace MySql.Data.MySqlClient.Tests
 
 		[Test]
 		[Category("4.1")]
-		public void Chinese() 
+		public void Chinese()
 		{
-			MySqlConnection c = new MySqlConnection( conn.ConnectionString + ";charset=utf8" );
+			MySqlConnection c = new MySqlConnection(conn.ConnectionString + ";charset=utf8");
 			c.Open();
 
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id int, name VARCHAR(200) CHAR SET big5, name2 VARCHAR(200) CHAR SET gb2312)");
 
-			MySqlCommand cmd = new MySqlCommand( "INSERT INTO Test VALUES(1, '困巫忘否役', '涝搞谷侪魍' )", c);
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(1, '困巫忘否役', '涝搞谷侪魍' )", c);
 			cmd.ExecuteNonQuery();
 
 			cmd.CommandText = "SELECT * FROM Test";
 			MySqlDataReader reader = null;
-			try 
+			try
 			{
 				reader = cmd.ExecuteReader();
 				reader.Read();
-				Assert.AreEqual( "困巫忘否役", reader.GetString(1) );
-				Assert.AreEqual( "涝搞谷侪魍", reader.GetString(2) );
+				Assert.AreEqual("困巫忘否役", reader.GetString(1));
+				Assert.AreEqual("涝搞谷侪魍", reader.GetString(2));
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 				c.Close();
@@ -275,31 +275,31 @@ namespace MySql.Data.MySqlClient.Tests
 
 		[Test]
 		[Category("4.1")]
-		public void Turkish() 
+		public void Turkish()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id int, name VARCHAR(200) CHAR SET latin5 )");
 
-			MySqlConnection c = new MySqlConnection( conn.ConnectionString + ";charset=utf8" );
+			MySqlConnection c = new MySqlConnection(conn.ConnectionString + ";charset=utf8");
 			c.Open();
-			
-			
-			MySqlCommand cmd = new MySqlCommand( "INSERT INTO Test VALUES(1, 'ĞËÇÄŞ')", c);
+
+
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(1, 'ĞËÇÄŞ')", c);
 			cmd.ExecuteNonQuery();
 
 			cmd.CommandText = "SELECT * FROM Test";
 			MySqlDataReader reader = null;
-			try 
+			try
 			{
 				reader = cmd.ExecuteReader();
 				reader.Read();
-				Assert.AreEqual( "ĞËÇÄŞ", reader.GetString(1) );
+				Assert.AreEqual("ĞËÇÄŞ", reader.GetString(1));
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 				c.Close();
@@ -308,30 +308,30 @@ namespace MySql.Data.MySqlClient.Tests
 
 		[Test]
 		[Category("4.1")]
-		public void Russian() 
+		public void Russian()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id int, name VARCHAR(200) CHAR SET cp1251)");
-			
-			MySqlConnection c = new MySqlConnection( conn.ConnectionString + ";charset=utf8" );
+
+			MySqlConnection c = new MySqlConnection(conn.ConnectionString + ";charset=utf8");
 			c.Open();
-			
-			MySqlCommand cmd = new MySqlCommand( "INSERT INTO Test VALUES(1, 'щьеи')", c);
+
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES(1, 'щьеи')", c);
 			cmd.ExecuteNonQuery();
 
 			cmd.CommandText = "SELECT * FROM Test";
 			MySqlDataReader reader = null;
-			try 
+			try
 			{
 				reader = cmd.ExecuteReader();
 				reader.Read();
-				Assert.AreEqual( "щьеи", reader.GetString(1) );
+				Assert.AreEqual("щьеи", reader.GetString(1));
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 				c.Close();
@@ -340,21 +340,21 @@ namespace MySql.Data.MySqlClient.Tests
 
 		[Test]
 		[Category("4.1")]
-		public void VariousCollations() 
+		public void VariousCollations()
 		{
 			execSQL("DROP DATABASE IF EXISTS dbtest");
 			execSQL("DROP TABLE IF EXISTS test_tbl");
 			execSQL("CREATE DATABASE `dbtest` DEFAULT CHARACTER SET utf8 COLLATE utf8_swedish_ci");
 			execSQL("CREATE TABLE `test_tbl` ( `test` VARCHAR( 255 ) NOT NULL) CHARACTER SET utf8 COLLATE utf8_swedish_ci TYPE = MYISAM");
 			execSQL("INSERT INTO test_tbl VALUES ('myval')");
-			try 
+			try
 			{
 				MySqlCommand cmd = new MySqlCommand("SELECT test FROM test_tbl", conn);
 				cmd.ExecuteScalar();
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 			execSQL("DROP TABLE test_tbl");
 			execSQL("DROP DATABASE dbtest");

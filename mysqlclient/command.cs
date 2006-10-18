@@ -30,23 +30,23 @@ namespace MySql.Data.MySqlClient
 {
 	/// <include file='docs/mysqlcommand.xml' path='docs/ClassSummary/*'/>
 #if WINDOWS
-	[System.Drawing.ToolboxBitmap( typeof(MySqlCommand), "MySqlClient.resources.command.bmp")]
+	[System.Drawing.ToolboxBitmap(typeof(MySqlCommand), "MySqlClient.resources.command.bmp")]
 #endif
 	[System.ComponentModel.DesignerCategory("Code")]
 	public sealed class MySqlCommand : Component, IDbCommand, ICloneable
 	{
-		MySqlConnection				connection;
-		MySqlTransaction			curTransaction;
-		string						cmdText;
-		CommandType					cmdType;
-		long						updateCount;
-		UpdateRowSource				updatedRowSource;
-		MySqlParameterCollection	parameters;
-		private ArrayList			sqlBuffers;
-		private PreparedStatement	preparedStatement;
-		private ArrayList			parameterMap;
-		private StoredProcedure		storedProcedure;
-		private CommandResult		lastResult;
+		MySqlConnection connection;
+		MySqlTransaction curTransaction;
+		string cmdText;
+		CommandType cmdType;
+		long updateCount;
+		UpdateRowSource updatedRowSource;
+		MySqlParameterCollection parameters;
+		private ArrayList sqlBuffers;
+		private PreparedStatement preparedStatement;
+		private ArrayList parameterMap;
+		private StoredProcedure storedProcedure;
+		private CommandResult lastResult;
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/ctor1/*'/>
 		public MySqlCommand()
@@ -58,13 +58,15 @@ namespace MySql.Data.MySqlClient
 		}
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/ctor2/*'/>
-		public MySqlCommand(string cmdText) : this()
+		public MySqlCommand(string cmdText)
+			: this()
 		{
 			CommandText = cmdText;
 		}
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/ctor3/*'/>
-		public MySqlCommand(string cmdText, MySqlConnection connection) : this(cmdText)
+		public MySqlCommand(string cmdText, MySqlConnection connection)
+			: this(cmdText)
 		{
 			Connection = connection;
 			if (connection != null)
@@ -72,11 +74,12 @@ namespace MySql.Data.MySqlClient
 		}
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/ctor4/*'/>
-		public MySqlCommand(string cmdText, MySqlConnection connection, 
-			MySqlTransaction transaction) : this(cmdText, connection)
+		public MySqlCommand(string cmdText, MySqlConnection connection,
+			MySqlTransaction transaction)
+			: this(cmdText, connection)
 		{
 			curTransaction = transaction;
-		} 
+		}
 
 		#region Properties
 
@@ -89,10 +92,10 @@ namespace MySql.Data.MySqlClient
 		public string CommandText
 		{
 			get { return cmdText; }
-			set { cmdText = value;  this.preparedStatement=null; }
+			set { cmdText = value; this.preparedStatement = null; }
 		}
 
-		internal int UpdateCount 
+		internal int UpdateCount
 		{
 			get { return (int)updateCount; }
 		}
@@ -103,8 +106,8 @@ namespace MySql.Data.MySqlClient
 		public int CommandTimeout
 		{
 			// TODO: support this
-			get  { return 0; }
-			set  { if (value != 0) throw new NotSupportedException(); }
+			get { return 0; }
+			set { if (value != 0) throw new NotSupportedException(); }
 		}
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/CommandType/*'/>
@@ -117,12 +120,12 @@ namespace MySql.Data.MySqlClient
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/IsPrepared/*'/>
 		[Browsable(false)]
-		public bool IsPrepared 
+		public bool IsPrepared
 		{
 			get { return preparedStatement != null; }
 		}
 
-		IDbConnection IDbCommand.Connection 
+		IDbConnection IDbCommand.Connection
 		{
 			get { return connection; }
 			set { Connection = (MySqlConnection)value; }
@@ -133,7 +136,7 @@ namespace MySql.Data.MySqlClient
 		[Description("Connection used by the command")]
 		public MySqlConnection Connection
 		{
-			get { return connection;  }
+			get { return connection; }
 			set
 			{
 				/*
@@ -156,15 +159,15 @@ namespace MySql.Data.MySqlClient
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
 		public MySqlParameterCollection Parameters
 		{
-			get  { return parameters; }
+			get { return parameters; }
 		}
 
 		IDataParameterCollection IDbCommand.Parameters
 		{
-			get  { return parameters; }
+			get { return parameters; }
 		}
 
-		IDbTransaction IDbCommand.Transaction 
+		IDbTransaction IDbCommand.Transaction
 		{
 			get { return Transaction; }
 			set { Transaction = (MySqlTransaction)value; }
@@ -183,13 +186,13 @@ namespace MySql.Data.MySqlClient
 		[Category("Behavior")]
 		public UpdateRowSource UpdatedRowSource
 		{
-			get 
-			{ 
-				return updatedRowSource;  
+			get
+			{
+				return updatedRowSource;
 			}
-			set 
-			{ 
-				updatedRowSource = value; 
+			set
+			{
+				updatedRowSource = value;
 			}
 		}
 		#endregion
@@ -253,12 +256,12 @@ namespace MySql.Data.MySqlClient
 		{
 			// if  we are supposed to return only a single resultset and our reader
 			// is calling us back again, then return null
-			if (reader != null && 
+			if (reader != null &&
 				(reader.Behavior & CommandBehavior.SingleResult) != 0 &&
 				lastResult != null) return null;
 
 			// if the last result we returned has more results
-			if (lastResult != null && lastResult.ReadNextResult(false) )
+			if (lastResult != null && lastResult.ReadNextResult(false))
 				return lastResult;
 			lastResult = null;
 
@@ -278,36 +281,36 @@ namespace MySql.Data.MySqlClient
 			// if we have a prepared statement, we execute it instead
 			if (preparedStatement != null)
 			{
-				result = preparedStatement.Execute( parameters );
+				result = preparedStatement.Execute(parameters);
 
-				if (! result.IsResultSet) 
+				if (!result.IsResultSet)
 				{
 					if (updateCount == -1) updateCount = 0;
 					updateCount += (long)result.AffectedRows;
 				}
 			}
 			else while (sqlBuffers.Count > 0)
-			{
-				MemoryStream sqlStream = (MemoryStream)sqlBuffers[0];
-
-				using (sqlStream) 
 				{
-					result = connection.driver.SendQuery( sqlStream.GetBuffer(), (int)sqlStream.Length, false );
-					sqlBuffers.RemoveAt( 0 );
-				}
-	
-				if (result.AffectedRows != -1)
-				{
-					if (updateCount == -1) updateCount = 0;
-					updateCount += (long)result.AffectedRows;
+					MemoryStream sqlStream = (MemoryStream)sqlBuffers[0];
+
+					using (sqlStream)
+					{
+						result = connection.driver.SendQuery(sqlStream.GetBuffer(), (int)sqlStream.Length, false);
+						sqlBuffers.RemoveAt(0);
+					}
+
+					if (result.AffectedRows != -1)
+					{
+						if (updateCount == -1) updateCount = 0;
+						updateCount += (long)result.AffectedRows;
+					}
+
+					// if this is a resultset, then we break out of our execution loop
+					if (result.IsResultSet)
+						break;
 				}
 
-				// if this is a resultset, then we break out of our execution loop
-				if (result.IsResultSet)
-					break;
-			}
-
-			if (result.IsResultSet) 
+			if (result.IsResultSet)
 			{
 				lastResult = result;
 				return result;
@@ -331,7 +334,7 @@ namespace MySql.Data.MySqlClient
 			if (connection.Reader != null)
 				throw new MySqlException(Resources.DataReaderOpen);
 
-			if (CommandType == CommandType.StoredProcedure && ! connection.driver.Version.isAtLeast(5,0,0))
+			if (CommandType == CommandType.StoredProcedure && !connection.driver.Version.isAtLeast(5, 0, 0))
 				throw new MySqlException(Resources.SPNotSupported);
 		}
 
@@ -340,22 +343,22 @@ namespace MySql.Data.MySqlClient
 		{
 			CheckState();
 
-            if (cmdText == null ||
-                cmdText.Trim().Length == 0)
-                throw new InvalidOperationException(Resources.CommandTextNotInitialized);
+			if (cmdText == null ||
+				 cmdText.Trim().Length == 0)
+				throw new InvalidOperationException(Resources.CommandTextNotInitialized);
 
-            updateCount = 0;
+			updateCount = 0;
 
 			if (preparedStatement == null)
 				sqlBuffers = PrepareSqlBuffers(CommandText);
 			else
 				preparedStatement.ExecutionCount = 0;
 
-			try 
+			try
 			{
 				Consume();
 			}
-			catch (MySqlException ex) 
+			catch (MySqlException ex)
 			{
 				if (ex.IsFatal) connection.Terminate();
 				throw;
@@ -364,14 +367,14 @@ namespace MySql.Data.MySqlClient
 			return (int)updateCount;
 		}
 
-		IDataReader IDbCommand.ExecuteReader ()
+		IDataReader IDbCommand.ExecuteReader()
 		{
-			return ExecuteReader ();
+			return ExecuteReader();
 		}
 
-		IDataReader IDbCommand.ExecuteReader (CommandBehavior behavior)
+		IDataReader IDbCommand.ExecuteReader(CommandBehavior behavior)
 		{
-			return ExecuteReader (behavior);
+			return ExecuteReader(behavior);
 		}
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/ExecuteReader/*'/>
@@ -386,9 +389,9 @@ namespace MySql.Data.MySqlClient
 		{
 			CheckState();
 
-            if (cmdText == null ||
-                cmdText.Trim().Length == 0)
-                throw new InvalidOperationException(Resources.CommandTextNotInitialized);
+			if (cmdText == null ||
+				 cmdText.Trim().Length == 0)
+				throw new InvalidOperationException(Resources.CommandTextNotInitialized);
 
 			string sql = TrimSemicolons(cmdText);
 
@@ -420,29 +423,29 @@ namespace MySql.Data.MySqlClient
 		public object ExecuteScalar()
 		{
 			// ExecuteReader will check out state
-            if (cmdText == null ||
-                cmdText.Trim().Length == 0)
-                throw new InvalidOperationException(Resources.CommandTextNotInitialized);
+			if (cmdText == null ||
+				 cmdText.Trim().Length == 0)
+				throw new InvalidOperationException(Resources.CommandTextNotInitialized);
 
-            updateCount = -1;
+			updateCount = -1;
 
 			object val = null;
-            MySqlDataReader reader = null;
-            try
-            {
-                reader = ExecuteReader();
-                if (reader.Read())
-                    val = reader.GetValue(0);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                if (reader != null)
-                    reader.Close();
-            }
+			MySqlDataReader reader = null;
+			try
+			{
+				reader = ExecuteReader();
+				if (reader.Read())
+					val = reader.GetValue(0);
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+			finally
+			{
+				if (reader != null)
+					reader.Close();
+			}
 
 			return val;
 		}
@@ -454,15 +457,15 @@ namespace MySql.Data.MySqlClient
 				throw new InvalidOperationException(Resources.ConnectionNotSet);
 			if (connection.State != ConnectionState.Open)
 				throw new InvalidOperationException(Resources.ConnectionNotOpen);
-			if (! connection.driver.Version.isAtLeast( 4,1,0)) 
+			if (!connection.driver.Version.isAtLeast(4, 1, 0))
 				return;
 
 			// strip out names from parameter markers
-            // if the length of the command text is zero, then just return
+			// if the length of the command text is zero, then just return
 			string psSQL = CommandText;
-            if (psSQL == null ||
-                psSQL.Trim().Length == 0)
-                return;
+			if (psSQL == null ||
+				 psSQL.Trim().Length == 0)
+				return;
 
 			if (CommandType == CommandType.StoredProcedure)
 			{
@@ -487,10 +490,10 @@ namespace MySql.Data.MySqlClient
 			while (sb[start] == ';')
 				start++;
 
-			int end = sb.Length-1;
+			int end = sb.Length - 1;
 			while (sb[end] == ';')
 				end--;
-			return sb.ToString(start, end-start+1);
+			return sb.ToString(start, end - start + 1);
 		}
 
 		/// <summary>
@@ -504,7 +507,7 @@ namespace MySql.Data.MySqlClient
 		/// </para>
 		/// </remarks>
 		/// <returns>True if the parameter was successfully serialized, false otherwise.</returns>
-		private bool SerializeParameter( PacketWriter writer, string parmName )
+		private bool SerializeParameter(PacketWriter writer, string parmName)
 		{
 			int index = parameters.IndexOf(parmName);
 			if (index == -1)
@@ -515,7 +518,7 @@ namespace MySql.Data.MySqlClient
 				throw new MySqlException("Parameter '" + parmName + "' must be defined");
 			}
 			MySqlParameter parameter = parameters[index];
-			parameter.Serialize( writer, false );
+			parameter.Serialize(writer, false);
 			return true;
 		}
 
@@ -550,35 +553,35 @@ namespace MySql.Data.MySqlClient
 
 			// tokenize the SQL
 			sql = sql.TrimStart(';').TrimEnd(';');
-			ArrayList tokens = TokenizeSql( sql );
+			ArrayList tokens = TokenizeSql(sql);
 
 			foreach (string token in tokens)
 			{
 				if (token.Trim().Length == 0) continue;
-				if (token == ";" && ! connection.driver.SupportsBatch)
+				if (token == ";" && !connection.driver.SupportsBatch)
 				{
 					MemoryStream ms = (MemoryStream)writer.Stream;
 					if (ms.Length > 0)
-						buffers.Add( ms );
+						buffers.Add(ms);
 
 					writer = new PacketWriter();
 					writer.Encoding = connection.Encoding;
 					writer.Version = connection.driver.Version;
 					continue;
 				}
-				else if (token[0] == parameters.ParameterMarker) 
+				else if (token[0] == parameters.ParameterMarker)
 				{
-					if (SerializeParameter( writer, token )) continue;
+					if (SerializeParameter(writer, token)) continue;
 				}
 
 				// our fall through case is to write the token to the byte stream
-				writer.WriteStringNoNull( token );
+				writer.WriteStringNoNull(token);
 			}
 
 			// capture any buffer that is left over
 			MemoryStream mStream = (MemoryStream)writer.Stream;
 			if (mStream.Length > 0)
-				buffers.Add( mStream );
+				buffers.Add(mStream);
 
 			return buffers;
 		}
@@ -595,7 +598,7 @@ namespace MySql.Data.MySqlClient
 		/// </remarks>
 		private string PrepareCommandText(string text)
 		{
-			StringBuilder	newSQL = new StringBuilder();
+			StringBuilder newSQL = new StringBuilder();
 
 			// tokenize the sql first
 			ArrayList tokens = TokenizeSql(text);
@@ -603,12 +606,12 @@ namespace MySql.Data.MySqlClient
 
 			foreach (string token in tokens)
 			{
-				if ( token[0] != parameters.ParameterMarker )
-					newSQL.Append( token );
+				if (token[0] != parameters.ParameterMarker)
+					newSQL.Append(token);
 				else
 				{
-					parameterMap.Add( token );
-					newSQL.Append( parameters.ParameterMarker );
+					parameterMap.Add(token);
+					newSQL.Append(parameters.ParameterMarker);
 				}
 			}
 
@@ -624,47 +627,47 @@ namespace MySql.Data.MySqlClient
 		/// <remarks>The SQL is tokenized at parameter markers ('?') and at 
 		/// (';') sql end markers if the server doesn't support batching.
 		/// </remarks>
-		private ArrayList TokenizeSql( string sql )
+		private ArrayList TokenizeSql(string sql)
 		{
-			char			delim = Char.MinValue;
-			StringBuilder	sqlPart = new StringBuilder();
-			bool			escaped = false;
-			ArrayList		tokens = new ArrayList();
+			char delim = Char.MinValue;
+			StringBuilder sqlPart = new StringBuilder();
+			bool escaped = false;
+			ArrayList tokens = new ArrayList();
 
-			for (int i=0; i < sql.Length; i++)
+			for (int i = 0; i < sql.Length; i++)
 			{
 				char c = sql[i];
 				if (escaped)
 					escaped = !escaped;
-				else if (c == delim) 
+				else if (c == delim)
 					delim = Char.MinValue;
 				else if (c == ';' && !escaped && delim == Char.MinValue && !connection.driver.SupportsBatch)
 				{
-					tokens.Add( sqlPart.ToString() );
-					tokens.Add( ";" );
-					sqlPart.Remove( 0, sqlPart.Length ); 
+					tokens.Add(sqlPart.ToString());
+					tokens.Add(";");
+					sqlPart.Remove(0, sqlPart.Length);
 					continue;
 				}
-				else if ((c == '\'' || c == '\"' || c == '`') & ! escaped & delim == Char.MinValue)
-					delim=c;
-				else if (c == '\\') 
-					escaped = ! escaped;
-				else if (c == parameters.ParameterMarker && delim == Char.MinValue && ! escaped) 
+				else if ((c == '\'' || c == '\"' || c == '`') & !escaped & delim == Char.MinValue)
+					delim = c;
+				else if (c == '\\')
+					escaped = !escaped;
+				else if (c == parameters.ParameterMarker && delim == Char.MinValue && !escaped)
 				{
-					tokens.Add( sqlPart.ToString() );
-					sqlPart.Remove( 0, sqlPart.Length ); 
+					tokens.Add(sqlPart.ToString());
+					sqlPart.Remove(0, sqlPart.Length);
 				}
-				else if (sqlPart.Length > 0 && sqlPart[0] == parameters.ParameterMarker && 
-					! Char.IsLetterOrDigit(c) && c != '_' && c != '.' && c != '$' 
+				else if (sqlPart.Length > 0 && sqlPart[0] == parameters.ParameterMarker &&
+					!Char.IsLetterOrDigit(c) && c != '_' && c != '.' && c != '$'
 					&& c != '@')
 				{
-					tokens.Add( sqlPart.ToString() );
-					sqlPart.Remove( 0, sqlPart.Length ); 
+					tokens.Add(sqlPart.ToString());
+					sqlPart.Remove(0, sqlPart.Length);
 				}
 
 				sqlPart.Append(c);
 			}
-			tokens.Add( sqlPart.ToString() );
+			tokens.Add(sqlPart.ToString());
 			return tokens;
 		}
 		#endregion
@@ -675,10 +678,10 @@ namespace MySql.Data.MySqlClient
 		/// are included as well as the entire parameter list.
 		/// </summary>
 		/// <returns>The cloned MySqlCommand object</returns>
-		object ICloneable.Clone() 
+		object ICloneable.Clone()
 		{
 			MySqlCommand clone = new MySqlCommand(cmdText, connection, curTransaction);
-			foreach (MySqlParameter p in parameters) 
+			foreach (MySqlParameter p in parameters)
 			{
 				clone.Parameters.Add((p as ICloneable).Clone());
 			}

@@ -31,7 +31,8 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class PoolingTests : BaseTest
 	{
-		public PoolingTests() : base()
+		public PoolingTests()
+			: base()
 		{
 			csAdditions = ";pooling=true; connection reset=true";
 		}
@@ -49,17 +50,17 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
-		public void Connection() 
+		public void Connection()
 		{
 			string connStr = conn.ConnectionString + ";pooling=true";
 
-			MySqlConnection c = new MySqlConnection( connStr );
+			MySqlConnection c = new MySqlConnection(connStr);
 			c.Open();
 			int serverThread = c.ServerThread;
 			c.Close();
-			
+
 			// first test that only a single connection get's used
-			for (int i=0; i < 10; i++) 
+			for (int i = 0; i < 10; i++)
 			{
 				c = new MySqlConnection(connStr);
 				c.Open();
@@ -73,23 +74,23 @@ namespace MySql.Data.MySqlClient.Tests
 
 			connStr += ";Min Pool Size=10";
 			MySqlConnection[] connArray = new MySqlConnection[10];
-			for (int i=0; i < connArray.Length; i++) 
+			for (int i = 0; i < connArray.Length; i++)
 			{
 				connArray[i] = new MySqlConnection(connStr);
 				connArray[i].Open();
 			}
 
 			// now make sure all the server ids are different
-			for (int i=0; i < connArray.Length; i++) 
+			for (int i = 0; i < connArray.Length; i++)
 			{
-				for (int j=0; j < connArray.Length; j++)
+				for (int j = 0; j < connArray.Length; j++)
 				{
 					if (i != j)
 						Assert.IsTrue(connArray[i].ServerThread != connArray[j].ServerThread);
 				}
 			}
 
-			for (int i=0; i < connArray.Length; i++)
+			for (int i = 0; i < connArray.Length; i++)
 			{
 				KillConnection(connArray[i]);
 				connArray[i].Close();
@@ -99,7 +100,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void OpenKilled()
 		{
-			try 
+			try
 			{
 				string connStr = conn.ConnectionString + ";pooling=true";
 				MySqlConnection c = new MySqlConnection(connStr);
@@ -126,7 +127,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 
 		[Test]
-		public void ReclaimBrokenConnection() 
+		public void ReclaimBrokenConnection()
 		{
 			// now create a new connection string only allowing 1 connection in the pool
 			string connStr = conn.ConnectionString + ";max pool size=1";
@@ -136,7 +137,7 @@ namespace MySql.Data.MySqlClient.Tests
 			c.Open();
 
 			// now attempting to open a connection should fail
-			try 
+			try
 			{
 				MySqlConnection c2 = new MySqlConnection(connStr);
 				c2.Open();
@@ -148,7 +149,7 @@ namespace MySql.Data.MySqlClient.Tests
 			base.KillConnection(c);
 
 			// now we do something on the first connection
-			try 
+			try
 			{
 				c.ChangeDatabase("mysql");
 				Assert.Fail("This change database should not work");
@@ -156,14 +157,14 @@ namespace MySql.Data.MySqlClient.Tests
 			catch (Exception) { }
 
 			// Opening a connection now should work
-			try 
+			try
 			{
 				MySqlConnection c2 = new MySqlConnection(connStr);
 				c2.Open();
 				c2.Close();
 			}
-			catch (Exception ex) 
-			{ 
+			catch (Exception ex)
+			{
 				Assert.Fail(ex.Message);
 			}
 		}

@@ -47,15 +47,15 @@ namespace MySql.Data.MySqlClient.Tests
 
 
 		[Test]
-		public void TestFloats() 
+		public void TestFloats()
 		{
 			InternalTestFloats(false);
-        }
+		}
 
-        [Category("4.1")]
-        [Test]
-        public void TestFloatsPrepared()
-        {
+		[Category("4.1")]
+		[Test]
+		public void TestFloatsPrepared()
+		{
 			InternalTestFloats(true);
 		}
 
@@ -66,7 +66,7 @@ namespace MySql.Data.MySqlClient.Tests
 			CultureInfo c = new CultureInfo("de-DE");
 			Thread.CurrentThread.CurrentCulture = c;
 			Thread.CurrentThread.CurrentUICulture = c;
-            
+
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (fl FLOAT, db DOUBLE, dec1 DECIMAL(5,2))");
 
@@ -83,7 +83,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(1, count);
 
 			MySqlDataReader reader = null;
-			try 
+			try
 			{
 				cmd.CommandText = "SELECT * FROM Test";
 				if (prepared) cmd.Prepare();
@@ -93,11 +93,11 @@ namespace MySql.Data.MySqlClient.Tests
 				Assert.AreEqual(4.6, reader.GetDouble(1));
 				Assert.AreEqual(23.82, reader.GetDecimal(2));
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 				Thread.CurrentThread.CurrentCulture = curCulture;
@@ -109,7 +109,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #8228  	turkish character set causing the error
 		/// </summary>
 		[Test]
-		public void Turkish() 
+		public void Turkish()
 		{
 			CultureInfo curCulture = Thread.CurrentThread.CurrentCulture;
 			CultureInfo curUICulture = Thread.CurrentThread.CurrentUICulture;
@@ -117,7 +117,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Thread.CurrentThread.CurrentCulture = c;
 			Thread.CurrentThread.CurrentUICulture = c;
 
-			try 
+			try
 			{
 				MySqlConnection newConn = new MySqlConnection(GetConnectionString(true));
 				newConn.Open();

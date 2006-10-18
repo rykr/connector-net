@@ -30,7 +30,7 @@ namespace MySql.Data.MySqlClient.Tests
 	/// <summary>
 	/// Summary description for ConnectionTests.
 	/// </summary>
-	[TestFixture] 
+	[TestFixture]
 	public class StressTests : BaseTest
 	{
 		[TestFixtureSetUp]
@@ -67,11 +67,11 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?id, NULL, ?blob, NULL )", c);
 			cmd.Parameters.Add(new MySqlParameter("?id", 1));
 			cmd.Parameters.Add(new MySqlParameter("?blob", dataIn));
-			try 
+			try
 			{
 				cmd.ExecuteNonQuery();
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				Assert.Fail(ex.Message);
 			}
@@ -83,87 +83,87 @@ namespace MySql.Data.MySqlClient.Tests
 
 			cmd.CommandText = "SELECT * FROM Test";
 			MySqlDataReader reader = null;
-			
-			try 
+
+			try
 			{
 				reader = cmd.ExecuteReader();
 				reader.Read();
-				byte[] dataOut = new byte[ len ];
+				byte[] dataOut = new byte[len];
 				long count = reader.GetBytes(2, 0, dataOut, 0, len);
 				Assert.AreEqual(len, count);
 
-				for (int i=0; i < len; i++)
+				for (int i = 0; i < len; i++)
 					Assert.AreEqual(dataIn[i], dataOut[i]);
 
 				reader.Read();
 				count = reader.GetBytes(2, 0, dataOut, 0, len);
 				Assert.AreEqual(len, count);
 
-				for (int i=0; i < len; i++)
+				for (int i = 0; i < len; i++)
 					Assert.AreEqual(dataIn2[i], dataOut[i]);
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 				c.Close();
 			}
 			execSQL("set @@global.max_allowed_packet=1047552");
 		}
-    }
+	}
 
-    #region Configs
+	#region Configs
 
 	[Category("Compressed")]
-    public class StressTestsSocketCompressed : StressTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return ";port=3306;compress=true";
-        }
-    }
+	public class StressTestsSocketCompressed : StressTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return ";port=3306;compress=true";
+		}
+	}
 
 	[Category("Pipe")]
-    public class StressTestsPipe : StressTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return ";protocol=pipe";
-        }
-    }
+	public class StressTestsPipe : StressTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return ";protocol=pipe";
+		}
+	}
 
-    [Category("Compressed")]
-    [Category("Pipe")]
-    public class StressTestsPipeCompressed : StressTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return ";protocol=pipe;compress=true";
-        }
-    }
+	[Category("Compressed")]
+	[Category("Pipe")]
+	public class StressTestsPipeCompressed : StressTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return ";protocol=pipe;compress=true";
+		}
+	}
 
-    [Category("SharedMemory")]
-    public class StressTestsSharedMemory : StressTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return ";protocol=memory";
-        }
-    }
+	[Category("SharedMemory")]
+	public class StressTestsSharedMemory : StressTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return ";protocol=memory";
+		}
+	}
 
-    [Category("Compressed")]
-    [Category("SharedMemory")]
-    public class StressTestsSharedMemoryCompressed : StressTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return ";protocol=memory;compress=true";
-        }
-    }
+	[Category("Compressed")]
+	[Category("SharedMemory")]
+	public class StressTestsSharedMemoryCompressed : StressTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return ";protocol=memory;compress=true";
+		}
+	}
 
-    #endregion
+	#endregion
 
 }

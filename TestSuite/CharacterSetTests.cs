@@ -57,36 +57,36 @@ namespace MySql.Data.MySqlClient.Tests
 			c.Close();
 		}
 
-        [Test]
-		[Category("4.1")]        
-        public void VarBinary()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            createTable("CREATE TABLE test (id int, name varchar(200) collate utf8_bin) charset utf8", "InnoDB");
-            execSQL("INSERT INTO test VALUES (1, 'Test1')");
+		[Test]
+		[Category("4.1")]
+		public void VarBinary()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			createTable("CREATE TABLE test (id int, name varchar(200) collate utf8_bin) charset utf8", "InnoDB");
+			execSQL("INSERT INTO test VALUES (1, 'Test1')");
 
-            MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
-            MySqlDataReader reader = null;
-            try
-            {
-                reader = cmd.ExecuteReader();
-                Assert.IsTrue(reader.Read());
-                object o = reader.GetValue(1);
-                Assert.IsTrue(o is string);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                if (reader != null) reader.Close();
-            }
-        }
+			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+			MySqlDataReader reader = null;
+			try
+			{
+				reader = cmd.ExecuteReader();
+				Assert.IsTrue(reader.Read());
+				object o = reader.GetValue(1);
+				Assert.IsTrue(o is string);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				if (reader != null) reader.Close();
+			}
+		}
 
 		[Category("4.1")]
 		[Test]
-		public void Latin1Connection() 
+		public void Latin1Connection()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id INT, name VARCHAR(200)) CHARSET latin1");
@@ -101,58 +101,57 @@ namespace MySql.Data.MySqlClient.Tests
 			c.Close();
 		}
 
-        /// <summary>
-        /// Bug #11621  	connector does not support charset cp1250
-        /// </summary>
-        [Test]
-        [Category("NotWorking")]
-        public void CP1250Connection()
-        {
-            execSQL("DROP TABLE IF EXISTS Test");
-            execSQL("CREATE TABLE Test (name VARCHAR(200)) CHARSET cp1250");
+		/// <summary>
+		/// Bug #11621  	connector does not support charset cp1250
+		/// </summary>
+		[Test]
+		public void CP1250Connection()
+		{
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (name VARCHAR(200)) CHARSET cp1250");
 
-            MySqlConnection c = new MySqlConnection(conn.ConnectionString + ";charset=cp1250");
-            c.Open();
+			MySqlConnection c = new MySqlConnection(conn.ConnectionString + ";charset=cp1250");
+			c.Open();
 
-            MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES('€TŽš')", c);
-            cmd.ExecuteNonQuery();
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES('€TŽš')", c);
+			cmd.ExecuteNonQuery();
 
-            cmd.CommandText = "SELECT name FROM Test";
-            object name = cmd.ExecuteScalar();
-            Assert.AreEqual("€TŽš", name);
-            c.Close();
-        }
+			cmd.CommandText = "SELECT name FROM Test";
+			object name = cmd.ExecuteScalar();
+			Assert.AreEqual("€TŽš", name);
+			c.Close();
+		}
 
-        /// <summary>
-        /// Bug #14592 Wrong column length returned for VARCHAR UTF8 columns 
-        /// </summary>
-        [Test]
-        public void GetSchemaOnUTF8()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test(name VARCHAR(40) NOT NULL, name2 VARCHAR(20)) " +
-                "CHARACTER SET utf8");
-            execSQL("INSERT INTO test VALUES('Test', 'Test')");
+		/// <summary>
+		/// Bug #14592 Wrong column length returned for VARCHAR UTF8 columns 
+		/// </summary>
+		[Test]
+		public void GetSchemaOnUTF8()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test(name VARCHAR(40) NOT NULL, name2 VARCHAR(20)) " +
+				 "CHARACTER SET utf8");
+			execSQL("INSERT INTO test VALUES('Test', 'Test')");
 
-            MySqlDataReader reader = null;
+			MySqlDataReader reader = null;
 
-            try
-            {
-                MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
-                reader = cmd.ExecuteReader();
-                DataTable dt = reader.GetSchemaTable();
-                Assert.AreEqual(40, dt.Rows[0]["ColumnSize"]);
-                Assert.AreEqual(20, dt.Rows[1]["ColumnSize"]);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                if (reader != null) reader.Close();
-            }
-        }
+			try
+			{
+				MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+				reader = cmd.ExecuteReader();
+				DataTable dt = reader.GetSchemaTable();
+				Assert.AreEqual(40, dt.Rows[0]["ColumnSize"]);
+				Assert.AreEqual(20, dt.Rows[1]["ColumnSize"]);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				if (reader != null) reader.Close();
+			}
+		}
 
-    }
+	}
 }

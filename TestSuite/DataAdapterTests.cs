@@ -29,7 +29,7 @@ namespace MySql.Data.MySqlClient.Tests
 	/// <summary>
 	/// Summary description for ConnectionTests.
 	/// </summary>
-	[TestFixture] 
+	[TestFixture]
 	public class DataAdapterTests : BaseTest
 	{
 
@@ -46,8 +46,8 @@ namespace MySql.Data.MySqlClient.Tests
 
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id INT NOT NULL AUTO_INCREMENT, " +
-                "id2 INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME, " +
-                "ts TIMESTAMP, OriginalId INT, PRIMARY KEY(id, id2))");
+					 "id2 INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME, " +
+					 "ts TIMESTAMP, OriginalId INT, PRIMARY KEY(id, id2))");
 		}
 
 
@@ -101,11 +101,11 @@ namespace MySql.Data.MySqlClient.Tests
 
 			// make sure our refresh of auto increment values worked
 			Assert.AreEqual(1, count, "checking insert count");
-			Assert.IsNotNull(dt.Rows[ dt.Rows.Count-1 ]["id"], 
-                "Checking auto increment column");
+			Assert.IsNotNull(dt.Rows[dt.Rows.Count - 1]["id"],
+					 "Checking auto increment column");
 
-            dt.Rows.Clear();
-            da.Fill(dt);
+			dt.Rows.Clear();
+			da.Fill(dt);
 			dt.Rows[0]["id2"] = 3;
 			dt.Rows[0]["name"] = "TestName2";
 			dt.Rows[0]["ts"] = DBNull.Value;
@@ -152,15 +152,15 @@ namespace MySql.Data.MySqlClient.Tests
 			row["tm"] = DBNull.Value;
 			row["ts"] = DBNull.Value;
 			row["OriginalId"] = 2;
-			dt.Rows.Add( row );
+			dt.Rows.Add(row);
 			da.Update(dt);
 
-			Assert.AreEqual( 1, dt.Rows.Count );
-			Assert.AreEqual( 2, dt.Rows[0]["OriginalId"] );
+			Assert.AreEqual(1, dt.Rows.Count);
+			Assert.AreEqual(2, dt.Rows[0]["OriginalId"]);
 		}
 
 		[Test]
-		public void UseAdapterPropertyOfCommandBuilder() 
+		public void UseAdapterPropertyOfCommandBuilder()
 		{
 			execSQL("INSERT INTO Test (id, id2, name) VALUES (NULL, 1, 'Test')");
 
@@ -174,21 +174,21 @@ namespace MySql.Data.MySqlClient.Tests
 			dt.Rows[0]["name"] = "Test Update";
 			int updateCnt = da.Update(dt);
 
-			Assert.AreEqual( 1, updateCnt );
+			Assert.AreEqual(1, updateCnt);
 
 			dt.Rows.Clear();
 			da.Fill(dt);
 
-			Assert.AreEqual( 1, dt.Rows.Count );
-			Assert.AreEqual( "Test Update", dt.Rows[0]["name"] );
+			Assert.AreEqual(1, dt.Rows.Count);
+			Assert.AreEqual("Test Update", dt.Rows[0]["name"]);
 		}
 
 		[Test]
-		public void UpdateNullTextFieldToEmptyString() 
+		public void UpdateNullTextFieldToEmptyString()
 		{
 			execSQL("INSERT INTO Test (id, id2, name) VALUES (1, 1, NULL)");
 
-			try 
+			try
 			{
 				MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
@@ -200,26 +200,26 @@ namespace MySql.Data.MySqlClient.Tests
 				dt.Rows[0]["name"] = "";
 				int updateCnt = da.Update(dt);
 
-				Assert.AreEqual( 1, updateCnt );
+				Assert.AreEqual(1, updateCnt);
 
 				dt.Rows.Clear();
 				da.Fill(dt);
 
-				Assert.AreEqual( 1, dt.Rows.Count );
-				Assert.AreEqual( "", dt.Rows[0]["name"] );
+				Assert.AreEqual(1, dt.Rows.Count);
+				Assert.AreEqual("", dt.Rows[0]["name"]);
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 		}
 
 		[Test]
-		public void UpdateExtendedTextFields() 
+		public void UpdateExtendedTextFields()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
-			execSQL( "CREATE TABLE Test (id int, notes MEDIUMTEXT, PRIMARY KEY(id))" );
-			execSQL("INSERT INTO Test VALUES(1, 'This is my note')" );
+			execSQL("CREATE TABLE Test (id int, notes MEDIUMTEXT, PRIMARY KEY(id))");
+			execSQL("INSERT INTO Test VALUES(1, 'This is my note')");
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
@@ -228,53 +228,53 @@ namespace MySql.Data.MySqlClient.Tests
 			da.Fill(dt);
 
 			dt.Rows[0]["notes"] = "This is my new note";
-			da.Update( dt );
+			da.Update(dt);
 
 			dt.Clear();
 			da.Fill(dt);
-			Assert.AreEqual( "This is my new note", dt.Rows[0]["notes"]);
+			Assert.AreEqual("This is my new note", dt.Rows[0]["notes"]);
 		}
 
 		[Test]
-		public void SelectMoreThan252Rows() 
+		public void SelectMoreThan252Rows()
 		{
-			for (int i=0; i < 500; i++) 
+			for (int i = 0; i < 500; i++)
 				execSQL("INSERT INTO Test(id, id2) VALUES(NULL, " + i + ")");
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 
-			Assert.AreEqual( 500, dt.Rows.Count );
+			Assert.AreEqual(500, dt.Rows.Count);
 		}
 
-/*		[Test]
-		[Explicit]
-		public void UpdateManyRows() 
-		{
-			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
-			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
-			DataTable dt = new DataTable();
-			da.Fill(dt);
+		/*		[Test]
+				[Explicit]
+				public void UpdateManyRows() 
+				{
+					MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+					MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+					DataTable dt = new DataTable();
+					da.Fill(dt);
 
-			for (int i=0; i < 100000; i++)
-			{
-				DataRow dr = dt.NewRow();
-				dr["id"] = DBNull.Value;
-				dr["id2"] = i;
-				dt.Rows.Add( dr );
-				DataTable changes = dt.GetChanges();
-				da.Update( changes );
-				dt.AcceptChanges();
-			}
+					for (int i=0; i < 100000; i++)
+					{
+						DataRow dr = dt.NewRow();
+						dr["id"] = DBNull.Value;
+						dr["id2"] = i;
+						dt.Rows.Add( dr );
+						DataTable changes = dt.GetChanges();
+						da.Update( changes );
+						dt.AcceptChanges();
+					}
 
-			dt.Clear();
-			da.Fill(dt);
-			Assert.AreEqual(100000, dt.Rows.Count);
-		}
-*/
+					dt.Clear();
+					da.Fill(dt);
+					Assert.AreEqual(100000, dt.Rows.Count);
+				}
+		*/
 		[Test]
-		public void DiscreteValues() 
+		public void DiscreteValues()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id int, name varchar(200), dt DATETIME, b1 TEXT)");
@@ -285,18 +285,18 @@ namespace MySql.Data.MySqlClient.Tests
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 
-			Assert.AreEqual( "Test", dt.Rows[0]["name"] );
-			Assert.AreEqual( "Test 1", dt.Rows[1]["name"] );
+			Assert.AreEqual("Test", dt.Rows[0]["name"]);
+			Assert.AreEqual("Test 1", dt.Rows[1]["name"]);
 
-			Assert.AreEqual( "Text 1", dt.Rows[0]["b1"] );
-			Assert.AreEqual( "Text 2", dt.Rows[1]["b1"] );
+			Assert.AreEqual("Text 1", dt.Rows[0]["b1"]);
+			Assert.AreEqual("Text 2", dt.Rows[1]["b1"]);
 
-			Assert.AreEqual( new DateTime(2004, 8, 1, 0, 0, 0).ToString(),  dt.Rows[0]["dt"].ToString() );
-			Assert.AreEqual( new DateTime(2004, 7, 2, 0, 0, 0).ToString(), dt.Rows[1]["dt"].ToString() );
+			Assert.AreEqual(new DateTime(2004, 8, 1, 0, 0, 0).ToString(), dt.Rows[0]["dt"].ToString());
+			Assert.AreEqual(new DateTime(2004, 7, 2, 0, 0, 0).ToString(), dt.Rows[1]["dt"].ToString());
 		}
 
 		[Test]
-		public void Bug5798() 
+		public void Bug5798()
 		{
 			execSQL("INSERT INTO Test (id, id2, name) VALUES (1, 1, '')");
 
@@ -304,20 +304,20 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
 			cb.ToString();  // keep the compiler happy
 			DataTable dt = new DataTable();
-			da.Fill( dt );
+			da.Fill(dt);
 
-			Assert.AreEqual( String.Empty, dt.Rows[0]["name"] );
+			Assert.AreEqual(String.Empty, dt.Rows[0]["name"]);
 
 			dt.Rows[0]["name"] = "Test";
-			da.Update( dt );
+			da.Update(dt);
 
 			dt.Clear();
 			da.Fill(dt);
-			Assert.AreEqual( "Test", dt.Rows[0]["name"] );
+			Assert.AreEqual("Test", dt.Rows[0]["name"]);
 		}
 
 		[Test]
-		public void ColumnMapping() 
+		public void ColumnMapping()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id int, dcname varchar(100), primary key(id))");
@@ -326,36 +326,36 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("INSERT INTO Test VALUES (3, 'Test3')");
 			execSQL("INSERT INTO Test VALUES (4, 'Test4')");
 
-//			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
-//			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
-//			DataTable dt = new DataTable();
+			//			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
+			//			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			//			DataTable dt = new DataTable();
 		}
 
 		[Test]
-		public void TestFillWithHelper() 
+		public void TestFillWithHelper()
 		{
 			execSQL("DROP TABLE IF EXISTS table1");
 			execSQL("DROP TABLE IF EXISTS table2");
-			execSQL( "CREATE TABLE table1 (`key` INT, PRIMARY KEY(`key`))" );
-			execSQL( "CREATE TABLE table2 (`key` INT, PRIMARY KEY(`key`))" );
+			execSQL("CREATE TABLE table1 (`key` INT, PRIMARY KEY(`key`))");
+			execSQL("CREATE TABLE table2 (`key` INT, PRIMARY KEY(`key`))");
 			execSQL("INSERT INTO table1 VALUES (1)");
 			execSQL("INSERT INTO table2 VALUES (1)");
 
 			string sql = "SELECT table1.key FROM table1 WHERE table1.key=1; " +
 				"SELECT table2.key FROM table2 WHERE table2.key=1";
-			DataSet ds = MySqlHelper.ExecuteDataset( conn, sql, null );
-			Assert.AreEqual( 2, ds.Tables.Count );
-			Assert.AreEqual( 1, ds.Tables[0].Rows.Count );
-			Assert.AreEqual( 1, ds.Tables[1].Rows.Count );
-			Assert.AreEqual( 1, ds.Tables[0].Rows[0]["key"] );
-			Assert.AreEqual( 1, ds.Tables[1].Rows[0]["key"] );
+			DataSet ds = MySqlHelper.ExecuteDataset(conn, sql, null);
+			Assert.AreEqual(2, ds.Tables.Count);
+			Assert.AreEqual(1, ds.Tables[0].Rows.Count);
+			Assert.AreEqual(1, ds.Tables[1].Rows.Count);
+			Assert.AreEqual(1, ds.Tables[0].Rows[0]["key"]);
+			Assert.AreEqual(1, ds.Tables[1].Rows[0]["key"]);
 		}
 
 		/// <summary>
 		/// Bug #8509 - MySqlDataAdapter.FillSchema does not interpret unsigned integer
 		/// </summary>
 		[Test]
-		public void AutoIncrementColumns() 
+		public void AutoIncrementColumns()
 		{
 			execSQL("DROP TABLE IF EXISTS test");
 			execSQL("CREATE TABLE test (id int(10) unsigned NOT NULL auto_increment primary key)");
@@ -376,7 +376,7 @@ namespace MySql.Data.MySqlClient.Tests
 			row["id"] = DBNull.Value;
 			ds.Tables[0].Rows.Add(row);
 
-			try 
+			try
 			{
 				da.Update(ds);
 			}
@@ -397,7 +397,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// </summary>
 		[Test]
 		[Category("4.1")]
-		public void Rollup() 
+		public void Rollup()
 		{
 			execSQL("DROP TABLE IF EXISTS test");
 			execSQL("CREATE TABLE test ( id INT NOT NULL, amount INT )");
@@ -418,13 +418,13 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #8514  	CURRENT_TIMESTAMP default not respected
 		/// </summary>
 		[Test]
-        [Category("NotWorking")]
-		public void DefaultValues() 
+		[Category("NotWorking")]
+		public void DefaultValues()
 		{
 			execSQL("DROP TABLE IF EXISTS test");
 			execSQL("CREATE TABLE test (id int, name VARCHAR(20) NOT NULL DEFAULT 'abc', " +
-				    "dt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)");
-			
+					 "dt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)");
+
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
 			MySqlCommand insCmd = new MySqlCommand("INSERT INTO test VALUES (?id, ?name, ?dt)", conn);
 			insCmd.Parameters.Add("?id", MySqlDbType.Int32, 0, "id");
@@ -436,11 +436,11 @@ namespace MySql.Data.MySqlClient.Tests
 
 			//da.FillSchema(ds, SchemaType.Source);//, "test");
 			da.MissingSchemaAction = MissingSchemaAction.AddWithKey;
-			try 
+			try
 			{
 				da.Fill(dt);
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				Console.WriteLine(ex.Message);
 			}
@@ -459,9 +459,9 @@ namespace MySql.Data.MySqlClient.Tests
 			da.Update(dt);
 
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
-			try 
+			try
 			{
-				using (MySqlDataReader reader = cmd.ExecuteReader()) 
+				using (MySqlDataReader reader = cmd.ExecuteReader())
 				{
 					Assert.IsTrue(reader.Read());
 					Assert.AreEqual(1, reader["id"]);
@@ -474,108 +474,108 @@ namespace MySql.Data.MySqlClient.Tests
 					Assert.IsFalse(reader.Read());
 				}
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				Assert.Fail(ex.Message);
 			}
 		}
 
-        /// <summary>
-        /// Bug #16307 @@Identity returning incorrect value 
-        /// </summary>
-        [Test]
-        public void Bug16307()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test (OrgNum int auto_increment, CallReportNum int, Stamp varchar(50), " +
-                "WasRealCall varchar(50), WasHangup varchar(50), primary key(orgnum))");
+		/// <summary>
+		/// Bug #16307 @@Identity returning incorrect value 
+		/// </summary>
+		[Test]
+		public void Bug16307()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (OrgNum int auto_increment, CallReportNum int, Stamp varchar(50), " +
+				 "WasRealCall varchar(50), WasHangup varchar(50), primary key(orgnum))");
 
-            string strSQL = "INSERT INTO test(OrgNum, CallReportNum, Stamp, WasRealCall, WasHangup) " +
-                "VALUES (?OrgNum, ?CallReportNum, ?Stamp, ?WasRealCall, ?WasHangup)";
+			string strSQL = "INSERT INTO test(OrgNum, CallReportNum, Stamp, WasRealCall, WasHangup) " +
+				 "VALUES (?OrgNum, ?CallReportNum, ?Stamp, ?WasRealCall, ?WasHangup)";
 
-            MySqlCommand cmd = new MySqlCommand(strSQL, conn);
-            MySqlParameterCollection pc = cmd.Parameters;
-        		
-            pc.Add("?OrgNum", MySqlDbType.Int32, 0, "OrgNum");
-            pc.Add("?CallReportNum", MySqlDbType.Int32, 0, "CallReportNum");
-            pc.Add("?Stamp", MySqlDbType.VarChar, 0, "Stamp");
-            pc.Add("?WasRealCall", MySqlDbType.VarChar, 0, "WasRealCall");
-            pc.Add("?WasHangup", MySqlDbType.VarChar, 0, "WasHangup");
+			MySqlCommand cmd = new MySqlCommand(strSQL, conn);
+			MySqlParameterCollection pc = cmd.Parameters;
 
-            MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
-            da.InsertCommand = cmd;
+			pc.Add("?OrgNum", MySqlDbType.Int32, 0, "OrgNum");
+			pc.Add("?CallReportNum", MySqlDbType.Int32, 0, "CallReportNum");
+			pc.Add("?Stamp", MySqlDbType.VarChar, 0, "Stamp");
+			pc.Add("?WasRealCall", MySqlDbType.VarChar, 0, "WasRealCall");
+			pc.Add("?WasHangup", MySqlDbType.VarChar, 0, "WasHangup");
 
-            DataSet ds = new DataSet();
-            da.Fill(ds);
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+			da.InsertCommand = cmd;
 
-            DataRow row = ds.Tables[0].NewRow();
-            row["CallReportNum"] = 1;
-            row["Stamp"] = "stamp";
-            row["WasRealCall"] = "yes";
-            row["WasHangup"] = "no";
-            ds.Tables[0].Rows.Add(row);
+			DataSet ds = new DataSet();
+			da.Fill(ds);
 
-            da.Update(ds.Tables[0]);
+			DataRow row = ds.Tables[0].NewRow();
+			row["CallReportNum"] = 1;
+			row["Stamp"] = "stamp";
+			row["WasRealCall"] = "yes";
+			row["WasHangup"] = "no";
+			ds.Tables[0].Rows.Add(row);
 
-            strSQL = "SELECT @@IDENTITY AS 'Identity';";
-            MySqlCommand cmd2 = new MySqlCommand(strSQL, conn);
-            MySqlDataReader reader = null;
-            try
-            {
-                reader = cmd2.ExecuteReader();
-                reader.Read();
-                int intCallNum = Int32.Parse(reader.GetValue(0).ToString());
-                Assert.AreEqual(1, intCallNum);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                if (reader != null)
-                    reader.Close();
-            }
-        }
-        
-        /// <summary>
-        /// Bug #8131 Data Adapter doesn't close connection 
-        /// </summary>
-        [Test]
-        public void QuietOpenAndClose()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test (id INT, PRIMARY KEY(id))");
-            execSQL("INSERT INTO test VALUES(1)");
+			da.Update(ds.Tables[0]);
 
-            try
-            {
-                MySqlConnection c = new MySqlConnection(GetConnectionString(true));
-                MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", c);
-                MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
-                Assert.IsTrue(c.State == ConnectionState.Closed);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                Assert.IsTrue(c.State == ConnectionState.Closed);
-                Assert.AreEqual(1, dt.Rows.Count);
+			strSQL = "SELECT @@IDENTITY AS 'Identity';";
+			MySqlCommand cmd2 = new MySqlCommand(strSQL, conn);
+			MySqlDataReader reader = null;
+			try
+			{
+				reader = cmd2.ExecuteReader();
+				reader.Read();
+				int intCallNum = Int32.Parse(reader.GetValue(0).ToString());
+				Assert.AreEqual(1, intCallNum);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				if (reader != null)
+					reader.Close();
+			}
+		}
 
-                dt.Rows[0][0] = 2;
-                DataRow[] rows = new DataRow[1];
-                rows[0] = dt.Rows[0];
-                da.Update(dt);
-                Assert.IsTrue(c.State == ConnectionState.Closed);
+		/// <summary>
+		/// Bug #8131 Data Adapter doesn't close connection 
+		/// </summary>
+		[Test]
+		public void QuietOpenAndClose()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (id INT, PRIMARY KEY(id))");
+			execSQL("INSERT INTO test VALUES(1)");
 
-                dt.Clear();
-                c.Open();
-                Assert.IsTrue(c.State == ConnectionState.Open);
-                da.Fill(dt);
-                Assert.IsTrue(c.State == ConnectionState.Open);
-                Assert.AreEqual(1, dt.Rows.Count);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-        }
+			try
+			{
+				MySqlConnection c = new MySqlConnection(GetConnectionString(true));
+				MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", c);
+				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+				Assert.IsTrue(c.State == ConnectionState.Closed);
+				DataTable dt = new DataTable();
+				da.Fill(dt);
+				Assert.IsTrue(c.State == ConnectionState.Closed);
+				Assert.AreEqual(1, dt.Rows.Count);
+
+				dt.Rows[0][0] = 2;
+				DataRow[] rows = new DataRow[1];
+				rows[0] = dt.Rows[0];
+				da.Update(dt);
+				Assert.IsTrue(c.State == ConnectionState.Closed);
+
+				dt.Clear();
+				c.Open();
+				Assert.IsTrue(c.State == ConnectionState.Open);
+				da.Fill(dt);
+				Assert.IsTrue(c.State == ConnectionState.Open);
+				Assert.AreEqual(1, dt.Rows.Count);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
 	}
 }

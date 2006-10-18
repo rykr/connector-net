@@ -29,9 +29,9 @@ namespace MySql.Data.MySqlClient
 	/// </summary>
 	internal sealed class MySqlPoolManager
 	{
-		private static Hashtable	pools;
+		private static Hashtable pools;
 
-		public MySqlPoolManager() 
+		public MySqlPoolManager()
 		{
 		}
 
@@ -43,7 +43,7 @@ namespace MySql.Data.MySqlClient
 			pools = new Hashtable();
 		}
 
-		public static MySqlPool GetPool(MySqlConnectionString settings) 
+		public static MySqlPool GetPool(MySqlConnectionString settings)
 		{
 			// make sure the manager is initialized
 			if (MySqlPoolManager.pools == null)
@@ -51,15 +51,15 @@ namespace MySql.Data.MySqlClient
 
 			string text = settings.GetConnectionString(true);
 
-			lock( pools.SyncRoot ) 
+			lock (pools.SyncRoot)
 			{
 				MySqlPool pool;
-				if (!pools.Contains( text )) 
+				if (!pools.Contains(text))
 				{
-					pool = new MySqlPool( settings );
-					pools.Add( text, pool );
+					pool = new MySqlPool(settings);
+					pools.Add(text, pool);
 				}
-				else 
+				else
 				{
 					pool = (pools[text] as MySqlPool);
 					pool.Settings = settings;
@@ -69,15 +69,15 @@ namespace MySql.Data.MySqlClient
 			}
 		}
 
-		public static void ReleaseConnection( Driver driver )
+		public static void ReleaseConnection(Driver driver)
 		{
-			lock (pools.SyncRoot) 
+			lock (pools.SyncRoot)
 			{
 				string key = driver.Settings.GetConnectionString(true);
-				MySqlPool pool = (MySqlPool)pools[ key ];
+				MySqlPool pool = (MySqlPool)pools[key];
 				if (pool == null)
 					throw new MySqlException("Pooling exception: Unable to find original pool for connection");
-				pool.ReleaseConnection( driver );
+				pool.ReleaseConnection(driver);
 			}
 		}
 	}

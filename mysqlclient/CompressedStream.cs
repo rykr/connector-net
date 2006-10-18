@@ -32,43 +32,43 @@ namespace MySql.Data.MySqlClient
 	internal class CompressedStream : Stream
 	{
 		// writing fields
-		private	Stream					baseStream;
-		private MemoryStream			cache;
+		private Stream baseStream;
+		private MemoryStream cache;
 
 		// reading fields
-        private byte[] localByte;
-        private int inPos;
-        private int maxInPos;
-        private ZInputStream zInStream;
+		private byte[] localByte;
+		private int inPos;
+		private int maxInPos;
+		private ZInputStream zInStream;
 
 		public CompressedStream(Stream baseStream)
 		{
 			this.baseStream = baseStream;
-            localByte = new byte[1];
+			localByte = new byte[1];
 			cache = new MemoryStream();
 		}
 
 		#region Properties
 
 		//TODO: remove comment
-/*		public Stream BaseStream 
-		{
-			get { return baseStream; }
-		}
-*/
+		/*		public Stream BaseStream 
+				{
+					get { return baseStream; }
+				}
+		*/
 		public override bool CanRead
 		{
-			get	{ return baseStream.CanRead; }
+			get { return baseStream.CanRead; }
 		}
 
 		public override bool CanWrite
 		{
-			get	{ return baseStream.CanWrite; }
+			get { return baseStream.CanWrite; }
 		}
 
 		public override bool CanSeek
 		{
-			get	{ return baseStream.CanSeek; }
+			get { return baseStream.CanSeek; }
 		}
 
 		public override long Length
@@ -78,8 +78,8 @@ namespace MySql.Data.MySqlClient
 
 		public override long Position
 		{
-			get	{ return baseStream.Position; }
-			set	{ baseStream.Position = value; }
+			get { return baseStream.Position; }
+			set { baseStream.Position = value; }
 		}
 
 		#endregion
@@ -87,7 +87,7 @@ namespace MySql.Data.MySqlClient
 		public override void Close()
 		{
 			baseStream.Close();
-			base.Close ();
+			base.Close();
 		}
 
 		public override void SetLength(long value)
@@ -97,8 +97,8 @@ namespace MySql.Data.MySqlClient
 
 		public override int ReadByte()
 		{
-            Read(localByte, 0, 1);
-            return localByte[0];
+			Read(localByte, 0, 1);
+			return localByte[0];
 		}
 
 		public override int Read(byte[] buffer, int offset, int count)
@@ -110,22 +110,22 @@ namespace MySql.Data.MySqlClient
 			if ((offset + count) > buffer.Length)
 				throw new ArgumentException(Resources.BufferNotLargeEnough, "buffer");
 
-            if (inPos == maxInPos)
-            {
-                PrepareNextPacket();
-            }
-            int countToRead = Math.Min(count, maxInPos-inPos);
-            int countRead = 0;
-            if (zInStream != null)
-                countRead = zInStream.read(buffer, offset, countToRead);
-            else
-                countRead = baseStream.Read(buffer, offset, countToRead);
-            inPos += countRead;
-            return countRead;
+			if (inPos == maxInPos)
+			{
+				PrepareNextPacket();
+			}
+			int countToRead = Math.Min(count, maxInPos - inPos);
+			int countRead = 0;
+			if (zInStream != null)
+				countRead = zInStream.read(buffer, offset, countToRead);
+			else
+				countRead = baseStream.Read(buffer, offset, countToRead);
+			inPos += countRead;
+			return countRead;
 		}
 
-        private void PrepareNextPacket()
-        {
+		private void PrepareNextPacket()
+		{
 			// read off the uncompressed and compressed lengths
 			byte b1 = (byte)baseStream.ReadByte();
 			byte b2 = (byte)baseStream.ReadByte();
@@ -133,100 +133,100 @@ namespace MySql.Data.MySqlClient
 			int compressedLength = b1 + (b2 << 8) + (b3 << 16);
 
 			baseStream.ReadByte();  // seq
-			int unCompressedLength = baseStream.ReadByte() + (baseStream.ReadByte() << 8) + 
+			int unCompressedLength = baseStream.ReadByte() + (baseStream.ReadByte() << 8) +
 				(baseStream.ReadByte() << 16);
 
-            if (unCompressedLength == 0)
-            {
-                unCompressedLength = compressedLength;
-                zInStream = null;
-            }
-            else
-            {
-                zInStream = new ZInputStream(baseStream);
-                zInStream.maxInput = compressedLength;
-            }
+			if (unCompressedLength == 0)
+			{
+				unCompressedLength = compressedLength;
+				zInStream = null;
+			}
+			else
+			{
+				zInStream = new ZInputStream(baseStream);
+				zInStream.maxInput = compressedLength;
+			}
 
-            inPos = 0;
-            maxInPos = unCompressedLength;
-        }
+			inPos = 0;
+			maxInPos = unCompressedLength;
+		}
 
-        private MemoryStream CompressCache()
-        {
-            // small arrays almost never yeild a benefit from compressing
-            if (cache.Length < 50)
-                return null;
-
-            byte[] cacheBytes = cache.GetBuffer();
-            MemoryStream compressedBuffer = new MemoryStream();
-            ZOutputStream zos = new ZOutputStream(compressedBuffer, zlibConst.Z_DEFAULT_COMPRESSION);
-            zos.Write(cacheBytes, 0, (int)cache.Length);
-            zos.finish();
-
-            // if the compression hasn't helped, then just return null
-            if (compressedBuffer.Length >= cache.Length)
-                return null;
-            return compressedBuffer;
-        }
-
-        private void CompressAndSendCache()
-        {
-            long compressedLength = 0, uncompressedLength = 0;
-
-            // we need to save the sequence byte that is written
-            byte[] cacheBuffer = cache.GetBuffer();
-            byte seq = cacheBuffer[3];
-            cacheBuffer[3] = 0;
-
-            // first we compress our current cache
-            MemoryStream compressedBuffer = CompressCache();
-
-            // now we set our compressed and uncompressed lengths
-            // based on if our compression is going to help or not
-            if (compressedBuffer == null)
-                compressedLength = cache.Length;
-            else
-            {
-                compressedLength = compressedBuffer.Length;
-                uncompressedLength = cache.Length;
-            }
-
-            baseStream.WriteByte((byte)(compressedLength & 0xff));
-            baseStream.WriteByte((byte)((compressedLength >> 8) & 0xff));
-            baseStream.WriteByte((byte)((compressedLength >> 16) & 0Xff));
-            baseStream.WriteByte(seq);
-            baseStream.WriteByte((byte)(uncompressedLength & 0xff));
-            baseStream.WriteByte((byte)((uncompressedLength >> 8) & 0xff));
-            baseStream.WriteByte((byte)((uncompressedLength >> 16) & 0Xff));
-
-            if (compressedBuffer == null)
-                baseStream.Write(cacheBuffer, 0, (int)cache.Length);
-            else
-            {
-                byte[] compressedBytes = compressedBuffer.GetBuffer();
-                baseStream.Write(compressedBytes, 0, (int)compressedBuffer.Length);
-            }
-
-            baseStream.Flush();
-
-            cache.SetLength(0);
-        }
-
-		public override void Flush() 
+		private MemoryStream CompressCache()
 		{
-            if (!InputDone()) return;
+			// small arrays almost never yeild a benefit from compressing
+			if (cache.Length < 50)
+				return null;
 
-            CompressAndSendCache();
-        }
+			byte[] cacheBytes = cache.GetBuffer();
+			MemoryStream compressedBuffer = new MemoryStream();
+			ZOutputStream zos = new ZOutputStream(compressedBuffer, zlibConst.Z_DEFAULT_COMPRESSION);
+			zos.Write(cacheBytes, 0, (int)cache.Length);
+			zos.finish();
 
-		private bool InputDone() 
+			// if the compression hasn't helped, then just return null
+			if (compressedBuffer.Length >= cache.Length)
+				return null;
+			return compressedBuffer;
+		}
+
+		private void CompressAndSendCache()
 		{
-            // if we have not done so yet, see if we can calculate how many bytes we are expecting
-            if (cache.Length < 4) return false;
-            byte[] buf = cache.GetBuffer();
-            int expectedLen = buf[0] + (buf[1] << 8) + (buf[2] << 16);
-            if (cache.Length < (expectedLen + 4)) return false;
-            return true;
+			long compressedLength = 0, uncompressedLength = 0;
+
+			// we need to save the sequence byte that is written
+			byte[] cacheBuffer = cache.GetBuffer();
+			byte seq = cacheBuffer[3];
+			cacheBuffer[3] = 0;
+
+			// first we compress our current cache
+			MemoryStream compressedBuffer = CompressCache();
+
+			// now we set our compressed and uncompressed lengths
+			// based on if our compression is going to help or not
+			if (compressedBuffer == null)
+				compressedLength = cache.Length;
+			else
+			{
+				compressedLength = compressedBuffer.Length;
+				uncompressedLength = cache.Length;
+			}
+
+			baseStream.WriteByte((byte)(compressedLength & 0xff));
+			baseStream.WriteByte((byte)((compressedLength >> 8) & 0xff));
+			baseStream.WriteByte((byte)((compressedLength >> 16) & 0Xff));
+			baseStream.WriteByte(seq);
+			baseStream.WriteByte((byte)(uncompressedLength & 0xff));
+			baseStream.WriteByte((byte)((uncompressedLength >> 8) & 0xff));
+			baseStream.WriteByte((byte)((uncompressedLength >> 16) & 0Xff));
+
+			if (compressedBuffer == null)
+				baseStream.Write(cacheBuffer, 0, (int)cache.Length);
+			else
+			{
+				byte[] compressedBytes = compressedBuffer.GetBuffer();
+				baseStream.Write(compressedBytes, 0, (int)compressedBuffer.Length);
+			}
+
+			baseStream.Flush();
+
+			cache.SetLength(0);
+		}
+
+		public override void Flush()
+		{
+			if (!InputDone()) return;
+
+			CompressAndSendCache();
+		}
+
+		private bool InputDone()
+		{
+			// if we have not done so yet, see if we can calculate how many bytes we are expecting
+			if (cache.Length < 4) return false;
+			byte[] buf = cache.GetBuffer();
+			int expectedLen = buf[0] + (buf[1] << 8) + (buf[2] << 16);
+			if (cache.Length < (expectedLen + 4)) return false;
+			return true;
 		}
 
 		public override void WriteByte(byte value)
@@ -237,13 +237,13 @@ namespace MySql.Data.MySqlClient
 
 		public override void Write(byte[] buffer, int offset, int count)
 		{
-            cache.Write(buffer, offset, count);
+			cache.Write(buffer, offset, count);
 			Flush();
 		}
 
 		public override long Seek(long offset, SeekOrigin origin)
 		{
-			return baseStream.Seek( offset, origin );
+			return baseStream.Seek(offset, origin);
 		}
 
 	}

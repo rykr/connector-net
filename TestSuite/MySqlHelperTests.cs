@@ -54,7 +54,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			MySqlDataReader reader = null;
 
-			try 
+			try
 			{
 				reader = MySqlHelper.ExecuteReader(this.GetConnectionString(true),
 					"SELECT * FROM mysql.host WHERE TIME('2005/6/21')");
@@ -63,7 +63,7 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null)
 					reader.Close();

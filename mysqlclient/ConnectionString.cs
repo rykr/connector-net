@@ -26,7 +26,7 @@ using MySql.Data.Common;
 
 namespace MySql.Data.MySqlClient
 {
-	internal enum ConnectionProtocol 
+	internal enum ConnectionProtocol
 	{
 		Sockets, NamedPipe, UnixSocket, SharedMemory
 	}
@@ -36,20 +36,22 @@ namespace MySql.Data.MySqlClient
 	/// </summary>
 	internal sealed class MySqlConnectionString : DBConnectionString
 	{
-		private Hashtable	defaults;
+		private Hashtable defaults;
 
-		public MySqlConnectionString() : base()
+		public MySqlConnectionString()
+			: base()
 		{
 		}
 
-		public MySqlConnectionString(string connectString) : this()
+		public MySqlConnectionString(string connectString)
+			: this()
 		{
 			SetConnectionString(connectString);
 		}
 
 		#region Server Properties
 
-/*		public string Name 
+		/*		public string Name 
 		{
 			get { return connectionName; }
 			set { connectionName = value; }
@@ -58,7 +60,7 @@ namespace MySql.Data.MySqlClient
 
 		[Category("Connection")]
 		[Description("The name or IP address of the server to use")]
-		public string Server 
+		public string Server
 		{
 			get { return GetString("host"); }
 		}
@@ -66,7 +68,7 @@ namespace MySql.Data.MySqlClient
 		[Category("Connection")]
 		[Description("Port to use when connecting with sockets")]
 		[DefaultValue(3306)]
-		public int Port 
+		public int Port
 		{
 			get { return GetInt("port"); }
 		}
@@ -81,7 +83,7 @@ namespace MySql.Data.MySqlClient
 
 		[Category("Connection")]
 		[Description("Name of pipe to use when connecting with named pipes (Win32 only)")]
-		public string PipeName 
+		public string PipeName
 		{
 			get { return GetString("pipeName"); }
 		}
@@ -89,7 +91,7 @@ namespace MySql.Data.MySqlClient
 		[Category("Connection")]
 		[Description("Should the connection ues compression")]
 		[DefaultValue(false)]
-		public bool UseCompression 
+		public bool UseCompression
 		{
 			get { return GetBool("compress"); }
 		}
@@ -114,7 +116,7 @@ namespace MySql.Data.MySqlClient
 		[Category("Connection")]
 		[Description("Allows execution of multiple SQL commands in a single statement")]
 		[DefaultValue(true)]
-		public bool AllowBatch 
+		public bool AllowBatch
 		{
 			get { return GetBool("allow batch"); }
 		}
@@ -130,7 +132,7 @@ namespace MySql.Data.MySqlClient
 		[Category("Connection")]
 		[Description("Name of the shared memory object to use")]
 		[DefaultValue("MYSQL")]
-		public string SharedMemoryName 
+		public string SharedMemoryName
 		{
 			get { return GetString("memname"); }
 		}
@@ -138,7 +140,7 @@ namespace MySql.Data.MySqlClient
 		[Category("Connection")]
 		[Description("Allows the use of old style @ syntax for parameters")]
 		[DefaultValue(false)]
-		public bool UseOldSyntax 
+		public bool UseOldSyntax
 		{
 			get { return GetBool("oldsyntax"); }
 		}
@@ -148,31 +150,31 @@ namespace MySql.Data.MySqlClient
 
 		[Category("Authentication")]
 		[Description("The username to connect as")]
-		public string UserId 
+		public string UserId
 		{
 			get { return GetString("user id"); }
 		}
 
 		[Category("Authentication")]
 		[Description("The password to use for authentication")]
-		public string Password 
+		public string Password
 		{
 			get { return GetString("password"); }
 		}
 
-/*		[Category("Authentication")]
-		[Description("Should the connection use SSL.  This currently has no effect.")]
-		[DefaultValue(false)]
-		public bool UseSSL
-		{
-			get { return GetBool("use ssl"); }
-//			set { keyValues["use ssl"] = value; }
-		}
-*/
+		/*		[Category("Authentication")]
+				[Description("Should the connection use SSL.  This currently has no effect.")]
+				[DefaultValue(false)]
+				public bool UseSSL
+				{
+					get { return GetBool("use ssl"); }
+		//			set { keyValues["use ssl"] = value; }
+				}
+		*/
 		[Category("Authentication")]
 		[Description("Show user password in connection string")]
 		[DefaultValue(false)]
-		public bool PersistSecurityInfo 
+		public bool PersistSecurityInfo
 		{
 			get { return GetBool("persist security info"); }
 		}
@@ -183,7 +185,7 @@ namespace MySql.Data.MySqlClient
 		[Category("Pooling")]
 		[Description("Should the connection support pooling")]
 		[DefaultValue(true)]
-		public bool Pooling 
+		public bool Pooling
 		{
 			get { return GetBool("pooling"); }
 		}
@@ -191,7 +193,7 @@ namespace MySql.Data.MySqlClient
 		[Category("Pooling")]
 		[Description("Minimum number of connections to have in this pool")]
 		[DefaultValue(0)]
-		public int MinPoolSize 
+		public int MinPoolSize
 		{
 			get { return GetInt("min pool size"); }
 		}
@@ -199,7 +201,7 @@ namespace MySql.Data.MySqlClient
 		[Category("Pooling")]
 		[Description("Maximum number of connections to have in this pool")]
 		[DefaultValue(100)]
-		public int MaxPoolSize 
+		public int MaxPoolSize
 		{
 			get { return GetInt("max pool size"); }
 		}
@@ -207,7 +209,7 @@ namespace MySql.Data.MySqlClient
 		[Category("Pooling")]
 		[Description("Maximum number of seconds a connection should live.  This is checked when a connection is returned to the pool.")]
 		[DefaultValue(0)]
-		public int ConnectionLifetime 
+		public int ConnectionLifetime
 		{
 			get { return GetInt("connect lifetime"); }
 		}
@@ -228,7 +230,7 @@ namespace MySql.Data.MySqlClient
 		[Category("Other")]
 		[Description("Should zero datetimes be supported")]
 		[DefaultValue(false)]
-		public bool AllowZeroDateTime 
+		public bool AllowZeroDateTime
 		{
 			get { return GetBool("allowzerodatetime"); }
 		}
@@ -236,7 +238,7 @@ namespace MySql.Data.MySqlClient
 		[Category("Other")]
 		[Description("Should illegal datetime values be converted to DateTime.MinValue")]
 		[DefaultValue(false)]
-		public bool ConvertZeroDateTime 
+		public bool ConvertZeroDateTime
 		{
 			get { return GetBool("convertzerodatetime"); }
 		}
@@ -244,15 +246,15 @@ namespace MySql.Data.MySqlClient
 		[Category("Other")]
 		[Description("Character set this connection should use")]
 		[DefaultValue(null)]
-		public string CharacterSet 
+		public string CharacterSet
 		{
 			get { return GetString("charset"); }
 		}
 
-        public int ProcedureCacheSize
-        {
-            get { return GetInt("procedure cache size"); }
-        }
+		public int ProcedureCacheSize
+		{
+			get { return GetInt("procedure cache size"); }
+		}
 
 		#endregion
 
@@ -266,7 +268,7 @@ namespace MySql.Data.MySqlClient
 			if (connectString == null) return String.Empty;
 
 			string connStr = connectString;
-			if (! PersistSecurityInfo && !includePass)
+			if (!PersistSecurityInfo && !includePass)
 				connStr = RemovePassword(connStr);
 
 			return connStr;
@@ -290,8 +292,8 @@ namespace MySql.Data.MySqlClient
 			Hashtable values = (Hashtable)keyValues.Clone();
 			Hashtable defaultValues = GetDefaultValues();
 
-			if (!PersistSecurityInfo && values.Contains("password") )
-				values.Remove( "password" );
+			if (!PersistSecurityInfo && values.Contains("password"))
+				values.Remove("password");
 
 			// we always return the server key.  It's not needed but 
 			// seems weird for it not to be there.
@@ -301,7 +303,7 @@ namespace MySql.Data.MySqlClient
 			foreach (string key in values.Keys)
 			{
 				if (values[key] != null && defaultValues[key] != null &&
-					!values[key].Equals( defaultValues[key]))
+					!values[key].Equals(defaultValues[key]))
 					cStr += key + "=" + values[key] + ";";
 			}
 
@@ -313,7 +315,7 @@ namespace MySql.Data.MySqlClient
 			defaults = base.GetDefaultValues();
 			if (defaults == null)
 			{
-				defaults = new Hashtable(new CaseInsensitiveHashCodeProvider(), 
+				defaults = new Hashtable(new CaseInsensitiveHashCodeProvider(),
 					new CaseInsensitiveComparer());
 				defaults["host"] = String.Empty;
 				defaults["connect lifetime"] = 0;
@@ -338,7 +340,7 @@ namespace MySql.Data.MySqlClient
 				defaults["allowzerodatetime"] = false;
 				defaults["convertzerodatetime"] = false;
 				defaults["reset_pooled_conn"] = true;
-                defaults["procedure cache size"] = 25;
+				defaults["procedure cache size"] = 25;
 			}
 			return (Hashtable)defaults.Clone();
 		}
@@ -351,9 +353,9 @@ namespace MySql.Data.MySqlClient
 
 			switch (lowerCaseKey)
 			{
-                case "procedure cache size":
-                    hash["procedure cache size"] = Int32.Parse(lowerCaseValue);
-                    break;
+				case "procedure cache size":
+					hash["procedure cache size"] = Int32.Parse(lowerCaseValue);
+					break;
 
 				case "connection reset":
 					hash["reset_pooled_conn"] = boolVal;
@@ -413,7 +415,7 @@ namespace MySql.Data.MySqlClient
 					break;
 
 				default:
-					if (! base.ConnectionParameterParsed(hash, key, value))
+					if (!base.ConnectionParameterParsed(hash, key, value))
 						throw new ArgumentException(Resources.KeywordNotSupported, key);
 					break;
 			}

@@ -33,9 +33,9 @@ namespace MySql.Data.MySqlClient
 	/// </summary>
 	internal class StoredProcedure
 	{
-		private string			hash;
-		private MySqlConnection	connection;
-		private string			outSelect;
+		private string hash;
+		private MySqlConnection connection;
+		private string outSelect;
 
 		public StoredProcedure(MySqlConnection conn)
 		{
@@ -57,9 +57,9 @@ namespace MySql.Data.MySqlClient
 			int dotIndex = spName.IndexOf('.');
 			string schema = spName.Substring(0, dotIndex);
 			if (schema == null || schema == String.Empty)
-				 schema = "database()";
+				schema = "database()";
 			else
-				 schema = String.Format("'{0}'", schema);
+				schema = String.Format("'{0}'", schema);
 			string name = spName.Substring(dotIndex + 1);
 
 			MySqlCommand cmd = new MySqlCommand(String.Format("SELECT ROUTINE_SCHEMA, ROUTINE_TYPE FROM " +
@@ -68,21 +68,21 @@ namespace MySql.Data.MySqlClient
 			MySqlDataReader reader = null;
 			try
 			{
-				 reader = cmd.ExecuteReader();
-				 reader.Read();
-				 object oSchema = reader.GetValue(0);
-				 if (schema == "database()")
-					  spName = oSchema.ToString() + "." + name;
-				 return reader.GetString(1);
+				reader = cmd.ExecuteReader();
+				reader.Read();
+				object oSchema = reader.GetValue(0);
+				if (schema == "database()")
+					spName = oSchema.ToString() + "." + name;
+				return reader.GetString(1);
 			}
 			catch (Exception)
 			{
-				 throw;
+				throw;
 			}
 			finally
 			{
-				 if (reader != null)
-					  reader.Close();
+				if (reader != null)
+					reader.Close();
 			}
 		}
 
@@ -92,28 +92,28 @@ namespace MySql.Data.MySqlClient
 
 			string type = GetRoutineType(ref spName);
 			if (type == null)
-				 throw new MySqlException("Procedure or function '" + spName + "' does not exist.");
+				throw new MySqlException("Procedure or function '" + spName + "' does not exist.");
 
 			MySqlDataReader reader = null;
 			try
 			{
-				 MySqlCommand cmd = new MySqlCommand(String.Format("SHOW CREATE " +
-					  "{0} {1}", type, spName), connection);
-				 isFunc = type.ToLower(CultureInfo.InvariantCulture) == "function";
-				 cmd.CommandText = String.Format("SHOW CREATE {0} {1}", type, spName);
-				 reader = cmd.ExecuteReader();
-				 reader.Read();
-				 sql_mode = reader.GetString(1);
-				 return reader.GetString(2);
+				MySqlCommand cmd = new MySqlCommand(String.Format("SHOW CREATE " +
+					 "{0} {1}", type, spName), connection);
+				isFunc = type.ToLower(CultureInfo.InvariantCulture) == "function";
+				cmd.CommandText = String.Format("SHOW CREATE {0} {1}", type, spName);
+				reader = cmd.ExecuteReader();
+				reader.Read();
+				sql_mode = reader.GetString(1);
+				return reader.GetString(2);
 			}
 			catch (Exception)
 			{
-				 throw;
+				throw;
 			}
 			finally
 			{
-				 if (reader != null)
-					  reader.Close();
+				if (reader != null)
+					reader.Close();
 			}
 		}
 
@@ -121,9 +121,9 @@ namespace MySql.Data.MySqlClient
 		{
 			char c = parameter[0];
 			if (c == '`' || c == '\'' || c == '"')
-				parameter = parameter.Substring(1, parameter.Length-2);
+				parameter = parameter.Substring(1, parameter.Length - 2);
 			if (stripMarker && parameter[0] == connection.ParameterMarker)
-					parameter = parameter.Substring(1);
+				parameter = parameter.Substring(1);
 
 			return parameter;
 		}
@@ -138,9 +138,9 @@ namespace MySql.Data.MySqlClient
 			{
 				if (c == ')')
 				{
-				  if (left)
+					if (left)
 						left = false;
-				  else if (quote == Char.MinValue)
+					else if (quote == Char.MinValue)
 						break;
 				}
 				else if (c == '(' && quote == Char.MinValue)
@@ -150,9 +150,9 @@ namespace MySql.Data.MySqlClient
 					int quoteIndex = quotePattern.IndexOf(c);
 					if (quoteIndex > -1)
 						if (quote == Char.MinValue)
-							 quote = c;
+							quote = c;
 						else if (quote == c)
-							 quote = Char.MinValue;
+							quote = Char.MinValue;
 				}
 				pos++;
 			}
@@ -181,12 +181,12 @@ namespace MySql.Data.MySqlClient
 			ArrayList parmArray = new ArrayList();
 			string[] paramDefs = cs.Split(parms, ",");
 			if (paramDefs.Length > 0)
-				 foreach (string def in paramDefs)
-					  parmArray.Add(ParseParameter(def, cs, sqlMode));
+				foreach (string def in paramDefs)
+					parmArray.Add(ParseParameter(def, cs, sqlMode));
 
-			body = body.Substring(rightParen+1).Trim().ToLower(CultureInfo.InvariantCulture);
+			body = body.Substring(rightParen + 1).Trim().ToLower(CultureInfo.InvariantCulture);
 			if (body.StartsWith("returns"))
-				 parmArray.Add(ParseParameter(body, cs, sqlMode));
+				parmArray.Add(ParseParameter(body, cs, sqlMode));
 			return parmArray;
 		}
 
@@ -243,7 +243,7 @@ namespace MySql.Data.MySqlClient
 		private string StripParameterName(string name)
 		{
 			if (name[0] == connection.ParameterMarker)
-				return name.Remove(0,1);
+				return name.Remove(0, 1);
 			return name;
 		}
 
@@ -256,8 +256,8 @@ namespace MySql.Data.MySqlClient
 		{
 			MySqlParameter returnParameter = GetReturnParameter(cmd);
 
-         try
-         {
+			try
+			{
 				ArrayList parameters = connection.ProcedureCache.GetProcedure(
 				connection, cmd.CommandText);
 
@@ -310,7 +310,7 @@ namespace MySql.Data.MySqlClient
 			catch (Exception ex)
 			{
 				throw new MySqlException("Exception during execution of '" + cmd.CommandText + "': " + ex.Message, ex);
-         }
+			}
 		}
 
 		public void UpdateParameters(MySqlParameterCollection parameters)
@@ -322,18 +322,18 @@ namespace MySql.Data.MySqlClient
 			MySqlCommand cmd = new MySqlCommand("SELECT " + outSelect, connection);
 			MySqlDataReader reader = cmd.ExecuteReader();
 
-			for (int i=0; i < reader.FieldCount; i++) 
+			for (int i = 0; i < reader.FieldCount; i++)
 			{
 				string fieldName = reader.GetName(i);
-				fieldName = marker + fieldName.Remove(0, hash.Length+1);
+				fieldName = marker + fieldName.Remove(0, hash.Length + 1);
 				reader.CurrentResult[i] = parameters[fieldName].GetValueObject();
 			}
 
 			reader.Read();
-			for (int i=0; i < reader.FieldCount; i++)
+			for (int i = 0; i < reader.FieldCount; i++)
 			{
 				string fieldName = reader.GetName(i);
-				fieldName = marker + fieldName.Remove(0, hash.Length+1);
+				fieldName = marker + fieldName.Remove(0, hash.Length + 1);
 				parameters[fieldName].Value = reader.GetValue(i);
 			}
 			reader.Close();
@@ -347,15 +347,15 @@ namespace MySql.Data.MySqlClient
 			type = type.ToLower(CultureInfo.InvariantCulture).Trim();
 			int start = type.IndexOf("(");
 			if (start != -1)
-				 end = type.IndexOf(')', start + 1);
+				end = type.IndexOf(')', start + 1);
 			else
-				 end = start = type.IndexOf(' ');
+				end = start = type.IndexOf(' ');
 			if (start == -1)
-				 start = type.Length;
+				start = type.Length;
 
 			typeName = type.Substring(0, start);
 			if (end != -1)
-				 flags = type.Substring(end + 1);
+				flags = type.Substring(end + 1);
 			bool unsigned = flags.IndexOf("unsigned") != -1;
 			bool real_as_float = sql_mode.IndexOf("REAL_AS_FLOAT") != -1;
 
@@ -363,11 +363,11 @@ namespace MySql.Data.MySqlClient
 
 			if (end > start && p.MySqlDbType != MySqlDbType.Set)
 			{
-				 size = type.Substring(start+1, end-(start+1));
-				 string[] parts = size.Split(new char[] { ',' } );
-				 p.Size = p.Precision = Byte.Parse(parts[0]);
-				 if (parts.Length > 1)
-					  p.Scale = Byte.Parse(parts[1]);
+				size = type.Substring(start + 1, end - (start + 1));
+				string[] parts = size.Split(new char[] { ',' });
+				p.Size = p.Precision = Byte.Parse(parts[0]);
+				if (parts.Length > 1)
+					p.Scale = Byte.Parse(parts[1]);
 			}
 		}
 
@@ -380,10 +380,10 @@ namespace MySql.Data.MySqlClient
 				case "date": return MySqlDbType.Date;
 				case "datetime": return MySqlDbType.Datetime;
 				case "numeric":
-				case "decimal": 
+				case "decimal":
 				case "dec":
 				case "fixed":
-					if (connection.driver.Version.isAtLeast(5,0,3))
+					if (connection.driver.Version.isAtLeast(5, 0, 3))
 						return MySqlDbType.NewDecimal;
 					else
 						return MySqlDbType.Decimal;
@@ -399,22 +399,22 @@ namespace MySql.Data.MySqlClient
 
 				case "tinyint":
 				case "bool":
-				case "boolean": 
+				case "boolean":
 					return MySqlDbType.Byte;
-				case "smallint": 
+				case "smallint":
 					return unsigned ? MySqlDbType.UInt16 : MySqlDbType.Int16;
-				case "mediumint": 
+				case "mediumint":
 					return unsigned ? MySqlDbType.UInt24 : MySqlDbType.Int24;
-				case "int" : 
+				case "int":
 				case "integer":
 					return unsigned ? MySqlDbType.UInt32 : MySqlDbType.Int32;
 				case "serial":
 					return MySqlDbType.UInt64;
-				case "bigint": 
+				case "bigint":
 					return unsigned ? MySqlDbType.UInt64 : MySqlDbType.Int64;
 				case "float": return MySqlDbType.Float;
 				case "double": return MySqlDbType.Double;
-				case "real": return 
+				case "real": return
 					 realAsFloat ? MySqlDbType.Float : MySqlDbType.Double;
 				case "blob":
 				case "text":

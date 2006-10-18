@@ -29,24 +29,24 @@ using MySql.Data.Common;
 namespace MySql.Data.MySqlClient
 {
 	/// <include file='docs/MySqlConnection.xml' path='docs/ClassSummary/*'/>
-	[System.Drawing.ToolboxBitmap( typeof(MySqlConnection), "MySqlClient.resources.connection.bmp")]
+	[System.Drawing.ToolboxBitmap(typeof(MySqlConnection), "MySqlClient.resources.connection.bmp")]
 	[System.ComponentModel.DesignerCategory("Code")]
 	[ToolboxItem(true)]
 	public sealed class MySqlConnection : Component, IDbConnection, IDisposable, ICloneable
 	{
-		internal ConnectionState			state;
-		internal Driver						driver;
-		private  MySqlDataReader			dataReader;
-		private  MySqlConnectionString		settings;
-		private  bool						hasBeenOpen;
-        private ProcedureCache procedureCache;
-        internal MySqlTransaction activeLegacyTransaction;
+		internal ConnectionState state;
+		internal Driver driver;
+		private MySqlDataReader dataReader;
+		private MySqlConnectionString settings;
+		private bool hasBeenOpen;
+		private ProcedureCache procedureCache;
+		internal MySqlTransaction activeLegacyTransaction;
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/StateChange/*'/>
-		public event StateChangeEventHandler		StateChange;
+		public event StateChangeEventHandler StateChange;
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/InfoMessage/*'/>
-		public event MySqlInfoMessageEventHandler	InfoMessage;
+		public event MySqlInfoMessageEventHandler InfoMessage;
 
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/DefaultCtor/*'/>
@@ -58,19 +58,20 @@ namespace MySql.Data.MySqlClient
 		}
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/Ctor1/*'/>
-		public MySqlConnection(string connectionString) : this()
+		public MySqlConnection(string connectionString)
+			: this()
 		{
 			ConnectionString = connectionString;
 		}
 
 		#region Interal Methods & Properties
 
-        internal ProcedureCache ProcedureCache
-        {
-            get { return procedureCache; }
-        }
+		internal ProcedureCache ProcedureCache
+		{
+			get { return procedureCache; }
+		}
 
-		internal MySqlConnectionString Settings 
+		internal MySqlConnectionString Settings
 		{
 			get { return settings; }
 		}
@@ -81,16 +82,16 @@ namespace MySql.Data.MySqlClient
 			set { dataReader = value; }
 		}
 
-		internal char ParameterMarker 
+		internal char ParameterMarker
 		{
 			get { if (settings.UseOldSyntax) return '@'; return '?'; }
 		}
 
-		internal void OnInfoMessage( MySqlInfoMessageEventArgs args ) 
+		internal void OnInfoMessage(MySqlInfoMessageEventArgs args)
 		{
-			if (InfoMessage != null) 
+			if (InfoMessage != null)
 			{
-				InfoMessage( this, args );
+				InfoMessage(this, args);
 			}
 		}
 
@@ -101,8 +102,8 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// Returns the id of the server thread this connection is executing on
 		/// </summary>
-		[Browsable(false)] 
-		public int ServerThread 
+		[Browsable(false)]
+		public int ServerThread
 		{
 			get { return driver.ThreadID; }
 		}
@@ -122,12 +123,12 @@ namespace MySql.Data.MySqlClient
 		{
 			get { return settings.ConnectionTimeout; }
 		}
-		
+
 		/// <include file='docs/MySqlConnection.xml' path='docs/Database/*'/>
 		[Browsable(true)]
 		public string Database
 		{
-			get	{ return settings.Database; }
+			get { return settings.Database; }
 		}
 
 		/// <summary>
@@ -138,7 +139,7 @@ namespace MySql.Data.MySqlClient
 		{
 			get { return settings.UseCompression; }
 		}
-		
+
 		/// <include file='docs/MySqlConnection.xml' path='docs/State/*'/>
 		[Browsable(false)]
 		public ConnectionState State
@@ -148,18 +149,18 @@ namespace MySql.Data.MySqlClient
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/ServerVersion/*'/>
 		[Browsable(false)]
-		public string ServerVersion 
+		public string ServerVersion
 		{
-			get { return  driver.Version.ToString(); }
+			get { return driver.Version.ToString(); }
 		}
 
-		internal Encoding Encoding 
+		internal Encoding Encoding
 		{
-			get 
+			get
 			{
 				if (driver == null)
 					return System.Text.Encoding.Default;
-				else 
+				else
 					return driver.Encoding;
 			}
 		}
@@ -186,7 +187,7 @@ namespace MySql.Data.MySqlClient
 					throw new MySqlException("Not allowed to change the 'ConnectionString' property while the connection (state=" + State + ").");
 
 				settings.SetConnectionString(value);
-				if ( driver != null)
+				if (driver != null)
 					driver.Settings = settings;
 			}
 		}
@@ -198,7 +199,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlConnection.xml' path='docs/BeginTransaction/*'/>
 		public MySqlTransaction BeginTransaction()
 		{
-			return this.BeginTransaction( IsolationLevel.RepeatableRead );
+			return this.BeginTransaction(IsolationLevel.RepeatableRead);
 		}
 
 		IDbTransaction IDbConnection.BeginTransaction()
@@ -213,15 +214,15 @@ namespace MySql.Data.MySqlClient
 			if (state != ConnectionState.Open)
 				throw new InvalidOperationException(Resources.ConnectionNotOpen);
 
-         if (activeLegacyTransaction != null)
-             throw new NotSupportedException(Resources.NoNestedTransactions);
+			if (activeLegacyTransaction != null)
+				throw new NotSupportedException(Resources.NoNestedTransactions);
 
 			MySqlTransaction t = new MySqlTransaction(this, iso);
 
 			MySqlCommand cmd = new MySqlCommand("", this);
 
 			cmd.CommandText = "SET SESSION TRANSACTION ISOLATION LEVEL ";
-			switch (iso) 
+			switch (iso)
 			{
 				case IsolationLevel.ReadCommitted:
 					cmd.CommandText += "READ COMMITTED"; break;
@@ -240,7 +241,7 @@ namespace MySql.Data.MySqlClient
 			cmd.CommandText = "BEGIN";
 			cmd.ExecuteNonQuery();
 
-            activeLegacyTransaction = t;
+			activeLegacyTransaction = t;
 			return t;
 		}
 
@@ -263,22 +264,22 @@ namespace MySql.Data.MySqlClient
 			settings.Database = databaseName;
 		}
 
-		internal void SetState( ConnectionState newState ) 
+		internal void SetState(ConnectionState newState)
 		{
 			ConnectionState oldState = state;
 			state = newState;
 			if (this.StateChange != null)
-				StateChange(this, new StateChangeEventArgs( oldState, newState ));
+				StateChange(this, new StateChangeEventArgs(oldState, newState));
 		}
 
 		/// <summary>
 		/// Ping
 		/// </summary>
 		/// <returns></returns>
-		public bool Ping() 
+		public bool Ping()
 		{
 			bool result = driver.Ping();
-			if (! result)
+			if (!result)
 				Terminate();
 			return result;
 		}
@@ -291,28 +292,28 @@ namespace MySql.Data.MySqlClient
 
 			SetState(ConnectionState.Connecting);
 
-            try
-            {
-                if (settings.Pooling)
-                {
-                    MySqlPool pool = MySqlPoolManager.GetPool(settings);
-                    driver = pool.GetConnection();
-                    procedureCache = pool.ProcedureCache;
-                }
-                else
-                {
-                    driver = Driver.Create(settings);
-                    procedureCache = new ProcedureCache(settings.ProcedureCacheSize);
-                }
-            }
-            catch (Exception)
+			try
+			{
+				if (settings.Pooling)
+				{
+					MySqlPool pool = MySqlPoolManager.GetPool(settings);
+					driver = pool.GetConnection();
+					procedureCache = pool.ProcedureCache;
+				}
+				else
+				{
+					driver = Driver.Create(settings);
+					procedureCache = new ProcedureCache(settings.ProcedureCacheSize);
+				}
+			}
+			catch (Exception)
 			{
 				SetState(ConnectionState.Closed);
 				throw;
 			}
 
 			// if the user is using old syntax, let them know
-			if ( driver.Settings.UseOldSyntax)
+			if (driver.Settings.UseOldSyntax)
 				Logger.LogWarning("You are using old syntax that will be removed in future versions");
 
 			SetState(ConnectionState.Open);
@@ -324,7 +325,7 @@ namespace MySql.Data.MySqlClient
 
 		internal void Terminate()
 		{
-			try 
+			try
 			{
 				if (settings.Pooling)
 					MySqlPoolManager.ReleaseConnection(driver);
@@ -382,7 +383,7 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// Releases the resources used by the MySqlConnection.
 		/// </summary>
-		protected override void Dispose(bool disposing) 
+		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
@@ -393,7 +394,7 @@ namespace MySql.Data.MySqlClient
 		}
 
 		#endregion
-  }
+	}
 
 	/// <summary>
 	/// Represents the method that will handle the <see cref="MySqlConnection.InfoMessage"/> event of a 
@@ -409,6 +410,6 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// 
 		/// </summary>
-		public MySqlError[]	errors;
+		public MySqlError[] errors;
 	}
 }

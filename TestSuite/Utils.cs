@@ -28,12 +28,12 @@ namespace MySql.Data.MySqlClient.Tests
 	public class Utils
 	{
 
-		public static byte[] CreateBlob( int size )
+		public static byte[] CreateBlob(int size)
 		{
 			byte[] buf = new byte[size];
 
 			Random r = new Random();
-			r.NextBytes( buf );
+			r.NextBytes(buf);
 			return buf;
 		}
 	}

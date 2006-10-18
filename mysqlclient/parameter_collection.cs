@@ -37,26 +37,26 @@ namespace MySql.Data.MySqlClient
 	/// <include file='docs/MySqlParameterCollection.xml' path='MyDocs/MyMembers[@name="Class"]/*'/>
 	[Editor("MySql.Data.MySqlClient.Design.DBParametersEditor,MySql.Design", typeof(System.Drawing.Design.UITypeEditor))]
 	[ListBindable(true)]
-	public sealed class MySqlParameterCollection : MarshalByRefObject, IDataParameterCollection, 
+	public sealed class MySqlParameterCollection : MarshalByRefObject, IDataParameterCollection,
 		IList, ICollection, IEnumerable
 	{
-		private ArrayList	_parms = new ArrayList();
-		private char		paramMarker = '?';
+		private ArrayList _parms = new ArrayList();
+		private char paramMarker = '?';
 		private Hashtable ciHash;
 		private Hashtable hash;
 
 		public MySqlParameterCollection()
 		{
 			hash = new Hashtable();
-	#if NET20
+#if NET20
 			ciHash = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-	#else
+#else
 			ciHash = new Hashtable(new CaseInsensitiveHashCodeProvider(),
 				new CaseInsensitiveComparer());
-	#endif
+#endif
 		}
 
-		internal char ParameterMarker 
+		internal char ParameterMarker
 		{
 			get { return paramMarker; }
 			set { paramMarker = value; }
@@ -66,7 +66,7 @@ namespace MySql.Data.MySqlClient
 		{
 			int index = IndexOf(name);
 			if (index != -1) return index;
-			throw new MySqlException("A MySqlParameter with ParameterName '" + name + 
+			throw new MySqlException("A MySqlParameter with ParameterName '" + name +
 				"' is not contained by this MySqlParameterCollection.");
 		}
 
@@ -75,7 +75,7 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// Gets the number of MySqlParameter objects in the collection.
 		/// </summary>
-		public int Count 
+		public int Count
 		{
 			get { return _parms.Count; }
 		}
@@ -85,7 +85,7 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		/// <param name="array"></param>
 		/// <param name="index"></param>
-		public void CopyTo( Array array, int index ) 
+		public void CopyTo(Array array, int index)
 		{
 			_parms.CopyTo(array, index);
 		}
@@ -174,13 +174,13 @@ namespace MySql.Data.MySqlClient
 			_parms.RemoveAt(index);
 		}
 
-		object IList.this[int index] 
+		object IList.this[int index]
 		{
 			get { return this[index]; }
-			set 
-			{ 
-				if (! (value is MySqlParameter)) throw new MySqlException("Only MySqlParameter objects may be stored");
-				this[index] = (MySqlParameter)value; 
+			set
+			{
+				if (!(value is MySqlParameter)) throw new MySqlException("Only MySqlParameter objects may be stored");
+				this[index] = (MySqlParameter)value;
 			}
 		}
 
@@ -191,7 +191,7 @@ namespace MySql.Data.MySqlClient
 		/// <returns>The index of the new <see cref="MySqlParameter"/> object.</returns>
 		public int Add(object value)
 		{
-			if (! (value is MySqlParameter)) 
+			if (!(value is MySqlParameter))
 				throw new MySqlException("Only MySqlParameter objects may be stored");
 
 			MySqlParameter p = (MySqlParameter)value;
@@ -244,9 +244,9 @@ namespace MySql.Data.MySqlClient
 		object IDataParameterCollection.this[string name]
 		{
 			get { return this[name]; }
-			set 
-			{ 
-				if (! (value is MySqlParameter)) throw new MySqlException("Only MySqlParameter objects may be stored");
+			set
+			{
+				if (!(value is MySqlParameter)) throw new MySqlException("Only MySqlParameter objects may be stored");
 				this[name] = (MySqlParameter)value;
 			}
 		}
@@ -289,22 +289,22 @@ namespace MySql.Data.MySqlClient
 		/// <returns>The newly added <see cref="MySqlParameter"/> object.</returns>
 		public MySqlParameter Add(MySqlParameter value)
 		{
-			if (value == null) 
+			if (value == null)
 				throw new ArgumentException("The MySqlParameterCollection only accepts non-null MySqlParameter type objects.", "value");
 
-            if (value.Direction == ParameterDirection.ReturnValue)
-                return AddReturnParameter(value);
+			if (value.Direction == ParameterDirection.ReturnValue)
+				return AddReturnParameter(value);
 
 			string inComingName = value.ParameterName.ToLower();
 			if (inComingName[0] == paramMarker)
-				inComingName = inComingName.Substring(1, inComingName.Length-1);
+				inComingName = inComingName.Substring(1, inComingName.Length - 1);
 
-			for (int i=0; i < _parms.Count; i++)
+			for (int i = 0; i < _parms.Count; i++)
 			{
 				MySqlParameter p = (MySqlParameter)_parms[i];
 				string name = p.ParameterName.ToLower();
 				if (name[0] == paramMarker)
-					name = name.Substring(1, name.Length-1);
+					name = name.Substring(1, name.Length - 1);
 				if (name == inComingName)
 				{
 					_parms[i] = value;
@@ -318,26 +318,26 @@ namespace MySql.Data.MySqlClient
 			return value;
 		}
 
-        private MySqlParameter AddReturnParameter(MySqlParameter value)
-        {
-            for (int i = 0; i < _parms.Count; i++)
-            {
-                MySqlParameter p = (MySqlParameter)_parms[i];
-                if (p.Direction != ParameterDirection.ReturnValue) continue;
-                _parms[i] = value;
-                return value;
-            }
-            _parms.Add(value);
-            return value;
-        }
+		private MySqlParameter AddReturnParameter(MySqlParameter value)
+		{
+			for (int i = 0; i < _parms.Count; i++)
+			{
+				MySqlParameter p = (MySqlParameter)_parms[i];
+				if (p.Direction != ParameterDirection.ReturnValue) continue;
+				_parms[i] = value;
+				return value;
+			}
+			_parms.Add(value);
+			return value;
+		}
 
-        /// <summary>
-        /// Adds a <see cref="MySqlParameter"/> to the <see cref="MySqlParameterCollection"/> given the specified parameter name and value.
-        /// </summary>
-        /// <param name="parameterName">The name of the parameter.</param>
-        /// <param name="value">The <see cref="MySqlParameter.Value"/> of the <see cref="MySqlParameter"/> to add to the collection.</param>
-        /// <returns>The newly added <see cref="MySqlParameter"/> object.</returns>
-        public MySqlParameter Add(string parameterName, object value)
+		/// <summary>
+		/// Adds a <see cref="MySqlParameter"/> to the <see cref="MySqlParameterCollection"/> given the specified parameter name and value.
+		/// </summary>
+		/// <param name="parameterName">The name of the parameter.</param>
+		/// <param name="value">The <see cref="MySqlParameter.Value"/> of the <see cref="MySqlParameter"/> to add to the collection.</param>
+		/// <returns>The newly added <see cref="MySqlParameter"/> object.</returns>
+		public MySqlParameter Add(string parameterName, object value)
 		{
 			return Add(new MySqlParameter(parameterName, value));
 		}

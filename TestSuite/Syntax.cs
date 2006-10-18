@@ -43,7 +43,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[SetUp]
 		protected override void Setup()
 		{
-			base.Setup ();
+			base.Setup();
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
 		}
@@ -104,7 +104,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), mt MEDIUMTEXT, " +
-				     "PRIMARY KEY(id))");
+					  "PRIMARY KEY(id))");
 
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?id, ?text, ?mt)", conn);
 			cmd.Parameters.Add("?id", 1);
@@ -114,7 +114,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			cmd.CommandText = "SELECT * FROM Test";
 			MySqlDataReader reader = null;
-			try 
+			try
 			{
 				reader = cmd.ExecuteReader();
 				Assert.IsTrue(reader.Read());
@@ -122,18 +122,18 @@ namespace MySql.Data.MySqlClient.Tests
 				Assert.AreEqual("This is my;test ? string-'''\"\".", reader.GetString(1));
 				Assert.AreEqual("My MT string: £", reader.GetString(2));
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 			}
 		}
 
 		[Test]
-		public void LoadDataLocalInfile() 
+		public void LoadDataLocalInfile()
 		{
 			execSQL("set @@global.max_allowed_packet=250000000");
 
@@ -143,7 +143,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			string path = Path.GetTempFileName();
 			StreamWriter sw = new StreamWriter(path);
-			for (int i=0; i < 2000000; i++) 
+			for (int i = 0; i < 2000000; i++)
 				sw.WriteLine(i + ",'Test'");
 			sw.Flush();
 			sw.Close();
@@ -152,11 +152,11 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlCommand cmd = new MySqlCommand("LOAD DATA LOCAL INFILE '" + path + "' INTO TABLE Test FIELDS TERMINATED BY ','", c);
 
 			object cnt = 0;
-			try 
+			try
 			{
 				cnt = cmd.ExecuteNonQuery();
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				Assert.Fail(ex.Message);
 			}
@@ -171,39 +171,39 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
-		public void ShowTablesInNonExistentDb() 
+		public void ShowTablesInNonExistentDb()
 		{
 			MySqlCommand cmd = new MySqlCommand("SHOW TABLES FROM dummy", conn);
-			MySqlDataReader reader =null;
-			try 
+			MySqlDataReader reader = null;
+			try
 			{
 				reader = cmd.ExecuteReader();
 				Assert.Fail("ExecuteReader should not succeed");
 			}
-			catch (MySqlException) 
+			catch (MySqlException)
 			{
 				Assert.AreEqual(ConnectionState.Open, conn.State);
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 			}
 		}
 
 		[Test]
-		public void Bug6135() 
+		public void Bug6135()
 		{
 			execSQL("DROP TABLE IF EXISTS KLANT");
 			string sql = "CREATE TABLE `KLANT` (`KlantNummer` int(11) NOT NULL auto_increment, " +
-				"`Username` varchar(50) NOT NULL default '', `Password` varchar(100) NOT NULL default '', " + 
+				"`Username` varchar(50) NOT NULL default '', `Password` varchar(100) NOT NULL default '', " +
 				"`Naam` varchar(100) NOT NULL default '', `Voornaam` varchar(100) NOT NULL default '', " +
 				"`Straat` varchar(100) NOT NULL default '', `StraatNr` varchar(10) NOT NULL default '', " +
 				"`Gemeente` varchar(100) NOT NULL default '', `Postcode` varchar(10) NOT NULL default '', " +
-				"`DefaultMail` varchar(255) default '', 	`BtwNr` varchar(50) default '', " + 
+				"`DefaultMail` varchar(255) default '', 	`BtwNr` varchar(50) default '', " +
 				"`ReceiveMail` tinyint(1) NOT NULL default '0',	`Online` tinyint(1) NOT NULL default '0', " +
 				"`LastVisit` timestamp(14) NOT NULL, `Categorie` int(11) NOT NULL default '0', " +
 				"PRIMARY KEY  (`KlantNummer`),	UNIQUE KEY `UniqueUsername` (`Username`), " +
@@ -212,23 +212,23 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM KLANT", conn);
 			MySqlDataReader reader = null;
-			try 
+			try
 			{
 				reader = cmd.ExecuteReader();
 				while (reader.Read()) { }
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 			}
 		}
 
 		[Test]
-		public void CharFunction() 
+		public void CharFunction()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id tinyint,val1	tinyint,val2 tinyint)");
@@ -237,7 +237,7 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT CHAR(id) FROM Test GROUP BY val1,val2", conn);
 			DataTable dt = new DataTable();
 			da.Fill(dt);
-			Assert.AreEqual( "A", dt.Rows[0][0] );
+			Assert.AreEqual("A", dt.Rows[0][0]);
 		}
 
 		[Test]
@@ -252,18 +252,18 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlDataReader reader = null;
 
 			MySqlCommand cmd2 = new MySqlCommand("SELECT sum(field2) FROM test", conn);
-			try 
+			try
 			{
 				reader = cmd2.ExecuteReader();
 				reader.Read();
 				object o = reader[0];
 				Assert.AreEqual(1, o);
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 				reader = null;
@@ -277,18 +277,18 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("INSERT INTO Test VALUES (1, 40)");
 
 			MySqlCommand cmd = new MySqlCommand("SELECT id, SUM(count) FROM Test GROUP BY id", conn);
-			try 
+			try
 			{
 				reader = cmd.ExecuteReader();
 				reader.Read();
-				Assert.AreEqual( 1, reader.GetInt32(0) );
-				Assert.AreEqual( 110, reader.GetDouble(1) );
+				Assert.AreEqual(1, reader.GetInt32(0));
+				Assert.AreEqual(110, reader.GetDouble(1));
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null)
 					reader.Close();
@@ -297,27 +297,27 @@ namespace MySql.Data.MySqlClient.Tests
 
 		[Category("4.1")]
 		[Test]
-		public void ForceWarnings() 
+		public void ForceWarnings()
 		{
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test; DROP TABLE IF EXISTS test2; SELECT * FROM test", conn);
-			MySqlDataReader reader = null; 
-			try 
+			MySqlDataReader reader = null;
+			try
 			{
 				reader = cmd.ExecuteReader();
 				while (reader.NextResult()) { }
 			}
-			catch( Exception ex) 
+			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 			}
 		}
 
 		[Test]
-		public void SettingAutoIncrementColumns() 
+		public void SettingAutoIncrementColumns()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id int auto_increment, name varchar(100), primary key(id))");
@@ -326,19 +326,19 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlCommand cmd = new MySqlCommand("SELECT name FROM Test WHERE id=1", conn);
 			object name = cmd.ExecuteScalar();
-			Assert.AreEqual( "One", name );
+			Assert.AreEqual("One", name);
 
 			cmd.CommandText = "SELECT name FROM Test WHERE id=3";
 			name = cmd.ExecuteScalar();
-			Assert.AreEqual( "Two", name );
+			Assert.AreEqual("Two", name);
 
-			try 
+			try
 			{
 				execSQL("INSERT INTO Test (id, name2) values (5, 'Three')");
-				Assert.Fail( "This should have failed" );
+				Assert.Fail("This should have failed");
 			}
-			catch (MySqlException) 	{}
-			catch (Exception ex) { Assert.Fail( ex.Message); }
+			catch (MySqlException) { }
+			catch (Exception ex) { Assert.Fail(ex.Message); }
 		}
 
 		/// <summary>
@@ -349,9 +349,9 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			execSQL("DROP TABLE IF EXISTS test");
 			execSQL("CREATE TABLE test (testID int(11) NOT NULL auto_increment, testName varchar(100) default '', " +
-				    "PRIMARY KEY  (testID)) ENGINE=InnoDB DEFAULT CHARSET=latin1");
+					 "PRIMARY KEY  (testID)) ENGINE=InnoDB DEFAULT CHARSET=latin1");
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (NULL, 'test')", conn);
-			for (int i=0; i < 1000; i++)
+			for (int i = 0; i < 1000; i++)
 				cmd.ExecuteNonQuery();
 			cmd.CommandText = "SELECT SQL_CALC_FOUND_ROWS * FROM test LIMIT 0, 10";
 			cmd.ExecuteNonQuery();
@@ -360,60 +360,60 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(1000, cnt);
 		}
 
-        [Test]
-        public void AutoIncrement()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test (testID int(11) NOT NULL auto_increment, testName varchar(100) default '', " +
-                    "PRIMARY KEY  (testID)) ENGINE=InnoDB DEFAULT CHARSET=latin1");
-            MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (NULL, 'test')", conn);
-            cmd.ExecuteNonQuery();
-            cmd.CommandText = "SELECT @@IDENTITY as 'Identity'";
-            MySqlDataReader reader = null;
-            try
-            {
-                reader = cmd.ExecuteReader();
-                reader.Read();
-                int ident = Int32.Parse(reader.GetValue(0).ToString());
-                Assert.AreEqual(1, ident);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                if (reader != null)
-                    reader.Close();
-            }
-        }
-        
-        /// <summary>
-        /// Bug #21521 # Symbols not allowed in column/table names. 
-        /// </summary>
-        [Test]
-        public void CommentSymbolInTableName()
-        {
-            try
-            {
-                execSQL("DROP TABLE IF EXISTS test");
-                execSQL("CREATE TABLE test (`PO#` int(11) NOT NULL auto_increment, " +
-                    "`PODate` date default NULL, PRIMARY KEY  (`PO#`))");
-                execSQL("INSERT INTO test ( `PO#`, `PODate` ) " +
-                    "VALUES ( NULL, '2006-01-01' )");
+		[Test]
+		public void AutoIncrement()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (testID int(11) NOT NULL auto_increment, testName varchar(100) default '', " +
+					  "PRIMARY KEY  (testID)) ENGINE=InnoDB DEFAULT CHARSET=latin1");
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (NULL, 'test')", conn);
+			cmd.ExecuteNonQuery();
+			cmd.CommandText = "SELECT @@IDENTITY as 'Identity'";
+			MySqlDataReader reader = null;
+			try
+			{
+				reader = cmd.ExecuteReader();
+				reader.Read();
+				int ident = Int32.Parse(reader.GetValue(0).ToString());
+				Assert.AreEqual(1, ident);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				if (reader != null)
+					reader.Close();
+			}
+		}
 
-                string sql = "SELECT `PO#` AS PurchaseOrderNumber, " +
-                    "`PODate` AS OrderDate FROM  test";
-                MySqlCommand cmd = new MySqlCommand(sql, conn);
-                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                Assert.AreEqual(1, dt.Rows.Count);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-        }
+		/// <summary>
+		/// Bug #21521 # Symbols not allowed in column/table names. 
+		/// </summary>
+		[Test]
+		public void CommentSymbolInTableName()
+		{
+			try
+			{
+				execSQL("DROP TABLE IF EXISTS test");
+				execSQL("CREATE TABLE test (`PO#` int(11) NOT NULL auto_increment, " +
+					 "`PODate` date default NULL, PRIMARY KEY  (`PO#`))");
+				execSQL("INSERT INTO test ( `PO#`, `PODate` ) " +
+					 "VALUES ( NULL, '2006-01-01' )");
+
+				string sql = "SELECT `PO#` AS PurchaseOrderNumber, " +
+					 "`PODate` AS OrderDate FROM  test";
+				MySqlCommand cmd = new MySqlCommand(sql, conn);
+				MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+				DataTable dt = new DataTable();
+				da.Fill(dt);
+				Assert.AreEqual(1, dt.Rows.Count);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
 	}
 }

@@ -29,17 +29,17 @@ namespace MySql.Data.MySqlClient
 	/// </summary>
 	internal class PacketReader
 	{
-		public static int		NULL_LEN=-1;
-		private Stream			stream;
-		private long			packetLength;
-		private bool			isLastPacket;
-		private NativeDriver	driver;
-		private int				firstByte;
-		private byte[]			buffer;
-		private Encoding		encoding;
-		private long			bytesLeft;
+		public static int NULL_LEN = -1;
+		private Stream stream;
+		private long packetLength;
+		private bool isLastPacket;
+		private NativeDriver driver;
+		private int firstByte;
+		private byte[] buffer;
+		private Encoding encoding;
+		private long bytesLeft;
 
-		public PacketReader(Stream stream, NativeDriver driver) 
+		public PacketReader(Stream stream, NativeDriver driver)
 		{
 			packetLength = -1;
 			isLastPacket = false;
@@ -52,46 +52,46 @@ namespace MySql.Data.MySqlClient
 
 		#region Properties
 
-		public MySql.Data.Common.DBVersion Version 
+		public MySql.Data.Common.DBVersion Version
 		{
 			get { return driver.Version; }
 		}
 
-		public int Length 
+		public int Length
 		{
 			get { return (int)packetLength; }
 		}
 
-		public Encoding Encoding 
+		public Encoding Encoding
 		{
 			get { return encoding; }
 			set { encoding = value; }
 		}
 
-		public Stream Stream 
+		public Stream Stream
 		{
 			get { return stream; }
 			set { stream = value; }
 		}
 
-		public bool IsLastPacket 
+		public bool IsLastPacket
 		{
 			get { return isLastPacket; }
 		}
 
-		public bool HasMoreData 
+		public bool HasMoreData
 		{
 			get { return bytesLeft > 0; }
 		}
 
-//		public bool IsLoadDataLocal 
-//		{
-//			get { return firstByte == 254 && packetLength >= 9; }
-//		}
+		//		public bool IsLoadDataLocal 
+		//		{
+		//			get { return firstByte == 254 && packetLength >= 9; }
+		//		}
 
-#endregion
+		#endregion
 
-		private void ReadHeader() 
+		private void ReadHeader()
 		{
 			int b1 = stream.ReadByte();
 			int b2 = stream.ReadByte();
@@ -104,7 +104,7 @@ namespace MySql.Data.MySqlClient
 			bytesLeft = packetLength;
 
 			(driver as NativeDriver).SequenceByte = (byte)(seq + 1);
-			if (packetLength > 0) 
+			if (packetLength > 0)
 			{
 				firstByte = stream.ReadByte();
 				if (firstByte == -1)
@@ -113,33 +113,33 @@ namespace MySql.Data.MySqlClient
 
 			encoding = driver.Encoding;
 			isLastPacket = (packetLength < 9 && firstByte == 0xfe);
-			if (! isLastPacket)
+			if (!isLastPacket)
 				CheckForError();
 		}
 
-		public void OpenPacket() 
+		public void OpenPacket()
 		{
 			// if we have not read all of the last packet, then read it off now
 			// we use skip so we don't create unneccessary buffers
-			while (bytesLeft > 0 || packetLength == driver.MaxSinglePacket ) 
+			while (bytesLeft > 0 || packetLength == driver.MaxSinglePacket)
 			{
 				if (bytesLeft == 0 && packetLength == driver.MaxSinglePacket)
 					ReadHeader();
-				Skip( bytesLeft );
+				Skip(bytesLeft);
 			}
 
 			ReadHeader();
 		}
 
-		public bool ReadOk() 
+		public bool ReadOk()
 		{
 			OpenPacket();
 			bool isOk = firstByte == 0 && packetLength > 1;
-			Skip( packetLength ) ;
+			Skip(packetLength);
 			return isOk;
 		}
 
-		private void CheckForError() 
+		private void CheckForError()
 		{
 			if (firstByte == 0xff)
 			{
@@ -151,20 +151,20 @@ namespace MySql.Data.MySqlClient
 
 		}
 
-		public void Skip( long count ) 
+		public void Skip(long count)
 		{
-			while (count > 0) 
+			while (count > 0)
 			{
-				int cntRead = Read( ref buffer, 0, count > buffer.Length ? buffer.Length : count );
+				int cntRead = Read(ref buffer, 0, count > buffer.Length ? buffer.Length : count);
 				count -= cntRead;
 			}
 		}
 
-		public int ReadByte() 
+		public int ReadByte()
 		{
-			bytesLeft --;
-			
-			if (firstByte != -1) 
+			bytesLeft--;
+
+			if (firstByte != -1)
 			{
 				int b = firstByte;
 				firstByte = -1;
@@ -173,21 +173,21 @@ namespace MySql.Data.MySqlClient
 
 			int theByte = stream.ReadByte();
 			if (theByte == -1)
-				throw new MySqlException( "Connection unexpectedly terminated", true, null );
+				throw new MySqlException("Connection unexpectedly terminated", true, null);
 			return theByte;
 		}
 
-		public long GetFieldLength() 
+		public long GetFieldLength()
 		{
-			byte c  = (byte)ReadByte();
+			byte c = (byte)ReadByte();
 
-			switch(c) 
+			switch (c)
 			{
-				case 251 : return (long)NULL_LEN; 
-				case 252 : return (long)ReadInteger(2);
-				case 253 : return (long)ReadInteger(3);
-				case 254 : return (long)ReadInteger(8);
-				default  : return c;
+				case 251: return (long)NULL_LEN;
+				case 252: return (long)ReadInteger(2);
+				case 253: return (long)ReadInteger(3);
+				case 254: return (long)ReadInteger(8);
+				default: return c;
 			}
 		}
 
@@ -198,31 +198,31 @@ namespace MySql.Data.MySqlClient
 			return ReadInteger((int)c);
 		}
 
-		public int Read(ref byte[] buffer, long pos, long len) 
+		public int Read(ref byte[] buffer, long pos, long len)
 		{
 			if (buffer == null || buffer.Length < len)
-				buffer = new byte[ pos + len ];
+				buffer = new byte[pos + len];
 
-			try 
+			try
 			{
 				long totalLen = len;
-				while (len > 0) 
+				while (len > 0)
 				{
 					// if we are in a multipacket, then read the next section
 					if (bytesLeft == 0 && packetLength == driver.MaxSinglePacket)
 						ReadHeader();
 
-					if (firstByte != -1) 
+					if (firstByte != -1)
 					{
 						buffer[pos++] = (byte)ReadByte();
-						len --;
+						len--;
 					}
-					else 
+					else
 					{
-						int lenToRead = (int)Math.Min( len, bytesLeft );
+						int lenToRead = (int)Math.Min(len, bytesLeft);
 						int count = stream.Read(buffer, (int)pos, lenToRead);
 						if (count == 0)
-							throw new MySqlException( "Connection unexpectedly terminated", true, null );
+							throw new MySqlException("Connection unexpectedly terminated", true, null);
 
 						len -= count;
 						pos += count;
@@ -232,21 +232,21 @@ namespace MySql.Data.MySqlClient
 
 				return (int)totalLen;
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
-				Logger.LogException(ex) ;
+				Logger.LogException(ex);
 				throw new MySqlException("Connection unexpectedly terminated", true, ex);
 			}
 		}
 
-		public ulong ReadLong( int numbytes ) 
+		public ulong ReadLong(int numbytes)
 		{
 			ulong val = 0;
 			int raise = 1;
-			for (int x=0; x < numbytes; x++)
+			for (int x = 0; x < numbytes; x++)
 			{
 				int b = ReadByte();
-				val += (ulong)(b*raise);
+				val += (ulong)(b * raise);
 				raise *= 256;
 			}
 			return val;
@@ -254,10 +254,10 @@ namespace MySql.Data.MySqlClient
 
 		public int ReadInteger(int numbytes)
 		{
-			return (int)ReadLong( numbytes );
+			return (int)ReadLong(numbytes);
 		}
 
-		public string ReadString() 
+		public string ReadString()
 		{
 			MemoryStream ms = new MemoryStream();
 
@@ -268,39 +268,39 @@ namespace MySql.Data.MySqlClient
 				ms.WriteByte((byte)b);
 			}
 
-			return Encoding.GetString( ms.GetBuffer(), 0, (int)ms.Length );
+			return Encoding.GetString(ms.GetBuffer(), 0, (int)ms.Length);
 		}
 
 		public int ReadPackedInteger()
 		{
-			byte c  = (byte)ReadByte();
+			byte c = (byte)ReadByte();
 
-			switch(c) 
+			switch (c)
 			{
-				case 251 : return NULL_LEN; 
-				case 252 : return ReadInteger(2);
-				case 253 : return ReadInteger(3);
-				case 254 : return ReadInteger(4);
-				default  : return c;
+				case 251: return NULL_LEN;
+				case 252: return ReadInteger(2);
+				case 253: return ReadInteger(3);
+				case 254: return ReadInteger(4);
+				default: return c;
 			}
 		}
 
-		public string ReadString( long length ) 
+		public string ReadString(long length)
 		{
 			if (length == 0) return String.Empty;
 
 			byte[] myBuff = buffer;
 			if (length > myBuff.Length)
-				myBuff = new byte[ length ];
+				myBuff = new byte[length];
 
-			Read( ref myBuff, 0, length );
-			return Encoding.GetString( myBuff, 0, (int)length );
+			Read(ref myBuff, 0, length);
+			return Encoding.GetString(myBuff, 0, (int)length);
 		}
 
 		public string ReadLenString()
 		{
 			long len = ReadPackedInteger();
-			return ReadString( len );
+			return ReadString(len);
 		}
 
 	}

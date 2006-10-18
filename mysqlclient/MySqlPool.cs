@@ -29,60 +29,60 @@ namespace MySql.Data.MySqlClient
 	/// </summary>
 	internal sealed class MySqlPool
 	{
-		private ArrayList				inUsePool;
-		private Queue					idlePool;
-		private MySqlConnectionString	settings;
-		private int						minSize;
-		private int						maxSize;
-        private ProcedureCache procedureCache;
+		private ArrayList inUsePool;
+		private Queue idlePool;
+		private MySqlConnectionString settings;
+		private int minSize;
+		private int maxSize;
+		private ProcedureCache procedureCache;
 
 		public MySqlPool(MySqlConnectionString settings)
 		{
 			minSize = settings.MinPoolSize;
 			maxSize = settings.MaxPoolSize;
 			this.settings = settings;
-			inUsePool =new ArrayList(maxSize);
+			inUsePool = new ArrayList(maxSize);
 			idlePool = new Queue(maxSize);
 
 			// prepopulate the idle pool to minSize
-			for (int i=0; i < minSize; i++) 
+			for (int i = 0; i < minSize; i++)
 				CreateNewPooledConnection();
 
-            procedureCache = new ProcedureCache(settings.ProcedureCacheSize);
+			procedureCache = new ProcedureCache(settings.ProcedureCacheSize);
 		}
 
-		public MySqlConnectionString	Settings 
+		public MySqlConnectionString Settings
 		{
 			get { return settings; }
 			set { settings = value; }
 		}
 
-        public ProcedureCache ProcedureCache
-        {
-            get { return procedureCache; }
-        }
-
-/*		private int CheckConnections() 
+		public ProcedureCache ProcedureCache
 		{
-			int freed = 0;
-			lock (inUsePool.SyncRoot) 
-			{
-				for (int i=inUsePool.Count-1; i >= 0; i--) 
-				{
-					Driver d = (inUsePool[i] as Driver);
-					if (! d.Ping()) 
-					{
-						inUsePool.RemoveAt(i);
-						freed++;
-					}
-				}
-			}
-			return freed;
+			get { return procedureCache; }
 		}
-*/
+
+		/*		private int CheckConnections() 
+				{
+					int freed = 0;
+					lock (inUsePool.SyncRoot) 
+					{
+						for (int i=inUsePool.Count-1; i >= 0; i--) 
+						{
+							Driver d = (inUsePool[i] as Driver);
+							if (! d.Ping()) 
+							{
+								inUsePool.RemoveAt(i);
+								freed++;
+							}
+						}
+					}
+					return freed;
+				}
+		*/
 		private Driver CheckoutConnection()
 		{
-			lock(idlePool.SyncRoot)
+			lock (idlePool.SyncRoot)
 			{
 				if (idlePool.Count == 0) return null;
 				Driver driver = (Driver)idlePool.Dequeue();
@@ -124,7 +124,7 @@ namespace MySql.Data.MySqlClient
 
 		private void CreateNewPooledConnection()
 		{
-			lock(idlePool.SyncRoot) 
+			lock (idlePool.SyncRoot)
 				lock (inUsePool.SyncRoot)
 				{
 					// first we check if we are allowed to create another
@@ -137,10 +137,10 @@ namespace MySql.Data.MySqlClient
 				}
 		}
 
-		public void ReleaseConnection( Driver driver )
+		public void ReleaseConnection(Driver driver)
 		{
 			lock (idlePool.SyncRoot)
-				lock (inUsePool.SyncRoot) 
+				lock (inUsePool.SyncRoot)
 				{
 					inUsePool.Remove(driver);
 					if (driver.Settings.ConnectionLifetime != 0 && driver.IsTooOld())
@@ -150,7 +150,7 @@ namespace MySql.Data.MySqlClient
 				}
 		}
 
-		public Driver GetConnection() 
+		public Driver GetConnection()
 		{
 			Driver driver = null;
 
@@ -160,11 +160,11 @@ namespace MySql.Data.MySqlClient
 			// wait timeOut seconds at most to get a connection
 			while (driver == null && (Environment.TickCount - start) < ticks)
 				driver = GetPooledConnection();
-					 
+
 			// if pool size is at maximum, then we must have reached our timeout so we simply
 			// throw our exception
 			if (driver == null)
-				throw new MySqlException("error connecting: Timeout expired.  The timeout period elapsed " + 
+				throw new MySqlException("error connecting: Timeout expired.  The timeout period elapsed " +
 					"prior to obtaining a connection from the pool.  This may have occurred because all " +
 					"pooled connections were in use and max pool size was reached.");
 

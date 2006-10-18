@@ -48,61 +48,60 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 
 		[Test]
-		public void TestReader() 
+		public void TestReader()
 		{
 			execSQL("INSERT INTO Test VALUES('P', 'Test1', 'Test2')");
 
 			MySqlTransaction txn = conn.BeginTransaction();
 			MySqlConnection c = txn.Connection;
-			Assert.AreEqual( conn, c );
-			MySqlCommand cmd = new MySqlCommand("SELECT name, name2 FROM Test WHERE key2='P'", 
+			Assert.AreEqual(conn, c);
+			MySqlCommand cmd = new MySqlCommand("SELECT name, name2 FROM Test WHERE key2='P'",
 				conn, txn);
 			MySqlTransaction t2 = cmd.Transaction;
-			Assert.AreEqual( txn, t2 );
+			Assert.AreEqual(txn, t2);
 			MySqlDataReader reader = null;
-			try 
+			try
 			{
 				reader = cmd.ExecuteReader();
 				reader.Close();
 				txn.Commit();
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 				txn.Rollback();
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 			}
 		}
 
-        /// <summary>
-        /// Bug #22400 Nested transactions 
-        /// </summary>
-        [Category("NotWorking")]
-        [Test]
-        public void NestedTransactions()
-        {
-            MySqlTransaction t1 = conn.BeginTransaction();
-            try
-            {
-                MySqlTransaction t2 = conn.BeginTransaction();
-                t2.Rollback();
-                Assert.Fail("Exception should have been thrown");
-            }
-            catch (NotSupportedException)
-            {
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally 
-            {
-                t1.Rollback();
-            }
-        }
+		/// <summary>
+		/// Bug #22400 Nested transactions 
+		/// </summary>
+		[Test]
+		public void NestedTransactions()
+		{
+			MySqlTransaction t1 = conn.BeginTransaction();
+			try
+			{
+				MySqlTransaction t2 = conn.BeginTransaction();
+				t2.Rollback();
+				Assert.Fail("Exception should have been thrown");
+			}
+			catch (NotSupportedException)
+			{
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				t1.Rollback();
+			}
+		}
 
 	}
 }

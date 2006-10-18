@@ -44,7 +44,7 @@ namespace MySql.Data.MySqlClient
 		/// <param name="commandText">SQL command to be executed</param>
 		/// <param name="commandParameters">Array of <see cref="MySqlParameter"/> objects to use with the command.</param>
 		/// <returns></returns>
-		public static int ExecuteNonQuery( MySqlConnection connection, string commandText, params MySqlParameter[] commandParameters )
+		public static int ExecuteNonQuery(MySqlConnection connection, string commandText, params MySqlParameter[] commandParameters)
 		{
 			//create a command and prepare it for execution
 			MySqlCommand cmd = new MySqlCommand();
@@ -54,7 +54,7 @@ namespace MySql.Data.MySqlClient
 
 			if (commandParameters != null)
 				foreach (MySqlParameter p in commandParameters)
-					cmd.Parameters.Add( p );
+					cmd.Parameters.Add(p);
 
 			int result = cmd.ExecuteNonQuery();
 			cmd.Parameters.Clear();
@@ -70,7 +70,7 @@ namespace MySql.Data.MySqlClient
 		/// <param name="commandText">SQL command to be executed</param>
 		/// <param name="parms">Array of <see cref="MySqlParameter"/> objects to use with the command.</param>
 		/// <returns></returns>
-		public static int ExecuteNonQuery( string connectionString, string commandText, params MySqlParameter[] parms )
+		public static int ExecuteNonQuery(string connectionString, string commandText, params MySqlParameter[] parms)
 		{
 			//create & open a SqlConnection, and dispose of it after we are done.
 			using (MySqlConnection cn = new MySqlConnection(connectionString))
@@ -78,7 +78,7 @@ namespace MySql.Data.MySqlClient
 				cn.Open();
 
 				//call the overload that takes a connection in place of the connection string
-				return ExecuteNonQuery(cn, commandText, parms );
+				return ExecuteNonQuery(cn, commandText, parms);
 			}
 		}
 		#endregion
@@ -93,9 +93,9 @@ namespace MySql.Data.MySqlClient
 		/// <param name="commandText">Command to execute</param>
 		/// <param name="parms">Parameters to use for the command</param>
 		/// <returns>DataRow containing the first row of the resultset</returns>
-		public static DataRow ExecuteDataRow( string connectionString, string commandText, params MySqlParameter[] parms )
+		public static DataRow ExecuteDataRow(string connectionString, string commandText, params MySqlParameter[] parms)
 		{
-			DataSet ds = ExecuteDataset( connectionString, commandText, parms );
+			DataSet ds = ExecuteDataset(connectionString, commandText, parms);
 			if (ds == null) return null;
 			if (ds.Tables.Count == 0) return null;
 			if (ds.Tables[0].Rows.Count == 0) return null;
@@ -168,20 +168,20 @@ namespace MySql.Data.MySqlClient
 
 			if (commandParameters != null)
 				foreach (MySqlParameter p in commandParameters)
-					cmd.Parameters.Add( p );
-			
+					cmd.Parameters.Add(p);
+
 			//create the DataAdapter & DataSet
 			MySqlDataAdapter da = new MySqlDataAdapter(cmd);
 			DataSet ds = new DataSet();
 
 			//fill the DataSet using default values for DataTable names, etc.
 			da.Fill(ds);
-			
+
 			// detach the MySqlParameters from the command object, so they can be used again.			
 			cmd.Parameters.Clear();
-			
+
 			//return the dataset
-			return ds;						
+			return ds;
 		}
 
 		/// <summary>
@@ -191,14 +191,14 @@ namespace MySql.Data.MySqlClient
 		/// <param name="commandText">Command text to use for the update</param>
 		/// <param name="ds"><see cref="DataSet"/> containing the new data to use in the update</param>
 		/// <param name="tablename">Tablename in the dataset to update</param>
-		public static void UpdateDataSet( string connectionString, string commandText, DataSet ds, string tablename )
+		public static void UpdateDataSet(string connectionString, string commandText, DataSet ds, string tablename)
 		{
-			MySqlConnection cn = new MySqlConnection( connectionString );
+			MySqlConnection cn = new MySqlConnection(connectionString);
 			cn.Open();
-			MySqlDataAdapter da = new MySqlDataAdapter( commandText, cn );
+			MySqlDataAdapter da = new MySqlDataAdapter(commandText, cn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
 			cb.ToString();
-			da.Update( ds, tablename );
+			da.Update(ds, tablename);
 			cn.Close();
 		}
 
@@ -215,18 +215,18 @@ namespace MySql.Data.MySqlClient
 		/// <param name="commandParameters">Array of <see cref="MySqlParameter"/> objects to use with the command</param>
 		/// <param name="ExternalConn">True if the connection should be preserved, false if not</param>
 		/// <returns><see cref="MySqlDataReader"/> object ready to read the results of the command</returns>
-		private static MySqlDataReader ExecuteReader(MySqlConnection connection, MySqlTransaction transaction, string commandText, MySqlParameter[] commandParameters, bool ExternalConn )
-		{	
+		private static MySqlDataReader ExecuteReader(MySqlConnection connection, MySqlTransaction transaction, string commandText, MySqlParameter[] commandParameters, bool ExternalConn)
+		{
 			//create a command and prepare it for execution
 			MySqlCommand cmd = new MySqlCommand();
 			cmd.Connection = connection;
 			cmd.Transaction = transaction;
 			cmd.CommandText = commandText;
 			cmd.CommandType = CommandType.Text;
-			
+
 			if (commandParameters != null)
 				foreach (MySqlParameter p in commandParameters)
-					cmd.Parameters.Add( p );
+					cmd.Parameters.Add(p);
 
 			//create a reader
 			MySqlDataReader dr;
@@ -240,10 +240,10 @@ namespace MySql.Data.MySqlClient
 			{
 				dr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
 			}
-			
+
 			// detach the SqlParameters from the command object, so they can be used again.
 			cmd.Parameters.Clear();
-			
+
 			return dr;
 		}
 
@@ -275,7 +275,7 @@ namespace MySql.Data.MySqlClient
 			try
 			{
 				//call the private overload that takes an internally owned connection in place of the connection string
-				return ExecuteReader(cn, null, commandText, commandParameters, false );
+				return ExecuteReader(cn, null, commandText, commandParameters, false);
 			}
 			catch
 			{
@@ -345,18 +345,18 @@ namespace MySql.Data.MySqlClient
 			cmd.Connection = connection;
 			cmd.CommandText = commandText;
 			cmd.CommandType = CommandType.Text;
-			
+
 			if (commandParameters != null)
 				foreach (MySqlParameter p in commandParameters)
-					cmd.Parameters.Add( p );
-			
+					cmd.Parameters.Add(p);
+
 			//execute the command & return the results
 			object retval = cmd.ExecuteScalar();
-			
+
 			// detach the SqlParameters from the command object, so they can be used again.
 			cmd.Parameters.Clear();
 			return retval;
-			
+
 		}
 
 		#endregion

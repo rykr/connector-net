@@ -54,7 +54,7 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM mysql.host WHERE TIME('2005/6/21')", conn);
 			MySqlDataReader reader = null;
 
-			try 
+			try
 			{
 				reader = cmd.ExecuteReader();
 			}
@@ -62,7 +62,7 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 				Assert.Fail(ex.Message);
 			}
-			finally 
+			finally
 			{
 				if (reader != null)
 					reader.Close();
@@ -73,9 +73,9 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			Assert.AreEqual(1, args.errors.Length);
 		}
-		
+
 		[Test]
-		public void StateChange() 
+		public void StateChange()
 		{
 			MySqlConnection c = new MySqlConnection(GetConnectionString(true));
 			c.StateChange += new StateChangeEventHandler(StateChangeHandler);
@@ -85,6 +85,6 @@ namespace MySql.Data.MySqlClient.Tests
 
 		private void StateChangeHandler(object sender, StateChangeEventArgs e)
 		{
-		}		
+		}
 	}
 }

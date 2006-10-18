@@ -26,11 +26,11 @@ namespace MySql.Data.MySqlClient
 	/// <include file='docs/MySqlTransaction.xml' path='docs/Class/*'/>
 	public sealed class MySqlTransaction : IDbTransaction
 	{
-		private IsolationLevel	level;
-		private MySqlConnection	conn;
-		private bool			open;
+		private IsolationLevel level;
+		private MySqlConnection conn;
+		private bool open;
 
-		internal MySqlTransaction( MySqlConnection c, IsolationLevel il) 
+		internal MySqlTransaction(MySqlConnection c, IsolationLevel il)
 		{
 			conn = c;
 			level = il;
@@ -39,7 +39,7 @@ namespace MySql.Data.MySqlClient
 
 		#region Properties
 
-		IDbConnection IDbTransaction.Connection 
+		IDbConnection IDbTransaction.Connection
 		{
 			get { return (MySqlConnection)Connection; }
 		}
@@ -56,7 +56,7 @@ namespace MySql.Data.MySqlClient
 		/// </remarks>
 		public MySqlConnection Connection
 		{
-			get { return conn;	} 
+			get { return conn; }
 		}
 
 		/// <summary>
@@ -69,14 +69,14 @@ namespace MySql.Data.MySqlClient
 		/// Parallel transactions are not supported. Therefore, the IsolationLevel 
 		/// applies to the entire transaction.
 		/// </remarks>
-		public IsolationLevel IsolationLevel 
+		public IsolationLevel IsolationLevel
 		{
 			get { return level; }
 		}
 
 		#endregion
 
-		void System.IDisposable.Dispose() 
+		void System.IDisposable.Dispose()
 		{
 		}
 
@@ -87,20 +87,20 @@ namespace MySql.Data.MySqlClient
 				throw new InvalidOperationException("Connection must be valid and open to commit transaction");
 			if (!open)
 				throw new InvalidOperationException("Transaction has already been committed or is not pending");
-            try
-            {
-                MySqlCommand cmd = new MySqlCommand("COMMIT", conn);
-                cmd.ExecuteNonQuery();
-                open = false;
-            }
-            catch (MySqlException)
-            {
-                throw;
-            }
-            finally
-            {
-                conn.activeLegacyTransaction = null;
-            }
+			try
+			{
+				MySqlCommand cmd = new MySqlCommand("COMMIT", conn);
+				cmd.ExecuteNonQuery();
+				open = false;
+			}
+			catch (MySqlException)
+			{
+				throw;
+			}
+			finally
+			{
+				conn.activeLegacyTransaction = null;
+			}
 		}
 
 		/// <include file='docs/MySqlTransaction.xml' path='docs/Rollback/*'/>
@@ -110,20 +110,20 @@ namespace MySql.Data.MySqlClient
 				throw new InvalidOperationException("Connection must be valid and open to commit transaction");
 			if (!open)
 				throw new InvalidOperationException("Transaction has already been rolled back or is not pending");
-			try 
+			try
 			{
-				MySqlCommand cmd = new MySqlCommand( "ROLLBACK", conn );
+				MySqlCommand cmd = new MySqlCommand("ROLLBACK", conn);
 				cmd.ExecuteNonQuery();
 				open = false;
 			}
-			catch (MySqlException) 
+			catch (MySqlException)
 			{
 				throw;
 			}
-            finally
-            {
-                conn.activeLegacyTransaction = null;
-            }
-        }
+			finally
+			{
+				conn.activeLegacyTransaction = null;
+			}
+		}
 	}
 }

@@ -46,9 +46,9 @@ namespace MySql.Data.MySqlClient.Tests
 
 
 		[Test]
-		public void Timeout() 
+		public void Timeout()
 		{
-			for (int i=1; i < 2000; i++)
+			for (int i = 1; i < 2000; i++)
 				execSQL("INSERT INTO Test VALUES (" + i + ", 'This is a long text string that I am inserting')");
 
 			// we create a new connection so our base one is not closed
@@ -59,7 +59,7 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", c2);
 			MySqlDataReader reader = null;
 
-			try 
+			try
 			{
 				reader = cmd.ExecuteReader();
 				reader.Read();
@@ -71,7 +71,7 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 				Assert.AreEqual(ConnectionState.Closed, c2.State);
 			}
-			finally 
+			finally
 			{
 				if (reader != null) reader.Close();
 				c2.Close();
