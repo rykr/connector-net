@@ -163,7 +163,6 @@ namespace MySql.Data.Common
 
 		public bool Connect(EndPoint remoteEP, int timeout)
 		{
-			int err;
 			// set the socket to non blocking
 			socket.Blocking = false;
 

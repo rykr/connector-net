@@ -45,7 +45,7 @@ namespace MySql.Data.MySqlClient
 		private Hashtable ciHash;
 		private Hashtable hash;
 
-		public MySqlParameterCollection()
+		internal MySqlParameterCollection()
 		{
 			hash = new Hashtable();
 #if NET20

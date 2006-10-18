@@ -311,10 +311,10 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// Initializes a new instance of the MySqlRowUpdatingEventArgs class.
 		/// </summary>
-		/// <param name="row">The <see cref="DataRow"/> to <see cref="DbDataAdapter.Update"/>.</param>
-		/// <param name="command">The <see cref="IDbCommand"/> to execute during <see cref="DbDataAdapter.Update"/>.</param>
+		/// <param name="row">The <see cref="DataRow"/> to <see cref="DbDataAdapter.Update(DataSet)"/>.</param>
+		/// <param name="command">The <see cref="IDbCommand"/> to execute during <see cref="DbDataAdapter.Update(DataSet)"/>.</param>
 		/// <param name="statementType">One of the <see cref="StatementType"/> values that specifies the type of query executed.</param>
-		/// <param name="tableMapping">The <see cref="DataTableMapping"/> sent through an <see cref="DbDataAdapter.Update"/>.</param>
+		/// <param name="tableMapping">The <see cref="DataTableMapping"/> sent through an <see cref="DbDataAdapter.Update(DataSet)"/>.</param>
 		public MySqlRowUpdatingEventArgs(DataRow row, IDbCommand command, StatementType statementType, DataTableMapping tableMapping)
 			: base(row, command, statementType, tableMapping)
 		{
@@ -338,10 +338,10 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// Initializes a new instance of the MySqlRowUpdatedEventArgs class.
 		/// </summary>
-		/// <param name="row">The <see cref="DataRow"/> sent through an <see cref="DbDataAdapter.Update"/>.</param>
-		/// <param name="command">The <see cref="IDbCommand"/> executed when <see cref="DbDataAdapter.Update"/> is called.</param>
+		/// <param name="row">The <see cref="DataRow"/> sent through an <see cref="DbDataAdapter.Update(DataSet)"/>.</param>
+		/// <param name="command">The <see cref="IDbCommand"/> executed when <see cref="DbDataAdapter.Update(DataSet)"/> is called.</param>
 		/// <param name="statementType">One of the <see cref="StatementType"/> values that specifies the type of query executed.</param>
-		/// <param name="tableMapping">The <see cref="DataTableMapping"/> sent through an <see cref="DbDataAdapter.Update"/>.</param>
+		/// <param name="tableMapping">The <see cref="DataTableMapping"/> sent through an <see cref="DbDataAdapter.Update(DataSet)"/>.</param>
 		public MySqlRowUpdatedEventArgs(DataRow row, IDbCommand command, StatementType statementType, DataTableMapping tableMapping)
 			: base(row, command, statementType, tableMapping)
 		{

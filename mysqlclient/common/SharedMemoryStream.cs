@@ -30,23 +30,23 @@ namespace MySql.Data.MySqlClient
 	/// </summary>
 	internal class SharedMemoryStream : Stream
 	{
-		private string			memoryName;
-		private AutoResetEvent	serverRead;
-		private AutoResetEvent	serverWrote;
-		private AutoResetEvent	clientRead;
-		private AutoResetEvent	clientWrote;
-		private IntPtr			dataMap;
-		private IntPtr			dataView;
-		private int				bytesLeft;
-		private int				position;
-		private int				connectNumber;
+		private string memoryName;
+		private AutoResetEvent serverRead;
+		private AutoResetEvent serverWrote;
+		private AutoResetEvent clientRead;
+		private AutoResetEvent clientWrote;
+		private IntPtr dataMap;
+		private IntPtr dataView;
+		private int bytesLeft;
+		private int position;
+		private int connectNumber;
 
-		private uint SYNCHRONIZE = 0x00100000;
-		private uint READ_CONTROL = 0x00020000;
-		private uint EVENT_MODIFY_STATE = 0x2; 
-		private uint EVENT_ALL_ACCESS = 0x001F0003;
-		private uint	FILE_MAP_WRITE = 0x2;
-		private int		BUFFERLENGTH = 16004;
+		private const uint SYNCHRONIZE = 0x00100000;
+		private const uint READ_CONTROL = 0x00020000;
+		private const uint EVENT_MODIFY_STATE = 0x2;
+		private const uint EVENT_ALL_ACCESS = 0x001F0003;
+		private const uint FILE_MAP_WRITE = 0x2;
+		private const int BUFFERLENGTH = 16004;
 
 		public SharedMemoryStream(string memName)
 		{
@@ -59,21 +59,21 @@ namespace MySql.Data.MySqlClient
 			SetupEvents();
 		}
 
-		public override void Close() 
+		public override void Close()
 		{
-			UnmapViewOfFile( dataView );
-			CloseHandle( dataMap );
+			UnmapViewOfFile(dataView);
+			CloseHandle(dataMap);
 		}
 
 		private void GetConnectNumber(int timeOut)
 		{
 			AutoResetEvent connectRequest = new AutoResetEvent(false);
-            connectRequest.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
-                false, memoryName + "_" + "CONNECT_REQUEST");
+			connectRequest.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE,
+				 false, memoryName + "_" + "CONNECT_REQUEST");
 
 			AutoResetEvent connectAnswer = new AutoResetEvent(false);
-            connectAnswer.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
-                false, memoryName + "_" + "CONNECT_ANSWER");
+			connectAnswer.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE,
+				 false, memoryName + "_" + "CONNECT_ANSWER");
 
 			IntPtr connectFileMap = OpenFileMapping(FILE_MAP_WRITE, false,
 				memoryName + "_" + "CONNECT_DATA");
@@ -81,10 +81,10 @@ namespace MySql.Data.MySqlClient
 				0, 0, (UIntPtr)4);
 
 			// now start the connection
-			if (! connectRequest.Set())
+			if (!connectRequest.Set())
 				throw new MySqlException("Failed to open shared memory connection ");
 
-			connectAnswer.WaitOne(timeOut*1000, false);
+			connectAnswer.WaitOne(timeOut * 1000, false);
 
 			connectNumber = Marshal.ReadInt32(connectView);
 		}
@@ -92,25 +92,25 @@ namespace MySql.Data.MySqlClient
 		private void SetupEvents()
 		{
 			string dataMemoryName = memoryName + "_" + connectNumber;
-			dataMap = OpenFileMapping( FILE_MAP_WRITE, false, 
-				dataMemoryName + "_DATA" );
-			dataView = MapViewOfFile( dataMap, FILE_MAP_WRITE, 0, 0, (UIntPtr)(uint)BUFFERLENGTH );
+			dataMap = OpenFileMapping(FILE_MAP_WRITE, false,
+				dataMemoryName + "_DATA");
+			dataView = MapViewOfFile(dataMap, FILE_MAP_WRITE, 0, 0, (UIntPtr)(uint)BUFFERLENGTH);
 
 			serverWrote = new AutoResetEvent(false);
-            serverWrote.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
-                false, dataMemoryName + "_SERVER_WROTE");
+			serverWrote.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE,
+				 false, dataMemoryName + "_SERVER_WROTE");
 
 			serverRead = new AutoResetEvent(false);
-            serverRead.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
-                false, dataMemoryName + "_SERVER_READ");
+			serverRead.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE,
+				 false, dataMemoryName + "_SERVER_READ");
 
 			clientWrote = new AutoResetEvent(false);
-            clientWrote.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
-                false, dataMemoryName + "_CLIENT_WROTE");
+			clientWrote.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE,
+				 false, dataMemoryName + "_CLIENT_WROTE");
 
 			clientRead = new AutoResetEvent(false);
-            clientRead.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, 
-                false, dataMemoryName + "_CLIENT_READ");
+			clientRead.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE,
+				 false, dataMemoryName + "_CLIENT_READ");
 
 			// tell the server we are ready
 			serverRead.Set();
@@ -119,7 +119,7 @@ namespace MySql.Data.MySqlClient
 		#region Properties
 		public override bool CanRead
 		{
-			get	{ return true; }
+			get { return true; }
 		}
 
 		public override bool CanSeek
@@ -140,25 +140,25 @@ namespace MySql.Data.MySqlClient
 		public override long Position
 		{
 			get { throw new NotSupportedException("SharedMemoryStream does not support seeking - postition"); }
-			set	{}
+			set { }
 		}
 
 		#endregion
 
 		public override void Flush()
 		{
-			FlushViewOfFile( dataView, 0 );
+			FlushViewOfFile(dataView, 0);
 		}
 
-		public bool IsClosed() 
+		public bool IsClosed()
 		{
-			try 
+			try
 			{
-				dataView = MapViewOfFile( dataMap, FILE_MAP_WRITE, 0, 0, (UIntPtr)(uint)BUFFERLENGTH );
+				dataView = MapViewOfFile(dataMap, FILE_MAP_WRITE, 0, 0, (UIntPtr)(uint)BUFFERLENGTH);
 				if (dataView == IntPtr.Zero) return true;
 				return false;
 			}
-			catch (Exception) 
+			catch (Exception)
 			{
 				return true;
 			}
@@ -168,24 +168,24 @@ namespace MySql.Data.MySqlClient
 		{
 			while (bytesLeft == 0)
 			{
-				while (! serverWrote.WaitOne(500, false)) 
+				while (!serverWrote.WaitOne(500, false))
 				{
 					if (IsClosed()) return 0;
 				}
 
-				bytesLeft = Marshal.ReadInt32( dataView );
+				bytesLeft = Marshal.ReadInt32(dataView);
 				position = 4;
 			}
 
-			int len = Math.Min( count, bytesLeft );
+			int len = Math.Min(count, bytesLeft);
 			long baseMem = dataView.ToInt64() + position;
 
-			for (int i=0; i < len; i++, position++)
-				buffer[offset+i] = Marshal.ReadByte( (IntPtr)( baseMem + i ) );
+			for (int i = 0; i < len; i++, position++)
+				buffer[offset + i] = Marshal.ReadByte((IntPtr)(baseMem + i));
 
 			bytesLeft -= len;
 
-			if ( bytesLeft == 0)
+			if (bytesLeft == 0)
 				clientRead.Set();
 
 			return len;
@@ -203,17 +203,17 @@ namespace MySql.Data.MySqlClient
 
 			while (leftToDo > 0)
 			{
-				if (! serverRead.WaitOne()) 
+				if (!serverRead.WaitOne())
 					throw new MySqlException("Writing to shared memory failed");
 
-				int bytesToDo = Math.Min( leftToDo, BUFFERLENGTH );
+				int bytesToDo = Math.Min(leftToDo, BUFFERLENGTH);
 
 				long baseMem = dataView.ToInt64() + 4;
-				Marshal.WriteInt32( dataView, bytesToDo );
-				for (int i=0; i < bytesToDo; i++, buffPos++)
-					Marshal.WriteByte( (IntPtr)(baseMem + i), buffer[ buffPos ] );
+				Marshal.WriteInt32(dataView, bytesToDo);
+				for (int i = 0; i < bytesToDo; i++, buffPos++)
+					Marshal.WriteByte((IntPtr)(baseMem + i), buffer[buffPos]);
 				leftToDo -= bytesToDo;
-				if (! clientWrote.Set())
+				if (!clientWrote.Set())
 					throw new MySqlException("Writing to shared memory failed");
 			}
 		}
@@ -225,13 +225,13 @@ namespace MySql.Data.MySqlClient
 
 
 
-#region Imports
+		#region Imports
 		[DllImport("kernel32.dll")]
 		static extern IntPtr OpenEvent(uint dwDesiredAccess, bool bInheritHandle,
 			string lpName);
 
-//		[DllImport("kernel32.dll")]
-//		static extern bool SetEvent(IntPtr hEvent);
+		//		[DllImport("kernel32.dll")]
+		//		static extern bool SetEvent(IntPtr hEvent);
 
 		[DllImport("kernel32.dll")]
 		static extern IntPtr OpenFileMapping(uint dwDesiredAccess, bool bInheritHandle,
@@ -245,13 +245,13 @@ namespace MySql.Data.MySqlClient
 		[DllImport("kernel32.dll")]
 		static extern bool UnmapViewOfFile(IntPtr lpBaseAddress);
 
-		[DllImport("kernel32.dll", SetLastError=true)]
+		[DllImport("kernel32.dll", SetLastError = true)]
 		static extern int CloseHandle(IntPtr hObject);
 
-		[DllImport("kernel32.dll", SetLastError=true)]
-		static extern int FlushViewOfFile( IntPtr address, uint numBytes );
+		[DllImport("kernel32.dll", SetLastError = true)]
+		static extern int FlushViewOfFile(IntPtr address, uint numBytes);
 
-#endregion
+		#endregion
 
 
 

@@ -30,40 +30,62 @@ namespace MySql.Data.Types
 	/// </summary>
 	public class MySqlDateTime : MySqlValue, IConvertible, IComparable
 	{
-        private int year, month, day, hour, minute, second, milli;
-		private static string	fullPattern;
-		private static string	shortPattern;
+		private int year, month, day, hour, minute, second, milli;
+		private static string fullPattern;
+		private static string shortPattern;
 
 
-        public MySqlDateTime(int year, int month, int day, int hour, int minute, int second)
-            : this(year, month, day, hour, minute, second, MySqlDbType.Datetime)
-        {
-        }
+		/// <summary>
+		/// Constructor for MySqlDateTime
+		/// </summary>
+		/// <param name="year"></param>
+		/// <param name="month"></param>
+		/// <param name="day"></param>
+		/// <param name="hour"></param>
+		/// <param name="minute"></param>
+		/// <param name="second"></param>
+		public MySqlDateTime(int year, int month, int day, int hour, int minute, int second)
+			: this(year, month, day, hour, minute, second, MySqlDbType.Datetime)
+		{
+		}
 
-        public MySqlDateTime(DateTime dt)
-            : this(dt, MySqlDbType.Datetime)
-        {
-        }
+		/// <summary>
+		/// Constructor for MySqlDateTime
+		/// </summary>
+		/// <param name="dt"></param>
+		public MySqlDateTime(DateTime dt)
+			: this(dt, MySqlDbType.Datetime)
+		{
+		}
 
-        public MySqlDateTime(MySqlDateTime mdt)
-        {
-            year = mdt.Year;
-            month = mdt.Month;
-            day = mdt.Day;
-            hour = mdt.Hour;
-            minute = mdt.Minute;
-            second = mdt.Second;
-            mySqlDbType = MySqlDbType.Datetime;
-            isNull = false;
-        }
+		/// <summary>
+		/// Constructor for MySqlDateTime
+		/// </summary>
+		/// <param name="mdt"></param>
+		public MySqlDateTime(MySqlDateTime mdt)
+		{
+			year = mdt.Year;
+			month = mdt.Month;
+			day = mdt.Day;
+			hour = mdt.Hour;
+			minute = mdt.Minute;
+			second = mdt.Second;
+			mySqlDbType = MySqlDbType.Datetime;
+			isNull = false;
+		}
 
-        public MySqlDateTime(string s)
-            : this(MySqlDateTime.Parse(s))
-        {
-        }
+		/// <summary>
+		/// Constructor for MySqlDateTime
+		/// </summary>
+		/// <param name="s"></param>
+		public MySqlDateTime(string s)
+			: this(MySqlDateTime.Parse(s))
+		{
+		}
 
-		internal MySqlDateTime(int year, int month, int day, int hour, int minute, 
-			int second, MySqlDbType type) : this(type)
+		internal MySqlDateTime(int year, int month, int day, int hour, int minute,
+			int second, MySqlDbType type)
+			: this(type)
 		{
 			this.year = year;
 			this.month = month;
@@ -74,22 +96,23 @@ namespace MySql.Data.Types
 
 			// we construct a date that is guaranteed not have zeros in the date part
 			// we do this for comparison 
-//			DateTime d = DateTime.MinValue;
-//			d = d.AddYears(year+1).AddMonths(month+1).AddDays(day+1).AddHours(hour);
-//			d = d.AddMinutes(minute).AddSeconds(second);
-//			comparingDate = d;
+			//			DateTime d = DateTime.MinValue;
+			//			d = d.AddYears(year+1).AddMonths(month+1).AddDays(day+1).AddHours(hour);
+			//			d = d.AddMinutes(minute).AddSeconds(second);
+			//			comparingDate = d;
 
 			if (fullPattern == null)
 				ComposePatterns();
 		}
 
-		internal MySqlDateTime(MySqlDbType type) 
+		internal MySqlDateTime(MySqlDbType type)
 		{
 			mySqlDbType = type;
 			objectValue = this;
 		}
 
-		internal MySqlDateTime(DateTime val, MySqlDbType type) : this(type)
+		internal MySqlDateTime(DateTime val, MySqlDbType type)
+			: this(type)
 		{
 			year = val.Year;
 			month = val.Month;
@@ -97,7 +120,7 @@ namespace MySql.Data.Types
 			hour = val.Hour;
 			minute = val.Minute;
 			second = val.Second;
-            milli = val.Millisecond;
+			milli = val.Millisecond;
 		}
 
 		#region Properties
@@ -105,132 +128,135 @@ namespace MySql.Data.Types
 		/// <summary>
 		/// Indicates if this object contains a value that can be represented as a DateTime
 		/// </summary>
-		public bool IsValidDateTime 
+		public bool IsValidDateTime
 		{
-			get 
+			get
 			{
 				return year != 0 && month != 0 && day != 0;
 			}
 		}
 
 		/// <summary>Returns the year portion of this datetime</summary>
-		public int Year 
+		public int Year
 		{
 			get { return year; }
 			set { year = value; }
 		}
 
 		/// <summary>Returns the month portion of this datetime</summary>
-		public int Month 
+		public int Month
 		{
 			get { return month; }
 			set { month = value; }
 		}
 
 		/// <summary>Returns the day portion of this datetime</summary>
-		public int Day 
+		public int Day
 		{
 			get { return day; }
 			set { day = value; }
 		}
 
 		/// <summary>Returns the hour portion of this datetime</summary>
-		public int Hour 
+		public int Hour
 		{
 			get { return hour; }
 			set { hour = value; }
 		}
 
 		/// <summary>Returns the minute portion of this datetime</summary>
-		public int Minute 
+		public int Minute
 		{
 			get { return minute; }
 			set { minute = value; }
 		}
 
 		/// <summary>Returns the second portion of this datetime</summary>
-		public int Second 
+		public int Second
 		{
 			get { return second; }
 			set { second = value; }
 		}
 
-        public int Millisecond
-        {
-            get { return milli; }
-            set { milli = value; }
-        }
+		/// <summary>
+		/// Returns the millisecond portion of this datetime
+		/// </summary>
+		public int Millisecond
+		{
+			get { return milli; }
+			set { milli = value; }
+		}
 
 		#endregion
 
-		private void SerializeText(PacketWriter writer, MySqlDateTime value) 
+		private void SerializeText(PacketWriter writer, MySqlDateTime value)
 		{
 			string val = String.Empty;
 
-			if (mySqlDbType == MySqlDbType.Timestamp && !writer.Version.isAtLeast(4,1,0))
+			if (mySqlDbType == MySqlDbType.Timestamp && !writer.Version.isAtLeast(4, 1, 0))
 				val = String.Format("{0:0000}{1:00}{2:00}{3:00}{4:00}{5:00}",
-					value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second );
-			else 
+					value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second);
+			else
 			{
-				val = String.Format("{0:0000}-{1:00}-{2:00} {3:00}:{4:00}:{5:00}", value.Year, value.Month, 
-					value.Day, value.Hour, value.Minute, value.Second );
+				val = String.Format("{0:0000}-{1:00}-{2:00} {3:00}:{4:00}:{5:00}", value.Year, value.Month,
+					value.Day, value.Hour, value.Minute, value.Second);
 			}
-			writer.WriteStringNoNull( "'" + val + "'" );
+			writer.WriteStringNoNull("'" + val + "'");
 		}
 
 
 		internal override void Serialize(PacketWriter writer, bool binary, object value, int length)
 		{
-            MySqlDateTime dtValue;
+			MySqlDateTime dtValue;
 
-            if (value is DateTime)
-                dtValue = new MySqlDateTime((DateTime)value, MySqlDbType);
-            else if (value is string)
-                dtValue = new MySqlDateTime(DateTime.Parse((string)value,
-                    System.Globalization.CultureInfo.CurrentCulture), MySqlDbType);
-            else if (value is MySqlDateTime)
-                dtValue = (MySqlDateTime)value;
-            else
+			if (value is DateTime)
+				dtValue = new MySqlDateTime((DateTime)value, MySqlDbType);
+			else if (value is string)
+				dtValue = new MySqlDateTime(DateTime.Parse((string)value,
+					 System.Globalization.CultureInfo.CurrentCulture), MySqlDbType);
+			else if (value is MySqlDateTime)
+				dtValue = (MySqlDateTime)value;
+			else
 				throw new MySqlException("Unable to serialize date/time value.");
 
-			if (! binary)
+			if (!binary)
 			{
 				SerializeText(writer, dtValue);
 				return;
 			}
 
 			if (mySqlDbType == MySqlDbType.Timestamp)
-				writer.WriteByte( 11 );
+				writer.WriteByte(11);
 			else
-				writer.WriteByte( 7 );
+				writer.WriteByte(7);
 
 			writer.WriteInteger(dtValue.Year, 2);
 			writer.WriteByte((byte)dtValue.Month);
 			writer.WriteByte((byte)dtValue.Day);
-			if (mySqlDbType == MySqlDbType.Date) 
+			if (mySqlDbType == MySqlDbType.Date)
 			{
 				writer.WriteByte(0);
 				writer.WriteByte(0);
 				writer.WriteByte(0);
 			}
-			else 
+			else
 			{
 				writer.WriteByte((byte)dtValue.Hour);
 				writer.WriteByte((byte)dtValue.Minute);
 				writer.WriteByte((byte)dtValue.Second);
 			}
-			
+
 			if (mySqlDbType == MySqlDbType.Timestamp)
 				writer.WriteInteger(dtValue.Millisecond, 4);
 		}
 
-		internal override DbType DbType 
+		internal override DbType DbType
 		{
-			get 
-			{ 
-				switch (mySqlDbType) 
+			get
+			{
+				switch (mySqlDbType)
 				{
-					case MySqlDbType.Date:			
+					case MySqlDbType.Date:
 					case MySqlDbType.Newdate:
 						return DbType.Date;
 				}
@@ -240,7 +266,7 @@ namespace MySql.Data.Types
 
 		internal override string GetMySqlTypeName()
 		{
-			switch (mySqlDbType) 
+			switch (mySqlDbType)
 			{
 				case MySqlDbType.Date: return "DATE";
 				case MySqlDbType.Newdate: return "NEWDATE";
@@ -252,13 +278,13 @@ namespace MySql.Data.Types
 		/// <summary>Returns this value as a DateTime</summary>
 		public DateTime GetDateTime()
 		{
-			if (! IsValidDateTime)
-				throw new MySqlConversionException("Unable to convert MySQL date/time value to System.DateTime");			
+			if (!IsValidDateTime)
+				throw new MySqlConversionException("Unable to convert MySQL date/time value to System.DateTime");
 
-			return new DateTime( year, month, day, hour, minute, second );
+			return new DateTime(year, month, day, hour, minute, second);
 		}
 
-		private MySqlDateTime Parse40Timestamp( string s ) 
+		private MySqlDateTime Parse40Timestamp(string s)
 		{
 			int pos = 0;
 			year = month = day = 1;
@@ -269,7 +295,7 @@ namespace MySql.Data.Types
 				year = int.Parse(s.Substring(pos, 4));
 				pos += 4;
 			}
-			else 
+			else
 			{
 				year = int.Parse(s.Substring(pos, 2));
 				pos += 2;
@@ -292,42 +318,42 @@ namespace MySql.Data.Types
 			if (s.Length > 8)
 			{
 				hour = int.Parse(s.Substring(pos, 2));
-				minute = int.Parse(s.Substring(pos+2, 2));
+				minute = int.Parse(s.Substring(pos + 2, 2));
 				pos += 4;
 			}
 			if (s.Length > 10)
 				second = int.Parse(s.Substring(pos, 2));
 
-			return new MySqlDateTime(year, month, day, hour, minute, 
-				                     second, mySqlDbType );
+			return new MySqlDateTime(year, month, day, hour, minute,
+											second, mySqlDbType);
 		}
 
-        internal static MySqlDateTime Parse(string s)
-        {
-            MySqlDateTime dt = new MySqlDateTime(MySqlDbType.Datetime);
-            return dt.ParseMySql(s, true);
-        }
-
-		internal MySqlDateTime ParseMySql(string s, bool is41) 
+		internal static MySqlDateTime Parse(string s)
 		{
-			if (mySqlDbType == MySqlDbType.Timestamp && ! is41)
+			MySqlDateTime dt = new MySqlDateTime(MySqlDbType.Datetime);
+			return dt.ParseMySql(s, true);
+		}
+
+		internal MySqlDateTime ParseMySql(string s, bool is41)
+		{
+			if (mySqlDbType == MySqlDbType.Timestamp && !is41)
 				return Parse40Timestamp(s);
 
-			string[] parts = s.Split( '-', ' ', ':', '/' );
-			
-			int year = int.Parse( parts[0] );
-			int month = int.Parse( parts[1] );
-			int day = int.Parse( parts[2] );
+			string[] parts = s.Split('-', ' ', ':', '/');
+
+			int year = int.Parse(parts[0]);
+			int month = int.Parse(parts[1]);
+			int day = int.Parse(parts[2]);
 
 			int hour = 0, minute = 0, second = 0;
-			if (parts.Length > 3) 
+			if (parts.Length > 3)
 			{
-				hour = int.Parse( parts[3] );
-				minute = int.Parse( parts[4] );
-				second = int.Parse( parts[5] );
+				hour = int.Parse(parts[3]);
+				minute = int.Parse(parts[4]);
+				second = int.Parse(parts[5]);
 			}
 
-			return new MySqlDateTime( year, month, day, hour, minute, second, mySqlDbType );
+			return new MySqlDateTime(year, month, day, hour, minute, second, mySqlDbType);
 		}
 
 		internal override Type SystemType
@@ -337,115 +363,120 @@ namespace MySql.Data.Types
 
 		internal override MySqlValue ReadValue(PacketReader reader, long length)
 		{
-			if (length >= 0) 
+			if (length >= 0)
 			{
-				string value = reader.ReadString( length );
-				return ParseMySql( value, reader.Version.isAtLeast(4,1,0) );
+				string value = reader.ReadString(length);
+				return ParseMySql(value, reader.Version.isAtLeast(4, 1, 0));
 			}
 
 			long bufLength = reader.ReadByte();
-            int year = 0, month = 0, day = 0;
-            int hour = 0, minute = 0, second = 0;
-            
-            if (bufLength >= 4)
-            {
-                year = reader.ReadInteger(2);
-                month = reader.ReadByte();
-                day = reader.ReadByte();
-            }
+			int year = 0, month = 0, day = 0;
+			int hour = 0, minute = 0, second = 0;
 
-			if (bufLength > 4) 
+			if (bufLength >= 4)
+			{
+				year = reader.ReadInteger(2);
+				month = reader.ReadByte();
+				day = reader.ReadByte();
+			}
+
+			if (bufLength > 4)
 			{
 				hour = reader.ReadByte();
 				minute = reader.ReadByte();
 				second = reader.ReadByte();
 			}
-		
+
 			if (bufLength > 7)
 				reader.ReadInteger(4);
-		
-			return new MySqlDateTime( year, month, day, hour, minute, second, mySqlDbType );
+
+			return new MySqlDateTime(year, month, day, hour, minute, second, mySqlDbType);
 		}
 
 		internal override void Skip(PacketReader reader)
 		{
 			long len = reader.ReadByte();
-			reader.Skip( len );
+			reader.Skip(len);
 		}
 
 		/// <summary>Returns a MySQL specific string representation of this value</summary>
 		public override string ToString()
 		{
-			if (this.IsValidDateTime) 
+			if (this.IsValidDateTime)
 			{
-				DateTime d = new DateTime( year, month, day, hour, minute, second );
+				DateTime d = new DateTime(year, month, day, hour, minute, second);
 				return (mySqlDbType == MySqlDbType.Date) ? d.ToString("d") : d.ToString();
 			}
 
 			if (mySqlDbType == MySqlDbType.Date)
-				return String.Format( shortPattern, year, month, day);
+				return String.Format(shortPattern, year, month, day);
 
 			if (hour >= 12)
 				fullPattern = fullPattern.Replace("A", "P");
-			return String.Format( fullPattern, year, month, day, hour, minute, second);
+			return String.Format(fullPattern, year, month, day, hour, minute, second);
 		}
 
-		private void ComposePatterns() 
+		private void ComposePatterns()
 		{
 			DateTime tempDT = new DateTime(1, 2, 3, 4, 5, 6);
 			fullPattern = tempDT.ToString();
-			fullPattern = fullPattern.Replace( "0001", "{0:0000}" );
+			fullPattern = fullPattern.Replace("0001", "{0:0000}");
 			if (fullPattern.IndexOf("02") != -1)
-				fullPattern = fullPattern.Replace( "02", "{1:00}" );
+				fullPattern = fullPattern.Replace("02", "{1:00}");
 			else
-				fullPattern = fullPattern.Replace("2", "{1}" );
+				fullPattern = fullPattern.Replace("2", "{1}");
 			if (fullPattern.IndexOf("03") != -1)
-				fullPattern = fullPattern.Replace( "03", "{2:00}" );
+				fullPattern = fullPattern.Replace("03", "{2:00}");
 			else
-				fullPattern = fullPattern.Replace("3", "{2}" );
+				fullPattern = fullPattern.Replace("3", "{2}");
 			if (fullPattern.IndexOf("04") != -1)
-				fullPattern = fullPattern.Replace( "04", "{3:00}" );
+				fullPattern = fullPattern.Replace("04", "{3:00}");
 			else
-				fullPattern = fullPattern.Replace("4", "{3}" );
+				fullPattern = fullPattern.Replace("4", "{3}");
 			if (fullPattern.IndexOf("05") != -1)
-				fullPattern = fullPattern.Replace( "05", "{4:00}" );
+				fullPattern = fullPattern.Replace("05", "{4:00}");
 			else
-				fullPattern = fullPattern.Replace("5", "{4}" );
+				fullPattern = fullPattern.Replace("5", "{4}");
 			if (fullPattern.IndexOf("06") != -1)
-				fullPattern = fullPattern.Replace( "06", "{5:00}" );
+				fullPattern = fullPattern.Replace("06", "{5:00}");
 			else
-				fullPattern = fullPattern.Replace("6", "{5}" );
+				fullPattern = fullPattern.Replace("6", "{5}");
 
 			shortPattern = tempDT.ToString("d");
-			shortPattern = shortPattern.Replace( "0001", "{0:0000}" );
+			shortPattern = shortPattern.Replace("0001", "{0:0000}");
 			if (shortPattern.IndexOf("02") != -1)
-				shortPattern = shortPattern.Replace( "02", "{1:00}" );
+				shortPattern = shortPattern.Replace("02", "{1:00}");
 			else
-				shortPattern = shortPattern.Replace("2", "{1}" );
+				shortPattern = shortPattern.Replace("2", "{1}");
 			if (shortPattern.IndexOf("03") != -1)
-				shortPattern = shortPattern.Replace( "03", "{2:00}" );
+				shortPattern = shortPattern.Replace("03", "{2:00}");
 			else
-				shortPattern = shortPattern.Replace("3", "{2}" );
+				shortPattern = shortPattern.Replace("3", "{2}");
 		}
 
 		/// <summary></summary>
 		/// <param name="val"></param>
 		/// <returns></returns>
-		public static explicit operator DateTime( MySqlDateTime val ) 
+		public static explicit operator DateTime(MySqlDateTime val)
 		{
-			if (! val.IsValidDateTime) return DateTime.MinValue;
+			if (!val.IsValidDateTime) return DateTime.MinValue;
 			return val.GetDateTime();
 		}
 
-        public static implicit operator MySqlDateTime(DateTime v)
-        {
-            MySqlDateTime dt = new MySqlDateTime(v, MySqlDbType.Datetime);
-            return dt;
-        }
+		/// <summary>
+		/// Implicit conversion operator for MySqlDateTime
+		/// </summary>
+		/// <param name="v"></param>
+		/// <returns></returns>
+		public static implicit operator MySqlDateTime(DateTime v)
+		{
+			MySqlDateTime dt = new MySqlDateTime(v, MySqlDbType.Datetime);
+			return dt;
+		}
 
 		#region IConvertible Members
 
-		ulong IConvertible.ToUInt64 (IFormatProvider provider)
+		ulong IConvertible.ToUInt64(IFormatProvider provider)
 		{
 			return 0;
 		}
@@ -513,7 +544,7 @@ namespace MySql.Data.Types
 
 		System.TypeCode IConvertible.GetTypeCode()
 		{
-			return new System.TypeCode ();
+			return new System.TypeCode();
 		}
 
 		decimal IConvertible.ToDecimal(IFormatProvider provider)

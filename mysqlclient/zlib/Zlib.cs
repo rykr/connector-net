@@ -44,8 +44,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 namespace zlib
 {
-	
-	sealed public class zlibConst
+	/// <summary>
+	/// 
+	/// </summary>
+	sealed internal class zlibConst
 	{
 		private const System.String version_Renamed_Field = "1.0.2";
 		public static System.String version()

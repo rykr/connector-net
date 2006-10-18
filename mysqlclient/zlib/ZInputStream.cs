@@ -45,7 +45,10 @@ using System;
 namespace zlib
 {
 	
-	public class ZInputStream:System.IO.BinaryReader
+	/// <summary>
+	/// 
+	/// </summary>
+	internal class ZInputStream:System.IO.BinaryReader
 	{
         public long maxInput;
 
@@ -54,6 +57,7 @@ namespace zlib
 			flush = zlibConst.Z_NO_FLUSH;
 			buf = new byte[bufsize];
 		}
+
 		virtual public int FlushMode
 		{
 			get
