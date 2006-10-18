@@ -35,8 +35,12 @@ namespace MySql.Data.Common
 
 		public DBConnectionString()
 		{	
+#if NET20
+			keyValues = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+#else
 			keyValues = new Hashtable(new CaseInsensitiveHashCodeProvider(), 
 				new CaseInsensitiveComparer());
+#endif
 		}
 
 		public void LoadDefaultValues()

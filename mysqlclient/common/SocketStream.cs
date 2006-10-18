@@ -141,21 +141,25 @@ namespace MySql.Data.Common
 
 		#region IDisposable Members
 
-		public void Dispose()
+		protected override void Dispose(bool disposing)
 		{
-			if (socket == null) return;
+			if (disposing)
+			{
+				if (socket == null) return;
 
-			canRead = false;
-			canWrite = false;
-			try 
-			{
-				socket.Shutdown(SocketShutdown.Both);				
+				canRead = false;
+				canWrite = false;
+				try
+				{
+					socket.Shutdown(SocketShutdown.Both);
+				}
+				catch (Exception)
+				{
+				}
+				socket.Close();
+				socket = null;
 			}
-			catch (Exception)
-			{
-			}
-			socket.Close();
-			socket = null;
+			base.Dispose(disposing);
 		}
 
 		#endregion

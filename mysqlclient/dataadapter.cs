@@ -81,7 +81,11 @@ namespace MySql.Data.MySqlClient
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/DeleteCommand/*'/>
 		[Description("Used during Update for deleted rows in Dataset.")]
+#if NET20
+		public new MySqlCommand DeleteCommand
+#else
 		public MySqlCommand DeleteCommand
+#endif
 		{
 			get { return m_deleteCommand; }
 			set { m_deleteCommand = value; }
@@ -95,7 +99,11 @@ namespace MySql.Data.MySqlClient
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/InsertCommand/*'/>
 		[Description("Used during Update for new rows in Dataset.")]
+#if NET20
+		public new MySqlCommand InsertCommand
+#else
 		public MySqlCommand InsertCommand
+#endif
 		{
 			get { return m_insertCommand; }
 			set { m_insertCommand = value; }
@@ -110,7 +118,11 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/SelectCommand/*'/>
 		[Description("Used during Fill/FillSchema")]
 		[Category("Fill")]
+#if NET20
+		public new MySqlCommand SelectCommand
+#else
 		public MySqlCommand SelectCommand
+#endif
 		{
 			get { return m_selectCommand; }
 			set { m_selectCommand = value; }
@@ -124,7 +136,11 @@ namespace MySql.Data.MySqlClient
 
 		/// <include file='docs/MySqlDataAdapter.xml' path='docs/UpdateCommand/*'/>
 		[Description("Used during Update for modified rows in Dataset.")]
+#if NET20
+		public new MySqlCommand UpdateCommand
+#else
 		public MySqlCommand UpdateCommand
+#endif
 		{
 			get { return m_updateCommand; }
 			set { m_updateCommand = value; }

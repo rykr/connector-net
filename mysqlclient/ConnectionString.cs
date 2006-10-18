@@ -315,8 +315,12 @@ namespace MySql.Data.MySqlClient
 			defaults = base.GetDefaultValues();
 			if (defaults == null)
 			{
+#if NET20
+				defaults = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+#else
 				defaults = new Hashtable(new CaseInsensitiveHashCodeProvider(),
 					new CaseInsensitiveComparer());
+#endif
 				defaults["host"] = String.Empty;
 				defaults["connect lifetime"] = 0;
 				defaults["user id"] = String.Empty;

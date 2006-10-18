@@ -40,7 +40,7 @@ namespace MySql.Data.Common
 			}
 			public int Length;
 			public IntPtr securityDescriptor = IntPtr.Zero;
-			public bool inheritHandle;
+			public bool inheritHandle = false;
 		}
 
 		[DllImport("Kernel32")]

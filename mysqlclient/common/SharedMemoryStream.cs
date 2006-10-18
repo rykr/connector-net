@@ -22,6 +22,8 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.IO;
+using Microsoft.Win32.SafeHandles;
+using System.Diagnostics;
 
 namespace MySql.Data.MySqlClient
 {
@@ -68,17 +70,27 @@ namespace MySql.Data.MySqlClient
 		private void GetConnectNumber(int timeOut)
 		{
 			AutoResetEvent connectRequest = new AutoResetEvent(false);
-			connectRequest.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE,
-				 false, memoryName + "_" + "CONNECT_REQUEST");
+			IntPtr handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, false,
+			memoryName + "_" + "CONNECT_REQUEST");
+#if NET20 && !MONO
+			connectRequest.SafeWaitHandle = new SafeWaitHandle(handle, true);
+#else
+			connectRequest.Handle = handle;
+#endif
 
 			AutoResetEvent connectAnswer = new AutoResetEvent(false);
-			connectAnswer.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE,
-				 false, memoryName + "_" + "CONNECT_ANSWER");
+			handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, false,
+			memoryName + "_" + "CONNECT_ANSWER");
+#if NET20 && !MONO
+			connectAnswer.SafeWaitHandle = new SafeWaitHandle(handle, true);
+#else
+			connectAnswer.Handle = handle;
+#endif
 
 			IntPtr connectFileMap = OpenFileMapping(FILE_MAP_WRITE, false,
 				memoryName + "_" + "CONNECT_DATA");
 			IntPtr connectView = MapViewOfFile(connectFileMap, FILE_MAP_WRITE,
-				0, 0, (UIntPtr)4);
+				0, 0, (IntPtr)4);
 
 			// now start the connection
 			if (!connectRequest.Set())
@@ -94,23 +106,48 @@ namespace MySql.Data.MySqlClient
 			string dataMemoryName = memoryName + "_" + connectNumber;
 			dataMap = OpenFileMapping(FILE_MAP_WRITE, false,
 				dataMemoryName + "_DATA");
-			dataView = MapViewOfFile(dataMap, FILE_MAP_WRITE, 0, 0, (UIntPtr)(uint)BUFFERLENGTH);
+			dataView = (IntPtr)MapViewOfFile(dataMap, FILE_MAP_WRITE,
+					 0, 0, (IntPtr)(int)BUFFERLENGTH);
 
 			serverWrote = new AutoResetEvent(false);
-			serverWrote.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE,
-				 false, dataMemoryName + "_SERVER_WROTE");
+			IntPtr handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, false,
+				 dataMemoryName + "_SERVER_WROTE");
+			Debug.Assert(handle != IntPtr.Zero);
+#if NET20 && !MONO
+			serverWrote.SafeWaitHandle = new SafeWaitHandle(handle, true);
+#else
+			serverWrote.Handle = handle;
+#endif
 
 			serverRead = new AutoResetEvent(false);
-			serverRead.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE,
-				 false, dataMemoryName + "_SERVER_READ");
+			handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, false,
+			dataMemoryName + "_SERVER_READ");
+			Debug.Assert(handle != IntPtr.Zero);
+#if NET20 && !MONO
+			serverRead.SafeWaitHandle = new SafeWaitHandle(handle, true);
+#else
+			serverRead.Handle = handle;
+#endif
 
 			clientWrote = new AutoResetEvent(false);
-			clientWrote.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE,
-				 false, dataMemoryName + "_CLIENT_WROTE");
+			handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, false,
+			dataMemoryName + "_CLIENT_WROTE");
+			Debug.Assert(handle != IntPtr.Zero);
+#if NET20 && !MONO
+			clientWrote.SafeWaitHandle = new SafeWaitHandle(handle, true);
+#else
+			clientWrote.Handle = handle;
+#endif
 
 			clientRead = new AutoResetEvent(false);
-			clientRead.Handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE,
-				 false, dataMemoryName + "_CLIENT_READ");
+			handle = OpenEvent(SYNCHRONIZE | EVENT_MODIFY_STATE, false,
+			dataMemoryName + "_CLIENT_READ");
+			Debug.Assert(handle != IntPtr.Zero);
+#if NET20 && !MONO
+			clientRead.SafeWaitHandle = new SafeWaitHandle(handle, true);
+#else
+			clientRead.Handle = handle;
+#endif
 
 			// tell the server we are ready
 			serverRead.Set();
@@ -154,7 +191,7 @@ namespace MySql.Data.MySqlClient
 		{
 			try
 			{
-				dataView = MapViewOfFile(dataMap, FILE_MAP_WRITE, 0, 0, (UIntPtr)(uint)BUFFERLENGTH);
+				dataView = MapViewOfFile(dataMap, FILE_MAP_WRITE, 0, 0, (IntPtr)(int)BUFFERLENGTH);
 				if (dataView == IntPtr.Zero) return true;
 				return false;
 			}
@@ -240,7 +277,7 @@ namespace MySql.Data.MySqlClient
 		[DllImport("kernel32.dll")]
 		static extern IntPtr MapViewOfFile(IntPtr hFileMappingObject, uint
 			dwDesiredAccess, uint dwFileOffsetHigh, uint dwFileOffsetLow,
-			UIntPtr dwNumberOfBytesToMap);
+			IntPtr dwNumberOfBytesToMap);
 
 		[DllImport("kernel32.dll")]
 		static extern bool UnmapViewOfFile(IntPtr lpBaseAddress);
