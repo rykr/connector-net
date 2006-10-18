@@ -30,62 +30,64 @@ namespace MySql.Data.MySqlClient
 {
 	internal enum ColumnFlags : int
 	{
-		NOT_NULL		= 1,
-		PRIMARY_KEY		= 2,
-		UNIQUE_KEY		= 4,
-		MULTIPLE_KEY	= 8,
-		BLOB			= 16,
-		UNSIGNED		= 32,
-		ZERO_FILL		= 64,
-		BINARY			= 128,
-		ENUM			= 256,
-		AUTO_INCREMENT	= 512,
-		TIMESTAMP		= 1024,
-		SET				= 2048,
-		NUMBER			= 32768
+		NOT_NULL = 1,
+		PRIMARY_KEY = 2,
+		UNIQUE_KEY = 4,
+		MULTIPLE_KEY = 8,
+		BLOB = 16,
+		UNSIGNED = 32,
+		ZERO_FILL = 64,
+		BINARY = 128,
+		ENUM = 256,
+		AUTO_INCREMENT = 512,
+		TIMESTAMP = 1024,
+		SET = 2048,
+		NUMBER = 32768
 	};
-	
+
 	/// <summary>
 	/// Summary description for Field.
 	/// </summary>
-	internal class MySqlField 
+	internal class MySqlField
 	{
 		#region Fields
 
 		// public fields
-		public		string		CatalogName;
-		public		int			ColumnLength;
-		public		string		ColumnName;
-		public		string		OriginalColumnName;
-		public		string		TableName;
-		public		string		RealTableName;
-		public		string		DatabaseName;
-		public		Encoding	Encoding;
+		public string CatalogName;
+		public int ColumnLength;
+		public string ColumnName;
+		public string OriginalColumnName;
+		public string TableName;
+		public string RealTableName;
+		public string DatabaseName;
+		public Encoding Encoding;
+		public int maxLength;
 
 		// protected fields
-		protected	ColumnFlags	colFlags;
-		protected	int			charSetIndex;
-		protected	byte		precision;
-		protected	byte		scale;
-		protected	MySqlDbType	mySqlDbType;
-		protected	DBVersion	connVersion;
+		protected ColumnFlags colFlags;
+		protected int charSetIndex;
+		protected byte precision;
+		protected byte scale;
+		protected MySqlDbType mySqlDbType;
+		protected DBVersion connVersion;
 
 		#endregion
 
-		public MySqlField( DBVersion connVersion ) 
+		public MySqlField(DBVersion connVersion)
 		{
 			this.connVersion = connVersion;
+			maxLength = 1;
 		}
 
 		#region Properties
 
-		public int CharactetSetIndex 
+		public int CharactetSetIndex
 		{
 			get { return charSetIndex; }
 			set { charSetIndex = value; }
 		}
 
-		public MySqlDbType	Type 
+		public MySqlDbType Type
 		{
 			get { return mySqlDbType; }
 			set { mySqlDbType = value; }
@@ -103,8 +105,14 @@ namespace MySql.Data.MySqlClient
 			set { scale = value; }
 		}
 
-		public ColumnFlags Flags 
-		{ 
+		public int MaxLength
+		{
+			get { return maxLength; }
+			set { maxLength = value; }
+		}
+
+		public ColumnFlags Flags
+		{
 			get { return colFlags; }
 			set { colFlags = value; }
 		}
@@ -149,25 +157,25 @@ namespace MySql.Data.MySqlClient
 			get { return (colFlags & ColumnFlags.UNSIGNED) > 0; }
 		}
 
-        public bool IsTextField
-        {
-            get
-            {
-                return Type == MySqlDbType.VarString || Type == MySqlDbType.VarChar ||
-                    ((Type == MySqlDbType.TinyBlob || Type == MySqlDbType.MediumBlob ||
-                      Type == MySqlDbType.Blob || Type == MySqlDbType.LongBlob) &&
-                      !IsBinary);
-            }
+		public bool IsTextField
+		{
+			get
+			{
+				return Type == MySqlDbType.VarString || Type == MySqlDbType.VarChar ||
+					 ((Type == MySqlDbType.TinyBlob || Type == MySqlDbType.MediumBlob ||
+						Type == MySqlDbType.Blob || Type == MySqlDbType.LongBlob) &&
+						!IsBinary);
+			}
 
-        }
+		}
 
-#endregion
+		#endregion
 
 		public MySqlDbType ProviderType()
 		{
-			if (IsUnsigned) 
+			if (IsUnsigned)
 			{
-				switch (Type) 
+				switch (Type)
 				{
 					case MySqlDbType.Byte: return MySqlDbType.UByte;
 					case MySqlDbType.Int16: return MySqlDbType.UInt16;
@@ -179,7 +187,7 @@ namespace MySql.Data.MySqlClient
 			return Type;
 		}
 
-		public MySqlValue GetValueObject() 
+		public MySqlValue GetValueObject()
 		{
 			MySqlValue valueObject = MySqlValue.GetMySqlValue(ProviderType(), IsBinary);
 			return valueObject;

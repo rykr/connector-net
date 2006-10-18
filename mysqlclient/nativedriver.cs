@@ -565,7 +565,11 @@ namespace MySql.Data.MySqlClient
 			field.Scale = (byte)reader.ReadByte();
 
 			if (charSets != null)
-				field.Encoding = CharSetMap.GetEncoding( this.version, (string)charSets[field.CharactetSetIndex] );
+			{
+				CharacterSet cs = CharSetMap.GetChararcterSet(this.Version, (string)charSets[field.CharactetSetIndex]);
+				field.MaxLength = cs.byteCount;
+				field.Encoding = CharSetMap.GetEncoding(this.version, (string)charSets[field.CharactetSetIndex]);
+			}
 
 			return field;
 		}

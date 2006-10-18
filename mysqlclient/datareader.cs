@@ -33,18 +33,18 @@ namespace MySql.Data.MySqlClient
 	public sealed class MySqlDataReader : MarshalByRefObject, IEnumerable, IDataReader, IDisposable, IDataRecord
 	{
 		// The DataReader should always be open when returned to the user.
-		private bool			isOpen = true;
+		private bool isOpen = true;
 
 		// Keep track of the results and position
 		// within the resultset (starts prior to first record).
-		private MySqlField[]	fields;
-		private CommandBehavior	commandBehavior;
-		private MySqlCommand	command;
-		private bool			canRead;
-		private bool			hasRows;
-		private CommandResult	currentResult;
-		private int				readCount;
-		private DataTable		schemaTable;
+		private MySqlField[] fields;
+		private CommandBehavior commandBehavior;
+		private MySqlCommand command;
+		private bool canRead;
+		private bool hasRows;
+		private CommandResult currentResult;
+		private int readCount;
+		private DataTable schemaTable;
 
 		/* 
 		 * Keep track of the connection in order to implement the
@@ -69,17 +69,17 @@ namespace MySql.Data.MySqlClient
 		/// Gets a value indicating the depth of nesting for the current row.  This method is not 
 		/// supported currently and always returns 0.
 		/// </summary>
-		public int Depth 
+		public int Depth
 		{
-			get { return 0;  }
+			get { return 0; }
 		}
 
-		internal CommandBehavior Behavior 
+		internal CommandBehavior Behavior
 		{
 			get { return commandBehavior; }
 		}
 
-		internal CommandResult CurrentResult 
+		internal CommandResult CurrentResult
 		{
 			get { return currentResult; }
 		}
@@ -89,10 +89,10 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		public bool IsClosed
 		{
-			get  { return ! isOpen; }
+			get { return !isOpen; }
 		}
 
-		void IDisposable.Dispose() 
+		void IDisposable.Dispose()
 		{
 			if (isOpen)
 				Close();
@@ -101,7 +101,7 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// Gets the number of rows changed, inserted, or deleted by execution of the SQL statement.
 		/// </summary>
-		public int RecordsAffected 
+		public int RecordsAffected
 		{
 			// RecordsAffected returns the number of rows affected in batch
 			// statments from insert/delete/update statments.  This property
@@ -122,9 +122,9 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		public void Close()
 		{
-			if (! isOpen) return;
+			if (!isOpen) return;
 
-			try 
+			try
 			{
 				// finish any current command
 				if (currentResult != null)
@@ -133,12 +133,12 @@ namespace MySql.Data.MySqlClient
 				connection.Reader = null;
 				command.Consume();
 
-                // if our batch resulted in warnings, then report them now
-                // this is suboptimal but we have to report them here since
-                // pulling warnings from the server requires a reader and
-                // we can't have more than one reader open at one time.
-                if (connection.driver.HasWarnings)
-                    connection.driver.ReportWarnings();
+				// if our batch resulted in warnings, then report them now
+				// this is suboptimal but we have to report them here since
+				// pulling warnings from the server requires a reader and
+				// we can't have more than one reader open at one time.
+				if (connection.driver.HasWarnings)
+					connection.driver.ReportWarnings();
 
 				if (0 != (commandBehavior & CommandBehavior.CloseConnection))
 					connection.Close();
@@ -152,7 +152,7 @@ namespace MySql.Data.MySqlClient
 				}
 				throw;
 			}
-			finally 
+			finally
 			{
 				isOpen = false;
 			}
@@ -169,8 +169,8 @@ namespace MySql.Data.MySqlClient
 			// Return the count of the number of columns, which in
 			// this case is the size of the column metadata
 			// array.
-			get 
-			{ 
+			get
+			{
 				if (fields != null)
 					return fields.Length;
 				return 0;
@@ -181,7 +181,7 @@ namespace MySql.Data.MySqlClient
 		/// Overloaded. Gets the value of a column in its native format.
 		/// In C#, this property is the indexer for the MySqlDataReader class.
 		/// </summary>
-		public object this [ int i ]
+		public object this[int i]
 		{
 			get { return GetValue(i); }
 		}
@@ -190,7 +190,7 @@ namespace MySql.Data.MySqlClient
 		/// Gets the value of a column in its native format.
 		///	[C#] In C#, this property is the indexer for the MySqlDataReader class.
 		/// </summary>
-		public object this [ String name ]
+		public object this[String name]
 		{
 			// Look up the ordinal and return 
 			// the value at that position.
@@ -234,35 +234,35 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='MyDocs/MyMembers[@name="GetBytes"]/*'/>
 		public long GetBytes(int i, long dataIndex, byte[] buffer, int bufferIndex, int length)
 		{
-			if (i >= fields.Length) 
+			if (i >= fields.Length)
 				throw new IndexOutOfRangeException();
 
 			MySqlValue val = GetFieldValue(i, false);
 
-			if (! (val is MySqlBinary))
+			if (!(val is MySqlBinary))
 				throw new MySqlException("GetBytes can only be called on binary columns");
 
 			MySqlBinary binary = (MySqlBinary)val;
-			if (buffer == null) 
+			if (buffer == null)
 				return (long)binary.Value.Length;
 
 			if (bufferIndex >= buffer.Length || bufferIndex < 0)
 				throw new IndexOutOfRangeException("Buffer index must be a valid index in buffer");
 			if (buffer.Length < (bufferIndex + length))
-				throw new ArgumentException("Buffer is not large enough to hold the requested data" );
-			if (dataIndex < 0 || 
+				throw new ArgumentException("Buffer is not large enough to hold the requested data");
+			if (dataIndex < 0 ||
 				((ulong)dataIndex >= (ulong)binary.Value.Length && (ulong)binary.Value.Length > 0))
-				throw new IndexOutOfRangeException("Data index must be a valid index in the field" );
+				throw new IndexOutOfRangeException("Data index must be a valid index in the field");
 
-			byte[] bytes = (byte[])binary.Value; 
+			byte[] bytes = (byte[])binary.Value;
 
 			// adjust the length so we don't run off the end
-			if ( (ulong)binary.Value.Length < (ulong)(dataIndex+length)) 
+			if ((ulong)binary.Value.Length < (ulong)(dataIndex + length))
 			{
 				length = (int)((ulong)binary.Value.Length - (ulong)dataIndex);
 			}
 
-			Array.Copy( bytes, (int)dataIndex, buffer, (int)bufferIndex, (int)length );
+			Array.Copy(bytes, (int)dataIndex, buffer, (int)bufferIndex, (int)length);
 
 			return length;
 		}
@@ -289,7 +289,7 @@ namespace MySql.Data.MySqlClient
 		/// <returns></returns>
 		public long GetChars(int i, long fieldOffset, char[] buffer, int bufferoffset, int length)
 		{
-			if (i >= fields.Length) 
+			if (i >= fields.Length)
 				throw new IndexOutOfRangeException();
 
 			string valAsString = GetString(i);
@@ -299,13 +299,13 @@ namespace MySql.Data.MySqlClient
 			if (bufferoffset >= buffer.Length || bufferoffset < 0)
 				throw new IndexOutOfRangeException("Buffer index must be a valid index in buffer");
 			if (buffer.Length < (bufferoffset + length))
-				throw new ArgumentException( "Buffer is not large enough to hold the requested data" );
-			if (fieldOffset < 0 || fieldOffset >= valAsString.Length )
-				throw new IndexOutOfRangeException( "Field offset must be a valid index in the field" );
-			
+				throw new ArgumentException("Buffer is not large enough to hold the requested data");
+			if (fieldOffset < 0 || fieldOffset >= valAsString.Length)
+				throw new IndexOutOfRangeException("Field offset must be a valid index in the field");
+
 			if (valAsString.Length < length)
 				length = valAsString.Length;
-			valAsString.CopyTo( (int)fieldOffset, buffer, bufferoffset, length );
+			valAsString.CopyTo((int)fieldOffset, buffer, bufferoffset, length);
 			return length;
 		}
 
@@ -316,7 +316,7 @@ namespace MySql.Data.MySqlClient
 		/// <returns></returns>
 		public String GetDataTypeName(int i)
 		{
-			if (! isOpen) throw new Exception("No current query in data reader");
+			if (!isOpen) throw new Exception("No current query in data reader");
 			if (i >= fields.Length) throw new IndexOutOfRangeException();
 
 			// return the name of the type used on the backend
@@ -375,15 +375,15 @@ namespace MySql.Data.MySqlClient
 		/// <returns></returns>
 		public Type GetFieldType(int i)
 		{
-			if (! isOpen) throw new Exception("No current query in data reader");
+			if (!isOpen) throw new Exception("No current query in data reader");
 			if (i >= fields.Length) throw new IndexOutOfRangeException();
 
-            if (currentResult[i] is MySqlDateTime)
-            {
-                if (!connection.Settings.AllowZeroDateTime)
-                    return typeof(DateTime);
-                return typeof(MySqlDateTime);
-            }
+			if (currentResult[i] is MySqlDateTime)
+			{
+				if (!connection.Settings.AllowZeroDateTime)
+					return typeof(DateTime);
+				return typeof(MySqlDateTime);
+			}
 
 			return currentResult[i].SystemType;
 		}
@@ -400,7 +400,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetGuid/*'/>
 		public Guid GetGuid(int index)
 		{
-			return new Guid( GetString(index) );
+			return new Guid(GetString(index));
 		}
 
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetInt16/*'/>
@@ -447,11 +447,11 @@ namespace MySql.Data.MySqlClient
 		/// <returns></returns>
 		public int GetOrdinal(string name)
 		{
-			if (! isOpen)
+			if (!isOpen)
 				throw new Exception("No current query in data reader");
 
 			name = name.ToLower(System.Globalization.CultureInfo.InvariantCulture);
-			for (int i=0; i < fields.Length; i ++) 
+			for (int i = 0; i < fields.Length; i++)
 			{
 				if (fields[i].ColumnName.ToLower(System.Globalization.CultureInfo.InvariantCulture) == name)
 					return i;
@@ -474,46 +474,42 @@ namespace MySql.Data.MySqlClient
 			// otherwise, DataTable is null reference
 			if (fields.Length == 0) return null;
 
-			DataTable dataTableSchema = new DataTable ("SchemaTable");
-			
-			dataTableSchema.Columns.Add ("ColumnName", typeof (string));
-			dataTableSchema.Columns.Add ("ColumnOrdinal", typeof (int));
-			dataTableSchema.Columns.Add ("ColumnSize", typeof (int));
-			dataTableSchema.Columns.Add ("NumericPrecision", typeof (int));
-			dataTableSchema.Columns.Add ("NumericScale", typeof (int));
-			dataTableSchema.Columns.Add ("IsUnique", typeof (bool));
-			dataTableSchema.Columns.Add ("IsKey", typeof (bool));
+			DataTable dataTableSchema = new DataTable("SchemaTable");
+
+			dataTableSchema.Columns.Add("ColumnName", typeof(string));
+			dataTableSchema.Columns.Add("ColumnOrdinal", typeof(int));
+			dataTableSchema.Columns.Add("ColumnSize", typeof(int));
+			dataTableSchema.Columns.Add("NumericPrecision", typeof(int));
+			dataTableSchema.Columns.Add("NumericScale", typeof(int));
+			dataTableSchema.Columns.Add("IsUnique", typeof(bool));
+			dataTableSchema.Columns.Add("IsKey", typeof(bool));
 			DataColumn dc = dataTableSchema.Columns["IsKey"];
 			dc.AllowDBNull = true; // IsKey can have a DBNull
-			dataTableSchema.Columns.Add ("BaseCatalogName", typeof (string));
-			dataTableSchema.Columns.Add ("BaseColumnName", typeof (string));
-			dataTableSchema.Columns.Add ("BaseSchemaName", typeof (string));
-			dataTableSchema.Columns.Add ("BaseTableName", typeof (string));
-			dataTableSchema.Columns.Add ("DataType", typeof(Type));
-			dataTableSchema.Columns.Add ("AllowDBNull", typeof (bool));
-			dataTableSchema.Columns.Add ("ProviderType", typeof (int));
-			dataTableSchema.Columns.Add ("IsAliased", typeof (bool));
-			dataTableSchema.Columns.Add ("IsExpression", typeof (bool));
-			dataTableSchema.Columns.Add ("IsIdentity", typeof (bool));
-			dataTableSchema.Columns.Add ("IsAutoIncrement", typeof (bool));
-			dataTableSchema.Columns.Add ("IsRowVersion", typeof (bool));
-			dataTableSchema.Columns.Add ("IsHidden", typeof (bool));
-			dataTableSchema.Columns.Add ("IsLong", typeof (bool));
-			dataTableSchema.Columns.Add ("IsReadOnly", typeof (bool));
+			dataTableSchema.Columns.Add("BaseCatalogName", typeof(string));
+			dataTableSchema.Columns.Add("BaseColumnName", typeof(string));
+			dataTableSchema.Columns.Add("BaseSchemaName", typeof(string));
+			dataTableSchema.Columns.Add("BaseTableName", typeof(string));
+			dataTableSchema.Columns.Add("DataType", typeof(Type));
+			dataTableSchema.Columns.Add("AllowDBNull", typeof(bool));
+			dataTableSchema.Columns.Add("ProviderType", typeof(int));
+			dataTableSchema.Columns.Add("IsAliased", typeof(bool));
+			dataTableSchema.Columns.Add("IsExpression", typeof(bool));
+			dataTableSchema.Columns.Add("IsIdentity", typeof(bool));
+			dataTableSchema.Columns.Add("IsAutoIncrement", typeof(bool));
+			dataTableSchema.Columns.Add("IsRowVersion", typeof(bool));
+			dataTableSchema.Columns.Add("IsHidden", typeof(bool));
+			dataTableSchema.Columns.Add("IsLong", typeof(bool));
+			dataTableSchema.Columns.Add("IsReadOnly", typeof(bool));
 
 			int ord = 1;
-			for (int i=0; i < fields.Length; i++)
+			for (int i = 0; i < fields.Length; i++)
 			{
 				MySqlField f = fields[i];
 
 				DataRow r = dataTableSchema.NewRow();
 				r["ColumnName"] = f.ColumnName;
 				r["ColumnOrdinal"] = ord++;
-                int maxByteCount = f.Encoding.GetMaxByteCount(1);
-#if NET20
-				maxByteCount >>= 1;
-#endif
-                r["ColumnSize"] = f.IsTextField ? f.ColumnLength / maxByteCount : f.ColumnLength;
+				r["ColumnSize"] = f.IsTextField ? f.ColumnLength / f.MaxLength : f.ColumnLength;
 				int prec = f.Precision;
 				int pscale = f.Scale;
 				if (prec != -1)
@@ -534,7 +530,7 @@ namespace MySql.Data.MySqlClient
 				r["BaseTableName"] = f.RealTableName;
 				r["BaseColumnName"] = f.OriginalColumnName;
 
-				dataTableSchema.Rows.Add( r );
+				dataTableSchema.Rows.Add(r);
 			}
 
 			schemaTable = dataTableSchema;
@@ -566,7 +562,7 @@ namespace MySql.Data.MySqlClient
 		/// <returns></returns>
 		public object GetValue(int i)
 		{
-			if (! isOpen) throw new Exception("No current query in data reader");
+			if (!isOpen) throw new Exception("No current query in data reader");
 			if (i >= fields.Length) throw new IndexOutOfRangeException();
 
 			MySqlValue val = GetFieldValue(i, false);
@@ -574,12 +570,12 @@ namespace MySql.Data.MySqlClient
 
 			// if the column is a date/time, then we return a MySqlDateTime
 			// so .ToString() will print '0000-00-00' correctly
-			if (val is MySqlDateTime) 
+			if (val is MySqlDateTime)
 			{
 				MySqlDateTime dt = (MySqlDateTime)val;
-				if (! dt.IsValidDateTime && connection.Settings.ConvertZeroDateTime)
+				if (!dt.IsValidDateTime && connection.Settings.ConvertZeroDateTime)
 					return DateTime.MinValue;
-				else if (connection.Settings.AllowZeroDateTime) 
+				else if (connection.Settings.AllowZeroDateTime)
 					return val;
 				else
 					return dt.GetDateTime();
@@ -596,15 +592,15 @@ namespace MySql.Data.MySqlClient
 		public int GetValues(object[] values)
 		{
 			if (values == null) return 0;
-			int numCols = Math.Min( values.Length, fields.Length );
-			for (int i=0; i < numCols; i ++) 
+			int numCols = Math.Min(values.Length, fields.Length);
+			for (int i = 0; i < numCols; i++)
 				values[i] = GetValue(i);
 
 			return numCols;
 		}
 
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetUInt16/*'/>
-		public UInt16 GetUInt16( int index )
+		public UInt16 GetUInt16(int index)
 		{
 			MySqlValue v = GetFieldValue(index, true);
 			if (v is MySqlUInt16)
@@ -613,7 +609,7 @@ namespace MySql.Data.MySqlClient
 		}
 
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetUInt32/*'/>
-		public UInt32 GetUInt32( int index )
+		public UInt32 GetUInt32(int index)
 		{
 			MySqlValue v = GetFieldValue(index, true);
 			if (v is MySqlUInt32)
@@ -622,7 +618,7 @@ namespace MySql.Data.MySqlClient
 		}
 
 		/// <include file='docs/MySqlDataReader.xml' path='docs/GetUInt64/*'/>
-		public UInt64 GetUInt64( int index )
+		public UInt64 GetUInt64(int index)
 		{
 			MySqlValue v = GetFieldValue(index, true);
 			if (v is MySqlUInt64)
@@ -654,21 +650,21 @@ namespace MySql.Data.MySqlClient
 		/// <returns></returns>
 		public bool NextResult()
 		{
-			if (! isOpen)
+			if (!isOpen)
 				throw new MySqlException("Invalid attempt to NextResult when reader is closed.");
 
 			// clear any rows that have not been read from the last rowset
-			if (currentResult != null) 
+			if (currentResult != null)
 				currentResult.Consume();
 
 			// tell our command to continue execution of the SQL batch until it its
 			// another resultset
-			try 
+			try
 			{
 				CommandResult nextResult = command.GetNextResultSet(this);
 				if (nextResult != null)
 					currentResult = nextResult;
-				else 
+				else
 				{
 					// if there was no more resultsets, then signal done
 					canRead = false;
@@ -681,7 +677,7 @@ namespace MySql.Data.MySqlClient
 				// When executing query statements, the result byte that is returned
 				// from MySql is the column count.  That is why we reference the LastResult
 				// property here to dimension our field array
-				connection.SetState( ConnectionState.Fetching );
+				connection.SetState(ConnectionState.Fetching);
 
 				// load in our field defs and set our internal variables so we know
 				// what we can do (canRead, hasRows)
@@ -689,18 +685,18 @@ namespace MySql.Data.MySqlClient
 				fields = currentResult.Fields;
 				return true;
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				if (ex is MySqlException && !(ex as MySqlException).IsFatal)
-					connection.SetState( ConnectionState.Open );
+					connection.SetState(ConnectionState.Open);
 				else
 					connection.Terminate();
 				throw;
 			}
-			finally 
+			finally
 			{
 				if (connection.State != ConnectionState.Closed && connection.State != ConnectionState.Open)
-					connection.SetState( ConnectionState.Open );
+					connection.SetState(ConnectionState.Open);
 			}
 		}
 
@@ -710,27 +706,27 @@ namespace MySql.Data.MySqlClient
 		/// <returns></returns>
 		public bool Read()
 		{
-			if (! isOpen)
+			if (!isOpen)
 				throw new MySqlException("Invalid attempt to Read when reader is closed.");
 
-			if (! canRead) return false;
-			readCount ++;
+			if (!canRead) return false;
+			readCount++;
 
-			connection.SetState( ConnectionState.Fetching );
+			connection.SetState(ConnectionState.Fetching);
 
-			try 
+			try
 			{
-				try 
+				try
 				{
-					if ( (Behavior & CommandBehavior.SequentialAccess) != 0)
-						canRead = currentResult.ReadDataRow( false );
+					if ((Behavior & CommandBehavior.SequentialAccess) != 0)
+						canRead = currentResult.ReadDataRow(false);
 					else
-						canRead = currentResult.ReadDataRow( true );
-					if ( ! canRead) return false;
+						canRead = currentResult.ReadDataRow(true);
+					if (!canRead) return false;
 				}
-				catch (MySqlException ex) 
+				catch (MySqlException ex)
 				{
-					if (ex.IsFatal) 
+					if (ex.IsFatal)
 						connection.Terminate();
 					throw;
 				}
@@ -745,24 +741,24 @@ namespace MySql.Data.MySqlClient
 				System.Diagnostics.Trace.WriteLine("MySql error: " + ex.Message);
 				throw;
 			}
-			finally 
+			finally
 			{
-				connection.SetState( ConnectionState.Open );
+				connection.SetState(ConnectionState.Open);
 			}
 			return true;
 		}
 
 
-		private MySqlValue GetFieldValue(int index, bool checkNull) 
+		private MySqlValue GetFieldValue(int index, bool checkNull)
 		{
-			if (index < 0 || index >= fields.Length) 
-				throw new ArgumentException( "You have specified an invalid column ordinal." );
+			if (index < 0 || index >= fields.Length)
+				throw new ArgumentException("You have specified an invalid column ordinal.");
 
 			try
 			{
 				MySqlValue val = currentResult.ReadColumnValue(index);
-                if (val.IsNull && checkNull)
-                    throw new SqlNullValueException();
+				if (val.IsNull && checkNull)
+					throw new SqlNullValueException();
 
 				if (readCount == 0)
 					throw new MySqlException("Invalid attempt to access a field before calling Read()");
@@ -782,7 +778,7 @@ namespace MySql.Data.MySqlClient
 
 
 		#region IEnumerator
-		IEnumerator	IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return new System.Data.Common.DbEnumerator(this);
 		}
