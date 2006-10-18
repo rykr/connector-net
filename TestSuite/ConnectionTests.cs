@@ -331,6 +331,7 @@ namespace MySql.Data.MySqlClient.Tests
 		public void ConnectWithQuotePassword()
 		{
 			execSQL("GRANT ALL ON *.* to 'test'@'localhost' IDENTIFIED BY '\"'");
+			execSQL("GRANT ALL ON *.* to 'test'@'%' IDENTIFIED BY '\"'");
 			MySqlConnection c = new MySqlConnection("server=" + host + ";uid=test;pwd='\"';pooling=false");
 			try 
 			{

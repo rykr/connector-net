@@ -50,7 +50,7 @@ namespace MySql.Data.MySqlClient
 
 		public static CharacterSet GetChararcterSet(DBVersion version, string CharSetName)
 		{
-			CharacterSet cs = mapping[CharSetName];
+			CharacterSet cs = (CharacterSet)mapping[CharSetName];
 			if (cs == null)
 				throw new MySqlException("Character set '" + CharSetName + "' is not supported");
 			return cs;
@@ -88,7 +88,7 @@ namespace MySql.Data.MySqlClient
 #if NET20
 			mapping = new Dictionary<string, CharacterSet>();
 #else
-         mapping = new Hashtable()
+			mapping = new Hashtable();
 #endif
 
 			mapping.Add("latin1", new CharacterSet("latin1", 1));

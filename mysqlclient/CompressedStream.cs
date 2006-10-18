@@ -232,11 +232,13 @@ namespace MySql.Data.MySqlClient
 		public override void WriteByte(byte value)
 		{
 			cache.WriteByte(value);
+			Flush();
 		}
 
 		public override void Write(byte[] buffer, int offset, int count)
 		{
             cache.Write(buffer, offset, count);
+			Flush();
 		}
 
 		public override long Seek(long offset, SeekOrigin origin)
