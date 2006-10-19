@@ -1,12 +1,34 @@
-MySQL Connector/Net 1.0.5
+MySQL Connector/Net 1.0.8
 MySQL AB's ADO.Net Driver for MySQL
-Copyright (c) 2004-2005 MySQL AB
+Copyright (c) 2004-2006 MySQL AB
 
 CONTENTS
 
+* Release Notes
 * License
 * Documentation Location
 
+RELEASE NOTES
+
+We are nearing the end of the 1.x line of Connector/Net.  This release is 
+being called a 'release candidate' and we encourage users to try this release
+out in a testing scenario.  It's being called an RC because we made significant
+changes to how stored procedures are processed internally and added major 
+features such as a procedure cache.  After a brief amount of exposure, we'll 
+fix any showstopper bugs that are reported and release a 1.0.9 GA.  
+
+Please see the CHANGES file for a detailed list of bugs fixed and changes made 
+to this release.  Here is a brief list of the major changes found in this release.
+
+  - Executing stored procedures no longer requires having SELECT privileges on
+    the mysql.proc table.
+  - Metadata for stored procedures is now cached.  Use the 'procedure cache' 
+    connection string option to adjust.
+  - Queries that use a great number of parameters are many times faster than with 
+    1.0.7
+  - Shared memory connections now work
+  - ICSharpZipLib is no longer used in the connector and is not shipped with 1.0.8
+  - Tons of bugs have been fixed.
 
 LICENSE
 

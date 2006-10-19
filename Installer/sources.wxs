@@ -2,11 +2,11 @@
 <Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'> 
 	<Fragment Id='SourceFragment'> 
 		<DirectoryRef Id='SourceDir'> 
-			<Component Id="TopLevelSrc" Guid="431c9afa-babe-4483-8a75-b68264c52d2a">
+			<Component Id="TopLevelSrc" Guid="89B34093-7D5E-42af-81A3-1B55CDD799B7">
 				<File Id="nantFile" Name="client.bld" LongName="client.build" src="..\client.build" DiskId="1"/>
 			</Component>
 			<Directory Id="clientFolder" Name="msc" LongName="MySqlClient">
-				<Component Id="ClientSrc" DiskId="1" Guid="e79a81cc-7f4a-420d-a58c-2a90f0b6f372">
+				<Component Id="ClientSrc" DiskId="1" Guid="90FFFFDF-B227-4ccd-860C-B580A49D39C3">
 					<File Id="file0" Name="ASSEMB_1.CS" LongName="AssemblyInfo.cs" src="..\mysqlclient\AssemblyInfo.cs" />
 					<File Id="file1" Name="CHARSE_1.CS" LongName="CharSetMap.cs" src="..\mysqlclient\CharSetMap.cs" />
 					<File Id="file2" Name="command.cs" src="..\mysqlclient\command.cs" />
@@ -16,11 +16,17 @@
 					<File Id="file6" Name="Crypt.cs" src="..\mysqlclient\Crypt.cs" />
 					<File Id="file7" Name="DATAAD_1.CS" LongName="dataadapter.cs" src="..\mysqlclient\dataadapter.cs" />
 					<File Id="file8" Name="DATARE_1.CS" LongName="datareader.cs" src="..\mysqlclient\datareader.cs" />
+					<File Id="file9" Name="COMMAN_2.CS" LongName="CommandResult.cs" src="..\mysqlclient\CommandResult.cs"/>
 					<File Id="file10" Name="Driver.cs" src="..\mysqlclient\Driver.cs" />
 					<File Id="file11" Name="EXCEPT_1.CS" LongName="Exception.cs" src="..\mysqlclient\Exception.cs" />
 					<File Id="file12" Name="Field.cs" src="..\mysqlclient\Field.cs" />
+					<File Id="file13" Name="CONNEC_2.CS" LongName="ConnectionString.cs" src="..\mysqlclient\ConnectionString.cs"/>
+					<File Id="file14" Name="PACKET_1.CS" LongName="PacketReader.cs" src="..\mysqlclient\PacketReader.cs"/>
 					<File Id="file15" Name="Logger.cs" src="..\mysqlclient\Logger.cs" />
-					<File Id="file17" Name="MYSQLD_2.CSP" LongName="MySql.Data.2005.csproj" src="..\mysqlclient\MySql.Data.2005.csproj" />
+					<File Id="file16" Name="PACKET_2.CS" LongName="PacketWriter.cs" src="..\mysqlclient\PacketWriter.cs"/>
+					<File Id="file17" Name="MYSQLD_1.CSP" LongName="MySql.Data.2003.csproj" src="..\mysqlclient\MySql.Data.2005.csproj" />
+					<File Id="file18" Name="MYSQLD_2.CSP" LongName="MySql.Data.2005.csproj" src="..\mysqlclient\MySql.Data.2005.csproj" />
+					<File Id="file19" Name="RESOUR_2.cs" LongName="Resources.Designer.cs" src="..\mysqlclient\Resources.Designer.cs"/>
 					<File Id="file20" Name="MYSQLD_1.CS" LongName="MysqlDefs.cs" src="..\mysqlclient\MysqlDefs.cs" />
 					<File Id="file21" Name="MYSQLE_1.CS" LongName="MySqlError.cs" src="..\mysqlclient\MySqlError.cs" />
 					<File Id="file22" Name="MYSQLH_1.CS" LongName="MySqlHelper.cs" src="..\mysqlclient\MySqlHelper.cs" />
@@ -36,18 +42,19 @@
 					<File Id="file40" Name="TRANSA_1.CS" LongName="transaction.cs" src="..\mysqlclient\transaction.cs" />
 				</Component>
 				<Directory Id="commonFolder" Name="Common">
-					<Component Id="CommonSrc"  DiskId="1" Guid="88ed3210-b947-4536-9d31-aeb9fcab2316">
+					<Component Id="CommonSrc"  DiskId="1" Guid="9EC26A78-08C1-4b65-969D-F2C9C6B668DD">
 						<File Id="file179" Name="CONTEX_1.CS" LongName="ContextString.cs" src="..\mysqlclient\common\ContextString.cs" />
 						<File Id="file180" Name="NAMEDP_1.CS" LongName="NamedPipeStream.cs" src="..\mysqlclient\common\NamedPipeStream.cs" />
 						<File Id="file181" Name="NATIVE_1.CS" LongName="NativeMethods.cs" src="..\mysqlclient\common\NativeMethods.cs" />
 						<File Id="file182" Name="Platform.cs" src="..\mysqlclient\common\Platform.cs" />
+						<File Id="file183" Name="DBCONN_1.CS" LongName="DBConnectionString.cs" src="..\mysqlclient\common\DBConnectionString.cs"/>
 						<File Id="file185" Name="SHARED_1.CS" LongName="SharedMemoryStream.cs" src="..\mysqlclient\common\SharedMemoryStream.cs" />
 						<File Id="file187" Name="STREAM_1.CS" LongName="StreamCreator.cs" src="..\mysqlclient\common\StreamCreator.cs" />
 						<File Id="file188" Name="Version.cs" src="..\mysqlclient\common\Version.cs" />
 					</Component>
 				</Directory>
 				<Directory Id="docSrcFolder" Name="Docs">
-					<Component Id="DocsSrc" DiskId="1" Guid="212bf5d7-db43-411d-9abc-ba4e54017abf">
+					<Component Id="DocsSrc" DiskId="1" Guid="CBC6D91E-4E0B-47aa-9158-F394FDF27B4E">
 						<File Id="file245" Name="MYSQLC_1.XML" LongName="MySqlCommand.xml" src="..\mysqlclient\docs\MySqlCommand.xml" />
 						<File Id="file246" Name="MYSQLC_2.XML" LongName="MySqlCommandBuilder.xml" src="..\mysqlclient\docs\MySqlCommandBuilder.xml" />
 						<File Id="file247" Name="MYSQLC_3.XML" LongName="MySqlConnection.xml" src="..\mysqlclient\docs\MySqlConnection.xml" />
@@ -61,7 +68,7 @@
 					</Component>
 				</Directory>
 				<Directory Id="typesFolder" Name="Types">
-					<Component Id="TypesSrc" DiskId="1" Guid="bf2429da-2580-4b4b-8232-455dfe336576">
+					<Component Id="TypesSrc" DiskId="1" Guid="254E5703-D491-4d38-B42E-A2C3A9A447A5">
 						<File Id="file300" Name="MYSQLB_1.CS" LongName="MySqlBinary.cs" src="..\mysqlclient\Types\MySqlBinary.cs" />
 						<File Id="file301" Name="MySqlBit.cs" src="..\mysqlclient\Types\MySqlBit.cs" />
 						<File Id="file302" Name="MYSQLB_2.CS" LongName="MySqlByte.cs" src="..\mysqlclient\Types\MySqlByte.cs" />
@@ -82,9 +89,27 @@
 						<File Id="file317" Name="MYSQLV_1.CS" LongName="MySqlValue.cs" src="..\mysqlclient\Types\MySqlValue.cs" />
 					</Component>
 				</Directory>
+		        <Directory Id="zlibFolder" Name="zlib">
+		          <Component Id="ZLibSrc" DiskId="1" Guid="1D292798-549F-4f3d-96DB-1CD6E4FBA181">
+		            <File Id="file500" Name="Adler32.cs" src="..\mysqlclient\zlib\Adler32.cs" />
+		            <File Id="file501" Name="Deflate.cs" src="..\mysqlclient\zlib\Deflate.cs" />
+		            <File Id="file502" Name="InfBlo_1.cs" LongName="InfBlocks.cs" src="..\mysqlclient\zlib\InfBlocks.cs" />
+		            <File Id="file503" Name="InfCodes.cs" src="..\mysqlclient\zlib\InfCodes.cs" />
+		            <File Id="file504" Name="Inflate.cs" src="..\mysqlclient\zlib\Inflate.cs" />
+		            <File Id="file505" Name="InfTree.cs" src="..\mysqlclient\zlib\InfTree.cs" />
+		            <File Id="file506" Name="Static_1.cs" LongName="StaticTree.cs" src="..\mysqlclient\zlib\StaticTree.cs" />
+		            <File Id="file507" Name="Suppor_1.cs" LongName="SupportClass.cs" src="..\mysqlclient\zlib\SupportClass.cs" />
+		            <File Id="file508" Name="Tree.cs" src="..\mysqlclient\zlib\Tree.cs" />
+		            <File Id="file509" Name="ZInput_1.cs" LongName="ZInputStream.cs" src="..\mysqlclient\zlib\ZInputStream.cs" />
+		            <File Id="file510" Name="Zlib.cs" src="..\mysqlclient\zlib\Zlib.cs" />
+		            <File Id="file511" Name="ZOutpu_1.cs" LongName="ZOutputStream.cs" src="..\mysqlclient\zlib\ZOutputStream.cs" />
+		            <File Id="file512" Name="ZStream.cs" src="..\mysqlclient\zlib\ZStream.cs" />
+		            <File Id="file513" Name="ZStrea_1.cs" LongName="ZStreamException.cs" src="..\mysqlclient\zlib\ZStreamException.cs" />
+		          </Component>
+		        </Directory> 			
 			</Directory>
 			<Directory Id="TestSuite" Name="ts" LongName="TestSuite">
-				<Component Id="TestSuiteSrc" DiskId="1" Guid="a17ca97f-1704-4b50-85e6-d9e727af64fe">
+				<Component Id="TestSuiteSrc" DiskId="1" Guid="E9B23A6A-9B6C-48c0-8D25-7CB6C5D0C229">
 					<File Id="file400" Name="APP_1.CON" LongName="App.config" src="..\TestSuite\App.config" />
 					<File Id="file401" Name="ASSEMB_1.CS" LongName="AssemblyInfo.cs" src="..\TestSuite\AssemblyInfo.cs" />
 					<File Id="file403" Name="BaseTest.cs" src="..\TestSuite\BaseTest.cs" />
@@ -99,8 +124,10 @@
 					<File Id="file414" Name="DATATY_1.CS" LongName="DataTypeTests.cs" src="..\TestSuite\DataTypeTests.cs" />
 					<File Id="file415" Name="DATETI_1.CS" LongName="DateTimeTests.cs" src="..\TestSuite\DateTimeTests.cs" />
 					<File Id="file416" Name="EVENTT_1.CS" LongName="EventTests.cs" src="..\TestSuite\EventTests.cs" />
+					<File Id="file417" Name="EXCEPT_1.CS" LongName="Exceptions.cs" src="..\TestSuite\Exceptions.cs" />
 					<File Id="file422" Name="LANGUA_1.CS" LongName="LanguageTests.cs" src="..\TestSuite\LanguageTests.cs" />
-					<File Id="file427" Name="MYSQLD_2.CSP" LongName="MySql.Data.Tests.2005.csproj" src="..\TestSuite\MySql.Data.Tests.2005.csproj" />
+					<File Id="file427" Name="MYSQLD_1.CSP" LongName="MySql.Data.Tests.2003.csproj" src="..\TestSuite\MySql.Data.Tests.2005.csproj" />
+					<File Id="file428" Name="MYSQLD_2.CSP" LongName="MySql.Data.Tests.2005.csproj" src="..\TestSuite\MySql.Data.Tests.2005.csproj" />
 					<File Id="file430" Name="MYSQLH_1.CS" LongName="MySqlHelperTests.cs" src="..\TestSuite\MySqlHelperTests.cs" />
 					<File Id="file431" Name="PARAME_1.CS" LongName="ParameterTests.cs" src="..\TestSuite\ParameterTests.cs" />
 					<File Id="file433" Name="POOLIN_1.CS" LongName="PoolingTests.cs" src="..\TestSuite\PoolingTests.cs" />
@@ -121,6 +148,7 @@
 			<ComponentRef Id='CommonSrc'/>
 			<ComponentRef Id='DocsSrc'/>
 			<ComponentRef Id='TypesSrc'/>
+      <ComponentRef Id='ZLibSrc'/>
 			<ComponentRef Id='TestSuiteSrc'/>
 		</Feature>
 	

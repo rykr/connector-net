@@ -99,9 +99,6 @@
     <Content Include="docs\MySqlParameter.xml" />
     <Content Include="docs\MySqlParameterCollection.xml" />
     <Content Include="docs\MySqlTransaction.xml" />
-    <None Include="Installer\main.wxs" />
-    <None Include="Installer\samples.wxs" />
-    <None Include="Installer\sources.wxs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CharSetMap.cs" />
     <Compile Include="command.cs" />

@@ -108,15 +108,6 @@
 				<include name="./**"/>
 			</fileset>
 		</zip>
-
-		<!-- now add the MD5 sig -->
-        <checksum algorithm="MD5" fileext="MD5">
-            <fileset>
-                <include name="packages/mysql-connector-net-${ver}${postfix}.zip"/>
-                <include name="packages/mysql-connector-net-${ver}${postfix}-noinstall.zip"/>
-            </fileset>
-        </checksum>
-
     </target>
     
     <!-- verification targets -->

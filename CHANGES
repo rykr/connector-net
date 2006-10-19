@@ -1,3 +1,5 @@
+Version 1.0.8 RC
+
     Other changes
     -------------
     Implemented a stored procedure cache
@@ -38,7 +40,7 @@
 	Bug #9619 Cannot update row using DbDataAdapter when row contains an invalid date 
 	Bug #15112 MySqlDateTime Constructor 	
 	
-x-xx-05 - Version 1.0.7
+Version 1.0.7
 
     Bugs fixed or addressed
     -------------------------

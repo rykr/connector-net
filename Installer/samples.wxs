@@ -4,7 +4,7 @@
     <DirectoryRef Id='SampleDir'> 
 		<Directory Id="TableEditor" Name="teditor" LongName="Table Editor">
 			<Directory Id="teCS" Name="cs">
-				<Component Id="Sample1CS" Guid="1c6044bb-0ff4-4e51-b301-6a64dcdf084c">
+				<Component Id="Sample1CS" Guid="2EC82711-B56E-496d-9035-7BB5A2359D6F">
 					<File Id="teCS1" Name="App.ico" src="..\Samples\TableEditor\cs\App.ico" DiskId="1"/>
 					<File Id="teCS2" Name="AssInfo.cs" LongName="AssemblyInfo.cs" src="..\Samples\TableEditor\cs\AssemblyInfo.cs" DiskId="1"/>
 					<File Id="teCS3" Name="Form1.cs" src="..\Samples\TableEditor\cs\Form1.cs" DiskId="1"/>
@@ -14,7 +14,7 @@
 				</Component>
 			</Directory>
 			<Directory Id="teVB" Name="vb">
-				<Component Id="Sample1VB" Guid="1c6044bb-0ff4-4e51-b301-6a64dcdf084c">
+				<Component Id="Sample1VB" Guid="E96D0201-7A2F-40a8-BCB7-BC23AB6910B6">
 					<File Id="teVB2" Name="AssInfo.vb" LongName="AssemblyInfo.vb" src="..\Samples\TableEditor\vb\AssemblyInfo.vb" DiskId="1"/>
 					<File Id="teVB3" Name="Form1.vb" src="..\Samples\TableEditor\vb\Form1.vb" DiskId="1"/>
 					<File Id="teVB4" Name="Form1.res" LongName="Form1.resx" src="..\Samples\TableEditor\vb\Form1.resx" DiskId="1"/>
