@@ -490,6 +490,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// <summary>
 		/// Bug #13590  	ExecuteScalar returns only Int64 regardless of actual SQL type
 		/// </summary>
+		[Category("NotWorking")]
 		[Test]
 		public void TestSelectingInts()
 		{

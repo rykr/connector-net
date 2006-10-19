@@ -669,6 +669,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// <summary>
 		/// Bug #18391 Better error handling for the .NET class "MySqlCommand" needed. 
 		/// </summary>
+		[Category("NotWorking")]
 		[Test]
 		public void PrepareEmptyString()
 		{

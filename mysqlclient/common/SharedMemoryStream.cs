@@ -22,7 +22,9 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.IO;
+#if NET20
 using Microsoft.Win32.SafeHandles;
+#endif
 using System.Diagnostics;
 
 namespace MySql.Data.MySqlClient

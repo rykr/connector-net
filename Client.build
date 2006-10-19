@@ -75,7 +75,6 @@
 
 	<!-- core managed driver target 1.0 -->	
 	<target name="net-1.0" description="1.0 .NET target">
-		<echo message="setting 1.0 dir = ${nunit1.dir}"/>
 		<property name="nunit.dir" value="${nunit1.dir}"/>
 		<property name="framework" value="net-1.0"/>
 		<call target="client"/>
@@ -83,7 +82,6 @@
 	
 	<!-- core managed driver target 1.1 -->
 	<target name="net-1.1" description="1.1 .NET target">
-		<echo message="setting 1.1 dir to ${nunit1.dir}"/>
 		<property name="nunit.dir" value="${nunit1.dir}"/>
 		<property name="framework" value="net-1.1"/>
 		<call target="client"/>
@@ -91,9 +89,12 @@
 
 	<!-- core managed driver target 2.0 -->
 	<target name="net-2.0" description="2.0 .NET target">
-		<echo message="setting 2.0 dir = ${nunit2.dir}"/>
 		<property name="nunit.dir" value="${nunit2.dir}"/>
 		<property name="framework" value="net-2.0"/>
+		<if test="${string::get-length(defines) > 0}">
+			<property name="defines" values="${defines},"/>
+		</if>
+		<property name="defines" value="${defines}NET20"/>
 		<call target="client"/>
 	</target>
 	
