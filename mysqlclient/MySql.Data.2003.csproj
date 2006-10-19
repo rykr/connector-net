@@ -288,17 +288,45 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Installer\main.wxs"
+                    RelPath = "docs\MySqlCommand.xml"
                     BuildAction = "Content"
                 />
                 <File
-                    RelPath = "Installer\ui.wxs"
+                    RelPath = "docs\MySqlCommandBuilder.xml"
                     BuildAction = "Content"
                 />
-                <Folder RelPath = "MySqlClient\common\" />
-                <Folder RelPath = "MySqlClient\docs\" />
-                <Folder RelPath = "MySqlClient\Types\" />
-                <Folder RelPath = "MySqlClient\zlib\" />
+                <File
+                    RelPath = "docs\MySqlConnection.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "docs\MySqlDataAdapter.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "docs\MySqlDataReader.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "docs\MySqlException.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "docs\MySqlHelper.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "docs\MySqlParameter.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "docs\MySqlParameterCollection.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "docs\MySqlTransaction.xml"
+                    BuildAction = "Content"
+                />
                 <File
                     RelPath = "Types\MySqlBinary.cs"
                     SubType = "Code"
