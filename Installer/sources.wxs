@@ -24,7 +24,7 @@
 					<File Id="file14" Name="PACKET_1.CS" LongName="PacketReader.cs" src="..\mysqlclient\PacketReader.cs"/>
 					<File Id="file15" Name="Logger.cs" src="..\mysqlclient\Logger.cs" />
 					<File Id="file16" Name="PACKET_2.CS" LongName="PacketWriter.cs" src="..\mysqlclient\PacketWriter.cs"/>
-					<File Id="file17" Name="MYSQLD_1.CSP" LongName="MySql.Data.2003.csproj" src="..\mysqlclient\MySql.Data.2005.csproj" />
+					<File Id="file17" Name="MYSQLD_1.CSP" LongName="MySql.Data.2003.csproj" src="..\mysqlclient\MySql.Data.2003.csproj" />
 					<File Id="file18" Name="MYSQLD_2.CSP" LongName="MySql.Data.2005.csproj" src="..\mysqlclient\MySql.Data.2005.csproj" />
 					<File Id="file19" Name="RESOUR_2.cs" LongName="Resources.Designer.cs" src="..\mysqlclient\Resources.Designer.cs"/>
 					<File Id="file20" Name="MYSQLD_1.CS" LongName="MysqlDefs.cs" src="..\mysqlclient\MysqlDefs.cs" />
@@ -126,7 +126,7 @@
 					<File Id="file416" Name="EVENTT_1.CS" LongName="EventTests.cs" src="..\TestSuite\EventTests.cs" />
 					<File Id="file417" Name="EXCEPT_1.CS" LongName="Exceptions.cs" src="..\TestSuite\Exceptions.cs" />
 					<File Id="file422" Name="LANGUA_1.CS" LongName="LanguageTests.cs" src="..\TestSuite\LanguageTests.cs" />
-					<File Id="file427" Name="MYSQLD_1.CSP" LongName="MySql.Data.Tests.2003.csproj" src="..\TestSuite\MySql.Data.Tests.2005.csproj" />
+					<File Id="file427" Name="MYSQLD_1.CSP" LongName="MySql.Data.Tests.2003.csproj" src="..\TestSuite\MySql.Data.Tests.2003.csproj" />
 					<File Id="file428" Name="MYSQLD_2.CSP" LongName="MySql.Data.Tests.2005.csproj" src="..\TestSuite\MySql.Data.Tests.2005.csproj" />
 					<File Id="file430" Name="MYSQLH_1.CS" LongName="MySqlHelperTests.cs" src="..\TestSuite\MySqlHelperTests.cs" />
 					<File Id="file431" Name="PARAME_1.CS" LongName="ParameterTests.cs" src="..\TestSuite\ParameterTests.cs" />
