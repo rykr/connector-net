@@ -19,29 +19,21 @@
 					<File Id="file10" Name="Driver.cs" src="..\mysqlclient\Driver.cs" />
 					<File Id="file11" Name="EXCEPT_1.CS" LongName="Exception.cs" src="..\mysqlclient\Exception.cs" />
 					<File Id="file12" Name="Field.cs" src="..\mysqlclient\Field.cs" />
-					<File Id="file14" Name="ISSCHE_1.CS" LongName="ISSchemaProvider.cs" src="..\mysqlclient\ISSchemaProvider.cs" />
 					<File Id="file15" Name="Logger.cs" src="..\mysqlclient\Logger.cs" />
 					<File Id="file17" Name="MYSQLD_2.CSP" LongName="MySql.Data.2005.csproj" src="..\mysqlclient\MySql.Data.2005.csproj" />
-					<File Id="file18" Name="MYSQLC_1.CS" LongName="MySqlClientFactory.cs" src="..\mysqlclient\MySqlClientFactory.cs" />
-					<File Id="file19" Name="MYSQLC_2.CS" LongName="MySqlConnectionStringBuilder.cs" src="..\mysqlclient\MySqlConnectionStringBuilder.cs" />
 					<File Id="file20" Name="MYSQLD_1.CS" LongName="MysqlDefs.cs" src="..\mysqlclient\MysqlDefs.cs" />
 					<File Id="file21" Name="MYSQLE_1.CS" LongName="MySqlError.cs" src="..\mysqlclient\MySqlError.cs" />
 					<File Id="file22" Name="MYSQLH_1.CS" LongName="MySqlHelper.cs" src="..\mysqlclient\MySqlHelper.cs" />
 					<File Id="file23" Name="MYSQLP_1.CS" LongName="MySqlPool.cs" src="..\mysqlclient\MySqlPool.cs" />
 					<File Id="file24" Name="MYSQLP_2.CS" LongName="MySqlPoolManager.cs" src="..\mysqlclient\MySqlPoolManager.cs" />
-					<File Id="file25" Name="MYSQLS_1.CS" LongName="MySqlStream.cs" src="..\mysqlclient\MySqlStream.cs" />
 					<File Id="file26" Name="NATIVE_1.CS" LongName="NativeDriver.cs" src="..\mysqlclient\NativeDriver.cs" />
 					<File Id="file27" Name="PARAME_1.CS" LongName="parameter.cs" src="..\mysqlclient\parameter.cs" />
 					<File Id="file28" Name="PARAME_2.CS" LongName="parameter_collection.cs" src="..\mysqlclient\parameter_collection.cs" />
-					<File Id="file29" Name="PERFOR_1.CS" LongName="PerformanceMonitor.cs" src="..\mysqlclient\PerformanceMonitor.cs" />
 					<File Id="file30" Name="PREPAR_1.CS" LongName="PreparedStatement.cs" src="..\mysqlclient\PreparedStatement.cs" />
 					<File Id="file31" Name="PROCED_1.CS" LongName="ProcedureCache.cs" src="..\mysqlclient\ProcedureCache.cs" />
 					<File Id="file36" Name="RESOUR_1.RES" LongName="Resources.resx" src="..\mysqlclient\Resources.resx" />
-					<File Id="file37" Name="SCHEMA_1.CS" LongName="SchemaProvider.cs" src="..\mysqlclient\SchemaProvider.cs" />
-					<File Id="file38" Name="STATEM_1.CS" LongName="Statement.cs" src="..\mysqlclient\Statement.cs" />
 					<File Id="file39" Name="STORED_1.CS" LongName="StoredProcedure.cs" src="..\mysqlclient\StoredProcedure.cs" />
 					<File Id="file40" Name="TRANSA_1.CS" LongName="transaction.cs" src="..\mysqlclient\transaction.cs" />
-					<File Id="file41" Name="USAGEA_1.CS" LongName="UsageAdvisor.cs" src="..\mysqlclient\UsageAdvisor.cs" />
 				</Component>
 				<Directory Id="commonFolder" Name="Common">
 					<Component Id="CommonSrc"  DiskId="1" Guid="88ed3210-b947-4536-9d31-aeb9fcab2316">
@@ -49,11 +41,9 @@
 						<File Id="file180" Name="NAMEDP_1.CS" LongName="NamedPipeStream.cs" src="..\mysqlclient\common\NamedPipeStream.cs" />
 						<File Id="file181" Name="NATIVE_1.CS" LongName="NativeMethods.cs" src="..\mysqlclient\common\NativeMethods.cs" />
 						<File Id="file182" Name="Platform.cs" src="..\mysqlclient\common\Platform.cs" />
-						<File Id="file184" Name="SHA1.cs" src="..\mysqlclient\common\SHA1.cs" />
 						<File Id="file185" Name="SHARED_1.CS" LongName="SharedMemoryStream.cs" src="..\mysqlclient\common\SharedMemoryStream.cs" />
 						<File Id="file187" Name="STREAM_1.CS" LongName="StreamCreator.cs" src="..\mysqlclient\common\StreamCreator.cs" />
 						<File Id="file188" Name="Version.cs" src="..\mysqlclient\common\Version.cs" />
-						<File Id="file189" Name="WinCE.cs" src="..\mysqlclient\common\WinCE.cs" />
 					</Component>
 				</Directory>
 				<Directory Id="docSrcFolder" Name="Docs">
@@ -61,7 +51,6 @@
 						<File Id="file245" Name="MYSQLC_1.XML" LongName="MySqlCommand.xml" src="..\mysqlclient\docs\MySqlCommand.xml" />
 						<File Id="file246" Name="MYSQLC_2.XML" LongName="MySqlCommandBuilder.xml" src="..\mysqlclient\docs\MySqlCommandBuilder.xml" />
 						<File Id="file247" Name="MYSQLC_3.XML" LongName="MySqlConnection.xml" src="..\mysqlclient\docs\MySqlConnection.xml" />
-						<File Id="file248" Name="MYSQLC_4.XML" LongName="MySqlConnectionStringBuilder.xml" src="..\mysqlclient\docs\MySqlConnectionStringBuilder.xml" />
 						<File Id="file249" Name="MYSQLD_1.XML" LongName="MySqlDataAdapter.xml" src="..\mysqlclient\docs\MySqlDataAdapter.xml" />
 						<File Id="file250" Name="MYSQLD_2.XML" LongName="MySqlDataReader.xml" src="..\mysqlclient\docs\MySqlDataReader.xml" />
 						<File Id="file251" Name="MYSQLE_1.XML" LongName="MySqlException.xml" src="..\mysqlclient\docs\MySqlException.xml" />
@@ -73,7 +62,6 @@
 				</Directory>
 				<Directory Id="typesFolder" Name="Types">
 					<Component Id="TypesSrc" DiskId="1" Guid="bf2429da-2580-4b4b-8232-455dfe336576">
-						<File Id="file299" Name="MetaData.cs" src="..\mysqlclient\Types\MetaData.cs" />
 						<File Id="file300" Name="MYSQLB_1.CS" LongName="MySqlBinary.cs" src="..\mysqlclient\Types\MySqlBinary.cs" />
 						<File Id="file301" Name="MySqlBit.cs" src="..\mysqlclient\Types\MySqlBit.cs" />
 						<File Id="file302" Name="MYSQLB_2.CS" LongName="MySqlByte.cs" src="..\mysqlclient\Types\MySqlByte.cs" />
@@ -99,7 +87,6 @@
 				<Component Id="TestSuiteSrc" DiskId="1" Guid="a17ca97f-1704-4b50-85e6-d9e727af64fe">
 					<File Id="file400" Name="APP_1.CON" LongName="App.config" src="..\TestSuite\App.config" />
 					<File Id="file401" Name="ASSEMB_1.CS" LongName="AssemblyInfo.cs" src="..\TestSuite\AssemblyInfo.cs" />
-					<File Id="file402" Name="ASYNCT_1.CS" LongName="AsyncTests.cs" src="..\TestSuite\AsyncTests.cs" />
 					<File Id="file403" Name="BaseTest.cs" src="..\TestSuite\BaseTest.cs" />
 					<File Id="file404" Name="BLOBTE_1.CS" LongName="BlobTests.cs" src="..\TestSuite\BlobTests.cs" />
 					<File Id="file405" Name="CHARAC_1.CS" LongName="CharacterSetTests.cs" src="..\TestSuite\CharacterSetTests.cs" />
@@ -107,22 +94,15 @@
 					<File Id="file407" Name="COMMAN_2.CS" LongName="CommandTests.cs" src="..\TestSuite\CommandTests.cs" />
 					<File Id="file408" Name="CONNEC_1.CS" LongName="ConnectionTests.cs" src="..\TestSuite\ConnectionTests.cs" />
 					<File Id="file409" Name="CULTUR_1.CS" LongName="CultureTests.cs" src="..\TestSuite\CultureTests.cs" />
-					<File Id="file410" Name="CURSOR_1.CS" LongName="CursorTests.cs" src="..\TestSuite\CursorTests.cs" />
 					<File Id="file411" Name="DATAAD_1.CS" LongName="DataAdapterTests.cs" src="..\TestSuite\DataAdapterTests.cs" />
 					<File Id="file412" Name="DATARE_1.CS" LongName="DataReaderTests.cs" src="..\TestSuite\DataReaderTests.cs" />
-					<File Id="file413" Name="DATASE_1.CS" LongName="DataSetTest.cs" src="..\TestSuite\DataSetTest.cs" />
 					<File Id="file414" Name="DATATY_1.CS" LongName="DataTypeTests.cs" src="..\TestSuite\DataTypeTests.cs" />
 					<File Id="file415" Name="DATETI_1.CS" LongName="DateTimeTests.cs" src="..\TestSuite\DateTimeTests.cs" />
 					<File Id="file416" Name="EVENTT_1.CS" LongName="EventTests.cs" src="..\TestSuite\EventTests.cs" />
-					<File Id="file418" Name="EXCEPT_1.CS" LongName="ExceptionTests.cs" src="..\TestSuite\ExceptionTests.cs" />
-					<File Id="file420" Name="GETSCH_1.CS" LongName="GetSchemaTests.cs" src="..\TestSuite\GetSchemaTests.cs" />
-					<File Id="file421" Name="INTERF_1.CS" LongName="InterfaceTests.cs" src="..\TestSuite\InterfaceTests.cs" />
 					<File Id="file422" Name="LANGUA_1.CS" LongName="LanguageTests.cs" src="..\TestSuite\LanguageTests.cs" />
-					<File Id="file424" Name="MICROP_1.CS" LongName="MicroPerfTests.cs" src="..\TestSuite\MicroPerfTests.cs" />
 					<File Id="file427" Name="MYSQLD_2.CSP" LongName="MySql.Data.Tests.2005.csproj" src="..\TestSuite\MySql.Data.Tests.2005.csproj" />
 					<File Id="file430" Name="MYSQLH_1.CS" LongName="MySqlHelperTests.cs" src="..\TestSuite\MySqlHelperTests.cs" />
 					<File Id="file431" Name="PARAME_1.CS" LongName="ParameterTests.cs" src="..\TestSuite\ParameterTests.cs" />
-					<File Id="file432" Name="PERFMO_1.CS" LongName="PerfMonTests.cs" src="..\TestSuite\PerfMonTests.cs" />
 					<File Id="file433" Name="POOLIN_1.CS" LongName="PoolingTests.cs" src="..\TestSuite\PoolingTests.cs" />
 					<File Id="file434" Name="PREPAR_1.CS" LongName="PreparedStatements.cs" src="..\TestSuite\PreparedStatements.cs" />
 					<File Id="file435" Name="STORED_1.CS" LongName="StoredProcedure.cs" src="..\TestSuite\StoredProcedure.cs" />
@@ -130,7 +110,6 @@
 					<File Id="file437" Name="Syntax.cs" src="..\TestSuite\Syntax.cs" />
 					<File Id="file438" Name="THREAD_1.CS" LongName="Threading.cs" src="..\TestSuite\Threading.cs" />
 					<File Id="file439" Name="Simple_1.CS" LongName="SimpleTransactions.cs" src="..\TestSuite\SimpleTransactions.cs" />
-					<File Id="file440" Name="USAGEA_1.CS" LongName="UsageAdvisor.cs" src="..\TestSuite\UsageAdvisor.cs" />
 					<File Id="file441" Name="Utils.cs" src="..\TestSuite\Utils.cs" />
 				</Component>
 			</Directory>

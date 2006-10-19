@@ -6,14 +6,21 @@
 
 	<!-- filesets -->
 	<fileset id="BaseSource">
-		<include name="mysqlclient/**"/>
+		<include name="mysqlclient/*.cs"/>
+		<include name="mysqlclient/*.resx"/>
+		<include name="mysqlclient/common/*.cs"/>
+		<include name="mysqlclient/types/*.cs"/>
+		<include name="mysqlclient/zlib/*.cs"/>
+		<include name="mysqlclient/docs/*"/>
+		<include name="mysqlclient/*.csproj"/>
+		<include name="installer/*"/>
 		<include name="testsuite/**"/>
-		<include name="client.build"/>
+		<include name="Client.build"/>
 		<include name="CHANGES"/>
 		<include name="README"/>
+		<include name="Release Notes.txt"/>
 		<include name="MySql.Data.csproj"/>
 		<include name="Samples/**" />
-		<include name="ICSharpCode.SharpZipLib.dll"/>
 	</fileset>
 
 	<fileset id="SourceGPL">
@@ -87,7 +94,7 @@
 		<exec workingdir="staging/Installer" program="candle" commandline="samples.wxs"/>
 		<exec workingdir="staging/Installer" program="candle" commandline="sources.wxs"/>
 		<exec workingdir="staging/Installer" program="light" 
-			commandline='main.wixobj samples.wixobj sources "${WIXPATH}/WixUI.wixlib" -loc "${WIXPATH}/WixUI_en-us.wxl" -out MySql.Data.msi'/>
+			commandline='main.wixobj samples.wixobj sources.wixobj "${wix.dir}/WixUI.wixlib" -loc "${wix.dir}/WixUI_en-us.wxl" -out MySql.Data.msi'/>
 
 		<zip zipfile="packages/mysql-connector-net-${ver}${postfix}.zip">
 			<fileset basedir="staging/Installer"><include name="MySql.Data.msi"/></fileset>

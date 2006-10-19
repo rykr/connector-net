@@ -34,7 +34,7 @@
 	</if>
 
 	<!-- builds the client on all supported frameworks -->
-	<target name="allframeworks" depends="net-1.0, net-1.1, net-2.0">
+	<target name="allframeworks" depends="net-1.1, net-2.0">
 		<call target="Docs"/>
 	</target>
 
@@ -92,7 +92,7 @@
 		<property name="nunit.dir" value="${nunit2.dir}"/>
 		<property name="framework" value="net-2.0"/>
 		<if test="${string::get-length(defines) > 0}">
-			<property name="defines" values="${defines},"/>
+			<property name="defines" value="${defines},"/>
 		</if>
 		<property name="defines" value="${defines}NET20"/>
 		<call target="client"/>
@@ -106,7 +106,7 @@
 	</target>
 
 	<!-- testing targets -->
-	<target name="alltests" depends="test-net-2.0, test-net-1.1, test-net-1.0">
+	<target name="alltests" depends="test-net-2.0, test-net-1.1">
 	</target>
 	
 	<target name="test-net-1.1" depends="net-1.1">
@@ -193,7 +193,7 @@
 	<!-- documentation target -->
 	<target name="Docs" description="Documentation">
 		<ndoc>
-			<assemblies basedir="bin/${framework}/${buildType}">
+			<assemblies basedir="mysqlclient/bin/${framework}/${buildType}">
 				<include name="MySQL.Data.dll" />
 			</assemblies>
 			<summaries>
