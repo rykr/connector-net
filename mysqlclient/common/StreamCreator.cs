@@ -39,7 +39,7 @@ namespace MySql.Data.Common
 		string				pipeName;
 		int					timeOut;
 
-		public StreamCreator( string hosts, int port, string pipeName)
+		public StreamCreator(string hosts, int port, string pipeName)
 		{
 			hostList = hosts;
 			if (hostList == null || hostList.Length == 0)
@@ -121,29 +121,32 @@ namespace MySql.Data.Common
 
 		private Stream CreateSocketStream(IPAddress ip, int port, bool unix) 
 		{
-			SocketStream ss = null;
+			EndPoint endPoint;
+
+			if (!Platform.IsWindows() && unix)
+				endPoint = CreateUnixEndPoint(hostList);
+			else
+				endPoint = 	new IPEndPoint(ip, port);
+
+			Socket socket = unix ? 
+				new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP) :
+				new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			IAsyncResult ias = socket.BeginConnect(endPoint, null, null);
+			if (!ias.AsyncWaitHandle.WaitOne(timeOut * 1000, true))
+			{
+				socket.Close();
+				return null;
+			}
 			try
 			{
-				//
-				// Lets try to connect
-				EndPoint endPoint;
-
-				if (!Platform.IsWindows() && unix)
-					endPoint = CreateUnixEndPoint(hostList);
-				else
-					endPoint = 	new IPEndPoint(ip, port);
-
-				ss = unix ? 
-					new SocketStream(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP) :
-					new SocketStream(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-				ss.Connect(endPoint, timeOut);
-				ss.Socket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, 1);
-				return ss;
+				socket.EndConnect(ias);
 			}
 			catch (Exception)
 			{
+				socket.Close();
 				return null;
 			}
+			return new NetworkStream(socket, true);
 		}
 
 	}
