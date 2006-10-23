@@ -5,7 +5,8 @@ Version 1.0.9
     Bugs fixed or addressed
     -----------------------
     Bug #23268 System.FormatException when invoking procedure with ENUM input parameter 
-    
+		Bug #23538 Exception thrown when GetSchemaTable is called and "fields" is null. 
+		
 Version 1.0.8 RC
 
     Other changes

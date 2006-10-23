@@ -472,7 +472,7 @@ namespace MySql.Data.MySqlClient
 			// Only Results from SQL SELECT Queries 
 			// get a DataTable for schema of the result
 			// otherwise, DataTable is null reference
-			if (fields.Length == 0) return null;
+			if (fields == null || fields.Length == 0) return null;
 
 			DataTable dataTableSchema = new DataTable("SchemaTable");
 
