@@ -946,5 +946,39 @@ namespace MySql.Data.MySqlClient.Tests
 				Thread.CurrentThread.CurrentUICulture = uiCulture;
 			}
 		}
+
+		/// <summary>
+		/// Bug #23268 System.FormatException when invoking procedure with ENUM input parameter 
+		/// </summary>
+		[Test]
+		public void ProcEnumParamTest()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test(str VARCHAR(50), e ENUM ('P','R','F','E'), i INT(6))");
+			execSQL("CREATE PROCEDURE spTest(IN p_enum ENUM('P','R','F','E')) BEGIN " +
+				"INSERT INTO test (str, e, i) VALUES (null, p_enum, 55);  END");
+
+			try
+			{
+				MySqlCommand cmd = new MySqlCommand("spTest", conn);
+				cmd.CommandType = CommandType.StoredProcedure;
+				cmd.Parameters.Add("?p_enum", "P");
+				cmd.Parameters["?p_enum"].Direction = ParameterDirection.Input;
+				using (MySqlDataReader reader = cmd.ExecuteReader())
+				{
+				}
+				cmd.CommandText = "SELECT e FROM test";
+				cmd.CommandType = CommandType.Text;
+				using (MySqlDataReader reader = cmd.ExecuteReader())
+				{
+					reader.Read();
+					Assert.AreEqual("P", reader.GetString(0));
+				}
+			}
+			catch (MySqlException ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
 	}
 }

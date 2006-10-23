@@ -361,7 +361,7 @@ namespace MySql.Data.MySqlClient
 
 			p.MySqlDbType = GetTypeFromName(typeName, unsigned, real_as_float);
 
-			if (end > start && p.MySqlDbType != MySqlDbType.Set)
+			if (end > start && p.MySqlDbType != MySqlDbType.Set && p.MySqlDbType != MySqlDbType.Enum)
 			{
 				size = type.Substring(start + 1, end - (start + 1));
 				string[] parts = size.Split(new char[] { ',' });

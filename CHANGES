@@ -1,3 +1,11 @@
+Version 1.0.9
+    Other changes
+    -------------
+    
+    Bugs fixed or addressed
+    -----------------------
+    Bug #23268 System.FormatException when invoking procedure with ENUM input parameter 
+    
 Version 1.0.8 RC
 
     Other changes
