@@ -53,7 +53,7 @@
         <Registry Id="vs80registry" Root="HKLM" Key="Software\Microsoft\VisualStudio\8.0\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)" Type="string" KeyPath="yes" Value="[TARGETDIR]bin\.NET 2.0\" />
       </Component>
       <Component Id="GAC20" DiskId="1" Guid="53332577-9093-4319-9AD8-44EAAFF9B731">
-        <!--<Condition><![CDATA[REGISTERGAC="1"]]></Condition>-->
+        <Condition><![CDATA[REGISTER_NET20_GAC="1"]]></Condition>
         <File Id="CoreBin20GAC" Name="MD20" LongName="MySql.Data.dll" src="..\mysqlclient\bin\net-2.0\$(var.build)\mysql.data.dll" Assembly=".net" KeyPath="yes" />
       </Component>
     </DirectoryRef>
@@ -65,7 +65,7 @@
         <Registry Id="vs71registry" Root="HKLM" Key="Software\Microsoft\VisualStudio\7.1\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)" Type="string" KeyPath="yes" Value="[TARGETDIR]bin\.NET 1.1\" />
       </Component>
       <Component Id="GAC11" DiskId="1" Guid="FCD6265C-3FC9-49fe-B774-08380522711C">
-        <!--<Condition><![CDATA[REGISTERGAC="1"]]></Condition>-->
+        <Condition><![CDATA[REGISTER_NET11_GAC="1"]]></Condition>
         <File Id="CoreBin11GAC" Name="MD11" LongName="MySql.Data.dll" src="..\mysqlclient\bin\net-1.1\$(var.build)\mysql.data.dll" Assembly=".net" KeyPath="yes" />
       </Component>
     </DirectoryRef>
@@ -99,15 +99,11 @@
     <Feature Id="SupportedAssemblies" Level="1" Title="Supported Frameworks" 
 			ConfigurableDirectory="INSTALLDIR" Absent="disallow"
 			Description="Frameworks that will be supported.">
-      <Feature Id="FeatureNet10" Level='0' Title=".NET 1.0">
-        <!--<ComponentRef Id="Net10"/>-->
-        <!--<ComponentRef Id="GACFiles10"/>-->
-      </Feature>
-      <Feature Id="FeatureNet11" Level='1' Title=".NET 1.1">
+      <Feature Id="FeatureNet11" Level='0' Title=".NET 1.1">
         <ComponentRef Id="Net11"/>
         <ComponentRef Id="GAC11"/>
       </Feature>
-      <Feature Id="FeatureNet20" Level='1' Title=".NET 2.0">
+      <Feature Id="FeatureNet20" Level='0' Title=".NET 2.0">
         <ComponentRef Id="Net20"/>
         <ComponentRef Id="GAC20"/>
       </Feature>
@@ -122,6 +118,7 @@
 
     <Property Id="WIXUI_INSTALLDIR" Value='INSTALLDIR'/>
     <UIRef Id="WixUI_Mondo"/>
+	<UIRef Id="CustomDialogs"/>
 
     <Icon Id="ChangeLogIcon" src="Bitmaps\document.ico"/>
   </Product>
