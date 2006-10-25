@@ -251,6 +251,19 @@ namespace MySql.Data.MySqlClient
 			get { return GetString("charset"); }
 		}
 
+		[Category("Other")]
+		[Description("Instructs the provider to ignore any attempts to prepare a command.")]
+		[DefaultValue(true)]
+		public bool IgnorePrepare
+		{
+			get { return GetBool("ignore prepare"); }
+		}
+
+		[Category("Advanced")]
+		[DisplayName("Procedure Cache Size")]
+		[Description("Indicates how many stored procedures can be cached at one time. " +
+				"A value of 0 effectively disables the procedure cache.")]
+		[DefaultValue(25)]
 		public int ProcedureCacheSize
 		{
 			get { return GetInt("procedure cache size"); }
@@ -345,6 +358,7 @@ namespace MySql.Data.MySqlClient
 				defaults["convertzerodatetime"] = false;
 				defaults["reset_pooled_conn"] = true;
 				defaults["procedure cache size"] = 25;
+				defaults["ignore prepare"] = true;
 			}
 			return (Hashtable)defaults.Clone();
 		}
@@ -416,6 +430,10 @@ namespace MySql.Data.MySqlClient
 				case "allow zero datetime":
 				case "allowzerodatetime":
 					hash["allowzerodatetime"] = boolVal;
+					break;
+
+				case "ignore prepare":
+					hash["ignore prepare"] = boolVal;
 					break;
 
 				default:

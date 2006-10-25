@@ -457,7 +457,8 @@ namespace MySql.Data.MySqlClient
 				throw new InvalidOperationException(Resources.ConnectionNotSet);
 			if (connection.State != ConnectionState.Open)
 				throw new InvalidOperationException(Resources.ConnectionNotOpen);
-			if (!connection.driver.Version.isAtLeast(4, 1, 0))
+			if (!connection.driver.Version.isAtLeast(4, 1, 0) ||
+				 connection.Settings.IgnorePrepare)
 				return;
 
 			// strip out names from parameter markers

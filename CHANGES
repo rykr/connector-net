@@ -1,6 +1,11 @@
 Version 1.0.9
     Other changes
     -------------
+    Turned MySqlPoolManager into a static class and added a static ctor to
+         avoid any race conditions related to initializing the hashtable.
+         (A similar suggestion came in from a user)
+    Added 'Ignore Prepare' connection string option for disabling prepared
+         statements application-wide    
     
     Bugs fixed or addressed
     -----------------------

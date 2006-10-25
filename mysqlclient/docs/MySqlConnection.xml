@@ -1000,6 +1000,18 @@
               on that named pipe.<br/><br/>This settings only applies to the Windows platform.
             </td>
           </tr>
+          <tr>
+            <td>
+              Ignore Prepare
+            </td>
+            <td>true</td>
+            <td>
+              Instructs the provider to ignore any attempts to prepare commands.  This option
+              was added to allow a user to disable prepared statements in an entire application
+              without modifying the code.  A user might want to do this if errors or bugs are
+              encountered with MySQL prepared statements.
+            </td>
+          </tr>
         </table>
       </div>
       <para>
