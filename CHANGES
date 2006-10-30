@@ -13,6 +13,7 @@ Version 1.0.9
 		Bug #23538 Exception thrown when GetSchemaTable is called and "fields" is null. 
     Bug #23758 Unable to connect to any server - IPv6 related 
     Bug #23749 VarChar field size over 255 causes a System.OverflowException 
+    Bug #18186 Problem with implementation of PreparedStatement 
 		
 Version 1.0.8 RC
 

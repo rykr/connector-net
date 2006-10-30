@@ -81,8 +81,12 @@ namespace MySql.Data.MySqlClient
 				if (p.Value == DBNull.Value || p.Value == null)
 					nullMap[x] = true;
 			}
+
 			byte[] nullMapBytes = new byte[(parameters.Count + 7) / 8];
-			nullMap.CopyTo(nullMapBytes, 0);
+			// we check this because Mono doesn't ignore the case where nullMapBytes
+			// is zero length.
+			if (nullMapBytes.Length > 0)
+				nullMap.CopyTo(nullMapBytes, 0);
 
 			// start constructing our packet
 			packet.WriteInteger(StatementId, 4);

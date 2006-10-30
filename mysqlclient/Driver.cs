@@ -146,8 +146,7 @@ namespace MySql.Data.MySqlClient
 		{
 			this.connection = connection;
 
-			// if we have already configured this driver and we are supposed
-			// to cache server config, then exit
+			// if we have already configured this driver then exit
 			if (serverProps != null)
 				return;
 
