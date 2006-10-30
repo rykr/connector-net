@@ -34,10 +34,10 @@ namespace MySql.Data.Common
 	/// </summary>
 	internal class StreamCreator
 	{
-		string				hostList;
-		int					port;
-		string				pipeName;
-		int					timeOut;
+		string hostList;
+		int port;
+		string pipeName;
+		int timeOut;
 
 		public StreamCreator(string hosts, int port, string pipeName)
 		{
@@ -72,11 +72,15 @@ namespace MySql.Data.Common
 #if NET20
 					IPHostEntry ipHE = Dns.GetHostEntry(dnsHosts[index]);
 #else
-				    IPHostEntry ipHE = Dns.GetHostByName(dnsHosts[index]);
+				   IPHostEntry ipHE = Dns.GetHostByName(dnsHosts[index]);
 #endif
 
 					foreach (IPAddress address in ipHE.AddressList)
 					{
+						// MySQL doesn't currently support IPv6 addresses
+						if (address.AddressFamily == AddressFamily.InterNetworkV6)
+							continue;
+
 						stream = CreateSocketStream(address, port, false);
 						if (stream != null)
 							break;
@@ -93,7 +97,7 @@ namespace MySql.Data.Common
 			return stream;
 		}
 
-		private Stream CreateNamedPipeStream( string hostname ) 
+		private Stream CreateNamedPipeStream(string hostname)
 		{
 			string pipePath;
 			if (0 == String.Compare(hostname, "localhost", true))
@@ -113,22 +117,22 @@ namespace MySql.Data.Common
 #endif
 
 			// then we need to construct a UnixEndPoint object
-			EndPoint ep = (EndPoint)a.CreateInstance("Mono.Posix.UnixEndPoint", 
-				false, BindingFlags.CreateInstance, null, 
+			EndPoint ep = (EndPoint)a.CreateInstance("Mono.Posix.UnixEndPoint",
+				false, BindingFlags.CreateInstance, null,
 				new object[1] { host }, null, null);
 			return ep;
 		}
 
-		private Stream CreateSocketStream(IPAddress ip, int port, bool unix) 
+		private Stream CreateSocketStream(IPAddress ip, int port, bool unix)
 		{
 			EndPoint endPoint;
 
 			if (!Platform.IsWindows() && unix)
 				endPoint = CreateUnixEndPoint(hostList);
 			else
-				endPoint = 	new IPEndPoint(ip, port);
+				endPoint = new IPEndPoint(ip, port);
 
-			Socket socket = unix ? 
+			Socket socket = unix ?
 				new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP) :
 				new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			IAsyncResult ias = socket.BeginConnect(endPoint, null, null);

@@ -11,6 +11,7 @@ Version 1.0.9
     -----------------------
     Bug #23268 System.FormatException when invoking procedure with ENUM input parameter 
 		Bug #23538 Exception thrown when GetSchemaTable is called and "fields" is null. 
+    Bug #23758 Unable to connect to any server - IPv6 related 
 		
 Version 1.0.8 RC
 
