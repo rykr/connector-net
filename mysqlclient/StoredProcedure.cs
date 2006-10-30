@@ -365,9 +365,14 @@ namespace MySql.Data.MySqlClient
 			{
 				size = type.Substring(start + 1, end - (start + 1));
 				string[] parts = size.Split(new char[] { ',' });
-				p.Size = p.Precision = Byte.Parse(parts[0]);
-				if (parts.Length > 1)
-					p.Scale = Byte.Parse(parts[1]);
+				p.Size = Int32.Parse(parts[0]);
+				if (p.MySqlDbType == MySqlDbType.Decimal)
+				{
+					p.Precision = (byte)p.Size;
+					p.Size = 0;
+					if (parts.Length > 1)
+						p.Scale = Byte.Parse(parts[1]);
+				}
 			}
 		}
 

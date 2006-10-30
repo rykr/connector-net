@@ -123,7 +123,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			// create our procedure
 			execSQL("DROP PROCEDURE IF EXISTS spCount");
-			execSQL("CREATE PROCEDURE spCount(out value VARCHAR(50), OUT intVal INT, " +
+			execSQL("CREATE PROCEDURE spCount(out value VARCHAR(350), OUT intVal INT, " +
 				"OUT dateVal TIMESTAMP, OUT floatVal FLOAT, OUT noTypeVarChar VARCHAR(20), " +
 				"OUT noTypeInt INT) " +
 				"BEGIN  SET value='42';  SET intVal=33; SET dateVal='2004-06-05 07:58:09'; " +
