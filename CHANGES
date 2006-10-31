@@ -1,11 +1,4 @@
 Version 1.0.9
-    Other changes
-    -------------
-    Turned MySqlPoolManager into a static class and added a static ctor to
-         avoid any race conditions related to initializing the hashtable.
-         (A similar suggestion came in from a user)
-    Added 'Ignore Prepare' connection string option for disabling prepared
-         statements application-wide    
     
     Bugs fixed or addressed
     -----------------------
@@ -15,6 +8,15 @@ Version 1.0.9
     Bug #23749 VarChar field size over 255 causes a System.OverflowException 
     Bug #18186 Problem with implementation of PreparedStatement 
 		
+    Other changes
+    -------------
+    Turned MySqlPoolManager into a static class and added a static ctor to
+         avoid any race conditions related to initializing the hashtable.
+         (A similar suggestion came in from a user)
+    Added 'Ignore Prepare' connection string option for disabling prepared
+         statements application-wide    
+    A nicer exception is displayed if you have added a parameter without the parameter marker.
+    
 Version 1.0.8 RC
 
     Other changes

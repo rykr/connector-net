@@ -66,6 +66,17 @@ namespace MySql.Data.MySqlClient
 		{
 			int index = IndexOf(name);
 			if (index != -1) return index;
+
+			// we have failed to find a parameter with the given name.
+			// We now check to see if the user gave us the parameter without a marker.
+			if (name.StartsWith(ParameterMarker.ToString()))
+			{
+				string newName = name.Substring(1);
+				index = IndexOf(newName);
+				if (index != -1)
+					throw new ArgumentException(String.Format(Resources.WrongParameterName,
+						name, newName));
+			}
 			throw new MySqlException("A MySqlParameter with ParameterName '" + name +
 				"' is not contained by this MySqlParameterCollection.");
 		}

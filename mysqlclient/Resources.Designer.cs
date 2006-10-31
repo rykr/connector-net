@@ -413,5 +413,14 @@
                 return ResourceManager.GetString("WriteToStreamFailed", resourceCulture);
             }
         }
+
+		 internal static string WrongParameterName
+		 {
+			 get
+			 {
+				 return ResourceManager.GetString("WrongParameterName", resourceCulture);
+			 }
+		 }
+
     }
 }
