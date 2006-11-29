@@ -7,6 +7,7 @@ Version 1.0.9
     Bug #23758 Unable to connect to any server - IPv6 related 
     Bug #23749 VarChar field size over 255 causes a System.OverflowException 
     Bug #18186 Problem with implementation of PreparedStatement 
+    Bug #24565 Inferring DbType fails when reusing commands and the first time the value is nul 
 		
     Other changes
     -------------

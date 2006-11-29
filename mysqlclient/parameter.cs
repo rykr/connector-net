@@ -346,8 +346,11 @@ namespace MySql.Data.MySqlClient
 
 		private void SetMySqlDbType(MySqlDbType mySqlDbType)
 		{
-			if (this.mySqlDbType != mySqlDbType)
+            // if the user is changing types, then we will need to
+            // regenerate the value object
+            if (this.mySqlDbType != mySqlDbType)
 				valueObject = null;
+
 			this.mySqlDbType = mySqlDbType;
 			switch (mySqlDbType)
 			{
@@ -391,6 +394,11 @@ namespace MySql.Data.MySqlClient
 
 		private void SetDbType(DbType dbType)
 		{
+            // if the user is changing types, then we will need to
+            // regenerate the value object
+            if (this.dbType != dbType)
+                valueObject = null;
+
 			this.dbType = dbType;
 			switch (dbType)
 			{
@@ -434,7 +442,7 @@ namespace MySql.Data.MySqlClient
 
 		private void SetTypeFromValue()
 		{
-			if (paramValue == null) return;
+			if (paramValue == null || paramValue == DBNull.Value) return;
 
 			if (paramValue is Guid)
 				DbType = DbType.String;
@@ -465,6 +473,7 @@ namespace MySql.Data.MySqlClient
 					default: DbType = DbType.Object; break;
 				}
 			}
+            valueObject = null;
 		}
 
 
