@@ -260,7 +260,9 @@ namespace MySql.Data.MySqlClient
 		}
 
 		[Category("Advanced")]
+#if NET20
 		[DisplayName("Procedure Cache Size")]
+#endif
 		[Description("Indicates how many stored procedures can be cached at one time. " +
 				"A value of 0 effectively disables the procedure cache.")]
 		[DefaultValue(25)]
