@@ -716,55 +716,55 @@ namespace MySql.Data.MySqlClient.Tests
 		}
 	}
 
-	#region Configs
+    #region Configs
 
-	[Category("Compressed")]
-	public class PreparedStatementsSocketCompressed : PreparedStatements
-	{
-		protected override string GetConnectionInfo()
-		{
-			return ";port=3306;compress=true";
-		}
-	}
+    [Category("Compressed")]
+    public class PreparedStatementsSocketCompressed : PreparedStatements
+    {
+        protected override string GetConnectionInfo()
+        {
+            return String.Format("port={0};compress=true", port);
+        }
+    }
 
-	[Category("Pipe")]
-	public class PreparedStatementsPipe : PreparedStatements
-	{
-		protected override string GetConnectionInfo()
-		{
-			return ";protocol=pipe";
-		}
-	}
+    [Category("Pipe")]
+    public class PreparedStatementsPipe : PreparedStatements
+    {
+        protected override string GetConnectionInfo()
+        {
+            return String.Format("protocol=pipe;pipe name={0}", pipeName);
+        }
+    }
 
-	[Category("Compressed")]
-	[Category("Pipe")]
-	public class PreparedStatementsPipeCompressed : PreparedStatements
-	{
-		protected override string GetConnectionInfo()
-		{
-			return ";protocol=pipe;compress=true";
-		}
-	}
+    [Category("Compressed")]
+    [Category("Pipe")]
+    public class PreparedStatementsPipeCompressed : PreparedStatements
+    {
+        protected override string GetConnectionInfo()
+        {
+            return String.Format("protocol=pipe;pipe name={0};compress=true", pipeName);
+        }
+    }
 
-	[Category("SharedMemory")]
-	public class PreparedStatementsSharedMemory : PreparedStatements
-	{
-		protected override string GetConnectionInfo()
-		{
-			return ";protocol=memory";
-		}
-	}
+    [Category("SharedMemory")]
+    public class PreparedStatementsSharedMemory : PreparedStatements
+    {
+        protected override string GetConnectionInfo()
+        {
+            return String.Format("protocol=memory; shared memory name={0}", memoryName);
+        }
+    }
 
-	[Category("Compressed")]
-	[Category("SharedMemory")]
-	public class PreparedStatementsSharedMemoryCompressed : PreparedStatements
-	{
-		protected override string GetConnectionInfo()
-		{
-			return ";protocol=memory;compress=true";
-		}
-	}
+    [Category("Compressed")]
+    [Category("SharedMemory")]
+    public class PreparedStatementsSharedMemoryCompressed : PreparedStatements
+    {
+        protected override string GetConnectionInfo()
+        {
+            return String.Format("protocol=memory; shared memory name={0};compress=true", memoryName);
+        }
+    }
 
-	#endregion
+    #endregion
 
 }

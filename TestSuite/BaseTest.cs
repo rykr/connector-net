@@ -37,29 +37,65 @@ namespace MySql.Data.MySqlClient.Tests
 		protected string host;
 		protected string user;
 		protected string password;
+        protected int port;
+        protected string database;
+        protected string pipeName;
+        protected string memoryName;
 
 		public BaseTest()
 		{
-			csAdditions = ";pooling=false";
+            csAdditions = ";pooling=false;";
 			user = "root";
 			password = "";
 			host = "localhost";
-		}
+            database = "test";
+            port = 3306;
+            pipeName = "MYSQL";
+            memoryName = "MYSQL";
+
+#if NET20
+            string strPort = ConfigurationManager.AppSettings["port"];
+            string strDatabase = ConfigurationManager.AppSettings["database"];
+            string strUserId = ConfigurationManager.AppSettings["userid"];
+            string strPassword = ConfigurationManager.AppSettings["password"];
+            string strPipeName = ConfigurationManager.AppSettings["pipename"];
+            string strMemName = ConfigurationManager.AppSettings["memory_name"];
+#else
+            string strPort = ConfigurationSettings.AppSettings["port"];
+            string strDatabase = ConfigurationSettings.AppSettings["database"];
+            string strUserId = ConfigurationSettings.AppSettings["userid"];
+            string strPassword = ConfigurationSettings.AppSettings["password"];
+            string strPipeName = ConfigurationSettings.AppSettings["pipename"];
+            string strMemName = ConfigurationSettings.AppSettings["memory_name"];
+#endif
+            if (strPort != null)
+                port = Int32.Parse(strPort);
+            if (strDatabase != null)
+                database = strDatabase;
+            if (strUserId != null)
+                user = strUserId;
+            if (strPassword != null)
+                password = strPassword;
+            if (strPipeName != null)
+                pipeName = strPipeName;
+            if (strMemName != null)
+                memoryName = strMemName;
+        }
 
 		protected virtual string GetConnectionInfo()
 		{
-			return String.Empty;
-		}
+            return String.Format("protocol=tcp;port={0}", port);
+        }
 
 		protected string GetConnectionString(bool includedb)
 		{
-			string connStr = String.Format("server={0};user id={1};password={2};" +
-				 "persist security info=true;{3}", host, user, password, csAdditions);
-			if (includedb)
-				connStr += ";database=test;compress=true";
-			connStr += GetConnectionInfo();
-			return connStr;
-		}
+            string connStr = String.Format("server={0};user id={1};password={2};" +
+                 "persist security info=true;{3}", host, user, password, csAdditions);
+            if (includedb)
+                connStr += String.Format("database={0};", database);
+            connStr += GetConnectionInfo();
+            return connStr;
+        }
 
 		protected void Open()
 		{
