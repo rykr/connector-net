@@ -8,6 +8,7 @@ Version 1.0.9
     Bug #23749 VarChar field size over 255 causes a System.OverflowException 
     Bug #18186 Problem with implementation of PreparedStatement 
     Bug #24565 Inferring DbType fails when reusing commands and the first time the value is nul 
+	Bug #24661 mysql-connector-net-5.0.2-beta Driver.IsTooOld() Error.... 
 		
     Other changes
     -------------
