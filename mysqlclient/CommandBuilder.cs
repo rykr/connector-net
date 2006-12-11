@@ -139,16 +139,14 @@ namespace MySql.Data.MySqlClient
 		public static void DeriveParameters(MySqlCommand command)
 		{
 			if (!command.Connection.driver.Version.isAtLeast(5, 0, 0))
-				throw new MySqlException("DeriveParameters is not supported on versions " +
+				throw new MySqlException("DeriveParameters is not supported on MySQL versions " +
 					"prior to 5.0");
-			StoredProcedure sp = new StoredProcedure(command.Connection);
 
-			string spName = command.CommandText;
-			int dotIndex = spName.IndexOf('.');
-			if (dotIndex == -1)
-				spName = command.Connection.Database + "." + spName;
-
-			ArrayList parameters = sp.DiscoverParameters(spName);
+            // retrieve the proc definitino from the cache.
+            string spName = command.CommandText;
+            if (spName.IndexOf(".") == -1)
+                spName = command.Connection.Database + "." + spName;
+            ArrayList parameters = command.Connection.ProcedureCache.GetProcedure(command.Connection, spName);
 
 			command.Parameters.Clear();
 			foreach (MySqlParameter p in parameters)

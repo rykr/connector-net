@@ -18,6 +18,7 @@ Version 1.0.9
     Added 'Ignore Prepare' connection string option for disabling prepared
          statements application-wide    
     A nicer exception is displayed if you have added a parameter without the parameter marker.
+    Improved CommandBuilder.DeriveParameters to use the procedure cache if possible
     
 Version 1.0.8 RC
 
