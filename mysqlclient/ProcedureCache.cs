@@ -84,9 +84,15 @@ namespace MySql.Data.MySqlClient
 				if (procHash.Keys.Count == maxSize)
 					TrimHash();
 				int hash = spName.GetHashCode();
-				procHash.Add(hash, procData);
-				hashQueue.Enqueue(hash);
-			}
+                lock (procHash.SyncRoot)
+                {
+                    if (!procHash.ContainsKey(hash))
+                    {
+                        procHash[hash] = procData;
+                        hashQueue.Enqueue(hash);
+                    }
+                }
+            }
 			return procData;
 		}
 
