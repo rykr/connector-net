@@ -466,10 +466,12 @@ namespace MySql.Data.MySqlClient
 		{
 			// If the parameter has one of these properties, then we don't include it in the insert:
 
-			/*			if ((bool) schemaRow ["IsHidden"])
-							return false;
-						if ((bool) schemaRow ["IsExpression"])
-							return false;*/
+            if ((bool)schemaRow["IsAutoIncrement"])
+                return false;
+/*			if ((bool) schemaRow ["IsHidden"])
+				return false;
+			if ((bool) schemaRow ["IsExpression"])
+				return false;*/
 			if ((bool)schemaRow["IsRowVersion"])
 				return false;
 			if ((bool)schemaRow["IsReadOnly"])
