@@ -193,7 +193,8 @@ namespace MySql.Data.MySqlClient.Tests
 				}
 
 				suExecSQL("GRANT ALL ON *.* to 'nopass'@'localhost'");
-				suExecSQL("FLUSH PRIVILEGES");
+                suExecSQL("GRANT ALL ON *.* to 'nopass'@'%'");
+                suExecSQL("FLUSH PRIVILEGES");
 
 				// connect with no password
                 connStr2 = GetConnectionStringEx("nopass", null, false);
