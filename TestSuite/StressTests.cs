@@ -56,15 +56,16 @@ namespace MySql.Data.MySqlClient.Tests
 			// currently do not test this with compression
 			if (conn.UseCompression) return;
 
-			execSQL("set @@global.max_allowed_packet=35000000");
-
 			MySqlConnection c = new MySqlConnection(conn.ConnectionString + ";pooling=false");
 			c.Open();
 
 			byte[] dataIn = Utils.CreateBlob(len);
 			byte[] dataIn2 = Utils.CreateBlob(len);
 
-			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?id, NULL, ?blob, NULL )", c);
+            MySqlCommand cmd = new MySqlCommand("SET max_allowed_packet=35000000", c);
+            cmd.ExecuteNonQuery();
+
+            cmd.CommandText = "INSERT INTO Test VALUES (?id, NULL, ?blob, NULL )";
 			cmd.Parameters.Add(new MySqlParameter("?id", 1));
 			cmd.Parameters.Add(new MySqlParameter("?blob", dataIn));
 			try
@@ -111,7 +112,6 @@ namespace MySql.Data.MySqlClient.Tests
 				if (reader != null) reader.Close();
 				c.Close();
 			}
-			execSQL("set @@global.max_allowed_packet=1047552");
 		}
 	}
 

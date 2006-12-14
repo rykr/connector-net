@@ -107,17 +107,15 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void TestPersistSecurityInfoCachingPasswords()
 		{
-			string connStr = String.Format("database=test;server={0};user id={1};Password={2}; pooling=false",
-				host, this.user, this.password);
+            string connStr = GetConnectionString(true);
 			MySqlConnection c = new MySqlConnection(connStr);
 			c.Open();
 			c.Close();
 
 			// this shouldn't work
-			connStr = String.Format("database=test;server={0};user id={1};Password={2}; pooling=false",
-				host, this.user, "bad_password");
-			c = new MySqlConnection(connStr);
-			try
+            connStr = GetConnectionStringEx(user, "bad_password", true);
+            c = new MySqlConnection(connStr);
+            try
 			{
 				c.Open();
 				Assert.Fail("Thn is should not work");
@@ -129,10 +127,9 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 
 			// this should work
-			connStr = String.Format("database=test;server={0};user id={1};Password={2}; pooling=false",
-				host, this.user, this.password);
-			c = new MySqlConnection(connStr);
-			c.Open();
+            connStr = GetConnectionString(true);
+            c = new MySqlConnection(connStr);
+            c.Open();
 			c.Close();
 		}
 
@@ -144,11 +141,11 @@ namespace MySql.Data.MySqlClient.Tests
 			c.Open();
 			Assert.IsTrue(c.State == ConnectionState.Open);
 
-			Assert.AreEqual("test", c.Database.ToLower());
+			Assert.AreEqual(databases[0], c.Database.ToLower());
 
-			c.ChangeDatabase("mysql");
+			c.ChangeDatabase(databases[1]);
 
-			Assert.AreEqual("mysql", c.Database.ToLower());
+			Assert.AreEqual(databases[1], c.Database.ToLower());
 
 			c.Close();
 		}
@@ -185,7 +182,7 @@ namespace MySql.Data.MySqlClient.Tests
 				c.Close();
 
 				// TODO: make anonymous login work
-				execSQL("GRANT ALL ON *.* to '' IDENTIFIED BY ''");
+				suExecSQL("GRANT ALL ON *.* to '' IDENTIFIED BY ''");
 
 				// connect with all defaults
 				if (connStr.IndexOf("localhost") != -1)
@@ -195,17 +192,17 @@ namespace MySql.Data.MySqlClient.Tests
 					c.Close();
 				}
 
-				execSQL("GRANT ALL ON *.* to 'nopass'@'localhost'");
-				execSQL("FLUSH PRIVILEGES");
+				suExecSQL("GRANT ALL ON *.* to 'nopass'@'localhost'");
+				suExecSQL("FLUSH PRIVILEGES");
 
 				// connect with no password
-				connStr2 = "server=" + host + ";user id=nopass";
-				c = new MySqlConnection(connStr2);
+                connStr2 = GetConnectionStringEx("nopass", null, false);
+                c = new MySqlConnection(connStr2);
 				c.Open();
 				c.Close();
 
-				connStr2 += ";password=;";
-				c = new MySqlConnection(connStr2);
+                connStr2 = GetConnectionStringEx("nopass", "", false);
+                c = new MySqlConnection(connStr2);
 				c.Open();
 				c.Close();
 			}
@@ -215,9 +212,9 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 			finally
 			{
-				execSQL("DELETE FROM mysql.user WHERE length(user) = 0");
-				execSQL("DELETE FROM mysql.user WHERE user='nopass'");
-				execSQL("FLUSH PRIVILEGES");
+				suExecSQL("DELETE FROM mysql.user WHERE length(user) = 0");
+				suExecSQL("DELETE FROM mysql.user WHERE user='nopass'");
+				suExecSQL("FLUSH PRIVILEGES");
 			}
 		}
 
@@ -330,9 +327,11 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void ConnectWithQuotePassword()
 		{
-			execSQL("GRANT ALL ON *.* to 'test'@'localhost' IDENTIFIED BY '\"'");
-			execSQL("GRANT ALL ON *.* to 'test'@'%' IDENTIFIED BY '\"'");
-			MySqlConnection c = new MySqlConnection("server=" + host + ";uid=test;pwd='\"';pooling=false");
+			suExecSQL("GRANT ALL ON *.* to 'quotedUser'@'%' IDENTIFIED BY '\"'");
+			suExecSQL("GRANT ALL ON *.* to 'quotedUser'@'%' IDENTIFIED BY '\"'");
+            string connStr = GetConnectionStringEx("quotedUser", null, false);
+            connStr += ";pwd='\"'";
+			MySqlConnection c = new MySqlConnection(connStr);
 			try
 			{
 				c.Open();
@@ -342,7 +341,7 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 				Assert.Fail(ex.Message);
 			}
-			execSQL("DELETE FROM mysql.user WHERE user='test'");
+			suExecSQL("DELETE FROM mysql.user WHERE user='quotedUser'");
 		}
 	}
 }
