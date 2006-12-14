@@ -338,8 +338,10 @@ namespace MySql.Data.MySqlClient
 				_parms[i] = value;
 				return value;
 			}
-			_parms.Add(value);
-			return value;
+            int index = _parms.Add(value);
+            hash.Add(value.ParameterName, index);
+            ciHash.Add(value.ParameterName, index);
+            return value;
 		}
 
 		/// <summary>
