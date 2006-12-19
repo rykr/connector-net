@@ -145,8 +145,13 @@ namespace MySql.Data.MySqlClient
 			{
 				ReadByte();
 				int errorCode = ReadInteger(2);
-				string msg = ReadString();
-				throw new MySqlException(msg, errorCode);
+                string msg = ReadString();
+                if (msg.StartsWith("#"))
+                {
+                    string stateCode = msg.Substring(1, 5);
+                    msg = msg.Substring(6);
+                } 
+                throw new MySqlException(msg, errorCode);
 			}
 
 		}
