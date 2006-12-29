@@ -16,6 +16,7 @@ Version 1.0.9
 	   are required. This will be fixed when the server exposes procedure parameters via
  	   information schema.]
     Bug #25013 Return Value parameter not found 
+    Bug #22400 Nested transactions 
 		
     Other changes
     -------------

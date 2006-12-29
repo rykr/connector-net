@@ -87,10 +87,10 @@ namespace MySql.Data.MySqlClient.Tests
 			try
 			{
 				MySqlTransaction t2 = conn.BeginTransaction();
-				t2.Rollback();
-				Assert.Fail("Exception should have been thrown");
+                Assert.Fail("Exception should have been thrown");
+                t2.Rollback();
 			}
-			catch (NotSupportedException)
+			catch (InvalidOperationException)
 			{
 			}
 			catch (Exception ex)

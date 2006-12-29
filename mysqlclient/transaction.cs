@@ -97,10 +97,6 @@ namespace MySql.Data.MySqlClient
 			{
 				throw;
 			}
-			finally
-			{
-				conn.activeLegacyTransaction = null;
-			}
 		}
 
 		/// <include file='docs/MySqlTransaction.xml' path='docs/Rollback/*'/>
@@ -119,10 +115,6 @@ namespace MySql.Data.MySqlClient
 			catch (MySqlException)
 			{
 				throw;
-			}
-			finally
-			{
-				conn.activeLegacyTransaction = null;
 			}
 		}
 	}

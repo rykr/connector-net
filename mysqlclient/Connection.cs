@@ -40,7 +40,6 @@ namespace MySql.Data.MySqlClient
 		private MySqlConnectionString settings;
 		private bool hasBeenOpen;
 		private ProcedureCache procedureCache;
-		internal MySqlTransaction activeLegacyTransaction;
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/StateChange/*'/>
 		public event StateChangeEventHandler StateChange;
@@ -214,8 +213,9 @@ namespace MySql.Data.MySqlClient
 			if (state != ConnectionState.Open)
 				throw new InvalidOperationException(Resources.ConnectionNotOpen);
 
-			if (activeLegacyTransaction != null)
-				throw new NotSupportedException(Resources.NoNestedTransactions);
+            // First check to see if we are in a current transaction
+            if ((driver.ServerStatus & ServerStatusFlags.InTransaction) != 0)
+                throw new InvalidOperationException(Resources.NoNestedTransactions);
 
 			MySqlTransaction t = new MySqlTransaction(this, iso);
 
@@ -240,8 +240,6 @@ namespace MySql.Data.MySqlClient
 
 			cmd.CommandText = "BEGIN";
 			cmd.ExecuteNonQuery();
-
-			activeLegacyTransaction = t;
 			return t;
 		}
 
@@ -347,7 +345,6 @@ namespace MySql.Data.MySqlClient
 				dataReader.Close();
 
 			Terminate();
-			activeLegacyTransaction = null;
 		}
 
 		IDbCommand IDbConnection.CreateCommand()
