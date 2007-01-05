@@ -17,7 +17,8 @@ Version 1.0.9
  	   information schema.]
     Bug #25013 Return Value parameter not found 
     Bug #22400 Nested transactions 
-		
+    Bug #25443 ExecuteScalar() hangs when more than one bad result 		
+
     Other changes
     -------------
     Turned MySqlPoolManager into a static class and added a static ctor to

@@ -341,6 +341,7 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/mysqlcommand.xml' path='docs/ExecuteNonQuery/*'/>
 		public int ExecuteNonQuery()
 		{
+            lastResult = null;
 			CheckState();
 
 			if (cmdText == null ||
@@ -387,7 +388,8 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/mysqlcommand.xml' path='docs/ExecuteReader1/*'/>
 		public MySqlDataReader ExecuteReader(CommandBehavior behavior)
 		{
-			CheckState();
+            lastResult = null;
+            CheckState();
 
 			if (cmdText == null ||
 				 cmdText.Trim().Length == 0)
@@ -422,7 +424,8 @@ namespace MySql.Data.MySqlClient
 		/// <include file='docs/mysqlcommand.xml' path='docs/ExecuteScalar/*'/>
 		public object ExecuteScalar()
 		{
-			// ExecuteReader will check out state
+            lastResult = null;
+            // ExecuteReader will check out state
 			if (cmdText == null ||
 				 cmdText.Trim().Length == 0)
 				throw new InvalidOperationException(Resources.CommandTextNotInitialized);
