@@ -33,7 +33,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			csAdditions = ";pooling=false";
+			csAdditions = ";pooling=false;";
 			Open();
 		}
 
@@ -105,7 +105,8 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #11621  	connector does not support charset cp1250
 		/// </summary>
 		[Test]
-		public void CP1250Connection()
+        [Category("NotWorking")]
+        public void CP1250Connection()
 		{
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (name VARCHAR(200)) CHARSET cp1250");

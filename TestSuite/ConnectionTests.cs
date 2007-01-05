@@ -26,323 +26,309 @@ using System.Configuration;
 
 namespace MySql.Data.MySqlClient.Tests
 {
-	/// <summary>
-	/// Summary description for ConnectionTests.
-	/// </summary>
-	[TestFixture]
-	public class ConnectionTests : BaseTest
-	{
-		[TestFixtureSetUp]
-		public void FixtureSetup()
-		{
-			Open();
-		}
+    /// <summary>
+    /// Summary description for ConnectionTests.
+    /// </summary>
+    [TestFixture]
+    public class ConnectionTests : BaseTest
+    {
+        [TestFixtureSetUp]
+        public void FixtureSetup()
+        {
+            Open();
+        }
 
-		[TestFixtureTearDown]
-		public void FixtureTearDown()
-		{
-			Close();
-		}
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            Close();
+        }
 
-		[Test]
-		public void TestConnectionStrings()
-		{
-			MySqlConnection c = new MySqlConnection();
+        [Test]
+        public void TestConnectionStrings()
+        {
+            MySqlConnection c = new MySqlConnection();
 
-			// public properties
-			Assert.AreEqual(15, c.ConnectionTimeout, "ConnectionTimeout");
-			Assert.AreEqual("", c.Database, "Database");
-			Assert.AreEqual(String.Empty, c.DataSource, "DataSource");
-			Assert.AreEqual(false, c.UseCompression, "Use Compression");
-			Assert.AreEqual(System.Data.ConnectionState.Closed, c.State, "State");
+            // public properties
+            Assert.AreEqual(15, c.ConnectionTimeout, "ConnectionTimeout");
+            Assert.AreEqual("", c.Database, "Database");
+            Assert.AreEqual(String.Empty, c.DataSource, "DataSource");
+            Assert.AreEqual(false, c.UseCompression, "Use Compression");
+            Assert.AreEqual(System.Data.ConnectionState.Closed, c.State, "State");
 
-			c = new MySqlConnection("connection timeout=25; user id=myuser; " +
-				"password=mypass; database=Test;server=myserver; use compression=true; " +
-				"pooling=false;min pool size=5; max pool size=101");
-			// public properties
-			Assert.AreEqual(25, c.ConnectionTimeout, "ConnectionTimeout");
-			Assert.AreEqual("Test", c.Database, "Database");
-			Assert.AreEqual("myserver", c.DataSource, "DataSource");
-			Assert.AreEqual(true, c.UseCompression, "Use Compression");
-			Assert.AreEqual(System.Data.ConnectionState.Closed, c.State, "State");
+            c = new MySqlConnection("connection timeout=25; user id=myuser; " +
+                "password=mypass; database=Test;server=myserver; use compression=true; " +
+                "pooling=false;min pool size=5; max pool size=101");
+            // public properties
+            Assert.AreEqual(25, c.ConnectionTimeout, "ConnectionTimeout");
+            Assert.AreEqual("Test", c.Database, "Database");
+            Assert.AreEqual("myserver", c.DataSource, "DataSource");
+            Assert.AreEqual(true, c.UseCompression, "Use Compression");
+            Assert.AreEqual(System.Data.ConnectionState.Closed, c.State, "State");
 
-			c.ConnectionString = "connection timeout=15; user id=newuser; " +
-				"password=newpass; port=3308; database=mydb; data source=myserver2; " +
-				"use compression=true; pooling=true; min pool size=3; max pool size=76";
+            c.ConnectionString = "connection timeout=15; user id=newuser; " +
+                "password=newpass; port=3308; database=mydb; data source=myserver2; " +
+                "use compression=true; pooling=true; min pool size=3; max pool size=76";
 
-			// public properties
-			Assert.AreEqual(15, c.ConnectionTimeout, "ConnectionTimeout");
-			Assert.AreEqual("mydb", c.Database, "Database");
-			Assert.AreEqual("myserver2", c.DataSource, "DataSource");
-			Assert.AreEqual(true, c.UseCompression, "Use Compression");
-			Assert.AreEqual(System.Data.ConnectionState.Closed, c.State, "State");
-		}
+            // public properties
+            Assert.AreEqual(15, c.ConnectionTimeout, "ConnectionTimeout");
+            Assert.AreEqual("mydb", c.Database, "Database");
+            Assert.AreEqual("myserver2", c.DataSource, "DataSource");
+            Assert.AreEqual(true, c.UseCompression, "Use Compression");
+            Assert.AreEqual(System.Data.ConnectionState.Closed, c.State, "State");
+        }
 
-		[Test]
-		[ExpectedException(typeof(MySqlException))]
-		public void TestConnectingSocketBadUserName()
-		{
-			execSQL("DELETE FROM mysql.user WHERE length(user) = 0");
-			execSQL("FLUSH PRIVILEGES");
+        [Test]
+        [ExpectedException(typeof(MySqlException))]
+        public void TestConnectingSocketBadUserName()
+        {
+            execSQL("DELETE FROM mysql.user WHERE length(user) = 0");
+            execSQL("FLUSH PRIVILEGES");
 
-			string connStr = "server={0};user id=dummy;password=;database=Test;pooling=false";
-			MySqlConnection c = new MySqlConnection(
-				String.Format(connStr, host));
-			c.Open();
-			c.Close();
-		}
+            string connStr = "server={0};user id=dummy;password=;database=Test;pooling=false";
+            MySqlConnection c = new MySqlConnection(
+                String.Format(connStr, host));
+            c.Open();
+            c.Close();
+        }
 
-		[Test]
-		[ExpectedException(typeof(MySqlException))]
-		public void TestConnectingSocketBadDbName()
-		{
-			string connStr = "server={0};user id={1};password={2};database=dummy; " +
-				"pooling=false";
-			MySqlConnection c = new MySqlConnection(
-				String.Format(connStr, host, this.user, this.password));
-			c.Open();
-			c.Close();
-		}
+        [Test]
+        [ExpectedException(typeof(MySqlException))]
+        public void TestConnectingSocketBadDbName()
+        {
+            string connStr = "server={0};user id={1};password={2};database=dummy; " +
+                "pooling=false";
+            MySqlConnection c = new MySqlConnection(
+                String.Format(connStr, host, this.user, this.password));
+            c.Open();
+            c.Close();
+        }
 
-		[Test]
-		public void TestPersistSecurityInfoCachingPasswords()
-		{
+        [Test]
+        public void TestPersistSecurityInfoCachingPasswords()
+        {
             string connStr = GetConnectionString(true);
-			MySqlConnection c = new MySqlConnection(connStr);
-			c.Open();
-			c.Close();
+            MySqlConnection c = new MySqlConnection(connStr);
+            c.Open();
+            c.Close();
 
-			// this shouldn't work
+            // this shouldn't work
             connStr = GetConnectionStringEx(user, "bad_password", true);
             c = new MySqlConnection(connStr);
             try
-			{
-				c.Open();
-				Assert.Fail("Thn is should not work");
-				c.Close();
-				return;
-			}
-			catch (MySqlException)
-			{
-			}
+            {
+                c.Open();
+                Assert.Fail("Thn is should not work");
+                c.Close();
+                return;
+            }
+            catch (MySqlException)
+            {
+            }
 
-			// this should work
+            // this should work
             connStr = GetConnectionString(true);
             c = new MySqlConnection(connStr);
             c.Open();
-			c.Close();
-		}
+            c.Close();
+        }
 
-		[Test]
-		public void ChangeDatabase()
-		{
-			string connStr = GetConnectionString(true);
-			MySqlConnection c = new MySqlConnection(connStr + ";pooling=false");
-			c.Open();
-			Assert.IsTrue(c.State == ConnectionState.Open);
+        [Test]
+        public void ChangeDatabase()
+        {
+            string connStr = GetConnectionString(true);
+            MySqlConnection c = new MySqlConnection(connStr + ";pooling=false");
+            c.Open();
+            Assert.IsTrue(c.State == ConnectionState.Open);
 
-			Assert.AreEqual(databases[0], c.Database.ToLower());
+            Assert.AreEqual(databases[0], c.Database.ToLower());
 
-			c.ChangeDatabase(databases[1]);
+            c.ChangeDatabase(databases[1]);
 
-			Assert.AreEqual(databases[1], c.Database.ToLower());
+            Assert.AreEqual(databases[1], c.Database.ToLower());
 
-			c.Close();
-		}
+            c.Close();
+        }
 
-		[Test]
-		public void ConnectionTimeout()
-		{
-			MySqlConnection c = new MySqlConnection(
-				"server=1.1.1.1;user id=bogus;pwd=bogus;Connection timeout=5;" +
-					 "pooling=false");
-			DateTime start = DateTime.Now;
-			try
-			{
-				c.Open();
-			}
-			catch (Exception)
-			{
-				TimeSpan diff = DateTime.Now.Subtract(start);
-				Assert.IsTrue(diff.TotalSeconds < 15, "Timeout exceeded");
-			}
-		}
+        [Test]
+        public void ConnectionTimeout()
+        {
+            MySqlConnection c = new MySqlConnection(
+                "server=1.1.1.1;user id=bogus;pwd=bogus;Connection timeout=5;" +
+                     "pooling=false");
+            DateTime start = DateTime.Now;
+            try
+            {
+                c.Open();
+            }
+            catch (Exception)
+            {
+                TimeSpan diff = DateTime.Now.Subtract(start);
+                Assert.IsTrue(diff.TotalSeconds < 15, "Timeout exceeded");
+            }
+        }
 
-		[Test]
-		public void ConnectInVariousWays()
-		{
-			try
-			{
-				string connStr = conn.ConnectionString;
+        [Test]
+        public void ConnectInVariousWays()
+        {
+            try
+            {
+                string connStr = conn.ConnectionString;
 
-				// connect with no db
-				string connStr2 = GetConnectionString(false);
-				MySqlConnection c = new MySqlConnection(connStr2);
-				c.Open();
-				c.Close();
+                // connect with no db
+                string connStr2 = GetConnectionString(false);
+                MySqlConnection c = new MySqlConnection(connStr2);
+                c.Open();
+                c.Close();
 
-				// TODO: make anonymous login work
-				suExecSQL("GRANT ALL ON *.* to '' IDENTIFIED BY ''");
-
-				// connect with all defaults
-				if (connStr.IndexOf("localhost") != -1)
-				{
-					c = new MySqlConnection(String.Empty);
-					c.Open();
-					c.Close();
-				}
-
-				suExecSQL("GRANT ALL ON *.* to 'nopass'@'localhost'");
                 suExecSQL("GRANT ALL ON *.* to 'nopass'@'%'");
+                suExecSQL("GRANT ALL ON *.* to 'nopass'@'localhost'");
                 suExecSQL("FLUSH PRIVILEGES");
 
-				// connect with no password
+                // connect with no password
                 connStr2 = GetConnectionStringEx("nopass", null, false);
                 c = new MySqlConnection(connStr2);
-				c.Open();
-				c.Close();
+                c.Open();
+                c.Close();
 
                 connStr2 = GetConnectionStringEx("nopass", "", false);
                 c = new MySqlConnection(connStr2);
-				c.Open();
-				c.Close();
-			}
-			catch (Exception ex)
-			{
-				Assert.Fail(ex.Message);
-			}
-			finally
-			{
-				suExecSQL("DELETE FROM mysql.user WHERE length(user) = 0");
-				suExecSQL("DELETE FROM mysql.user WHERE user='nopass'");
-				suExecSQL("FLUSH PRIVILEGES");
-			}
-		}
+                c.Open();
+                c.Close();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                suExecSQL("DELETE FROM mysql.user WHERE length(user) = 0");
+                suExecSQL("DELETE FROM mysql.user WHERE user='nopass'");
+                suExecSQL("FLUSH PRIVILEGES");
+            }
+        }
 
-		[Test]
-		[Category("4.1")]
-		public void ConnectingAsUTF8()
-		{
-			execSQL("CREATE Database IF NOT EXISTS test2 DEFAULT CHARACTER SET utf8");
+        [Test]
+        [Category("4.1")]
+        public void ConnectingAsUTF8()
+        {
+            string connStr = GetConnectionString(true) + ";charset=utf8";
+            MySqlConnection c = new MySqlConnection(connStr);
+            c.Open();
 
-			string connStr = String.Format("server={0};user id={1}; password={2}; database=test2;pooling=false;charset=utf8",
-				host, user, password);
-			MySqlConnection c = new MySqlConnection(connStr);
-			c.Open();
+            MySqlCommand cmd = new MySqlCommand("DROP TABLE IF EXISTS test", c);
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = "CREATE TABLE test (id varbinary(16), active bit) CHARACTER SET utf8";
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x1234567890 AS Binary), true)";
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x123456789a AS Binary), true)";
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x123456789b AS Binary), true)";
+            cmd.ExecuteNonQuery();
+            c.Close();
 
-			MySqlCommand cmd = new MySqlCommand("DROP TABLE IF EXISTS test;CREATE TABLE test (id varbinary(16), active bit)", c);
-			cmd.ExecuteNonQuery();
-			cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x1234567890 AS Binary), true)";
-			cmd.ExecuteNonQuery();
-			cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x123456789a AS Binary), true)";
-			cmd.ExecuteNonQuery();
-			cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x123456789b AS Binary), true)";
-			cmd.ExecuteNonQuery();
-			c.Close();
+            MySqlConnection d = new MySqlConnection(connStr);
+            d.Open();
 
-			MySqlConnection d = new MySqlConnection(connStr);
-			d.Open();
+            MySqlCommand cmd2 = new MySqlCommand("SELECT id, active FROM test", d);
+            MySqlDataReader reader = null;
+            try
+            {
+                reader = cmd2.ExecuteReader();
+                Assert.IsTrue(reader.Read());
+                Assert.IsTrue(reader.GetBoolean(1));
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+            }
 
-			MySqlCommand cmd2 = new MySqlCommand("SELECT id, active FROM test", d);
-			MySqlDataReader reader = null;
-			try
-			{
-				reader = cmd2.ExecuteReader();
-				Assert.IsTrue(reader.Read());
-				Assert.IsTrue(reader.GetBoolean(1));
-			}
-			catch (Exception ex)
-			{
-				Assert.Fail(ex.Message);
-			}
-			finally
-			{
-				if (reader != null) reader.Close();
-			}
+            d.Close();
+        }
 
-			d.Close();
+        /// <summary>
+        /// Bug #10281 Clone issue with MySqlConnection 
+        /// </summary>
+        [Test]
+        public void TestConnectionClone()
+        {
+            MySqlConnection c = new MySqlConnection();
+            MySqlConnection clone = (MySqlConnection)((ICloneable)c).Clone();
+            clone.ToString();
+        }
 
-			execSQL("DROP DATABASE IF EXISTS test2");
-		}
+        /// <summary>
+        /// Bug #13321  	Persist security info does not woek
+        /// </summary>
+        [Test]
+        public void PersistSecurityInfo()
+        {
+            string s = GetConnectionString(true).ToLower();
+            int start = s.IndexOf("persist security info");
+            int end = s.IndexOf(";", start);
+            string connStr = s.Substring(0, start);
+            connStr += s.Substring(end, s.Length - (end));
 
-		/// <summary>
-		/// Bug #10281 Clone issue with MySqlConnection 
-		/// </summary>
-		[Test]
-		public void TestConnectionClone()
-		{
-			MySqlConnection c = new MySqlConnection();
-			MySqlConnection clone = (MySqlConnection)((ICloneable)c).Clone();
-			clone.ToString();
-		}
+            string p = "password";
+            if (connStr.IndexOf("pwd") != -1)
+                p = "pwd";
+            else if (connStr.IndexOf("passwd") != -1)
+                p = "passwd";
 
-		/// <summary>
-		/// Bug #13321  	Persist security info does not woek
-		/// </summary>
-		[Test]
-		public void PersistSecurityInfo()
-		{
-			string s = GetConnectionString(true).ToLower();
-			int start = s.IndexOf("persist security info");
-			int end = s.IndexOf(";", start);
-			string connStr = s.Substring(0, start);
-			connStr += s.Substring(end, s.Length - (end));
+            string newConnStr = connStr + ";persist security info=true";
+            MySqlConnection conn2 = new MySqlConnection(newConnStr);
+            Assert.IsTrue(conn2.ConnectionString.IndexOf(p) != -1);
+            conn2.Open();
+            conn2.Close();
+            Assert.IsTrue(conn2.ConnectionString.IndexOf(p) != -1);
 
-			string p = "password";
-			if (connStr.IndexOf("pwd") != -1)
-				p = "pwd";
-			else if (connStr.IndexOf("passwd") != -1)
-				p = "passwd";
+            newConnStr = connStr + ";persist security info=false";
+            conn2 = new MySqlConnection(newConnStr);
+            Assert.IsTrue(conn2.ConnectionString.IndexOf(p) != -1);
+            conn2.Open();
+            conn2.Close();
+            Assert.IsTrue(conn2.ConnectionString.IndexOf(p) == -1);
+        }
 
-			string newConnStr = connStr + ";persist security info=true";
-			MySqlConnection conn2 = new MySqlConnection(newConnStr);
-			Assert.IsTrue(conn2.ConnectionString.IndexOf(p) != -1);
-			conn2.Open();
-			conn2.Close();
-			Assert.IsTrue(conn2.ConnectionString.IndexOf(p) != -1);
+        /// <summary>
+        /// Bug #13658  	connection.state does not update on Ping()
+        /// </summary>
+        [Test]
+        public void PingUpdatesState()
+        {
+            MySqlConnection conn2 = new MySqlConnection(GetConnectionString(true));
+            conn2.Open();
+            KillConnection(conn2);
+            Assert.IsFalse(conn2.Ping());
+            Assert.IsTrue(conn2.State == ConnectionState.Closed);
+        }
 
-			newConnStr = connStr + ";persist security info=false";
-			conn2 = new MySqlConnection(newConnStr);
-			Assert.IsTrue(conn2.ConnectionString.IndexOf(p) != -1);
-			conn2.Open();
-			conn2.Close();
-			Assert.IsTrue(conn2.ConnectionString.IndexOf(p) == -1);
-		}
-
-		/// <summary>
-		/// Bug #13658  	connection.state does not update on Ping()
-		/// </summary>
-		[Test]
-		public void PingUpdatesState()
-		{
-			MySqlConnection conn2 = new MySqlConnection(GetConnectionString(true));
-			conn2.Open();
-			KillConnection(conn2);
-			Assert.IsFalse(conn2.Ping());
-			Assert.IsTrue(conn2.State == ConnectionState.Closed);
-		}
-
-		/// <summary>
-		/// Bug #16659  	Can't use double quotation marks(") as password access server by Connector/NET
-		/// </summary>
-		[Test]
-		public void ConnectWithQuotePassword()
-		{
-			suExecSQL("GRANT ALL ON *.* to 'quotedUser'@'%' IDENTIFIED BY '\"'");
-			suExecSQL("GRANT ALL ON *.* to 'quotedUser'@'%' IDENTIFIED BY '\"'");
+        /// <summary>
+        /// Bug #16659  	Can't use double quotation marks(") as password access server by Connector/NET
+        /// </summary>
+        [Test]
+        public void ConnectWithQuotePassword()
+        {
+            suExecSQL("GRANT ALL ON *.* to 'quotedUser'@'%' IDENTIFIED BY '\"'");
+            suExecSQL("GRANT ALL ON *.* to 'quotedUser'@'%' IDENTIFIED BY '\"'");
             string connStr = GetConnectionStringEx("quotedUser", null, false);
             connStr += ";pwd='\"'";
-			MySqlConnection c = new MySqlConnection(connStr);
-			try
-			{
-				c.Open();
-				c.Close();
-			}
-			catch (Exception ex)
-			{
-				Assert.Fail(ex.Message);
-			}
-			suExecSQL("DELETE FROM mysql.user WHERE user='quotedUser'");
-		}
-	}
+            MySqlConnection c = new MySqlConnection(connStr);
+            try
+            {
+                c.Open();
+                c.Close();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            suExecSQL("DELETE FROM mysql.user WHERE user='quotedUser'");
+        }
+    }
 }
