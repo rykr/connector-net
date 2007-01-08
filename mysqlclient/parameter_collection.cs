@@ -44,6 +44,7 @@ namespace MySql.Data.MySqlClient
 		private char paramMarker = '?';
 		private Hashtable ciHash;
 		private Hashtable hash;
+        private int returnParameterIndex;
 
 		internal MySqlParameterCollection()
 		{
@@ -54,6 +55,7 @@ namespace MySql.Data.MySqlClient
 			ciHash = new Hashtable(new CaseInsensitiveHashCodeProvider(),
 				new CaseInsensitiveComparer());
 #endif
+            Clear();
 		}
 
 		internal char ParameterMarker
@@ -122,6 +124,7 @@ namespace MySql.Data.MySqlClient
 			_parms.Clear();
 			hash.Clear();
 			ciHash.Clear();
+            returnParameterIndex = -1;
 		}
 
 		/// <summary>
@@ -173,6 +176,12 @@ namespace MySql.Data.MySqlClient
 		public void Remove(object value)
 		{
 			_parms.Remove(value);
+
+            MySqlParameter p = (value as MySqlParameter);
+            hash.Remove(p.ParameterName);
+            ciHash.Remove(p.ParameterName);
+            if (p.Direction == ParameterDirection.ReturnValue)
+                returnParameterIndex = -1;
 		}
 
 		/// <summary>
@@ -182,7 +191,8 @@ namespace MySql.Data.MySqlClient
 		/// <overloads>Removes the specified <see cref="MySqlParameter"/> from the collection.</overloads>
 		public void RemoveAt(int index)
 		{
-			_parms.RemoveAt(index);
+            MySqlParameter p = this[index];
+            Remove(p);
 		}
 
 		object IList.this[int index]
@@ -190,7 +200,8 @@ namespace MySql.Data.MySqlClient
 			get { return this[index]; }
 			set
 			{
-				if (!(value is MySqlParameter)) throw new MySqlException("Only MySqlParameter objects may be stored");
+				if (!(value is MySqlParameter)) 
+                    throw new MySqlException("Only MySqlParameter objects may be stored");
 				this[index] = (MySqlParameter)value;
 			}
 		}
@@ -236,11 +247,20 @@ namespace MySql.Data.MySqlClient
 		public int IndexOf(string parameterName)
 		{
 			object o = hash[parameterName];
-			if (o == null)
-				o = ciHash[parameterName];
-			if (o == null)
-				return -1;
-			return (int)o;
+            if (o != null)
+                return (int)o;
+
+			o = ciHash[parameterName];
+            if (o != null)
+                return (int)o;
+
+            if (returnParameterIndex != -1)
+            {
+                MySqlParameter p = (MySqlParameter)_parms[returnParameterIndex];
+                if (String.Compare(parameterName, p.ParameterName, true) == 0)
+                    return returnParameterIndex;
+            }
+            return -1;
 		}
 
 		/// <summary>
@@ -249,7 +269,8 @@ namespace MySql.Data.MySqlClient
 		/// <param name="name">The name of the <see cref="MySqlParameter"/> object to retrieve. </param>
 		public void RemoveAt(string name)
 		{
-			_parms.RemoveAt(InternalIndexOf(name));
+            int index = InternalIndexOf(name);
+            RemoveAt(index);
 		}
 
 		object IDataParameterCollection.this[string name]
@@ -281,7 +302,25 @@ namespace MySql.Data.MySqlClient
 		public MySqlParameter this[int index]
 		{
 			get { return (MySqlParameter)_parms[index]; }
-			set { _parms[index] = value; }
+			set 
+            {
+                MySqlParameter p = (MySqlParameter)_parms[index];
+                if (p.Direction == ParameterDirection.ReturnValue)
+                    returnParameterIndex = -1;
+                else 
+                {
+                    ciHash.Remove(p.ParameterName);
+                    hash.Remove(p.ParameterName);
+                }
+                _parms[index] = value;
+                if (value.Direction == ParameterDirection.ReturnValue)
+                    returnParameterIndex = index;
+                else
+                {
+                    ciHash.Add(value.ParameterName, index);
+                    hash.Add(value.ParameterName, index);
+                }
+            }
 		}
 
 		/// <summary>
@@ -290,7 +329,7 @@ namespace MySql.Data.MySqlClient
 		public MySqlParameter this[string name]
 		{
 			get { return (MySqlParameter)_parms[InternalIndexOf(name)]; }
-			set { _parms[InternalIndexOf(name)] = value; }
+			set { this[InternalIndexOf(name)] = value; }
 		}
 
 		/// <summary>
@@ -331,16 +370,10 @@ namespace MySql.Data.MySqlClient
 
 		private MySqlParameter AddReturnParameter(MySqlParameter value)
 		{
-			for (int i = 0; i < _parms.Count; i++)
-			{
-				MySqlParameter p = (MySqlParameter)_parms[i];
-				if (p.Direction != ParameterDirection.ReturnValue) continue;
-				_parms[i] = value;
-				return value;
-			}
-            int index = _parms.Add(value);
-            hash.Add(value.ParameterName, index);
-            ciHash.Add(value.ParameterName, index);
+            if (returnParameterIndex != -1)
+                throw new InvalidOperationException(Resources.ReturnParameterExists);
+            else
+                returnParameterIndex = _parms.Add(value);
             return value;
 		}
 

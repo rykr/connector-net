@@ -218,12 +218,14 @@ namespace MySql.Data.MySqlClient
 			parmDef = parmDef.Trim();
 
 			string[] split = cs.Split(parmDef, " \t\r\n");
-			if (p.Direction != ParameterDirection.ReturnValue)
-			{
-				p.ParameterName = String.Format("{0}{1}", connection.ParameterMarker,
-					CleanParameterName(split[0], false));
-				parmDef = parmDef.Substring(split[0].Length);
-			}
+            if (p.Direction != ParameterDirection.ReturnValue)
+            {
+                p.ParameterName = String.Format("{0}{1}", connection.ParameterMarker,
+                    CleanParameterName(split[0], false));
+                parmDef = parmDef.Substring(split[0].Length);
+            }
+            else
+                p.ParameterName = String.Format("{0}RETURN_VALUE", connection.ParameterMarker);
 
 			ParseType(parmDef, sqlMode, p);
 			return p;

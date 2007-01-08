@@ -357,39 +357,31 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void AutoIncrementColumns()
 		{
-			execSQL("DROP TABLE IF EXISTS test");
-			execSQL("CREATE TABLE test (id int(10) unsigned NOT NULL auto_increment primary key)");
-			execSQL("INSERT INTO test VALUES(NULL)");
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test (id int(10) unsigned NOT NULL auto_increment primary key)");
+            execSQL("INSERT INTO test VALUES(NULL)");
 
-			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
-			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
-			DataSet ds = new DataSet();
-			da.Fill(ds);
-			Assert.AreEqual(1, ds.Tables[0].Rows[0]["id"]);
-			ds.Tables[0].Rows[0]["id"] = 2;
-			DataRow row = ds.Tables[0].NewRow();
-			row["id"] = 4;
-			ds.Tables[0].Rows.Add(row);
+            MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+            MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+            DataSet ds = new DataSet();
+            da.Fill(ds);
+            Assert.AreEqual(1, ds.Tables[0].Rows[0]["id"]);
+            DataRow row = ds.Tables[0].NewRow();
+            ds.Tables[0].Rows.Add(row);
 
-			// add a null id.  This should be auto'ed to 5
-			row = ds.Tables[0].NewRow();
-			row["id"] = DBNull.Value;
-			ds.Tables[0].Rows.Add(row);
+            try
+            {
+                da.Update(ds);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
 
-			try
-			{
-				da.Update(ds);
-			}
-			catch (Exception ex)
-			{
-				Assert.Fail(ex.Message);
-			}
-
-			ds.Clear();
-			da.Fill(ds);
-			Assert.AreEqual(2, ds.Tables[0].Rows[0]["id"]);
-			Assert.AreEqual(4, ds.Tables[0].Rows[1]["id"]);
-			Assert.AreEqual(5, ds.Tables[0].Rows[2]["id"]);
+            ds.Clear();
+            da.Fill(ds);
+            Assert.AreEqual(1, ds.Tables[0].Rows[0]["id"]);
+            Assert.AreEqual(2, ds.Tables[0].Rows[1]["id"]);
 		}
 
 		/// <summary>

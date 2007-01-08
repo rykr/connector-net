@@ -341,6 +341,14 @@
                 return ResourceManager.GetString("ReadFromStreamFailed", resourceCulture);
             }
         }
+
+        internal static string ReturnParameterExists
+        {
+            get
+            {
+                return ResourceManager.GetString("ReturnParameterExists", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Socket streams do not support seeking.
