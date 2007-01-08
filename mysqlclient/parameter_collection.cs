@@ -121,6 +121,9 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		public void Clear()
 		{
+            foreach (MySqlParameter p in _parms)
+                p.Collection = null;
+
 			_parms.Clear();
 			hash.Clear();
 			ciHash.Clear();
@@ -180,6 +183,7 @@ namespace MySql.Data.MySqlClient
             MySqlParameter p = (value as MySqlParameter);
             hash.Remove(p.ParameterName);
             ciHash.Remove(p.ParameterName);
+            p.Collection = null;
             if (p.Direction == ParameterDirection.ReturnValue)
                 returnParameterIndex = -1;
 		}
@@ -365,6 +369,7 @@ namespace MySql.Data.MySqlClient
 			int index = _parms.Add(value);
 			hash.Add(value.ParameterName, index);
 			ciHash.Add(value.ParameterName, index);
+            value.Collection = this;
 			return value;
 		}
 
@@ -425,6 +430,17 @@ namespace MySql.Data.MySqlClient
 		}
 
 		#endregion
+
+        internal void ParameterNameChanged(MySqlParameter p, string oldName, string newName)
+        {
+            if (p.Direction == ParameterDirection.ReturnValue)
+                return;
+            int index = IndexOf(oldName);
+            hash.Remove(oldName);
+            ciHash.Remove(oldName);
+            hash.Add(newName, index);
+            ciHash.Add(newName, index);
+        }
 
 	}
 }

@@ -29,7 +29,9 @@ Version 1.0.9
     A nicer exception is displayed if you have added a parameter without the parameter marker.
     Improved CommandBuilder.DeriveParameters to use the procedure cache if possible
     Return parameters created with DeriveParameters now have the name RETURN_VALUE
-      
+    Fixed problem with parameter name hashing where the hashes were not getting updated
+         or removed in certain situations.
+    
 Version 1.0.8 RC
 
     Other changes
