@@ -488,10 +488,13 @@ namespace MySql.Data.MySqlClient
             string[] split = cs.Split(parmDef, " \t\r\n");
             if (parmRow["IS_RESULT"].Equals("NO"))
             {
-					parmRow["PARAMETER_NAME"] = String.Format("{0}{1}",
-						connection.ParameterMarker, CleanParameterName(split[0]));
+                parmRow["PARAMETER_NAME"] = String.Format("{0}{1}",
+                    connection.ParameterMarker, CleanParameterName(split[0]));
                 parmDef = parmDef.Substring(split[0].Length);
             }
+            else
+                parmRow["PARAMETER_NAME"] = String.Format("{0}RETURN_VALUE",
+                    connection.ParameterMarker);
 
             ParseType(parmDef, sqlMode, parmRow);
         }

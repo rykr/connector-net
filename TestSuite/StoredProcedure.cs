@@ -988,5 +988,17 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
+        [Test]
+        public void CheckNameOfReturnParameter()
+        {
+            execSQL("CREATE FUNCTION fnTest() RETURNS CHAR(50)" +
+                " LANGUAGE SQL DETERMINISTIC BEGIN  RETURN \"Test\"; END");
+
+            MySqlCommand cmd = new MySqlCommand("fnTest", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            MySqlCommandBuilder.DeriveParameters(cmd);
+            Assert.AreEqual(1, cmd.Parameters.Count);
+            Assert.AreEqual("?RETURN_VALUE", cmd.Parameters[0].ParameterName);
+        }
 	}
 }
