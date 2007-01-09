@@ -53,7 +53,7 @@ namespace MySql.Data.MySqlClient.Tests
             password = "";
             host = "localhost";
             databases[0] = "test";
-            databases[1] = "root";
+            databases[1] = "mysql";
             port = 3306;
             pipeName = "MYSQL";
             memoryName = "MYSQL";
