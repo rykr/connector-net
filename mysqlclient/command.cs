@@ -355,15 +355,20 @@ namespace MySql.Data.MySqlClient
 			else
 				preparedStatement.ExecutionCount = 0;
 
-			try
-			{
-				Consume();
-			}
-			catch (MySqlException ex)
-			{
-				if (ex.IsFatal) connection.Terminate();
-				throw;
-			}
+            try
+            {
+                Consume();
+            }
+            catch (MySqlException mex)
+            {
+                if (mex.IsFatal) connection.Terminate();
+                throw;
+            }
+            catch (Exception ex)
+            {
+                connection.Terminate();
+                throw;
+            }
 
 			return (int)updateCount;
 		}

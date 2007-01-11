@@ -55,6 +55,11 @@ namespace MySql.Data.MySqlClient
 
 		#region Properties
 
+        internal bool IsOpen
+        {
+            get { return isOpen; }
+        }
+
 		internal long MaxPacketSize
 		{
 			get { return maxPacketSize; }
@@ -99,13 +104,16 @@ namespace MySql.Data.MySqlClient
 			return (string)serverProps[key];
 		}
 
-		public bool IsTooOld()
+		public bool IsTooOld
 		{
-			TimeSpan ts = DateTime.Now.Subtract(creationTime);
-            if (Settings.ConnectionLifetime != 0 && 
-                ts.TotalSeconds > Settings.ConnectionLifetime)
-				return true;
-			return false;
+            get
+            {
+                TimeSpan ts = DateTime.Now.Subtract(creationTime);
+                if (Settings.ConnectionLifetime != 0 &&
+                    ts.TotalSeconds > Settings.ConnectionLifetime)
+                    return true;
+                return false;
+            }
 		}
 
 		public static Driver Create(MySqlConnectionString settings)
@@ -136,7 +144,7 @@ namespace MySql.Data.MySqlClient
 		public virtual void Close()
 		{
 			isOpen = false;
-		}
+        }
 
 		/// <summary>
 		/// I don't like this setup but can't think of a better way of doing

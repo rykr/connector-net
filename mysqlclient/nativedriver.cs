@@ -88,16 +88,28 @@ namespace MySql.Data.MySqlClient
 
 		private void ExecuteCommand(DBCmd cmd, byte[] bytes, int length)
 		{
-			SequenceByte = 0;
-			int len = 1;
-			if (bytes != null)
-				len += length;
-			writer.StartPacket(len);
-			writer.WriteByte((byte)cmd);
-			if (bytes != null)
-				writer.Write(bytes, 0, length);
-			writer.Flush();
-		}
+            try
+            {
+                SequenceByte = 0;
+                int len = 1;
+                if (bytes != null)
+                    len += length;
+                writer.StartPacket(len);
+                writer.WriteByte((byte)cmd);
+                if (bytes != null)
+                    writer.Write(bytes, 0, length);
+                writer.Flush();
+            }
+            catch (MySqlException ex)
+            {
+                if (ex.IsFatal)
+                {
+                    isOpen = false;
+                    Close();
+                }
+                throw;
+            }
+        }
 
 		/// <summary>
 		/// Sets the current database for the this connection

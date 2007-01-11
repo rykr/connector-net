@@ -57,6 +57,15 @@ namespace MySql.Data.MySqlClient
 			set { settings = value; }
 		}
 
+        private bool NeedConnections
+        {
+            get
+            {
+                int connections = idlePool.Count + inUsePool.Count;
+                return idlePool.Count == 0 || connections < minSize;
+            }
+        }
+
 		public ProcedureCache ProcedureCache
 		{
 			get { return procedureCache; }
@@ -139,15 +148,20 @@ namespace MySql.Data.MySqlClient
 
 		public void ReleaseConnection(Driver driver)
 		{
-			lock (idlePool.SyncRoot)
-				lock (inUsePool.SyncRoot)
-				{
-					inUsePool.Remove(driver);
-					if (driver.IsTooOld())
-						driver.Close();
-					else
-						idlePool.Enqueue(driver);
-				}
+            lock (idlePool.SyncRoot)
+                lock (inUsePool.SyncRoot)
+                {
+                    inUsePool.Remove(driver);
+
+                    if (driver.IsTooOld && driver.IsOpen)
+                        driver.Close();
+
+                    if (!NeedConnections) return;
+
+                    if (!driver.IsOpen)
+                        driver.Open();
+                    idlePool.Enqueue(driver);
+                }
 		}
 
 		public Driver GetConnection()

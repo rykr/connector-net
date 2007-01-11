@@ -31,6 +31,8 @@ Version 1.0.9
     Return parameters created with DeriveParameters now have the name RETURN_VALUE
     Fixed problem with parameter name hashing where the hashes were not getting updated
          or removed in certain situations.
+    Fixed problem where pooled connections that are added back to the idle pool may be
+         still in the closed state.
     
 Version 1.0.8 RC
 
