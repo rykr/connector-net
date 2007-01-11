@@ -191,7 +191,6 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			try
 			{
-				IDbConnection conn2 = (IDbConnection)conn;
 				IDbCommand cmd = conn.CreateCommand();
 				IDbDataParameter prm = cmd.CreateParameter();
 				prm.DbType = DbType.Int64;

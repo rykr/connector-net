@@ -55,6 +55,7 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 				MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+				cb.ToString();  // keep mono happy
 				DataTable dt = new DataTable();
 				da.Fill(dt);
 
@@ -87,6 +88,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da, true);
+			cb.ToString();
 
 			DataTable dt = new DataTable();
 			da.Fill(dt);
@@ -189,6 +191,7 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlDataAdapter da = new MySqlDataAdapter(
                 String.Format("SELECT id, name FROM {0}.test", databases[0]), conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();
 			DataSet ds = new DataSet();
 			da.Fill(ds);
 
@@ -241,6 +244,7 @@ namespace MySql.Data.MySqlClient.Tests
 				da.FillSchema(ds, SchemaType.Source, "test");
 
 				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+				cb.ToString();
 				DataTable dt = new DataTable();
 				da.Fill(dt);
 				dt.Rows[0]["id"] = 2;
@@ -268,6 +272,7 @@ namespace MySql.Data.MySqlClient.Tests
                 "name VARCHAR(100), PRIMARY KEY(id))");
             MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
             MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();
 
             DataTable dt = new DataTable();
             da.Fill(dt);

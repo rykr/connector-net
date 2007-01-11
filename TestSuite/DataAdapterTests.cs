@@ -90,6 +90,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();  // keep mono happy
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 
@@ -363,7 +364,8 @@ namespace MySql.Data.MySqlClient.Tests
 
             MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
             MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
-            DataSet ds = new DataSet();
+			cb.ToString();
+			DataSet ds = new DataSet();
             da.Fill(ds);
             Assert.AreEqual(1, ds.Tables[0].Rows[0]["id"]);
             DataRow row = ds.Tables[0].NewRow();
@@ -545,6 +547,7 @@ namespace MySql.Data.MySqlClient.Tests
 				MySqlConnection c = new MySqlConnection(GetConnectionString(true));
 				MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", c);
 				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+				cb.ToString();
 				Assert.IsTrue(c.State == ConnectionState.Closed);
 				DataTable dt = new DataTable();
 				da.Fill(dt);

@@ -364,7 +364,7 @@ namespace MySql.Data.MySqlClient
                 if (mex.IsFatal) connection.Terminate();
                 throw;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 connection.Terminate();
                 throw;

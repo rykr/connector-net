@@ -40,15 +40,29 @@
 
 	<!-- core managed driver target -->	
 	<target name="client" description="Core client target">
-		<property name="nunit-lib" value="${nunit.dir}/bin"/>
 		<property name="nant.settings.currentframework" value="${framework}"/>
 		<property name="outdir" value="mysqlclient/bin/${framework}/${buildType}"/>
-		
+
 		<mkdir dir="${outdir}" failonerror="false"/>
 		<resgen input="mysqlclient/Resources.resx" output="mysqlclient/Resources.resources"/>
+
 		<csc output="${outdir}/MySql.Data.dll" target="library" 
 			define="${defines}" debug="${debug}" optimize="${opt}"
-			doc="${outdir}/MySql.Data.xml">
+			doc="${outdir}/MySql.Data.xml"
+			if="${property::get-value('framework') == 'net-1.1'}">
+			<arg value="/nowarn:0679"/>
+			<resources prefix="MySql.Data.MySqlClient" dynamicprefix="false">
+				<include name="mysqlclient/Resources.resources"/>
+			</resources>
+			<references>
+				<include name="System.Data.dll"/>		
+				<include name="System.Drawing.dll"/>
+			</references>
+			<sources refid="Source"/>
+		</csc>
+		<csc output="${outdir}/MySql.Data.dll" target="library" 
+			define="${defines}" debug="${debug}" optimize="${opt}"
+			unless="${property::get-value('framework') == 'net-1.1'}">
 			<arg value="/nowarn:0679"/>
 			<resources prefix="MySql.Data.MySqlClient" dynamicprefix="false">
 				<include name="mysqlclient/Resources.resources"/>
@@ -76,6 +90,7 @@
 	<!-- core managed driver target 1.0 -->	
 	<target name="net-1.0" description="1.0 .NET target">
 		<property name="nunit.dir" value="${nunit1.dir}"/>
+		<property name="nunit-lib" value="${nunit.dir}/bin"/>
 		<property name="framework" value="net-1.0"/>
 		<call target="client"/>
 	</target>
@@ -83,6 +98,7 @@
 	<!-- core managed driver target 1.1 -->
 	<target name="net-1.1" description="1.1 .NET target">
 		<property name="nunit.dir" value="${nunit1.dir}"/>
+		<property name="nunit-lib" value="${nunit.dir}/bin"/>
 		<property name="framework" value="net-1.1"/>
 		<call target="client"/>
 	</target>
@@ -90,6 +106,7 @@
 	<!-- core managed driver target 2.0 -->
 	<target name="net-2.0" description="2.0 .NET target">
 		<property name="nunit.dir" value="${nunit2.dir}"/>
+		<property name="nunit-lib" value="${nunit.dir}/bin"/>
 		<property name="framework" value="net-2.0"/>
 		<if test="${string::get-length(defines) > 0}">
 			<property name="defines" value="${defines},"/>
@@ -99,8 +116,8 @@
 	</target>
 	
 	<!-- core managed driver target mono 1.0 -->
-	<target name="mono-1.0" description="Mono 1.0 Target">
-        <property name="nunit-lib" value="${framework::get-assembly-directory('mono-1.0')}"/>
+		<target name="mono-1.0" description="Mono 1.0 Target">
+	        <property name="nunit-lib" value="${framework::get-assembly-directory('mono-1.0')}"/>
 		<property name="framework" value="mono-1.0"/>
 		<call target="client"/>
 	</target>

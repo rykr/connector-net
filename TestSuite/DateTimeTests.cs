@@ -194,6 +194,7 @@ namespace MySql.Data.MySqlClient.Tests
 				DataTable dt = new DataTable();
 				MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", c);
 				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+				cb.ToString();  // keep mono happy
 				da.Fill(dt);
 				dt.Rows[0]["id"] = 2;
 				DataRow row = dt.NewRow();
@@ -233,6 +234,7 @@ namespace MySql.Data.MySqlClient.Tests
 				c.Open();
 				MySqlDataAdapter da = new MySqlDataAdapter("SELECT id, dt FROM Test", c);
 				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+				cb.ToString();  // keep mono happy
 
 				DataTable dt = new DataTable();
 				dt.Columns.Add(new DataColumn("id", typeof(int)));
@@ -448,6 +450,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", c);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+			cb.ToString();  // keep mono happy
 			DataTable dt = new DataTable();
 			try
 			{

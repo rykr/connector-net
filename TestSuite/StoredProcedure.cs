@@ -530,7 +530,6 @@ namespace MySql.Data.MySqlClient.Tests
 
             MySqlCommand cmd = new MySqlCommand("spTest", conn);
             cmd.CommandType = CommandType.StoredProcedure;
-            MySqlDataAdapter da = new MySqlDataAdapter(cmd);
             MySqlCommandBuilder.DeriveParameters(cmd);
 
             Assert.AreEqual(9, cmd.Parameters.Count);
@@ -575,7 +574,6 @@ namespace MySql.Data.MySqlClient.Tests
             cmd.CommandText = "spTest";
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Clear();
-            da = new MySqlDataAdapter(cmd);
             MySqlCommandBuilder.DeriveParameters(cmd);
             Assert.AreEqual(0, cmd.Parameters.Count);
         }
@@ -593,7 +591,6 @@ namespace MySql.Data.MySqlClient.Tests
 
                 MySqlCommand cmd = new MySqlCommand("fnTest", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
                 MySqlCommandBuilder.DeriveParameters(cmd);
 
                 Assert.AreEqual(2, cmd.Parameters.Count);

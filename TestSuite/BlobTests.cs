@@ -272,6 +272,7 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 				MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 				MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+				cb.ToString();  // keep mono happy
 				DataTable dt = new DataTable();
 				da.Fill(dt);
 
