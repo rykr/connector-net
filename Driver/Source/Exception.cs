@@ -53,6 +53,12 @@ namespace MySql.Data.MySqlClient
 			this.isFatal = isFatal;
 		}
 
+        internal MySqlException(string msg, int errno, Exception inner)
+            : this(msg, inner)
+        {
+            errorCode = errno;
+        }
+
 		internal MySqlException(string msg, int errno) : this(msg)
 		{
 			errorCode = errno;

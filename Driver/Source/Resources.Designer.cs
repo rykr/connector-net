@@ -556,6 +556,15 @@ namespace MySql.Data.MySqlClient {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to connect to any of the specified MySQL hosts..
+        /// </summary>
+        internal static string UnableToConnectToHost {
+            get {
+                return ResourceManager.GetString("UnableToConnectToHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to execute stored procedure &apos;{0}&apos;..
         /// </summary>
         internal static string UnableToExecuteSP {

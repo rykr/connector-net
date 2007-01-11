@@ -297,4 +297,7 @@
   <data name="WrongParameterName" xml:space="preserve">
     <value>Parameter '{0}' is not found but a parameter with the name '{1}' is found. Parameter names must include the leading parameter marker.</value>
   </data>
+  <data name="UnableToConnectToHost" xml:space="preserve">
+    <value>Unable to connect to any of the specified MySQL hosts.</value>
+  </data>
 </root>

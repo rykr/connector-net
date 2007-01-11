@@ -187,10 +187,15 @@ namespace MySql.Data.MySqlClient
 #if !PocketPC
 				}
 #endif
+                if (baseStream == null)
+                    throw new Exception();
 			}
 			catch (Exception ex)
 			{
-				throw new MySqlException("Unable to connect to any of the specified MySQL hosts", ex);
+				throw new MySqlException(
+                    Resources.UnableToConnectToHost, 
+                    (int)MySqlErrorCode.UnableToConnectToHost,
+                    ex);
 			}
 
 			if (baseStream == null)
