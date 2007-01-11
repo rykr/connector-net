@@ -246,4 +246,7 @@
   <data name="ReturnParameterExists" xml:space="preserve">
     <value>A return value parameter already exists in the parameter collection.</value>
   </data>
+  <data name="UnableToConnectToHost" xml:space="preserve">
+    <value>Unable to connect to any of the specified MySQL hosts.</value>
+  </data>
 </root>

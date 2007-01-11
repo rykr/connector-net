@@ -394,7 +394,15 @@
                 return ResourceManager.GetString("StreamNoWrite", resourceCulture);
             }
         }
-        
+
+        internal static string UnableToConnectToHost
+        {
+            get
+            {
+                return ResourceManager.GetString("UnableToConnectToHost", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Unable to execute stored procedure &apos;{0}&apos;..
         /// </summary>

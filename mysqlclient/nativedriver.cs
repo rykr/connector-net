@@ -156,10 +156,15 @@ namespace MySql.Data.MySqlClient
 					StreamCreator sc = new StreamCreator(Settings.Server, Settings.Port, pipeName);
 					stream = sc.GetStream((uint)Settings.ConnectionTimeout);
 				}
+                if (stream == null)
+                    throw new Exception();
 			}
 			catch (Exception ex)
 			{
-				throw new MySqlException("Unable to connect to any of the specified MySQL hosts", ex);
+				throw new MySqlException(
+                    Resources.UnableToConnectToHost, 
+                    (int)MySqlErrorCode.UnableToConnectToHost,
+                    ex);
 			}
 
 
