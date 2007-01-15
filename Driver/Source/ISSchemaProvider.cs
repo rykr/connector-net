@@ -25,6 +25,7 @@ using MySql.Data.Common;
 using System.Globalization;
 using System.Diagnostics;
 using System.Collections;
+using System.Data.SqlTypes;
 
 namespace MySql.Data.MySqlClient
 {
@@ -365,6 +366,11 @@ namespace MySql.Data.MySqlClient
                     reader.Read();
                     ParseProcedureBody(parametersTable, reader.GetString(2),
                         routine, nameToRestrict);
+                }
+                catch (SqlNullValueException snex)
+                {
+                    throw new InvalidOperationException(
+                        Resources.UnableToRetrieveSProcData, snex);
                 }
                 catch (Exception)
                 {

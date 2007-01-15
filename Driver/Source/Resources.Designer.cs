@@ -583,6 +583,15 @@ namespace MySql.Data.MySqlClient {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to retrieve stored procedure metadata.  Either grant SELECTprivilege to mysql.proc for this user or use &quot;noAccessToProcedureBody=true&quot; with  your connection string..
+        /// </summary>
+        internal static string UnableToRetrieveSProcData {
+            get {
+                return ResourceManager.GetString("UnableToRetrieveSProcData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unix sockets are not supported on Windows.
         /// </summary>
         internal static string UnixSocketsNotSupported {
