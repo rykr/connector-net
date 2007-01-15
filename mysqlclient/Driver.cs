@@ -155,8 +155,10 @@ namespace MySql.Data.MySqlClient
 		{
 			this.connection = connection;
 
-			// if we have already configured this driver then exit
-			if (serverProps != null)
+			// if we have already configured this driver and the user has 
+            // requested that we not reset the connections upon a pool
+            // checkout, then get out
+			if (serverProps != null && !Settings.ResetPooledConnections)
 				return;
 
 			// load server properties

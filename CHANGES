@@ -19,6 +19,7 @@ Version 1.0.9
     Bug #22400 Nested transactions 
     Bug #25443 ExecuteScalar() hangs when more than one bad result 		
     Bug #24802 Error Handling 
+    Bug #25614 After connection is closed, and opened again UTF-8 characters are not read well 
 
     Other changes
     -------------
