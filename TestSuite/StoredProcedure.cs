@@ -995,5 +995,57 @@ namespace MySql.Data.MySqlClient.Tests
             Assert.AreEqual(1, cmd.Parameters.Count);
             Assert.AreEqual("?RETURN_VALUE", cmd.Parameters[0].ParameterName);
         }
+
+        /// <summary>
+        /// Bug #25625 Crashes when calling with CommandType set to StoredProcedure 
+        /// </summary>
+        [Test]
+        public void RunWithoutSelectPrivsThrowException()
+        {
+            suExecSQL(String.Format(
+                "GRANT ALL ON {0}.* to 'testuser'@'%' identified by 'testuser'",
+                databases[0]));
+            suExecSQL(String.Format(
+                "GRANT ALL ON {0}.* to 'testuser'@'localhost' identified by 'testuser'",
+                databases[0]));
+
+            execSQL("DROP PROCEDURE IF EXISTS spTest");
+            execSQL("CREATE PROCEDURE spTest(id int, OUT outid int, INOUT inoutid int) " +
+                "BEGIN SET outid=id+inoutid; SET inoutid=inoutid+id; END");
+
+            string s = GetConnectionStringEx("testuser", "testuser", true);
+            MySqlConnection c = new MySqlConnection(s);
+            c.Open();
+
+            try
+            {
+
+                MySqlCommand cmd = new MySqlCommand("spTest", c);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("?id", 2);
+                cmd.Parameters.Add("?outid", MySqlDbType.Int32);
+                cmd.Parameters[1].Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("?inoutid", 4);
+                cmd.Parameters[2].Direction = ParameterDirection.InputOutput;
+                cmd.ExecuteNonQuery();
+
+                Assert.AreEqual(6, cmd.Parameters[1].Value);
+                Assert.AreEqual(6, cmd.Parameters[2].Value);
+            }
+            catch (InvalidOperationException iex)
+            {
+                Assert.IsTrue(iex.Message.StartsWith("Unable to retrieve"));
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                if (c != null)
+                    c.Close();
+                suExecSQL("DELETE FROM mysql.user WHERE user = 'testuser'");
+            }
+        }
     }
 }

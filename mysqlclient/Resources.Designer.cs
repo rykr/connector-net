@@ -411,7 +411,14 @@
                 return ResourceManager.GetString("UnableToExecuteSP", resourceCulture);
             }
         }
-        
+
+        internal static string UnableToRetrieveSProcData
+        {
+            get {
+                return ResourceManager.GetString("UnableToRetrieveSProcData", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Unix sockets are not supported on Windows.
         /// </summary>

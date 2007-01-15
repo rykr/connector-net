@@ -20,6 +20,7 @@ Version 1.0.9
     Bug #25443 ExecuteScalar() hangs when more than one bad result 		
     Bug #24802 Error Handling 
     Bug #25614 After connection is closed, and opened again UTF-8 characters are not read well 
+    Bug #25625 Crashes when calling with CommandType set to StoredProcedure 
 
     Other changes
     -------------

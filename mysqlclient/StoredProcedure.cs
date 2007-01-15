@@ -25,6 +25,7 @@ using MySql.Data.Common;
 using System.Collections;
 using System.Globalization;
 using System.Diagnostics;
+using System.Data.SqlTypes;
 
 namespace MySql.Data.MySqlClient
 {
@@ -95,21 +96,26 @@ namespace MySql.Data.MySqlClient
 				throw new MySqlException("Procedure or function '" + spName + "' does not exist.");
 
 			MySqlDataReader reader = null;
-			try
-			{
-				MySqlCommand cmd = new MySqlCommand(String.Format("SHOW CREATE " +
-					 "{0} {1}", type, spName), connection);
-				isFunc = type.ToLower(CultureInfo.InvariantCulture) == "function";
-				cmd.CommandText = String.Format("SHOW CREATE {0} {1}", type, spName);
-				reader = cmd.ExecuteReader();
-				reader.Read();
-				sql_mode = reader.GetString(1);
-				return reader.GetString(2);
-			}
-			catch (Exception)
-			{
-				throw;
-			}
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand(String.Format("SHOW CREATE " +
+                     "{0} {1}", type, spName), connection);
+                isFunc = type.ToLower(CultureInfo.InvariantCulture) == "function";
+                cmd.CommandText = String.Format("SHOW CREATE {0} {1}", type, spName);
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                sql_mode = reader.GetString(1);
+                return reader.GetString(2);
+            }
+            catch (SqlNullValueException snex)
+            {
+                throw new InvalidOperationException(
+                    Resources.UnableToRetrieveSProcData, snex);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 			finally
 			{
 				if (reader != null)
@@ -258,61 +264,67 @@ namespace MySql.Data.MySqlClient
 		{
 			MySqlParameter returnParameter = GetReturnParameter(cmd);
 
-			try
-			{
-				ArrayList parameters = connection.ProcedureCache.GetProcedure(
-				connection, cmd.CommandText);
+            try
+            {
+                ArrayList parameters = connection.ProcedureCache.GetProcedure(
+                connection, cmd.CommandText);
 
-				string sqlStr = String.Empty;
-				string setStr = String.Empty;
-				outSelect = String.Empty;
+                string sqlStr = String.Empty;
+                string setStr = String.Empty;
+                outSelect = String.Empty;
 
-				foreach (MySqlParameter serverP in parameters)
-				{
-					if (serverP.Direction == ParameterDirection.ReturnValue)
-						continue;
-					int index = cmd.Parameters.IndexOf(serverP.ParameterName);
-					if (index == -1)
-						throw new MySqlException("Parameter '" + serverP.ParameterName + "' is not defined");
+                foreach (MySqlParameter serverP in parameters)
+                {
+                    if (serverP.Direction == ParameterDirection.ReturnValue)
+                        continue;
+                    int index = cmd.Parameters.IndexOf(serverP.ParameterName);
+                    if (index == -1)
+                        throw new MySqlException("Parameter '" + serverP.ParameterName + "' is not defined");
 
-					MySqlParameter p = cmd.Parameters[index];
-					if (!p.TypeHasBeenSet)
-						p.MySqlDbType = serverP.MySqlDbType;
-					string cleanName = StripParameterName(p.ParameterName);
-					string pName = connection.ParameterMarker + cleanName;
-					string vName = "@" + hash + cleanName;
-					if (p.Direction == ParameterDirection.Input)
-					{
-						sqlStr += pName + ", ";
-						continue;
-					}
-					else if (p.Direction == ParameterDirection.InputOutput)
-						setStr += "set " + vName + "=" + pName + ";";
-					sqlStr += vName + ", ";
-					outSelect += vName + ", ";
-				}
+                    MySqlParameter p = cmd.Parameters[index];
+                    if (!p.TypeHasBeenSet)
+                        p.MySqlDbType = serverP.MySqlDbType;
+                    string cleanName = StripParameterName(p.ParameterName);
+                    string pName = connection.ParameterMarker + cleanName;
+                    string vName = "@" + hash + cleanName;
+                    if (p.Direction == ParameterDirection.Input)
+                    {
+                        sqlStr += pName + ", ";
+                        continue;
+                    }
+                    else if (p.Direction == ParameterDirection.InputOutput)
+                        setStr += "set " + vName + "=" + pName + ";";
+                    sqlStr += vName + ", ";
+                    outSelect += vName + ", ";
+                }
 
-				if (returnParameter == null)
-					sqlStr = "call " + cmd.CommandText + "(" + sqlStr;
-				else
-				{
-					string cleanedName = CleanParameterName(returnParameter.ParameterName, true);
-					string vname = "@" + hash + cleanedName;
-					sqlStr = "set " + vname + "=" + cmd.CommandText + "(" + sqlStr;
-					outSelect = vname + outSelect;
-				}
+                if (returnParameter == null)
+                    sqlStr = "call " + cmd.CommandText + "(" + sqlStr;
+                else
+                {
+                    string cleanedName = CleanParameterName(returnParameter.ParameterName, true);
+                    string vname = "@" + hash + cleanedName;
+                    sqlStr = "set " + vname + "=" + cmd.CommandText + "(" + sqlStr;
+                    outSelect = vname + outSelect;
+                }
 
-				sqlStr = sqlStr.TrimEnd(' ', ',');
-				outSelect = outSelect.TrimEnd(' ', ',');
-				sqlStr += ")";
-				if (setStr.Length > 0)
-					sqlStr = setStr + sqlStr;
-				return sqlStr;
-			}
-			catch (Exception ex)
-			{
-				throw new MySqlException("Exception during execution of '" + cmd.CommandText + "': " + ex.Message, ex);
-			}
+                sqlStr = sqlStr.TrimEnd(' ', ',');
+                outSelect = outSelect.TrimEnd(' ', ',');
+                sqlStr += ")";
+                if (setStr.Length > 0)
+                    sqlStr = setStr + sqlStr;
+                return sqlStr;
+            }
+            catch (InvalidOperationException)
+            {
+                // this exception is thrown when the user doesn't have access to
+                // mysql.proc
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new MySqlException("Exception during execution of '" + cmd.CommandText + "': " + ex.Message, ex);
+            }
 		}
 
 		public void UpdateParameters(MySqlParameterCollection parameters)
