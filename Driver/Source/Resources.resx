@@ -303,4 +303,7 @@
   <data name="UnableToRetrieveSProcData" xml:space="preserve">
     <value>Unable to retrieve stored procedure metadata.  Either grant SELECTprivilege to mysql.proc for this user or use "noAccessToProcedureBody=true" with  your connection string.</value>
   </data>
+  <data name="NextResultIsClosed" xml:space="preserve">
+    <value>Invalid attempt to call NextResult when the reader is closed.</value>
+  </data>
 </root>

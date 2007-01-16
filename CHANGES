@@ -6,6 +6,7 @@ Version 5.0.4
   Bug #24802 Error Handling 
   Bug #25614 After connection is closed, and opened again UTF-8 characters are not read well 
   Bug #25625 Crashes when calling with CommandType set to StoredProcedure 
+  Bug #25458 Opening connection hangs 
   
   Other changes
   -------------

@@ -349,6 +349,15 @@ namespace MySql.Data.MySqlClient {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid attempt to call NextResult when the reader is closed..
+        /// </summary>
+        internal static string NextResultIsClosed {
+            get {
+                return ResourceManager.GetString("NextResultIsClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Nested transactions are not supported..
         /// </summary>
         internal static string NoNestedTransactions {

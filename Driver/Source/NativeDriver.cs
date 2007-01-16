@@ -271,9 +271,11 @@ namespace MySql.Data.MySqlClient
             stream.MaxBlockSize = maxSinglePacket;
 
 			isOpen = true;
-		}
+        }
 
-		private void StartSSL()
+        #region SSL
+
+        private void StartSSL()
 		{
 			RemoteCertificateValidationCallback sslValidateCallback;
 
@@ -307,9 +309,13 @@ namespace MySql.Data.MySqlClient
 			 X509Chain chain, SslPolicyErrors sslPolicyErrors)
 		{
 			return true;
-		}
+        }
 
-		/// <summary>
+        #endregion
+
+        #region Authentication
+
+        /// <summary>
 		/// Return the appropriate set of connection flags for our
 		/// server capabilities and our user requested options.
 		/// </summary>
@@ -415,9 +421,11 @@ namespace MySql.Data.MySqlClient
 				Authenticate411();
 			else
 				AuthenticateOld();
-		}
+        }
 
-		public override void Reset()
+        #endregion
+
+        public override void Reset()
 		{
 			stream.StartOutput(0, true);
 			stream.WriteByte((byte)DBCmd.CHANGE_USER);
@@ -720,7 +728,9 @@ namespace MySql.Data.MySqlClient
 
 			stream.ReadByte();  // read off the 254
 
-			if (stream.HasMoreData && version.isAtLeast(4, 1, 0))
+            if (version.isAtLeast(3, 0, 0) && !version.isAtLeast(4,1,0))
+                serverStatus = 0;
+            if (stream.HasMoreData && version.isAtLeast(4, 1, 0))
 			{
 				warningCount = stream.ReadInteger(2);
 				serverStatus = (ServerStatusFlags)stream.ReadInteger(2);
