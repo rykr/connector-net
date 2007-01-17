@@ -158,28 +158,30 @@ namespace MySql.Data.MySqlClient
 			// if we have already configured this driver and the user has 
             // requested that we not reset the connections upon a pool
             // checkout, then get out
-			if (serverProps != null && !Settings.ResetPooledConnections)
-				return;
+            if (serverProps == null)
+            {
+                // load server properties
+                serverProps = new Hashtable();
+                MySqlCommand cmd = new MySqlCommand("SHOW VARIABLES", connection);
 
-			// load server properties
-			serverProps = new Hashtable();
-			MySqlCommand cmd = new MySqlCommand("SHOW VARIABLES", connection);
+                try
+                {
+                    MySqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                        serverProps[reader.GetValue(0)] = reader.GetString(1);
+                    reader.Close();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException(ex);
+                    throw;
+                }
 
-			try
-			{
-				MySqlDataReader reader = cmd.ExecuteReader();
-				while (reader.Read())
-					serverProps[reader.GetValue(0)] = reader.GetString(1);
-				reader.Close();
-			}
-			catch (Exception ex)
-			{
-				Logger.LogException(ex);
-				throw;
-			}
+                if (serverProps.Contains("max_allowed_packet"))
+                    maxPacketSize = Convert.ToInt64(serverProps["max_allowed_packet"]);
 
-			if (serverProps.Contains("max_allowed_packet"))
-				maxPacketSize = Convert.ToInt64(serverProps["max_allowed_packet"]);
+                LoadCharacterSets();
+            }
 
 #if AUTHENTICATED
 			string licenseType = (string)serverProps["license"];
@@ -187,7 +189,9 @@ namespace MySql.Data.MySqlClient
 				licenseType != "commercial") 
 				throw new MySqlException( "This client library licensed only for use with commercially-licensed MySQL servers." );
 #endif
-			LoadCharacterSets();
+            // if the user has indicated that we are not to reset
+            // the connection then we are done.
+            if (!Settings.ResetPooledConnections) return;
 
 			string charSet = connectionString.CharacterSet;
 			if (charSet == null || charSet.Length == 0)
@@ -207,7 +211,8 @@ namespace MySql.Data.MySqlClient
 			// want results in
 			if (version.isAtLeast(4, 1, 0))
 			{
-				cmd.CommandText = "SET character_set_results=NULL";
+				MySqlCommand cmd = new MySqlCommand("SET character_set_results=NULL",
+                    connection);
 				object clientCharSet = serverProps["character_set_client"];
 				object connCharSet = serverProps["character_set_connection"];
 				if ((clientCharSet != null && clientCharSet.ToString() != charSet) ||
