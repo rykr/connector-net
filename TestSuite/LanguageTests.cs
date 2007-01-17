@@ -356,5 +356,40 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 			execSQL("DROP TABLE test_tbl");
 		}
+
+        /// <summary>
+        /// Bug #25651 SELECT does not work properly when WHERE contains UTF-8 characters 
+        /// </summary>
+        [Test]
+        public void UTF8Parameters()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test (id int(11) NOT NULL, " +
+                "value varchar(100) NOT NULL, PRIMARY KEY (id)) " +
+                "ENGINE=MyISAM DEFAULT CHARSET=utf8");
+
+            string conString = GetConnectionString(true) + ";charset=utf8";
+            try
+            {
+                using (MySqlConnection con = new MySqlConnection(conString))
+                {
+                    con.Open();
+
+                    MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (1, 'šđčćžŠĐČĆŽ')", con);
+                    cmd.ExecuteNonQuery();
+
+                    cmd.CommandText = "SELECT id FROM test WHERE value =  ?parameter";
+                    cmd.Parameters.Add("?parameter", MySqlDbType.VarString);
+                    cmd.Parameters[0].Value = "šđčćžŠĐČĆŽ";
+                    cmd.CommandTimeout = 0;
+                    object o = cmd.ExecuteScalar();
+                    Assert.AreEqual(1, o);
+                }
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
 	}
 }
