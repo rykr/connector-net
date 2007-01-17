@@ -33,7 +33,6 @@ namespace MySql.Data.MySqlClient.Tests
         [TestFixtureSetUp]
         public void FixtureSetup()
         {
-            csAdditions += ";logging=true;";
             Open();
         }
 
@@ -370,7 +369,6 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE TABLE test (id int(11) NOT NULL, " +
                 "value varchar(100) NOT NULL, PRIMARY KEY (id)) " +
                 "ENGINE=MyISAM DEFAULT CHARSET=utf8");
-            execSQL("INSERT INTO test VALUES (1, 'šđčćžŠĐČĆŽ')");
 
             string conString = GetConnectionString(true) + ";charset=utf8";
             try
@@ -379,12 +377,14 @@ namespace MySql.Data.MySqlClient.Tests
                 {
                     con.Open();
 
-                    MySqlCommand command = new MySqlCommand(
-                        "SELECT id FROM test WHERE value =  ?parameter", con);
-                    command.Parameters.Add("?parameter", MySqlDbType.VarString);
-                    command.Parameters[0].Value = "šđčćžŠĐČĆŽ";
-                    command.CommandTimeout = 0;
-                    object o = command.ExecuteScalar();
+                    MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (1, 'šđčćžŠĐČĆŽ')", con);
+                    cmd.ExecuteNonQuery();
+
+                    cmd.CommandText = "SELECT id FROM test WHERE value =  ?parameter";
+                    cmd.Parameters.Add("?parameter", MySqlDbType.VarString);
+                    cmd.Parameters[0].Value = "šđčćžŠĐČĆŽ";
+                    cmd.CommandTimeout = 0;
+                    object o = cmd.ExecuteScalar();
                     Assert.AreEqual(1, o);
                 }
             }
