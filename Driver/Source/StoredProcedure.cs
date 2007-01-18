@@ -129,9 +129,11 @@ namespace MySql.Data.MySqlClient
 				sqlCmd = String.Format("call {0} ({1})", commandText, sqlCmd);
 			else
 			{
-				sqlCmd = String.Format("set @{0}={1} ({2})", retParm,
-					 commandText, sqlCmd);
-				outSelect = String.Format("@{0}", retParm);
+                if (retParm == null)
+                    retParm = hash + "dummy";
+                else
+                    outSelect = String.Format("@{0}", retParm);
+                sqlCmd = String.Format("set @{0}={1}({2})", retParm, commandText, sqlCmd);
 			}
 
 			if (setStr.Length > 0)
