@@ -1047,5 +1047,27 @@ namespace MySql.Data.MySqlClient.Tests
                 suExecSQL("DELETE FROM mysql.user WHERE user = 'testuser'");
             }
         }
+
+        [Test]
+        public void CallingFunctionWithoutReturnParameter()
+        {
+            execSQL("CREATE FUNCTION fnTest (p_kiosk bigint(20), " +
+                "p_user bigint(20)) returns double begin declare v_return double; " +
+                "set v_return = 3.6; return v_return; end");
+
+            MySqlCommand cmd = new MySqlCommand("fnTest", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("?p_kiosk", 2);
+            cmd.Parameters.Add("?p_user", 4);
+            try
+            {
+                cmd.ExecuteNonQuery();
+                Assert.AreEqual(2, cmd.Parameters.Count);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
     }
 }

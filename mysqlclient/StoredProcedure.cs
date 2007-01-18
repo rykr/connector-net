@@ -45,9 +45,9 @@ namespace MySql.Data.MySqlClient
 			connection = conn;
 		}
 
-		private MySqlParameter GetReturnParameter(MySqlCommand cmd)
+		private MySqlParameter GetReturnParameter(IEnumerable parms)
 		{
-			foreach (MySqlParameter p in cmd.Parameters)
+			foreach (MySqlParameter p in parms)
 				if (p.Direction == ParameterDirection.ReturnValue)
 					return p;
 			return null;
@@ -231,7 +231,11 @@ namespace MySql.Data.MySqlClient
                 parmDef = parmDef.Substring(split[0].Length);
             }
             else
+            {
+                lowerDef = parmDef.ToLower(CultureInfo.InvariantCulture);
+                parmDef = parmDef.Substring(0, lowerDef.IndexOf("begin"));
                 p.ParameterName = String.Format("{0}RETURN_VALUE", connection.ParameterMarker);
+            }
 
 			ParseType(parmDef, sqlMode, p);
 			return p;
@@ -262,12 +266,14 @@ namespace MySql.Data.MySqlClient
 		/// <returns></returns>
 		public string Prepare(MySqlCommand cmd)
 		{
-			MySqlParameter returnParameter = GetReturnParameter(cmd);
+			MySqlParameter returnParameter = GetReturnParameter(cmd.Parameters);
 
             try
             {
                 ArrayList parameters = connection.ProcedureCache.GetProcedure(
                 connection, cmd.CommandText);
+
+                bool isReturn = GetReturnParameter(parameters) != null;
 
                 string sqlStr = String.Empty;
                 string setStr = String.Empty;
@@ -298,14 +304,18 @@ namespace MySql.Data.MySqlClient
                     outSelect += vName + ", ";
                 }
 
-                if (returnParameter == null)
+                if (!isReturn)
                     sqlStr = "call " + cmd.CommandText + "(" + sqlStr;
                 else
                 {
-                    string cleanedName = CleanParameterName(returnParameter.ParameterName, true);
-                    string vname = "@" + hash + cleanedName;
+                    string vname = "@" + hash + "dummy";
+                    if (returnParameter != null)
+                    {
+                        string cleanedName = CleanParameterName(returnParameter.ParameterName, true);
+                        vname = "@" + hash + cleanedName;
+                        outSelect = vname + outSelect;
+                    }
                     sqlStr = "set " + vname + "=" + cmd.CommandText + "(" + sqlStr;
-                    outSelect = vname + outSelect;
                 }
 
                 sqlStr = sqlStr.TrimEnd(' ', ',');
