@@ -402,16 +402,6 @@ namespace MySql.Data.MySqlClient
 
 			string sql = TrimSemicolons(cmdText);
 
-			if (0 != (behavior & CommandBehavior.SchemaOnly))
-			{
-				sql = "SET SQL_SELECT_LIMIT=0;" + sql + ";SET sql_select_limit=-1";
-			}
-
-			if (0 != (behavior & CommandBehavior.SingleRow))
-			{
-				sql = "SET SQL_SELECT_LIMIT=1;" + sql + ";SET sql_select_limit=-1";
-			}
-
 			updateCount = -1;
 			MySqlDataReader reader = new MySqlDataReader(this, behavior);
 
@@ -420,6 +410,8 @@ namespace MySql.Data.MySqlClient
 				sqlBuffers = PrepareSqlBuffers(sql);
 			else
 				preparedStatement.ExecutionCount = 0;
+
+           HandleCommandBehaviors(behavior);
 
 			reader.NextResult();
 			connection.Reader = reader;
@@ -491,6 +483,34 @@ namespace MySql.Data.MySqlClient
 
 
 		#region Private Methods
+
+		private void HandleCommandBehaviors(CommandBehavior behavior)
+		{
+			MySqlCommand cmd = new MySqlCommand("", connection);
+			int selectLimit = -1;
+
+			// if we are asked to provide only schema or single row resultsets, then
+			// set SQL_SELECT_LIMIT to optimize the process
+			if (0 != (behavior & CommandBehavior.SchemaOnly))
+				selectLimit = 0;
+			else if (0 != (behavior & CommandBehavior.SingleRow))
+				selectLimit = 1;
+			else if (connection.driver.selectLimit != -1)
+				selectLimit = -1;
+			else
+				return;
+
+			try
+			{
+				cmd.CommandText = String.Format("SET SQL_SELECT_LIMIT={0}", selectLimit);
+				cmd.ExecuteNonQuery();
+				connection.driver.selectLimit = selectLimit;
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
 
 		private string TrimSemicolons(string sql)
 		{

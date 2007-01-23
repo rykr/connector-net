@@ -45,12 +45,14 @@ namespace MySql.Data.MySqlClient
 		protected Hashtable charSets;
 		protected bool hasWarnings;
 		protected long maxPacketSize;
+		internal int selectLimit;
 
 		public Driver(MySqlConnectionString settings)
 		{
 			encoding = System.Text.Encoding.GetEncoding("latin1");
 			connectionString = settings;
 			threadId = -1;
+			selectLimit = -1;
 		}
 
 		#region Properties
