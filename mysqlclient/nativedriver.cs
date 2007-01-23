@@ -71,20 +71,23 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		public override bool SupportsBatch
 		{
-			get
-			{
-				if ((Flags & ClientFlags.MULTI_STATEMENTS) != 0)
-				{
-					if (version.isAtLeast(4, 1, 0) && !version.isAtLeast(4, 1, 10))
-					{
-						if (serverProps["query_cache_type"].Equals("ON") &&
-							!serverProps["query_cache_size"].Equals("0")) return false;
-					}
-					return true;
-				}
-				return false;
-			}
-		}
+            get
+            {
+                if ((Flags & ClientFlags.MULTI_STATEMENTS) != 0)
+                {
+                    if (version.isAtLeast(4, 1, 0) && !version.isAtLeast(4, 1, 10))
+                    {
+                        object qtType = serverProps["query_cache_type"];
+                        object qtSize = serverProps["query_cache_size"];
+                        if (qtType != null && qtType.Equals("ON") &&
+                            (qtSize != null && !qtSize.Equals("0")))
+                            return false;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        }
 
 		private void ExecuteCommand(DBCmd cmd, byte[] bytes, int length)
 		{
