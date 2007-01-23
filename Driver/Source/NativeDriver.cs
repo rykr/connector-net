@@ -72,8 +72,11 @@ namespace MySql.Data.MySqlClient
 				{
 					if (version.isAtLeast(4, 1, 0) && !version.isAtLeast(4, 1, 10))
 					{
-						if (serverProps["query_cache_type"].Equals("ON") &&
-							!serverProps["query_cache_size"].Equals("0")) return false;
+                        object qtType = serverProps["query_cache_type"];
+                        object qtSize = serverProps["query_cache_size"];
+                        if (qtType != null && qtType.Equals("ON") &&
+                            (qtSize != null && !qtSize.Equals("0")))
+                            return false;
 					}
 					return true;
 				}
