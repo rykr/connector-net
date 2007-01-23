@@ -32,6 +32,8 @@ namespace MySql.Data.MySqlClient
         protected string commandText;
         private ArrayList buffers;
         protected MySqlParameterCollection parameters;
+        protected string preCommand;
+        protected string postCommand;
 
         private Statement(MySqlConnection connection)
         {
@@ -45,13 +47,43 @@ namespace MySql.Data.MySqlClient
             commandText = text;
         }
 
+        #region Properties
+
         public virtual string ProcessedCommandText
         {
             get { return commandText; }
         }
 
+        public string PreCommand
+        {
+            get { return preCommand; }
+            set { preCommand = value; }
+        }
+
+        public string PostCommand
+        {
+            get { return postCommand; }
+            set { postCommand = value; }
+        }
+
+        #endregion
+
         public virtual void Close()
         {
+        }
+
+        private string GetCommandText()
+        {
+            StringBuilder sb = new StringBuilder(PreCommand);
+            if (sb.Length > 0)
+                sb.Append(";");
+            sb.Append(ProcessedCommandText);
+            if (PostCommand != null)
+            {
+                sb.Append(";");
+                sb.Append(PostCommand);
+            }
+            return sb.ToString();
         }
 
         public virtual void Execute(MySqlParameterCollection parameters)
@@ -77,7 +109,7 @@ namespace MySql.Data.MySqlClient
         protected virtual void BindParameters()
         {
             // tokenize the sql
-            ArrayList tokenArray = TokenizeSql(ProcessedCommandText);
+            ArrayList tokenArray = TokenizeSql(GetCommandText());
 
             MySqlStream stream = new MySqlStream(driver.Encoding);
             stream.Version = driver.Version;

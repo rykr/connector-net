@@ -309,7 +309,7 @@ namespace MySql.Data.MySqlClient
 		{
 			if (statement != null)
 				statement.Close();
-		}
+        }
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/ExecuteReader/*'/>
 		public new MySqlDataReader ExecuteReader()
@@ -342,17 +342,6 @@ namespace MySql.Data.MySqlClient
 
 			string sql = TrimSemicolons(cmdText);
 
-			//TODO: make these work with prepared statements and stored procedures
-			if (0 != (behavior & CommandBehavior.SchemaOnly))
-			{
-				sql = String.Format("SET SQL_SELECT_LIMIT=0;{0};SET sql_select_limit=-1;", sql);
-			}
-
-			if (0 != (behavior & CommandBehavior.SingleRow))
-			{
-				sql = String.Format("SET SQL_SELECT_LIMIT=1;{0};SET sql_select_limit=-1;", sql);
-			}
-
 			if (statement == null || !statement.IsPrepared)
 			{
 				if (CommandType == CommandType.StoredProcedure)
@@ -360,6 +349,19 @@ namespace MySql.Data.MySqlClient
 				else
 					statement = new PreparableStatement(this.Connection, sql);
 			}
+
+            // if we are asked to provide only schema or single row resultsets, then
+            // set SQL_SELECT_LIMIT to optimize the process
+            if (0 != (behavior & CommandBehavior.SchemaOnly))
+            {
+                statement.PreCommand = "SET SQL_SELECT_LIMIT=0";
+                statement.PostCommand = "SET SQL_SELECT_LIMIT=-1";
+            }
+            else if (0 != (behavior & CommandBehavior.SingleRow))
+            {
+                statement.PreCommand = "SET SQL_SELECT_LIMIT=1";
+                statement.PostCommand = "SET SQL_SELECT_LIMIT=-1";
+            }
 
 			updatedRowCount = -1;
 
