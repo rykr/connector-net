@@ -1088,6 +1088,11 @@ namespace MySql.Data.MySqlClient.Tests
                 MySqlCommand cmd = new MySqlCommand("spTest", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = 0;
+
+                MySqlDataReader reader = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
+                reader.Read();
+                reader.Close();
+
                 MySqlDataAdapter da = new MySqlDataAdapter(cmd);
                 DataTable schema = new DataTable();
                 da.FillSchema(schema, SchemaType.Source);
