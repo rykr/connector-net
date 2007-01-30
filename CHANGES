@@ -12,7 +12,9 @@ Version 5.0.4
   Bug #25609 MySqlDataAdapter.FillSchema 
   Bug #25928 Invalid Registry Entries 
   Bug #25912 selecting negative time values gets wrong results 
+  Bug #25906 Typo makes GetSchema with DataTypes collection throw an exception   
   Bug #25907 DataType Column of DataTypes collection does'nt contain the correct CLR Datatype   
+  Bug #25950 DataSourceInformation collection contains incorrect values 
   
   Other changes
   -------------
