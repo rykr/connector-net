@@ -612,7 +612,7 @@ namespace MySql.Data.MySqlClient
             dt.Columns.Add(new DataColumn("IsConcurrencyType", typeof(bool)));
             dt.Columns.Add(new DataColumn("IsLiteralsSupported", typeof(bool)));
             dt.Columns.Add(new DataColumn("LiteralPrefix", typeof(string)));
-            dt.Columns.Add(new DataColumn("LitteralSuffix", typeof(string)));
+            dt.Columns.Add(new DataColumn("LiteralSuffix", typeof(string)));
             dt.Columns.Add(new DataColumn("NativeDataType", typeof(string)));
 
             // have each one of the types contribute to the datatypes collection
