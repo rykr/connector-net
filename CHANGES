@@ -24,6 +24,7 @@ Version 1.0.9
     Bug #25651 SELECT does not work properly when WHERE contains UTF-8 characters 
     Bug #25726 MySqlConnection throws NullReferenceException and ArgumentNullException 
     Bug #25609 MySqlDataAdapter.FillSchema 
+    Bug #25912 selecting negative time values gets wrong results 
 
     Other changes
     -------------

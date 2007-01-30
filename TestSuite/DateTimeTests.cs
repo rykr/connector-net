@@ -478,6 +478,26 @@ namespace MySql.Data.MySqlClient.Tests
 					c.Close();
 			}
 		}
+
+        /// <summary>
+        /// Bug #25912 selecting negative time values gets wrong results 
+        /// </summary>
+        [Test]
+        public void TestNegativeTime()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test (t time)");
+            execSQL("INSERT INTO test SET T='-07:24:00'");
+
+            MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+
+            TimeSpan ts = (TimeSpan)dt.Rows[0]["t"];
+            Assert.AreEqual(-7, ts.Hours);
+            Assert.AreEqual(-24, ts.Minutes);
+            Assert.AreEqual(0, ts.Seconds);
+        }
 	}
 
 }
