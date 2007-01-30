@@ -10,6 +10,7 @@ Version 5.0.4
   Bug #25651 SELECT does not work properly when WHERE contains UTF-8 characters   
   Bug #25726 MySqlConnection throws NullReferenceException and ArgumentNullException 
   Bug #25609 MySqlDataAdapter.FillSchema 
+  Bug #25928 Invalid Registry Entries 
   
   Other changes
   -------------
@@ -17,7 +18,10 @@ Version 5.0.4
   Fixed problem with parameter name hashing where the hashes were not getting updated
        or removed in certain situations.
   Fixed problem with calling stored functions when a return parameter was not given
-
+  Fixed problem that prevented use of SchemaOnly or SingleRow command behaviors with
+       sprocs or prepared statements
+  Assembly now properly appears in the Visual Studio 2005 Add/Remove Reference dialog
+  
 Version 5.0.3 12-31-2006
 
   Bugs fixed
