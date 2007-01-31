@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?define ProductVersion="1.0.8"?>
 <?define ProductName="MySQL Connector Net $(var.ProductVersion)"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="D045B660-8A39-4338-8135-508B2978ABAE" Name="$(var.ProductName)" Manufacturer="MySQL" Version="$(var.ProductVersion)" Language="1033">
 
-    <Package Id="????????-????-????-????-????????????" Compressed="yes" InstallerVersion="200" Languages="1033" SummaryCodepage="1252" />
+    <Package Compressed="yes" InstallerVersion="200" Languages="1033" SummaryCodepage="1252" />
 
     <Media Id="1" EmbedCab="yes" Cabinet="ConnectorNet.cab" CompressionLevel="high" />
 
@@ -12,14 +12,12 @@
     <Directory Id='TARGETDIR' Name='SourceDir'>
       <Directory Id='ProgramFilesFolder' Name='PFiles'>
         <Directory Id='CompanyDir' Name='MySQL'>
-          <Directory Id='INSTALLDIR' Name='Con$(var.ProductVersion)' LongName='$(var.ProductName)'>
+          <Directory Id='INSTALLDIR' Name='$(var.ProductName)'>
             <Directory Id='Binaries' Name='Binaries'>
-              <Directory Id='BinNet20' Name='NET20' LongName='.NET 2.0'/>
-              <Directory Id='BinNet11' Name='NET11' LongName='.NET 1.1'/>
-              <Directory Id='BinNet10' Name='NET10' LongName='.NET 1.0'/>
-              <Directory Id='Mono10' Name='MONO10' LongName='Mono 1.0'/>
+              <Directory Id='BinNet11' Name='.NET 1.1'/>
+              <Directory Id='Mono10' Name='Mono 1.0'/>
             </Directory>
-            <Directory Id='DocsDir' Name='Docs' LongName='Documentation'/>
+            <Directory Id='DocsDir' Name='Documentation'/>
             <Directory Id='SourceDir' Name='Source'/>
             <Directory Id='SampleDir' Name='Samples'/>
           </Directory>
@@ -27,7 +25,7 @@
       </Directory>
       <Directory Id="ProgramMenuFolder" Name="PMFolder">
         <Directory Id='PMCompanyDir' Name='MySQL'>
-          <Directory Id="ShortCutDir" Name="SCutDir" LongName="$(var.ProductName)"/>
+          <Directory Id="ShortCutDir" Name="$(var.ProductName)"/>
         </Directory>
       </Directory>
     </Directory>
@@ -35,10 +33,10 @@
     <!-- Top level junk - readme, changelog, etc -->
     <DirectoryRef Id='INSTALLDIR'>
       <Component Id="BaseComponents" Guid="7C0533A3-E7D4-456e-A55B-773B9AC7DC67" DiskId="1">
-        <File Id="ChangeLog" Name="CLog" LongName="CHANGES" src="..\CHANGES" />
+        <File Id="ChangeLog" Name="CHANGES" src="..\CHANGES" />
         <?if $(var.IsGPL) = true ?>
-        <File Id="EXCEPTIONS" Name="EXC" LongName="EXCEPTIONS" src="..\EXCEPTIONS" DiskId="1"/>
-        <File Id="COPYING" Name="COPY" LongName="COPYING" src="..\COPYING" DiskId="1" />
+        <File Id="EXCEPTIONS" Name="EXCEPTIONS" src="..\EXCEPTIONS" DiskId="1"/>
+        <File Id="COPYING" Name="COPYING" src="..\COPYING" DiskId="1" />
         <?endif?>
         <File Id="README1" Name="README" src="..\README" DiskId="1"/>
         <Registry Id="LocKey" Root="HKLM" Key="Software\MySQL AB\MySQL Connector/Net $(var.ProductVersion)" Name="Location" Type="string" Value="[TARGETDIR]"/>
@@ -49,24 +47,24 @@
     <!-- .Net 2.0 Binaries -->
     <DirectoryRef Id='BinNet20'>
       <Component Id="Net20" Guid="542ADC66-8118-4b20-816C-FC4E608ED18E">
-        <File Id="CoreBin20" Name="MD20" LongName="MySql.Data.dll" src="..\mysqlclient\bin\net-2.0\$(var.build)\mysql.data.dll" DiskId="1"  />
+        <File Id="CoreBin20" Name="MySql.Data.dll" src="..\mysqlclient\bin\net-2.0\$(var.build)\mysql.data.dll" DiskId="1"  />
         <Registry Id="vs80registry" Root="HKLM" Key="Software\Microsoft\VisualStudio\8.0\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)" Type="string" KeyPath="yes" Value="[TARGETDIR]bin\.NET 2.0\" />
       </Component>
       <Component Id="GAC20" DiskId="1" Guid="53332577-9093-4319-9AD8-44EAAFF9B731">
         <Condition><![CDATA[REGISTER_NET20_GAC="1"]]></Condition>
-        <File Id="CoreBin20GAC" Name="MD20" LongName="MySql.Data.dll" src="..\mysqlclient\bin\net-2.0\$(var.build)\mysql.data.dll" Assembly=".net" KeyPath="yes" />
+        <File Id="CoreBin20GAC" Name="MySql.Data.dll" src="..\mysqlclient\bin\net-2.0\$(var.build)\mysql.data.dll" Assembly=".net" KeyPath="yes" />
       </Component>
     </DirectoryRef>
 
     <!-- .Net 1.1 Binaries -->
     <DirectoryRef Id='BinNet11'>
       <Component Id="Net11" Guid="6F17833F-3CF6-4d14-8552-BBDF4014311C">
-        <File Id="CoreBin11" Name="MD11" LongName="MySql.Data.dll" src="..\mysqlclient\bin\net-1.1\$(var.build)\mysql.data.dll" DiskId="1"  />
+        <File Id="CoreBin11" Name="MySql.Data.dll" src="..\mysqlclient\bin\net-1.1\$(var.build)\mysql.data.dll" DiskId="1"  />
         <Registry Id="vs71registry" Root="HKLM" Key="Software\Microsoft\VisualStudio\7.1\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)" Type="string" KeyPath="yes" Value="[TARGETDIR]bin\.NET 1.1\" />
       </Component>
       <Component Id="GAC11" DiskId="1" Guid="FCD6265C-3FC9-49fe-B774-08380522711C">
         <Condition><![CDATA[REGISTER_NET11_GAC="1"]]></Condition>
-        <File Id="CoreBin11GAC" Name="MD11" LongName="MySql.Data.dll" src="..\mysqlclient\bin\net-1.1\$(var.build)\mysql.data.dll" Assembly=".net" KeyPath="yes" />
+        <File Id="CoreBin11GAC" Name="MySql.Data.dll" src="..\mysqlclient\bin\net-1.1\$(var.build)\mysql.data.dll" Assembly=".net" KeyPath="yes" />
       </Component>
     </DirectoryRef>
 
@@ -74,20 +72,20 @@
     <DirectoryRef Id='ShortCutDir'>
       <Component Id="StartMenuComponent" Guid="36FF7CFF-6239-4035-BD09-96DA9BF9467C">
         <Condition><![CDATA[CREATESTARTMENU="1"]]></Condition>
-        <Shortcut Id="S100" Name="Docs" LongName="Documentation" 
+        <Shortcut Id="S100" Name="Documentation" 
 					Description="Complete documentation for the connector" 
 					Target="[#CoreCHM]" Directory="ShortCutDir" />
-        <Shortcut Id="S101" Name="Changes" LongName="ChangeLog" 
+        <Shortcut Id="S101" Name="ChangeLog" 
 					Description="Complete changelog for the connector" Directory="ShortCutDir" 
 					Icon="ChangeLogIcon" Target="[#ChangeLog]"/>
-        <Shortcut Id="S102" Name="Release" LongName="Release Notes" 
+        <Shortcut Id="S102" Name="Release Notes" 
 					Description="Release notes" Directory="ShortCutDir" Target="[#RelNotes]"/>
       </Component>
     </DirectoryRef>
 
     <DirectoryRef Id='DocsDir'>
       <Component Id="Docs" Guid="8DB4E744-9DA0-4b19-953B-CF90390FFC74">
-        <File Id="CoreCHM" Name="Docs" LongName="MySql.Data.chm" src="..\doc\MySql.Data.chm" DiskId="1" />
+        <File Id="CoreCHM" Name="MySql.Data.chm" src="..\doc\MySql.Data.chm" DiskId="1" />
       </Component>
     </DirectoryRef>
 
