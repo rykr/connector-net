@@ -1070,27 +1070,28 @@ namespace MySql.Data.MySqlClient.Tests
             }
         }
 
-		/// <summary>
-		/// Bug #25609 MySqlDataAdapter.FillSchema 
-		/// </summary>
-		[Test]
-		public void GetSchema()
-		{
-			try
-			{
-				execSQL("CREATE PROCEDURE spTest() BEGIN SELECT * FROM test; END");
+        /// <summary>
+        /// Bug #25609 MySqlDataAdapter.FillSchema 
+        /// </summary>
+        [Test]
+        public void GetSchema()
+        {
+            try
+            {
+                execSQL("CREATE PROCEDURE spTest() BEGIN SELECT * FROM test; END");
 
-				MySqlCommand cmd = new MySqlCommand("spTest", conn);
-				cmd.CommandType = CommandType.StoredProcedure;
-				MySqlDataAdapter da = new MySqlDataAdapter(cmd);
-				DataTable schema = new DataTable();
-				da.FillSchema(schema, SchemaType.Source);
-				Assert.AreEqual(2, schema.Columns.Count);
-			}
-			catch (Exception ex)
-			{
-				Assert.Fail(ex.Message);
-			}
-		}
+                MySqlCommand cmd = new MySqlCommand("spTest", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 0;
+                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                DataTable schema = new DataTable();
+                da.FillSchema(schema, SchemaType.Source);
+                Assert.AreEqual(2, schema.Columns.Count);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
     }
 }

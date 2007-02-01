@@ -31,6 +31,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
+            csAdditions += ";ignore prepare=false;";
 			Open();
 
 			execSQL("DROP TABLE IF EXISTS Test");
