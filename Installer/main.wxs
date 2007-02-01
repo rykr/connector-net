@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?define ProductVersion="1.0.8"?>
+<?define ProductVersion="1.0.9"?>
 <?define ProductName="MySQL Connector Net $(var.ProductVersion)"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="D045B660-8A39-4338-8135-508B2978ABAE" Name="$(var.ProductName)" Manufacturer="MySQL" Version="$(var.ProductVersion)" Language="1033">
@@ -33,45 +33,38 @@
     <!-- Top level junk - readme, changelog, etc -->
     <DirectoryRef Id='INSTALLDIR'>
       <Component Id="BaseComponents" Guid="7C0533A3-E7D4-456e-A55B-773B9AC7DC67" DiskId="1">
-        <File Id="ChangeLog" Name="CHANGES" src="..\CHANGES" />
+        <File Id="ChangeLog" Name="CHANGES" Source="..\CHANGES" />
         <?if $(var.IsGPL) = true ?>
-        <File Id="EXCEPTIONS" Name="EXCEPTIONS" src="..\EXCEPTIONS" DiskId="1"/>
-        <File Id="COPYING" Name="COPYING" src="..\COPYING" DiskId="1" />
+        <File Id="EXCEPTIONS" Name="EXCEPTIONS" Source="..\EXCEPTIONS" DiskId="1"/>
+        <File Id="COPYING" Name="COPYING" Source="..\COPYING" DiskId="1" />
         <?endif?>
-        <File Id="README1" Name="README" src="..\README" DiskId="1"/>
-        <Registry Id="LocKey" Root="HKLM" Key="Software\MySQL AB\MySQL Connector/Net $(var.ProductVersion)" Name="Location" Type="string" Value="[TARGETDIR]"/>
-        <Registry Id="VerKey" Root="HKLM" Key="Software\MySQL AB\MySQL Connector/Net $(var.ProductVersion)" Name="Version" Type="string" Value="$(var.ProductVersion)"/>
-      </Component>
-    </DirectoryRef>
-
-    <!-- .Net 2.0 Binaries -->
-    <DirectoryRef Id='BinNet20'>
-      <Component Id="Net20" Guid="542ADC66-8118-4b20-816C-FC4E608ED18E">
-        <File Id="CoreBin20" Name="MySql.Data.dll" src="..\mysqlclient\bin\net-2.0\$(var.build)\mysql.data.dll" DiskId="1"  />
-        <Registry Id="vs80registry" Root="HKLM" Key="Software\Microsoft\VisualStudio\8.0\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)" Type="string" KeyPath="yes" Value="[TARGETDIR]bin\.NET 2.0\" />
-      </Component>
-      <Component Id="GAC20" DiskId="1" Guid="53332577-9093-4319-9AD8-44EAAFF9B731">
-        <Condition><![CDATA[REGISTER_NET20_GAC="1"]]></Condition>
-        <File Id="CoreBin20GAC" Name="MySql.Data.dll" src="..\mysqlclient\bin\net-2.0\$(var.build)\mysql.data.dll" Assembly=".net" KeyPath="yes" />
+        <File Id="README1" Name="README" Source="..\README" DiskId="1"/>
+        
+        <RegistryKey Id="MySqlKey" Root="HKLM" Action="createAndRemoveOnUninstall"
+                     Key="Software\MySQL AB\MySQL Connector/Net $(var.ProductVersion)">
+          <RegistryValue Id="Location" Name="Location" Value="[INSTALLDIR]" Type="string"/>
+          <RegistryValue Id="Version" Name="Version" Value="$(var.ProductVersion)" Type="string"/>
+        </RegistryKey>
       </Component>
     </DirectoryRef>
 
     <!-- .Net 1.1 Binaries -->
     <DirectoryRef Id='BinNet11'>
       <Component Id="Net11" Guid="6F17833F-3CF6-4d14-8552-BBDF4014311C">
-        <File Id="CoreBin11" Name="MySql.Data.dll" src="..\mysqlclient\bin\net-1.1\$(var.build)\mysql.data.dll" DiskId="1"  />
-        <Registry Id="vs71registry" Root="HKLM" Key="Software\Microsoft\VisualStudio\7.1\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)" Type="string" KeyPath="yes" Value="[TARGETDIR]bin\.NET 1.1\" />
+        <File Id="CoreBin11" Name="MySql.Data.dll" Source="..\mysqlclient\bin\net-1.1\$(var.build)\mysql.data.dll" DiskId="1"  />
+        <RegistryKey Id="VSRegistry" Root="HKLM" Action="createAndRemoveOnUninstall"
+                     Key="SOFTWARE\Microsoft\.NETFramework\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)">
+          <RegistryValue Id="VSRegistryValue" Value="[BinNet11]" Type="string" Action="write"/>
+        </RegistryKey>
       </Component>
       <Component Id="GAC11" DiskId="1" Guid="FCD6265C-3FC9-49fe-B774-08380522711C">
-        <Condition><![CDATA[REGISTER_NET11_GAC="1"]]></Condition>
-        <File Id="CoreBin11GAC" Name="MySql.Data.dll" src="..\mysqlclient\bin\net-1.1\$(var.build)\mysql.data.dll" Assembly=".net" KeyPath="yes" />
+        <File Id="CoreBin11GAC" Name="MySql.Data.dll" Source="..\mysqlclient\bin\net-1.1\$(var.build)\mysql.data.dll" Assembly=".net" KeyPath="yes" />
       </Component>
     </DirectoryRef>
 
     <!-- Start menu junk -->
     <DirectoryRef Id='ShortCutDir'>
       <Component Id="StartMenuComponent" Guid="36FF7CFF-6239-4035-BD09-96DA9BF9467C">
-        <Condition><![CDATA[CREATESTARTMENU="1"]]></Condition>
         <Shortcut Id="S100" Name="Documentation" 
 					Description="Complete documentation for the connector" 
 					Target="[#CoreCHM]" Directory="ShortCutDir" />
@@ -85,7 +78,7 @@
 
     <DirectoryRef Id='DocsDir'>
       <Component Id="Docs" Guid="8DB4E744-9DA0-4b19-953B-CF90390FFC74">
-        <File Id="CoreCHM" Name="MySql.Data.chm" src="..\doc\MySql.Data.chm" DiskId="1" />
+        <File Id="CoreCHM" Name="MySql.Data.chm" Source="..\doc\MySql.Data.chm" DiskId="1" />
       </Component>
     </DirectoryRef>
 
@@ -101,10 +94,6 @@
         <ComponentRef Id="Net11"/>
         <ComponentRef Id="GAC11"/>
       </Feature>
-      <Feature Id="FeatureNet20" Level='0' Title=".NET 2.0">
-        <ComponentRef Id="Net20"/>
-        <ComponentRef Id="GAC20"/>
-      </Feature>
     </Feature>
 
     <Feature Id='DocsFeature' Level='1' Title='Documentation' Description='Documentation'>
@@ -115,9 +104,11 @@
     <FeatureRef Id="Sources"/>
 
     <Property Id="WIXUI_INSTALLDIR" Value='INSTALLDIR'/>
-    <UIRef Id="WixUI_Mondo"/>
-	<UIRef Id="CustomDialogs"/>
+    <UIRef Id="WixUI_InstallDir"/>
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf"/>
+    <WixVariable Id="WixUIBannerBmp" Value="Bitmaps/BannrBmp.bmp"/>
+    <WixVariable Id="WixUIDialogBmp" Value="Bitmaps/DlgBmp.bmp"/>
 
-    <Icon Id="ChangeLogIcon" src="Bitmaps\document.ico"/>
+    <Icon Id="ChangeLogIcon" SourceFile="Bitmaps\document.ico"/>
   </Product>
 </Wix>

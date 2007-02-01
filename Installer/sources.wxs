@@ -3,141 +3,140 @@
 	<Fragment Id='SourceFragment'> 
 		<DirectoryRef Id='SourceDir'> 
 			<Component Id="TopLevelSrc" Guid="89B34093-7D5E-42af-81A3-1B55CDD799B7">
-				<File Id="nantFile" Name="client.build" src="..\client.build" DiskId="1"/>
+				<File Id="nantFile" Name="client.build" Source="..\client.build" DiskId="1"/>
 			</Component>
 			<Directory Id="clientFolder" Name="MySqlClient">
 				<Component Id="ClientSrc" DiskId="1" Guid="90FFFFDF-B227-4ccd-860C-B580A49D39C3">
-					<File Id="file0" Name="AssemblyInfo.cs" src="..\mysqlclient\AssemblyInfo.cs" />
-					<File Id="file1" Name="CharSetMap.cs" src="..\mysqlclient\CharSetMap.cs" />
-					<File Id="file2" Name="command.cs" src="..\mysqlclient\command.cs" />
-					<File Id="file3" Name="CommandBuilder.cs" src="..\mysqlclient\CommandBuilder.cs" />
-					<File Id="file4" Name="CompressedStream.cs" src="..\mysqlclient\CompressedStream.cs" />
-					<File Id="file5" Name="Connection.cs" src="..\mysqlclient\Connection.cs" />
-					<File Id="file6" Name="Crypt.cs" src="..\mysqlclient\Crypt.cs" />
-					<File Id="file7" Name="dataadapter.cs" src="..\mysqlclient\dataadapter.cs" />
-					<File Id="file8" Name="datareader.cs" src="..\mysqlclient\datareader.cs" />
-					<File Id="file9" Name="CommandResult.cs" src="..\mysqlclient\CommandResult.cs"/>
-					<File Id="file10" Name="Driver.cs" src="..\mysqlclient\Driver.cs" />
-					<File Id="file11" Name="Exception.cs" src="..\mysqlclient\Exception.cs" />
-					<File Id="file12" Name="Field.cs" src="..\mysqlclient\Field.cs" />
-					<File Id="file13" Name="ConnectionString.cs" src="..\mysqlclient\ConnectionString.cs"/>
-					<File Id="file14" Name="PacketReader.cs" src="..\mysqlclient\PacketReader.cs"/>
-					<File Id="file15" Name="Logger.cs" src="..\mysqlclient\Logger.cs" />
-					<File Id="file16" Name="PacketWriter.cs" src="..\mysqlclient\PacketWriter.cs"/>
-					<File Id="file17" Name="MySql.Data.2003.csproj" src="..\mysqlclient\MySql.Data.2003.csproj" />
-					<File Id="file18" Name="MySql.Data.2005.csproj" src="..\mysqlclient\MySql.Data.2005.csproj" />
-					<File Id="file19" Name="Resources.Designer.cs" src="..\mysqlclient\Resources.Designer.cs"/>
-					<File Id="file20" Name="MysqlDefs.cs" src="..\mysqlclient\MysqlDefs.cs" />
-					<File Id="file21" Name="MySqlError.cs" src="..\mysqlclient\MySqlError.cs" />
-					<File Id="file22" Name="MySqlHelper.cs" src="..\mysqlclient\MySqlHelper.cs" />
-					<File Id="file23" Name="MySqlPool.cs" src="..\mysqlclient\MySqlPool.cs" />
-					<File Id="file24" Name="MySqlPoolManager.cs" src="..\mysqlclient\MySqlPoolManager.cs" />
-					<File Id="file26" Name="NativeDriver.cs" src="..\mysqlclient\NativeDriver.cs" />
-					<File Id="file27" Name="parameter.cs" src="..\mysqlclient\parameter.cs" />
-					<File Id="file28" Name="parameter_collection.cs" src="..\mysqlclient\parameter_collection.cs" />
-					<File Id="file30" Name="PreparedStatement.cs" src="..\mysqlclient\PreparedStatement.cs" />
-					<File Id="file31" Name="ProcedureCache.cs" src="..\mysqlclient\ProcedureCache.cs" />
-					<File Id="file36" Name="Resources.resx" src="..\mysqlclient\Resources.resx" />
-					<File Id="file39" Name="StoredProcedure.cs" src="..\mysqlclient\StoredProcedure.cs" />
-					<File Id="file40" Name="transaction.cs" src="..\mysqlclient\transaction.cs" />
+					<File Id="file0" Name="AssemblyInfo.cs" Source="..\mysqlclient\AssemblyInfo.cs" />
+					<File Id="file1" Name="CharSetMap.cs" Source="..\mysqlclient\CharSetMap.cs" />
+					<File Id="file2" Name="command.cs" Source="..\mysqlclient\command.cs" />
+					<File Id="file3" Name="CommandBuilder.cs" Source="..\mysqlclient\CommandBuilder.cs" />
+					<File Id="file4" Name="CompressedStream.cs" Source="..\mysqlclient\CompressedStream.cs" />
+					<File Id="file5" Name="Connection.cs" Source="..\mysqlclient\Connection.cs" />
+					<File Id="file6" Name="Crypt.cs" Source="..\mysqlclient\Crypt.cs" />
+					<File Id="file7" Name="dataadapter.cs" Source="..\mysqlclient\dataadapter.cs" />
+					<File Id="file8" Name="datareader.cs" Source="..\mysqlclient\datareader.cs" />
+					<File Id="file9" Name="CommandResult.cs" Source="..\mysqlclient\CommandResult.cs"/>
+					<File Id="file10" Name="Driver.cs" Source="..\mysqlclient\Driver.cs" />
+					<File Id="file11" Name="Exception.cs" Source="..\mysqlclient\Exception.cs" />
+					<File Id="file12" Name="Field.cs" Source="..\mysqlclient\Field.cs" />
+					<File Id="file13" Name="ConnectionString.cs" Source="..\mysqlclient\ConnectionString.cs"/>
+					<File Id="file14" Name="PacketReader.cs" Source="..\mysqlclient\PacketReader.cs"/>
+					<File Id="file15" Name="Logger.cs" Source="..\mysqlclient\Logger.cs" />
+					<File Id="file16" Name="PacketWriter.cs" Source="..\mysqlclient\PacketWriter.cs"/>
+					<File Id="file17" Name="MySql.Data.2003.csproj" Source="..\mysqlclient\MySql.Data.2003.csproj" />
+					<File Id="file18" Name="MySql.Data.2005.csproj" Source="..\mysqlclient\MySql.Data.2005.csproj" />
+					<File Id="file19" Name="Resources.Designer.cs" Source="..\mysqlclient\Resources.Designer.cs"/>
+					<File Id="file20" Name="MysqlDefs.cs" Source="..\mysqlclient\MysqlDefs.cs" />
+					<File Id="file21" Name="MySqlError.cs" Source="..\mysqlclient\MySqlError.cs" />
+					<File Id="file22" Name="MySqlHelper.cs" Source="..\mysqlclient\MySqlHelper.cs" />
+					<File Id="file23" Name="MySqlPool.cs" Source="..\mysqlclient\MySqlPool.cs" />
+					<File Id="file24" Name="MySqlPoolManager.cs" Source="..\mysqlclient\MySqlPoolManager.cs" />
+					<File Id="file26" Name="NativeDriver.cs" Source="..\mysqlclient\NativeDriver.cs" />
+					<File Id="file27" Name="parameter.cs" Source="..\mysqlclient\parameter.cs" />
+					<File Id="file28" Name="parameter_collection.cs" Source="..\mysqlclient\parameter_collection.cs" />
+					<File Id="file30" Name="PreparedStatement.cs" Source="..\mysqlclient\PreparedStatement.cs" />
+					<File Id="file31" Name="ProcedureCache.cs" Source="..\mysqlclient\ProcedureCache.cs" />
+					<File Id="file36" Name="Resources.resx" Source="..\mysqlclient\Resources.resx" />
+					<File Id="file39" Name="StoredProcedure.cs" Source="..\mysqlclient\StoredProcedure.cs" />
+					<File Id="file40" Name="transaction.cs" Source="..\mysqlclient\transaction.cs" />
 				</Component>
 				<Directory Id="commonFolder" Name="Common">
 					<Component Id="CommonSrc"  DiskId="1" Guid="9EC26A78-08C1-4b65-969D-F2C9C6B668DD">
-						<File Id="file179" Name="ContextString.cs" src="..\mysqlclient\common\ContextString.cs" />
-						<File Id="file180" Name="NamedPipeStream.cs" src="..\mysqlclient\common\NamedPipeStream.cs" />
-						<File Id="file181" Name="NativeMethods.cs" src="..\mysqlclient\common\NativeMethods.cs" />
-						<File Id="file182" Name="Platform.cs" src="..\mysqlclient\common\Platform.cs" />
-						<File Id="file183" Name="DBConnectionString.cs" src="..\mysqlclient\common\DBConnectionString.cs"/>
-						<File Id="file185" Name="SharedMemoryStream.cs" src="..\mysqlclient\common\SharedMemoryStream.cs" />
-						<File Id="file187" Name="StreamCreator.cs" src="..\mysqlclient\common\StreamCreator.cs" />
-						<File Id="file188" Name="Version.cs" src="..\mysqlclient\common\Version.cs" />
+						<File Id="file179" Name="ContextString.cs" Source="..\mysqlclient\common\ContextString.cs" />
+						<File Id="file180" Name="NamedPipeStream.cs" Source="..\mysqlclient\common\NamedPipeStream.cs" />
+						<File Id="file181" Name="NativeMethods.cs" Source="..\mysqlclient\common\NativeMethods.cs" />
+						<File Id="file182" Name="Platform.cs" Source="..\mysqlclient\common\Platform.cs" />
+						<File Id="file183" Name="DBConnectionString.cs" Source="..\mysqlclient\common\DBConnectionString.cs"/>
+						<File Id="file185" Name="SharedMemoryStream.cs" Source="..\mysqlclient\common\SharedMemoryStream.cs" />
+						<File Id="file187" Name="StreamCreator.cs" Source="..\mysqlclient\common\StreamCreator.cs" />
+						<File Id="file188" Name="Version.cs" Source="..\mysqlclient\common\Version.cs" />
 					</Component>
 				</Directory>
 				<Directory Id="docSrcFolder" Name="Docs">
 					<Component Id="DocsSrc" DiskId="1" Guid="CBC6D91E-4E0B-47aa-9158-F394FDF27B4E">
-						<File Id="file245" Name="MySqlCommand.xml" src="..\mysqlclient\docs\MySqlCommand.xml" />
-						<File Id="file246" Name="MySqlCommandBuilder.xml" src="..\mysqlclient\docs\MySqlCommandBuilder.xml" />
-						<File Id="file247" Name="MySqlConnection.xml" src="..\mysqlclient\docs\MySqlConnection.xml" />
-						<File Id="file249" Name="MySqlDataAdapter.xml" src="..\mysqlclient\docs\MySqlDataAdapter.xml" />
-						<File Id="file250" Name="MySqlDataReader.xml" src="..\mysqlclient\docs\MySqlDataReader.xml" />
-						<File Id="file251" Name="MySqlException.xml" src="..\mysqlclient\docs\MySqlException.xml" />
-						<File Id="file252" Name="MySqlHelper.xml" src="..\mysqlclient\docs\MySqlHelper.xml" />
-						<File Id="file253" Name="MySqlParameter.xml" src="..\mysqlclient\docs\MySqlParameter.xml" />
-						<File Id="file254" Name="MySqlParameterCollection.xml" src="..\mysqlclient\docs\MySqlParameterCollection.xml" />
-						<File Id="file255" Name="MySqlTransaction.xml" src="..\mysqlclient\docs\MySqlTransaction.xml" />
+						<File Id="file245" Name="MySqlCommand.xml" Source="..\mysqlclient\docs\MySqlCommand.xml" />
+						<File Id="file246" Name="MySqlCommandBuilder.xml" Source="..\mysqlclient\docs\MySqlCommandBuilder.xml" />
+						<File Id="file247" Name="MySqlConnection.xml" Source="..\mysqlclient\docs\MySqlConnection.xml" />
+						<File Id="file249" Name="MySqlDataAdapter.xml" Source="..\mysqlclient\docs\MySqlDataAdapter.xml" />
+						<File Id="file250" Name="MySqlDataReader.xml" Source="..\mysqlclient\docs\MySqlDataReader.xml" />
+						<File Id="file251" Name="MySqlException.xml" Source="..\mysqlclient\docs\MySqlException.xml" />
+						<File Id="file252" Name="MySqlHelper.xml" Source="..\mysqlclient\docs\MySqlHelper.xml" />
+						<File Id="file253" Name="MySqlParameter.xml" Source="..\mysqlclient\docs\MySqlParameter.xml" />
+						<File Id="file254" Name="MySqlParameterCollection.xml" Source="..\mysqlclient\docs\MySqlParameterCollection.xml" />
+						<File Id="file255" Name="MySqlTransaction.xml" Source="..\mysqlclient\docs\MySqlTransaction.xml" />
 					</Component>
 				</Directory>
 				<Directory Id="typesFolder" Name="Types">
 					<Component Id="TypesSrc" DiskId="1" Guid="254E5703-D491-4d38-B42E-A2C3A9A447A5">
-						<File Id="file300" Name="MySqlBinary.cs" src="..\mysqlclient\Types\MySqlBinary.cs" />
-						<File Id="file301" Name="MySqlBit.cs" src="..\mysqlclient\Types\MySqlBit.cs" />
-						<File Id="file302" Name="MySqlByte.cs" src="..\mysqlclient\Types\MySqlByte.cs" />
-						<File Id="file303" Name="MySqlConversionException.cs" src="..\mysqlclient\Types\MySqlConversionException.cs" />
-						<File Id="file304" Name="MySqlDateTime.cs" src="..\mysqlclient\Types\MySqlDateTime.cs" />
-						<File Id="file305" Name="MySqlDecimal.cs" src="..\mysqlclient\Types\MySqlDecimal.cs" />
-						<File Id="file306" Name="MySqlDouble.cs" src="..\mysqlclient\Types\MySqlDouble.cs" />
-						<File Id="file307" Name="MySqlInt16.cs" src="..\mysqlclient\Types\MySqlInt16.cs" />
-						<File Id="file308" Name="MySqlInt32.cs" src="..\mysqlclient\Types\MySqlInt32.cs" />
-						<File Id="file309" Name="MySqlInt64.cs" src="..\mysqlclient\Types\MySqlInt64.cs" />
-						<File Id="file310" Name="MySqlSingle.cs" src="..\mysqlclient\Types\MySqlSingle.cs" />
-						<File Id="file311" Name="MySqlString.cs" src="..\mysqlclient\Types\MySqlString.cs" />
-						<File Id="file312" Name="MySqlTime.cs" src="..\mysqlclient\Types\MySqlTime.cs" />
-						<File Id="file313" Name="MySqlUByte.cs" src="..\mysqlclient\Types\MySqlUByte.cs" />
-						<File Id="file314" Name="MySqlUInt16.cs" src="..\mysqlclient\Types\MySqlUInt16.cs" />
-						<File Id="file315" Name="MySqlUInt32.cs" src="..\mysqlclient\Types\MySqlUInt32.cs" />
-						<File Id="file316" Name="MySqlUInt64.cs" src="..\mysqlclient\Types\MySqlUInt64.cs" />
-						<File Id="file317" Name="MySqlValue.cs" src="..\mysqlclient\Types\MySqlValue.cs" />
+						<File Id="file300" Name="MySqlBinary.cs" Source="..\mysqlclient\Types\MySqlBinary.cs" />
+						<File Id="file301" Name="MySqlBit.cs" Source="..\mysqlclient\Types\MySqlBit.cs" />
+						<File Id="file302" Name="MySqlByte.cs" Source="..\mysqlclient\Types\MySqlByte.cs" />
+						<File Id="file303" Name="MySqlConversionException.cs" Source="..\mysqlclient\Types\MySqlConversionException.cs" />
+						<File Id="file304" Name="MySqlDateTime.cs" Source="..\mysqlclient\Types\MySqlDateTime.cs" />
+						<File Id="file305" Name="MySqlDecimal.cs" Source="..\mysqlclient\Types\MySqlDecimal.cs" />
+						<File Id="file306" Name="MySqlDouble.cs" Source="..\mysqlclient\Types\MySqlDouble.cs" />
+						<File Id="file307" Name="MySqlInt16.cs" Source="..\mysqlclient\Types\MySqlInt16.cs" />
+						<File Id="file308" Name="MySqlInt32.cs" Source="..\mysqlclient\Types\MySqlInt32.cs" />
+						<File Id="file309" Name="MySqlInt64.cs" Source="..\mysqlclient\Types\MySqlInt64.cs" />
+						<File Id="file310" Name="MySqlSingle.cs" Source="..\mysqlclient\Types\MySqlSingle.cs" />
+						<File Id="file311" Name="MySqlString.cs" Source="..\mysqlclient\Types\MySqlString.cs" />
+						<File Id="file312" Name="MySqlTime.cs" Source="..\mysqlclient\Types\MySqlTime.cs" />
+						<File Id="file313" Name="MySqlUByte.cs" Source="..\mysqlclient\Types\MySqlUByte.cs" />
+						<File Id="file314" Name="MySqlUInt16.cs" Source="..\mysqlclient\Types\MySqlUInt16.cs" />
+						<File Id="file315" Name="MySqlUInt32.cs" Source="..\mysqlclient\Types\MySqlUInt32.cs" />
+						<File Id="file316" Name="MySqlUInt64.cs" Source="..\mysqlclient\Types\MySqlUInt64.cs" />
+						<File Id="file317" Name="MySqlValue.cs" Source="..\mysqlclient\Types\MySqlValue.cs" />
 					</Component>
 				</Directory>
 		        <Directory Id="zlibFolder" Name="zlib">
 		          <Component Id="ZLibSrc" DiskId="1" Guid="1D292798-549F-4f3d-96DB-1CD6E4FBA181">
-		            <File Id="file500" Name="Adler32.cs" src="..\mysqlclient\zlib\Adler32.cs" />
-		            <File Id="file501" Name="Deflate.cs" src="..\mysqlclient\zlib\Deflate.cs" />
-		            <File Id="file502" Name="InfBlocks.cs" src="..\mysqlclient\zlib\InfBlocks.cs" />
-		            <File Id="file503" Name="InfCodes.cs" src="..\mysqlclient\zlib\InfCodes.cs" />
-		            <File Id="file504" Name="Inflate.cs" src="..\mysqlclient\zlib\Inflate.cs" />
-		            <File Id="file505" Name="InfTree.cs" src="..\mysqlclient\zlib\InfTree.cs" />
-		            <File Id="file506" Name="StaticTree.cs" src="..\mysqlclient\zlib\StaticTree.cs" />
-		            <File Id="file507" Name="SupportClass.cs" src="..\mysqlclient\zlib\SupportClass.cs" />
-		            <File Id="file508" Name="Tree.cs" src="..\mysqlclient\zlib\Tree.cs" />
-		            <File Id="file509" Name="ZInputStream.cs" src="..\mysqlclient\zlib\ZInputStream.cs" />
-		            <File Id="file510" Name="Zlib.cs" src="..\mysqlclient\zlib\Zlib.cs" />
-		            <File Id="file511" Name="ZOutputStream.cs" src="..\mysqlclient\zlib\ZOutputStream.cs" />
-		            <File Id="file512" Name="ZStream.cs" src="..\mysqlclient\zlib\ZStream.cs" />
-		            <File Id="file513" Name="ZStreamException.cs" src="..\mysqlclient\zlib\ZStreamException.cs" />
+		            <File Id="file500" Name="Adler32.cs" Source="..\mysqlclient\zlib\Adler32.cs" />
+		            <File Id="file501" Name="Deflate.cs" Source="..\mysqlclient\zlib\Deflate.cs" />
+		            <File Id="file502" Name="InfBlocks.cs" Source="..\mysqlclient\zlib\InfBlocks.cs" />
+		            <File Id="file503" Name="InfCodes.cs" Source="..\mysqlclient\zlib\InfCodes.cs" />
+		            <File Id="file504" Name="Inflate.cs" Source="..\mysqlclient\zlib\Inflate.cs" />
+		            <File Id="file505" Name="InfTree.cs" Source="..\mysqlclient\zlib\InfTree.cs" />
+		            <File Id="file506" Name="StaticTree.cs" Source="..\mysqlclient\zlib\StaticTree.cs" />
+		            <File Id="file507" Name="SupportClass.cs" Source="..\mysqlclient\zlib\SupportClass.cs" />
+		            <File Id="file508" Name="Tree.cs" Source="..\mysqlclient\zlib\Tree.cs" />
+		            <File Id="file509" Name="ZInputStream.cs" Source="..\mysqlclient\zlib\ZInputStream.cs" />
+		            <File Id="file510" Name="Zlib.cs" Source="..\mysqlclient\zlib\Zlib.cs" />
+		            <File Id="file511" Name="ZOutputStream.cs" Source="..\mysqlclient\zlib\ZOutputStream.cs" />
+		            <File Id="file512" Name="ZStream.cs" Source="..\mysqlclient\zlib\ZStream.cs" />
+		            <File Id="file513" Name="ZStreamException.cs" Source="..\mysqlclient\zlib\ZStreamException.cs" />
 		          </Component>
 		        </Directory> 			
 			</Directory>
 			<Directory Id="TestSuite" Name="TestSuite">
 				<Component Id="TestSuiteSrc" DiskId="1" Guid="E9B23A6A-9B6C-48c0-8D25-7CB6C5D0C229">
-					<File Id="file400" Name="App.config" src="..\TestSuite\App.config" />
-					<File Id="file401" Name="AssemblyInfo.cs" src="..\TestSuite\AssemblyInfo.cs" />
-					<File Id="file403" Name="BaseTest.cs" src="..\TestSuite\BaseTest.cs" />
-					<File Id="file404" Name="BlobTests.cs" src="..\TestSuite\BlobTests.cs" />
-					<File Id="file405" Name="CharacterSetTests.cs" src="..\TestSuite\CharacterSetTests.cs" />
-					<File Id="file406" Name="CommandBuilderTests.cs" src="..\TestSuite\CommandBuilderTests.cs" />
-					<File Id="file407" Name="CommandTests.cs" src="..\TestSuite\CommandTests.cs" />
-					<File Id="file408" Name="ConnectionTests.cs" src="..\TestSuite\ConnectionTests.cs" />
-					<File Id="file409" Name="CultureTests.cs" src="..\TestSuite\CultureTests.cs" />
-					<File Id="file411" Name="DataAdapterTests.cs" src="..\TestSuite\DataAdapterTests.cs" />
-					<File Id="file412" Name="DataReaderTests.cs" src="..\TestSuite\DataReaderTests.cs" />
-					<File Id="file414" Name="DataTypeTests.cs" src="..\TestSuite\DataTypeTests.cs" />
-					<File Id="file415" Name="DateTimeTests.cs" src="..\TestSuite\DateTimeTests.cs" />
-					<File Id="file416" Name="EventTests.cs" src="..\TestSuite\EventTests.cs" />
-					<File Id="file417" Name="Exceptions.cs" src="..\TestSuite\Exceptions.cs" />
-					<File Id="file422" Name="LanguageTests.cs" src="..\TestSuite\LanguageTests.cs" />
-					<File Id="file427" Name="MySql.Data.Tests.2003.csproj" src="..\TestSuite\MySql.Data.Tests.2003.csproj" />
-					<File Id="file428" Name="MySql.Data.Tests.2005.csproj" src="..\TestSuite\MySql.Data.Tests.2005.csproj" />
-					<File Id="file430" Name="MySqlHelperTests.cs" src="..\TestSuite\MySqlHelperTests.cs" />
-					<File Id="file431" Name="ParameterTests.cs" src="..\TestSuite\ParameterTests.cs" />
-					<File Id="file433" Name="PoolingTests.cs" src="..\TestSuite\PoolingTests.cs" />
-					<File Id="file434" Name="PreparedStatements.cs" src="..\TestSuite\PreparedStatements.cs" />
-					<File Id="file435" Name="StoredProcedure.cs" src="..\TestSuite\StoredProcedure.cs" />
-					<File Id="file436" Name="StressTests.cs" src="..\TestSuite\StressTests.cs" />
-					<File Id="file437" Name="Syntax.cs" src="..\TestSuite\Syntax.cs" />
-					<File Id="file438" Name="Threading.cs" src="..\TestSuite\Threading.cs" />
-					<File Id="file439" Name="SimpleTransactions.cs" src="..\TestSuite\SimpleTransactions.cs" />
-					<File Id="file441" Name="Utils.cs" src="..\TestSuite\Utils.cs" />
+					<File Id="file401" Name="AssemblyInfo.cs" Source="..\TestSuite\AssemblyInfo.cs" />
+					<File Id="file403" Name="BaseTest.cs" Source="..\TestSuite\BaseTest.cs" />
+					<File Id="file404" Name="BlobTests.cs" Source="..\TestSuite\BlobTests.cs" />
+					<File Id="file405" Name="CharacterSetTests.cs" Source="..\TestSuite\CharacterSetTests.cs" />
+					<File Id="file406" Name="CommandBuilderTests.cs" Source="..\TestSuite\CommandBuilderTests.cs" />
+					<File Id="file407" Name="CommandTests.cs" Source="..\TestSuite\CommandTests.cs" />
+					<File Id="file408" Name="ConnectionTests.cs" Source="..\TestSuite\ConnectionTests.cs" />
+					<File Id="file409" Name="CultureTests.cs" Source="..\TestSuite\CultureTests.cs" />
+					<File Id="file411" Name="DataAdapterTests.cs" Source="..\TestSuite\DataAdapterTests.cs" />
+					<File Id="file412" Name="DataReaderTests.cs" Source="..\TestSuite\DataReaderTests.cs" />
+					<File Id="file414" Name="DataTypeTests.cs" Source="..\TestSuite\DataTypeTests.cs" />
+					<File Id="file415" Name="DateTimeTests.cs" Source="..\TestSuite\DateTimeTests.cs" />
+					<File Id="file416" Name="EventTests.cs" Source="..\TestSuite\EventTests.cs" />
+					<File Id="file417" Name="Exceptions.cs" Source="..\TestSuite\Exceptions.cs" />
+					<File Id="file422" Name="LanguageTests.cs" Source="..\TestSuite\LanguageTests.cs" />
+					<File Id="file427" Name="MySql.Data.Tests.2003.csproj" Source="..\TestSuite\MySql.Data.Tests.2003.csproj" />
+					<File Id="file428" Name="MySql.Data.Tests.2005.csproj" Source="..\TestSuite\MySql.Data.Tests.2005.csproj" />
+					<File Id="file430" Name="MySqlHelperTests.cs" Source="..\TestSuite\MySqlHelperTests.cs" />
+					<File Id="file431" Name="ParameterTests.cs" Source="..\TestSuite\ParameterTests.cs" />
+					<File Id="file433" Name="PoolingTests.cs" Source="..\TestSuite\PoolingTests.cs" />
+					<File Id="file434" Name="PreparedStatements.cs" Source="..\TestSuite\PreparedStatements.cs" />
+					<File Id="file435" Name="StoredProcedure.cs" Source="..\TestSuite\StoredProcedure.cs" />
+					<File Id="file436" Name="StressTests.cs" Source="..\TestSuite\StressTests.cs" />
+					<File Id="file437" Name="Syntax.cs" Source="..\TestSuite\Syntax.cs" />
+					<File Id="file438" Name="Threading.cs" Source="..\TestSuite\Threading.cs" />
+					<File Id="file439" Name="SimpleTransactions.cs" Source="..\TestSuite\SimpleTransactions.cs" />
+					<File Id="file441" Name="Utils.cs" Source="..\TestSuite\Utils.cs" />
 				</Component>
 			</Directory>
 		</DirectoryRef> 
