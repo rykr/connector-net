@@ -25,6 +25,7 @@ Version 5.0.4
   Fixed problem that prevented use of SchemaOnly or SingleRow command behaviors with
        sprocs or prepared statements
   Assembly now properly appears in the Visual Studio 2005 Add/Remove Reference dialog
+  Added MySqlParameterCollection.AddWithValue and marked the Add(name, value) method as obsolete
   
 Version 5.0.3 12-31-2006
 

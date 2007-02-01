@@ -138,10 +138,16 @@ namespace MySql.Data.MySqlClient
 		/// <param name="parameterName">The name of the parameter.</param>
 		/// <param name="value">The <see cref="MySqlParameter.Value"/> of the <see cref="MySqlParameter"/> to add to the collection.</param>
 		/// <returns>The newly added <see cref="MySqlParameter"/> object.</returns>
-		public MySqlParameter Add(string parameterName, object value)
+		[Obsolete("Add(String parameterName, Object value) has been deprecated.  Use AddWithValue(String parameterName, Object value)")]
+        public MySqlParameter Add(string parameterName, object value)
 		{
 			return Add(new MySqlParameter(parameterName, value));
 		}
+
+        public MySqlParameter AddWithValue(string parameterName, object value)
+        {
+            return Add(new MySqlParameter(parameterName, value));
+        }
 
 		/// <summary>
 		/// Adds a <see cref="MySqlParameter"/> to the <see cref="MySqlParameterCollection"/> given the parameter name and the data type.
