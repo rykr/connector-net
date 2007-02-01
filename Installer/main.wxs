@@ -53,7 +53,7 @@
       <Component Id="Net11" Guid="6F17833F-3CF6-4d14-8552-BBDF4014311C">
         <File Id="CoreBin11" Name="MySql.Data.dll" Source="..\mysqlclient\bin\net-1.1\$(var.build)\mysql.data.dll" DiskId="1"  />
         <RegistryKey Id="VSRegistry" Root="HKLM" Action="createAndRemoveOnUninstall"
-                     Key="SOFTWARE\Microsoft\.NETFramework\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)">
+                     Key="Software\Microsoft\VisualStudio\7.1\AssemblyFolders\MySQL Connector Net $(var.ProductVersion)">
           <RegistryValue Id="VSRegistryValue" Value="[BinNet11]" Type="string" Action="write"/>
         </RegistryKey>
       </Component>
@@ -90,7 +90,7 @@
     <Feature Id="SupportedAssemblies" Level="1" Title="Supported Frameworks" 
 			ConfigurableDirectory="INSTALLDIR" Absent="disallow"
 			Description="Frameworks that will be supported.">
-      <Feature Id="FeatureNet11" Level='0' Title=".NET 1.1">
+      <Feature Id="FeatureNet11" Level='1' Title=".NET 1.1">
         <ComponentRef Id="Net11"/>
         <ComponentRef Id="GAC11"/>
       </Feature>

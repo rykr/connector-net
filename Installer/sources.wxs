@@ -24,8 +24,7 @@
 					<File Id="file14" Name="PacketReader.cs" Source="..\mysqlclient\PacketReader.cs"/>
 					<File Id="file15" Name="Logger.cs" Source="..\mysqlclient\Logger.cs" />
 					<File Id="file16" Name="PacketWriter.cs" Source="..\mysqlclient\PacketWriter.cs"/>
-					<File Id="file17" Name="MySql.Data.2003.csproj" Source="..\mysqlclient\MySql.Data.2003.csproj" />
-					<File Id="file18" Name="MySql.Data.2005.csproj" Source="..\mysqlclient\MySql.Data.2005.csproj" />
+					<File Id="file17" Name="MySql.Data.csproj" Source="..\mysqlclient\MySql.Data.csproj" />
 					<File Id="file19" Name="Resources.Designer.cs" Source="..\mysqlclient\Resources.Designer.cs"/>
 					<File Id="file20" Name="MysqlDefs.cs" Source="..\mysqlclient\MysqlDefs.cs" />
 					<File Id="file21" Name="MySqlError.cs" Source="..\mysqlclient\MySqlError.cs" />
@@ -125,8 +124,7 @@
 					<File Id="file416" Name="EventTests.cs" Source="..\TestSuite\EventTests.cs" />
 					<File Id="file417" Name="Exceptions.cs" Source="..\TestSuite\Exceptions.cs" />
 					<File Id="file422" Name="LanguageTests.cs" Source="..\TestSuite\LanguageTests.cs" />
-					<File Id="file427" Name="MySql.Data.Tests.2003.csproj" Source="..\TestSuite\MySql.Data.Tests.2003.csproj" />
-					<File Id="file428" Name="MySql.Data.Tests.2005.csproj" Source="..\TestSuite\MySql.Data.Tests.2005.csproj" />
+					<File Id="file427" Name="MySql.Data.Tests.csproj" Source="..\TestSuite\MySql.Data.Tests.csproj" />
 					<File Id="file430" Name="MySqlHelperTests.cs" Source="..\TestSuite\MySqlHelperTests.cs" />
 					<File Id="file431" Name="ParameterTests.cs" Source="..\TestSuite\ParameterTests.cs" />
 					<File Id="file433" Name="PoolingTests.cs" Source="..\TestSuite\PoolingTests.cs" />
