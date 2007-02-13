@@ -1093,5 +1093,27 @@ namespace MySql.Data.MySqlClient.Tests
                 Assert.Fail(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Bug #26139 MySqlCommand.LastInsertedId doesn't work for stored procedures 
+        /// Currently this is borked on the server so we are marking this as notworking
+        /// until the server has this fixed.
+        /// </summary>
+        [Category("NotWorking")]
+        [Test]
+        public void LastInsertId()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(200))");
+            execSQL("INSERT INTO test VALUES (NULL, 'Test1')");
+            execSQL("CREATE PROCEDURE spTest() BEGIN " +
+                "INSERT INTO test VALUES (NULL, 'test'); END");
+
+            MySqlCommand cmd = new MySqlCommand("spTest", conn);
+            cmd.CommandTimeout = 0;
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.ExecuteNonQuery();
+            Assert.AreEqual(2, cmd.LastInsertedId);
+        }
     }
 }
