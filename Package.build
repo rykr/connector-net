@@ -9,7 +9,7 @@
 		<include name="Driver/MySql.Data.2005.csproj"/>
 		<include name="Driver/Properties/**"/>
 		<include name="Driver/Source/**"/>
-		<include name="installer/*"/>
+		<include name="installer/**"/>
 		<include name="testsuite/**"/>
 		<include name="Client.build"/>
 		<include name="CHANGES"/>

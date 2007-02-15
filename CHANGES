@@ -15,7 +15,8 @@ Version 5.0.4
   Bug #25906 Typo makes GetSchema with DataTypes collection throw an exception   
   Bug #25907 DataType Column of DataTypes collection does'nt contain the correct CLR Datatype   
   Bug #25950 DataSourceInformation collection contains incorrect values 
-  
+  Bug #26430 Will not install under Vista   
+
   Other changes
   -------------
   Return parameters created with DeriveParameters now have the name RETURN_VALUE

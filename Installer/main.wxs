@@ -45,7 +45,7 @@
 				<File Id="README1" Name="README" Source="..\README" DiskId="1"/>
         <RegistryKey Id="MySqlKey" Root="HKLM" Action="createAndRemoveOnUninstall"
                      Key="Software\MySQL AB\MySQL Connector/Net $(var.ProductVersion)">
-          <RegistryValue Id="Location" Name="Location" Value="[TARGETDIR]" Type="string"/>
+          <RegistryValue Id="Location" Name="Location" Value="[INSTALLDIR]" Type="string"/>
           <RegistryValue Id="Version" Name="Version" Value="$(var.ProductVersion)" Type="string"/>
         </RegistryKey>
 			</Component>
@@ -56,7 +56,7 @@
 			<Component Id="Net20" Guid="1b476514-8bcb-48a1-8b32-e477f520b450">
         <File Id="CoreBin20" Name="MySql.Data.dll"
               Source="..\Driver\bin\net-2.0\$(var.build)\mysql.data.dll" DiskId="1"/>
-				<File Id="CoreBin20Config" Name="CustomAction.config" Source="CustomAction.config" DiskId="1"/>
+<!--				<File Id="CoreBin20Config" Name="CustomAction.config" Source="CustomAction.config" DiskId="1"/>-->
         <RegistryKey Id="VSRegistry" Root="HKLM" Action="createAndRemoveOnUninstall"
                      Key="SOFTWARE\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\MySQL Connector Net $(var.ProductVersion)">
           <RegistryValue Id="VSRegistryValue" Value="[BinNet20]" Type="string" Action="write"/>
@@ -90,14 +90,6 @@
 		<Feature Id="SupportedAssemblies" Level="1" Title="Supported Frameworks" 
 			ConfigurableDirectory="INSTALLDIR" Absent="disallow"
 			Description="Frameworks that will be supported.">
-				<Feature Id="FeatureNet10" Level='0' Title=".NET 1.0">
-					<!--<ComponentRef Id="Net10"/>-->
-					<!--<ComponentRef Id="GACFiles10"/>-->
-				</Feature>
-				<Feature Id="FeatureNet11" Level='0' Title=".NET 1.1">
-					<!--<ComponentRef Id="Net11"/>-->
-					<!--<ComponentRef Id="GACFiles11"/>-->
-				</Feature>
 				<Feature Id="FeatureNet20" Level='1' Title=".NET 2.0">
 					<ComponentRef Id="Net20"/>
 				</Feature>
@@ -118,20 +110,34 @@
 
     <Icon Id="ChangeLogIcon" SourceFile="Bitmaps\document.ico"/>
 
-		<!-- custom actions for performing machine.config mods -->
-<!--		<Binary Id="InstallUtil" SourceFile="InstallUtilLib.dll" />
-		<CustomAction Id="CustomInstall" BinaryKey="InstallUtil" DllEntry="ManagedInstall" Execute="deferred" />
-		<CustomAction Id="InstallSetProp" Property="CustomInstall" Value="/installtype=notransaction /action=install /LogFile= &quot;[#CoreBin20]&quot; &quot;[#CoreBin20Config]&quot;" />
-		<CustomAction Id="CustomUninstall" BinaryKey="InstallUtil" DllEntry="ManagedInstall" Execute="deferred" />
-		<CustomAction Id="UninstallSetProp" Property="CustomUninstall" Value="/installtype=notransaction /action=uninstall /LogFile= &quot;[#CoreBin20]&quot; &quot;[#CoreBin20Config]&quot;" />
+		<!-- custom actions for machine.config mods -->
+    <Binary Id="InstallUtil" SourceFile="Binary\InstallUtilLib.dll" />
+    <Binary Id="MSVBDPCADLL" SourceFile="Binary\MSVBDPCADLL.ibd" />
+    <Binary Id="VSDNETCFG" SourceFile="Binary\VSDNETCFG.ibd" />
 
-		<InstallExecuteSequence>
-			<Custom Action="InstallSetProp" After="InstallFiles">NOT Installed</Custom>
-			<Custom Action="CustomInstall" After="InstallSetProp">NOT Installed</Custom>
+    <CustomAction Id="SetPrereqs" BinaryKey="MSVBDPCADLL" DllEntry="CheckFX" Impersonate="no" />
+    <CustomAction Id="MyCASetProp" Property="InstallCA"  Impersonate="no"
+                  Value="/installtype=notransaction /action=install /LogFile= &quot;[#CoreBin20]&quot; &quot;[VSDFxConfigFile]&quot;"/>
+    <CustomAction Id="InstallCA" BinaryKey="InstallUtil" DllEntry="ManagedInstall" 
+                  Execute="deferred" Impersonate="no"/>
 
-			<Custom Action="UninstallSetProp" After="ProcessComponents">Installed</Custom>
-			<Custom Action="CustomUninstall" After="UninstallSetProp">Installed</Custom>
-		</InstallExecuteSequence>-->
+    <CustomAction Id="SetPrereqs1" BinaryKey="MSVBDPCADLL" DllEntry="CheckFX" Impersonate="no"/>
+    <CustomAction Id="MyCAUnSetProp" Property="RemoveCA" Impersonate="no"
+                  Value="/installtype=notransaction /action=uninstall /LogFile= &quot;[#CoreBin20]&quot; &quot;[VSDFxConfigFile]&quot;"/>
+    <CustomAction Id="RemoveCA" BinaryKey="InstallUtil" DllEntry="ManagedInstall"
+                  Execute="deferred" Impersonate="no" />
+
+    <InstallExecuteSequence>
+      <!-- Install code -->
+      <Custom Action="SetPrereqs" After="InstallFiles"/>
+      <Custom Action="MyCASetProp" After="SetPrereqs">NOT Installed</Custom>
+      <Custom Action="InstallCA" After="MyCASetProp">NOT Installed</Custom>
+
+      <!-- UnInstall code -->
+      <Custom Action="SetPrereqs1" Before="RemoveFiles">Installed</Custom>
+      <Custom Action="MyCAUnSetProp" After="SetPrereqs1">Installed</Custom>
+      <Custom Action="RemoveCA" After="MyCAUnSetProp">Installed</Custom>
+    </InstallExecuteSequence>
   </Product>
 </Wix>
 
