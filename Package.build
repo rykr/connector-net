@@ -91,9 +91,9 @@
 		
 		<!-- now build the WIX installer -->
     		<exec workingdir="staging/Installer" program="candle" 
-          		commandline="-dIsGPL=${IsGPL} -dbuild=release main.wxs samples.wxs sources.wxs"/>
+          		commandline="-ext WixNetFxExtension -dIsGPL=${IsGPL} -dbuild=release main.wxs samples.wxs sources.wxs"/>
     		<exec workingdir="staging/Installer" program="light"
-			commandline="-sval -ext WixUIExtension -cultures:en-us main.wixobj samples.wixobj sources.wixobj -out MySql.Data.msi"/>
+			commandline="-ext WixNetFxExtension -sval -ext WixUIExtension -cultures:en-us main.wixobj samples.wixobj sources.wixobj -out MySql.Data.msi"/>
 
 		<zip zipfile="packages/mysql-connector-net-${ver}${postfix}.zip">
 			<fileset basedir="staging/Installer"><include name="MySql.Data.msi"/></fileset>

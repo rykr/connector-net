@@ -8,6 +8,10 @@
 
     <Media Id="1" EmbedCab="yes" Cabinet="ConnectorNet.cab" CompressionLevel="high" />
 
+    <!-- First make sure that .NET 1.1 is installed -->
+    <PropertyRef Id="NETFRAMEWORK11"/>
+    <Condition Message="The .NET Framework 1.1 must be installed before installing this package.">Installed OR NETFRAMEWORK11</Condition>
+
     <!-- Our directory structure -->
     <Directory Id='TARGETDIR' Name='SourceDir'>
       <Directory Id='ProgramFilesFolder' Name='PFiles'>
