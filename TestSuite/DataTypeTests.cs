@@ -716,5 +716,25 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
+		/// <summary>
+		/// Bug #25605 BINARY and VARBINARY is returned as a string 
+		/// </summary>
+		[Test]
+		public void BinaryAndVarBinary()
+		{
+			MySqlCommand cmd = new MySqlCommand("SELECT BINARY 'something' AS BinaryData", conn);
+			using (MySqlDataReader reader = cmd.ExecuteReader())
+			{
+				reader.Read();
+				byte[] buffer = new byte[2];
+				long read = reader.GetBytes(0, 0, buffer, 0, 2);
+				Assert.AreEqual('s', buffer[0]);
+				Assert.AreEqual('o', buffer[1]);
+				Assert.AreEqual(2, read);
+
+				string s = reader.GetString(0);
+				Assert.AreEqual("something", s);
+			}
+		}
 	}
 }

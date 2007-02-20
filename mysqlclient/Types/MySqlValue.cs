@@ -162,8 +162,6 @@ namespace MySql.Data.Types
 				case MySqlDbType.Char:
                 case MySqlDbType.VarString:
 				case MySqlDbType.VarChar: 
-					return new MySqlString(null, type);
-
 				case MySqlDbType.Blob:
 				case MySqlDbType.MediumBlob:
 				case MySqlDbType.LongBlob:

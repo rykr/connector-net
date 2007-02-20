@@ -1,6 +1,7 @@
 Version 1.0.10
     Bugs
     ----
+    Bug #25605 BINARY and VARBINARY is returned as a string 
     
     Other
     -----
