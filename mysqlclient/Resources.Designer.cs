@@ -261,10 +261,19 @@
             }
         }
         
+		internal static string NoBodiesAndTypeNotSet
+		{
+			get 
+			{
+				return ResourceManager.GetString("NoBodiesAndTypeNotSet", resourceCulture);
+			}
+		}
+
         /// <summary>
         ///   Looks up a localized string similar to Nested transactions are not supported..
         /// </summary>
-        internal static string NoNestedTransactions {
+        internal static string NoNestedTransactions 
+		{
             get {
                 return ResourceManager.GetString("NoNestedTransactions", resourceCulture);
             }

@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <root>
-  <!-- 
+	<!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,197 +59,200 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <data name="BadVersionFormat" xml:space="preserve">
-    <value>Version string not in acceptable format</value>
-  </data>
-  <data name="NamedPipeNoSeek" xml:space="preserve">
-    <value>NamedPipeStream does not support seeking</value>
-  </data>
-  <data name="StreamAlreadyClosed" xml:space="preserve">
-    <value>The stream has already been closed</value>
-  </data>
-  <data name="BufferCannotBeNull" xml:space="preserve">
-    <value> The buffer cannot be null</value>
-  </data>
-  <data name="BufferNotLargeEnough" xml:space="preserve">
-    <value> Buffer is not large enough</value>
-  </data>
-  <data name="OffsetCannotBeNegative" xml:space="preserve">
-    <value> Offset cannot be negative</value>
-  </data>
-  <data name="CountCannotBeNegative" xml:space="preserve">
-    <value> Count cannot be negative</value>
-  </data>
-  <data name="StreamNoRead" xml:space="preserve">
-    <value> The stream does not support reading</value>
-  </data>
-  <data name="NamedPipeNoSetLength" xml:space="preserve">
-    <value>NamedPipeStream doesn't support SetLength</value>
-  </data>
-  <data name="StreamNoWrite" xml:space="preserve">
-    <value>The stream does not support writing</value>
-  </data>
-  <data name="ErrorCreatingSocket" xml:space="preserve">
-    <value>Error creating socket connection</value>
-  </data>
-  <data name="SocketNoSeek" xml:space="preserve">
-    <value>Socket streams do not support seeking</value>
-  </data>
-  <data name="UnixSocketsNotSupported" xml:space="preserve">
-    <value>Unix sockets are not supported on Windows</value>
-  </data>
-  <data name="OffsetMustBeValid" xml:space="preserve">
-    <value>Offset must be a valid position in buffer</value>
-  </data>
-  <data name="CSNoSetLength" xml:space="preserve">
-    <value>SetLength is not a valid operation on CompressedStream</value>
-  </data>
-  <data name="FromIndexMustBeValid" xml:space="preserve">
-    <value>From index must be a valid index inside the from buffer</value>
-  </data>
-  <data name="FromAndLengthTooBig" xml:space="preserve">
-    <value>From index and length use more bytes than from contains</value>
-  </data>
-  <data name="IndexMustBeValid" xml:space="preserve">
-    <value>Index must be a valid position in the buffer</value>
-  </data>
-  <data name="IndexAndLengthTooBig" xml:space="preserve">
-    <value>Index and length use more bytes than to has room for</value>
-  </data>
-  <data name="PasswordMustHaveLegalChars" xml:space="preserve">
-    <value>Password must be valid and contain length characters</value>
-  </data>
-  <data name="ParameterCannotBeNegative" xml:space="preserve">
-    <value>Parameter cannot have a negative value</value>
-  </data>
-  <data name="ConnectionMustBeOpen" xml:space="preserve">
-    <value>Connection must be valid and open</value>
-  </data>
-  <data name="DataReaderOpen" xml:space="preserve">
-    <value>There is already an open DataReader associated with this Connection which must be closed first.</value>
-  </data>
-  <data name="SPNotSupported" xml:space="preserve">
-    <value>Stored procedures are not supported on this version of MySQL</value>
-  </data>
-  <data name="ConnectionNotSet" xml:space="preserve">
-    <value>The connection property has not been set.</value>
-  </data>
-  <data name="ConnectionNotOpen" xml:space="preserve">
-    <value>The connection is not open.</value>
-  </data>
-  <data name="AdapterIsNull" xml:space="preserve">
-    <value>Improper MySqlCommandBuilder state: adapter is null</value>
-  </data>
-  <data name="AdapterSelectIsNull" xml:space="preserve">
-    <value>Improper MySqlCommandBuilder state: adapter's SelectCommand is null</value>
-  </data>
-  <data name="CBMultiTableNotSupported" xml:space="preserve">
-    <value>MySqlCommandBuilder does not support multi-table statements</value>
-  </data>
-  <data name="CBNoKeyColumn" xml:space="preserve">
-    <value>MySqlCommandBuilder cannot operate on tables with no unique or key columns</value>
-  </data>
-  <data name="ParameterCannotBeNull" xml:space="preserve">
-    <value>Parameter cannot be null</value>
-  </data>
-  <data name="ChaosNotSupported" xml:space="preserve">
-    <value>Chaos isolation level is not supported</value>
-  </data>
-  <data name="ParameterIsInvalid" xml:space="preserve">
-    <value>Parameter is invalid.</value>
-  </data>
-  <data name="ConnectionAlreadyOpen" xml:space="preserve">
-    <value>The connection is already open.</value>
-  </data>
-  <data name="KeywordNotSupported" xml:space="preserve">
-    <value>Keyword not supported.</value>
-  </data>
-  <data name="WriteToStreamFailed" xml:space="preserve">
-    <value>Writing to the stream failed.</value>
-  </data>
-  <data name="ReadFromStreamFailed" xml:space="preserve">
-    <value>Reading from the stream has failed.</value>
-  </data>
-  <data name="QueryTooLarge" xml:space="preserve">
-    <value>Packets larger than max_allowed_packet are not allowed.</value>
-  </data>
-  <data name="UnableToExecuteSP" xml:space="preserve">
-    <value>Unable to execute stored procedure '{0}'.</value>
-  </data>
-  <data name="NoNestedTransactions" xml:space="preserve">
-    <value>Nested transactions are not supported.</value>
-  </data>
-  <data name="CommandTextNotInitialized" xml:space="preserve">
-    <value>The CommandText property has not been properly initialized.</value>
-  </data>
-  <data name="WrongParameterName" xml:space="preserve">
-    <value>Parameter '{0}' is not found but a parameter with the name '{1}' is found. Parameter names must include the leading parameter marker.</value>
-  </data>
-  <data name="ReturnParameterExists" xml:space="preserve">
-    <value>A return value parameter already exists in the parameter collection.</value>
-  </data>
-  <data name="UnableToConnectToHost" xml:space="preserve">
-    <value>Unable to connect to any of the specified MySQL hosts.</value>
-  </data>
-  <data name="UnableToRetrieveSProcData" xml:space="preserve">
-    <value>Unable to retrieve stored procedure metadata.  Either grant SELECTprivilege to mysql.proc for this user or use "noAccessToProcedureBody=true" with  your connection string.</value>
-  </data>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="metadata">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" />
+							</xsd:sequence>
+							<xsd:attribute name="name" use="required" type="xsd:string" />
+							<xsd:attribute name="type" type="xsd:string" />
+							<xsd:attribute name="mimetype" type="xsd:string" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="assembly">
+						<xsd:complexType>
+							<xsd:attribute name="alias" type="xsd:string" />
+							<xsd:attribute name="name" type="xsd:string" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="BadVersionFormat" xml:space="preserve">
+		<value>Version string not in acceptable format</value>
+	</data>
+	<data name="NamedPipeNoSeek" xml:space="preserve">
+		<value>NamedPipeStream does not support seeking</value>
+	</data>
+	<data name="StreamAlreadyClosed" xml:space="preserve">
+		<value>The stream has already been closed</value>
+	</data>
+	<data name="BufferCannotBeNull" xml:space="preserve">
+		<value> The buffer cannot be null</value>
+	</data>
+	<data name="BufferNotLargeEnough" xml:space="preserve">
+		<value> Buffer is not large enough</value>
+	</data>
+	<data name="OffsetCannotBeNegative" xml:space="preserve">
+		<value> Offset cannot be negative</value>
+	</data>
+	<data name="CountCannotBeNegative" xml:space="preserve">
+		<value> Count cannot be negative</value>
+	</data>
+	<data name="StreamNoRead" xml:space="preserve">
+		<value> The stream does not support reading</value>
+	</data>
+	<data name="NamedPipeNoSetLength" xml:space="preserve">
+		<value>NamedPipeStream doesn't support SetLength</value>
+	</data>
+	<data name="StreamNoWrite" xml:space="preserve">
+		<value>The stream does not support writing</value>
+	</data>
+	<data name="ErrorCreatingSocket" xml:space="preserve">
+		<value>Error creating socket connection</value>
+	</data>
+	<data name="SocketNoSeek" xml:space="preserve">
+		<value>Socket streams do not support seeking</value>
+	</data>
+	<data name="UnixSocketsNotSupported" xml:space="preserve">
+		<value>Unix sockets are not supported on Windows</value>
+	</data>
+	<data name="OffsetMustBeValid" xml:space="preserve">
+		<value>Offset must be a valid position in buffer</value>
+	</data>
+	<data name="CSNoSetLength" xml:space="preserve">
+		<value>SetLength is not a valid operation on CompressedStream</value>
+	</data>
+	<data name="FromIndexMustBeValid" xml:space="preserve">
+		<value>From index must be a valid index inside the from buffer</value>
+	</data>
+	<data name="FromAndLengthTooBig" xml:space="preserve">
+		<value>From index and length use more bytes than from contains</value>
+	</data>
+	<data name="IndexMustBeValid" xml:space="preserve">
+		<value>Index must be a valid position in the buffer</value>
+	</data>
+	<data name="IndexAndLengthTooBig" xml:space="preserve">
+		<value>Index and length use more bytes than to has room for</value>
+	</data>
+	<data name="PasswordMustHaveLegalChars" xml:space="preserve">
+		<value>Password must be valid and contain length characters</value>
+	</data>
+	<data name="ParameterCannotBeNegative" xml:space="preserve">
+		<value>Parameter cannot have a negative value</value>
+	</data>
+	<data name="ConnectionMustBeOpen" xml:space="preserve">
+		<value>Connection must be valid and open</value>
+	</data>
+	<data name="DataReaderOpen" xml:space="preserve">
+		<value>There is already an open DataReader associated with this Connection which must be closed first.</value>
+	</data>
+	<data name="SPNotSupported" xml:space="preserve">
+		<value>Stored procedures are not supported on this version of MySQL</value>
+	</data>
+	<data name="ConnectionNotSet" xml:space="preserve">
+		<value>The connection property has not been set.</value>
+	</data>
+	<data name="ConnectionNotOpen" xml:space="preserve">
+		<value>The connection is not open.</value>
+	</data>
+	<data name="AdapterIsNull" xml:space="preserve">
+		<value>Improper MySqlCommandBuilder state: adapter is null</value>
+	</data>
+	<data name="AdapterSelectIsNull" xml:space="preserve">
+		<value>Improper MySqlCommandBuilder state: adapter's SelectCommand is null</value>
+	</data>
+	<data name="CBMultiTableNotSupported" xml:space="preserve">
+		<value>MySqlCommandBuilder does not support multi-table statements</value>
+	</data>
+	<data name="CBNoKeyColumn" xml:space="preserve">
+		<value>MySqlCommandBuilder cannot operate on tables with no unique or key columns</value>
+	</data>
+	<data name="ParameterCannotBeNull" xml:space="preserve">
+		<value>Parameter cannot be null</value>
+	</data>
+	<data name="ChaosNotSupported" xml:space="preserve">
+		<value>Chaos isolation level is not supported</value>
+	</data>
+	<data name="ParameterIsInvalid" xml:space="preserve">
+		<value>Parameter is invalid.</value>
+	</data>
+	<data name="ConnectionAlreadyOpen" xml:space="preserve">
+		<value>The connection is already open.</value>
+	</data>
+	<data name="KeywordNotSupported" xml:space="preserve">
+		<value>Keyword not supported.</value>
+	</data>
+	<data name="WriteToStreamFailed" xml:space="preserve">
+		<value>Writing to the stream failed.</value>
+	</data>
+	<data name="ReadFromStreamFailed" xml:space="preserve">
+		<value>Reading from the stream has failed.</value>
+	</data>
+	<data name="QueryTooLarge" xml:space="preserve">
+		<value>Packets larger than max_allowed_packet are not allowed.</value>
+	</data>
+	<data name="UnableToExecuteSP" xml:space="preserve">
+		<value>Unable to execute stored procedure '{0}'.</value>
+	</data>
+	<data name="NoNestedTransactions" xml:space="preserve">
+		<value>Nested transactions are not supported.</value>
+	</data>
+	<data name="CommandTextNotInitialized" xml:space="preserve">
+		<value>The CommandText property has not been properly initialized.</value>
+	</data>
+	<data name="WrongParameterName" xml:space="preserve">
+		<value>Parameter '{0}' is not found but a parameter with the name '{1}' is found. Parameter names must include the leading parameter marker.</value>
+	</data>
+	<data name="ReturnParameterExists" xml:space="preserve">
+		<value>A return value parameter already exists in the parameter collection.</value>
+	</data>
+	<data name="UnableToConnectToHost" xml:space="preserve">
+		<value>Unable to connect to any of the specified MySQL hosts.</value>
+	</data>
+	<data name="UnableToRetrieveSProcData" xml:space="preserve">
+		<value>Unable to retrieve stored procedure metadata.  Either grant SELECT privilege to mysql.proc for this user or use "Use Procedure Bodies=false" with  your connection string.</value>
+	</data>
+	<data name="NoBodiesAndTypeNotSet" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+		<value>When calling stored procedures and 'Use Procedure Bodies' is false, all parameters must have their type explicitly set.</value>
+	</data>
 </root>

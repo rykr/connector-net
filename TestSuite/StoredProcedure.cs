@@ -1099,7 +1099,7 @@ namespace MySql.Data.MySqlClient.Tests
         /// Currently this is borked on the server so we are marking this as notworking
         /// until the server has this fixed.
         /// </summary>
-        [Category("NotWorking")]
+/*        [Category("NotWorking")]
         [Test]
         public void LastInsertId()
         {
@@ -1114,6 +1114,39 @@ namespace MySql.Data.MySqlClient.Tests
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.ExecuteNonQuery();
             Assert.AreEqual(2, cmd.LastInsertedId);
-        }
+        }*/
+
+		[Test]
+		public void NoAccessToProcedureBodies()
+		{
+			suExecSQL("DROP PROCEDURE IF EXISTS spTest");
+			suExecSQL("CREATE PROCEDURE spTest(in1 INT, INOUT inout1 INT, OUT out1 INT ) " +
+				"BEGIN SET inout1 = inout1+2; SET out1=inout1-3; SELECT in1; END");
+
+			string connStr = GetConnectionString(true) + "; use procedure bodies=false";
+			using (MySqlConnection c = new MySqlConnection(connStr))
+			{
+				try
+				{
+					c.Open();
+
+					MySqlCommand cmd = new MySqlCommand("spTest", c);
+					cmd.CommandType = CommandType.StoredProcedure;
+					cmd.Parameters.Add("?in1", 2);
+					cmd.Parameters.Add("?inout1", 4);
+					cmd.Parameters.Add("?out1", MySqlDbType.Int32);
+					cmd.Parameters[1].Direction = ParameterDirection.InputOutput;
+					cmd.Parameters[2].Direction = ParameterDirection.Output;
+					cmd.ExecuteNonQuery();
+
+					Assert.AreEqual(6, cmd.Parameters[1].Value);
+					Assert.AreEqual(3, cmd.Parameters[2].Value);
+				}
+				catch (Exception ex)
+				{
+					Assert.Fail(ex.Message);
+				}
+			}
+		}
     }
 }

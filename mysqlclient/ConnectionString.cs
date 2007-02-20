@@ -271,6 +271,17 @@ namespace MySql.Data.MySqlClient
 			get { return GetInt("procedure cache size"); }
 		}
 
+		[Category("Advanced")]
+#if NET20
+		[DisplayName("Use Procedure Bodies")]
+#endif
+		[Description("Indicates if stored procedure bodies will be available for parameter detection.")]
+		[DefaultValue(true)]
+		public bool UseProcedureBodies
+		{
+			get { return GetBool("procedure bodies"); }
+		}
+
 		#endregion
 
 		/// <summary>
@@ -361,6 +372,7 @@ namespace MySql.Data.MySqlClient
 				defaults["reset_pooled_conn"] = true;
 				defaults["procedure cache size"] = 25;
 				defaults["ignore prepare"] = true;
+				defaults["procedure bodies"] = true;
 			}
 			return (Hashtable)defaults.Clone();
 		}
@@ -436,6 +448,11 @@ namespace MySql.Data.MySqlClient
 
 				case "ignore prepare":
 					hash["ignore prepare"] = boolVal;
+					break;
+
+				case "procedure bodies":
+				case "use procedure bodies":
+					hash["procedure bodies"] = boolVal;
 					break;
 
 				default:

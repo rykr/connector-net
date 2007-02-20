@@ -1,3 +1,13 @@
+Version 1.0.10
+    Bugs
+    ----
+    
+    Other
+    -----
+    Added "Use Procedure Bodies" connection string option to allow calling procedures without
+       using procedure metadata (if possible).
+    
+
 Version 1.0.9
     
     Bugs fixed or addressed

@@ -259,6 +259,22 @@ namespace MySql.Data.MySqlClient
 			return name;
 		}
 
+		private IEnumerable GetParameters(MySqlConnection connection, MySqlCommand cmd)
+		{
+			// if we can use mysql.proc, then do so
+			if (connection.Settings.UseProcedureBodies)
+				return connection.ProcedureCache.GetProcedure(connection, cmd.CommandText);
+
+			foreach (MySqlParameter p in cmd.Parameters)
+			{
+				// in this mode, all parameters must have their type set
+				if (!p.TypeHasBeenSet)
+					throw new InvalidOperationException(Resources.NoBodiesAndTypeNotSet);
+			}
+			return cmd.Parameters;									
+		}
+
+
 		/// <summary>
 		/// Creates the proper command text for executing the given stored procedure
 		/// </summary>
@@ -270,8 +286,7 @@ namespace MySql.Data.MySqlClient
 
             try
             {
-                ArrayList parameters = connection.ProcedureCache.GetProcedure(
-                connection, cmd.CommandText);
+				IEnumerable parameters = GetParameters(connection, cmd);
 
                 bool isReturn = GetReturnParameter(parameters) != null;
 
