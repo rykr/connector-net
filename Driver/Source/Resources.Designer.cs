@@ -358,6 +358,15 @@ namespace MySql.Data.MySqlClient {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to When calling stored procedures and &apos;Use Procedure Bodies&apos; is false, all parameters must have their type explicitly set..
+        /// </summary>
+        internal static string NoBodiesAndTypeNotSet {
+            get {
+                return ResourceManager.GetString("NoBodiesAndTypeNotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Nested transactions are not supported..
         /// </summary>
         internal static string NoNestedTransactions {
@@ -592,7 +601,7 @@ namespace MySql.Data.MySqlClient {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to retrieve stored procedure metadata.  Either grant SELECTprivilege to mysql.proc for this user or use &quot;noAccessToProcedureBody=true&quot; with  your connection string..
+        ///   Looks up a localized string similar to Unable to retrieve stored procedure metadata.  Either grant  SELECTprivilege to mysql.proc for this user or use &quot;use procedure bodies=false&quot; with  your connection string..
         /// </summary>
         internal static string UnableToRetrieveSProcData {
             get {
