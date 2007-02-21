@@ -74,12 +74,6 @@ namespace MySql.Data.MySqlClient
         }
 
         #region Server Properties
-        private DriverColor driverColor;
-        public DriverColor DriverColor
-        {
-            get { return driverColor; }
-            set { driverColor = value; }
-        }
 
         /// <summary>
         /// Gets or sets the name of the server.
