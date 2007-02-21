@@ -69,7 +69,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
-			cmd.Parameters.Add("?id", 1);
+			cmd.Parameters.AddWithValue("?id", 1);
 			cmd.ExecuteScalar();
 
 			Assert.AreEqual(hardCount + 1, hardQuery.RawValue);
@@ -78,7 +78,7 @@ namespace MySql.Data.MySqlClient.Tests
 
 			MySqlCommand cmd2 = new MySqlCommand("spTest", conn);
 			cmd2.CommandType = CommandType.StoredProcedure;
-			cmd2.Parameters.Add("?id", 1);
+			cmd2.Parameters.AddWithValue("?id", 1);
 			cmd2.ExecuteScalar();
 
 			Assert.AreEqual(hardCount, hardQuery.RawValue);

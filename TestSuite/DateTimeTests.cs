@@ -135,7 +135,7 @@ namespace MySql.Data.MySqlClient.Tests
 			DateTime now = DateTime.Now;
 			DateTime later = now.AddHours(1);
 			later = later.AddMilliseconds(later.Millisecond * -1);
-			cmd.Parameters.Add("?someday", now );
+			cmd.Parameters.AddWithValue("?someday", now );
 			MySqlDataReader reader = null;
 			try 
 			{
@@ -418,7 +418,7 @@ namespace MySql.Data.MySqlClient.Tests
         {
             execSQL("INSERT INTO test VALUES(1, Now(), '0000-00-00', NULL, NULL)");
             MySqlCommand cmd = new MySqlCommand("SELECT d FROM test WHERE id=?id", conn);
-            cmd.Parameters.Add("?id", 1);
+            cmd.Parameters.AddWithValue("?id", 1);
             cmd.Prepare();
             MySqlDataReader reader = null;
             try

@@ -158,7 +158,7 @@ namespace MySql.Data.MySqlClient.Tests
 
             MySqlCommand clone = new MySqlCommand(cmd.CommandText, (MySqlConnection)cmd.Connection,
                 (MySqlTransaction)cmd.Transaction);
-            clone.Parameters.Add("?test", 1);
+            clone.Parameters.AddWithValue("?test", 1);
             txn.Rollback();
         }
 

@@ -553,7 +553,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE TABLE test (val decimal(10,1))");
 
             MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES(?dec)", conn);
-            cmd.Parameters.Add("?dec", (decimal)2.4);
+            cmd.Parameters.AddWithValue("?dec", (decimal)2.4);
             Assert.AreEqual(1, cmd.ExecuteNonQuery());
 
             cmd.Prepare();
@@ -592,7 +592,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE TABLE test (val decimal(10,1))");
 
             MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES(?dec)", conn);
-            cmd.Parameters.Add("?dec", (decimal)2.4);
+            cmd.Parameters.AddWithValue("?dec", (decimal)2.4);
             Assert.AreEqual(1, cmd.ExecuteNonQuery());
 
             cmd.Prepare();

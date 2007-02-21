@@ -220,8 +220,8 @@ namespace MySql.Data.MySqlClient.Tests
 			conn2.Open();
 
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, name) VALUES (@id, @name)", conn2);
-			cmd.Parameters.Add( "@id", 33 );
-			cmd.Parameters.Add( "@name", "Test" );
+			cmd.Parameters.AddWithValue( "@id", 33 );
+			cmd.Parameters.AddWithValue( "@name", "Test" );
 			cmd.ExecuteNonQuery();
 
 			MySqlDataReader reader = null;
@@ -371,7 +371,7 @@ namespace MySql.Data.MySqlClient.Tests
         public void UnTypedParameterBeingReused()
         {
             MySqlCommand cmd = new MySqlCommand("INSERT INTO test (id, dt) VALUES (?id, ?dt)", conn);
-            cmd.Parameters.Add("?id", 1);
+            cmd.Parameters.AddWithValue("?id", 1);
             MySqlParameter p = cmd.CreateParameter();
             p.ParameterName = "?dt";
             p.Value = DBNull.Value;
@@ -400,15 +400,15 @@ namespace MySql.Data.MySqlClient.Tests
             try
             {
                 MySqlCommand cmd = new MySqlCommand("INSERT INTO test (id, name) VALUES (?id, ?name)", conn);
-                cmd.Parameters.Add("?id", 1);
-                cmd.Parameters.Add("?name", "test");
+                cmd.Parameters.AddWithValue("?id", 1);
+                cmd.Parameters.AddWithValue("?name", "test");
                 cmd.ExecuteNonQuery();
 
                 cmd.CommandText = "INSERT INTO test (id, name, dt) VALUES (?id1, ?name1, ?id)";
                 cmd.Parameters[0].ParameterName = "?id1";
                 cmd.Parameters[0].Value = 2;
                 cmd.Parameters[1].ParameterName = "?name1";
-                cmd.Parameters.Add("?id", DateTime.Now);
+                cmd.Parameters.AddWithValue("?id", DateTime.Now);
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
