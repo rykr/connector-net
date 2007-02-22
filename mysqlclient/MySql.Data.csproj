@@ -273,6 +273,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "common\Semaphore.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "common\SharedMemoryStream.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

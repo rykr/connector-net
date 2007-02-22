@@ -404,6 +404,14 @@
             }
         }
 
+		internal static string TimeoutGettingConnection
+		{
+			get 
+			{
+				return ResourceManager.GetString("TimeoutGettingConnection", resourceCulture);
+			}
+		}
+
         internal static string UnableToConnectToHost
         {
             get

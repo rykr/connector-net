@@ -2,12 +2,12 @@ Version 1.0.10
     Bugs
     ----
     Bug #25605 BINARY and VARBINARY is returned as a string 
+    Bug #24373 High CPU utilization when no idle connection 
     
     Other
     -----
     Added "Use Procedure Bodies" connection string option to allow calling procedures without
        using procedure metadata (if possible).
-    
 
 Version 1.0.9
     

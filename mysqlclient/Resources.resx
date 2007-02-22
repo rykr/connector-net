@@ -255,4 +255,7 @@
 	<data name="NoBodiesAndTypeNotSet" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
 		<value>When calling stored procedures and 'Use Procedure Bodies' is false, all parameters must have their type explicitly set.</value>
 	</data>
+	<data name="TimeoutGettingConnection" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+		<value>error connecting: Timeout expired.  The timeout period elapsed prior to obtaining a connection from the pool.  This may have occurred because all pooled connections were in use and max pool size was reached.</value>
+	</data>
 </root>
