@@ -309,4 +309,7 @@
   <data name="NoBodiesAndTypeNotSet" xml:space="preserve">
     <value>When calling stored procedures and 'Use Procedure Bodies' is false, all parameters must have their type explicitly set.</value>
   </data>
+  <data name="TimeoutGettingConnection" xml:space="preserve">
+    <value>error connecting: Timeout expired.  The timeout period elapsed prior to obtaining a connection from the pool.  This may have occurred because all pooled connections were in use and max pool size was reached.</value>
+  </data>
 </root>

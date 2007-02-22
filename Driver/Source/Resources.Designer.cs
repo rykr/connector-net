@@ -574,6 +574,15 @@ namespace MySql.Data.MySqlClient {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to error connecting: Timeout expired.  The timeout period elapsed prior to obtaining a connection from the pool.  This may have occurred because all pooled connections were in use and max pool size was reached..
+        /// </summary>
+        internal static string TimeoutGettingConnection {
+            get {
+                return ResourceManager.GetString("TimeoutGettingConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to connect to any of the specified MySQL hosts..
         /// </summary>
         internal static string UnableToConnectToHost {
