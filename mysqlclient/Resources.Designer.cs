@@ -297,10 +297,19 @@
             }
         }
         
+		internal static string ParameterAlreadyDefined
+		{
+			get 
+			{
+				return ResourceManager.GetString("ParameterAlreadyDefined", resourceCulture);
+			}
+		}
+
         /// <summary>
         ///   Looks up a localized string similar to Parameter cannot have a negative value.
         /// </summary>
-        internal static string ParameterCannotBeNegative {
+        internal static string ParameterCannotBeNegative 
+		{
             get {
                 return ResourceManager.GetString("ParameterCannotBeNegative", resourceCulture);
             }
@@ -323,11 +332,20 @@
                 return ResourceManager.GetString("ParameterIsInvalid", resourceCulture);
             }
         }
+
+		internal static string ParameterMustBeDefined
+		{
+			get 
+			{
+				return ResourceManager.GetString("ParameterMustBeDefined", resourceCulture);
+			}
+		}
         
         /// <summary>
         ///   Looks up a localized string similar to Password must be valid and contain length characters.
         /// </summary>
-        internal static string PasswordMustHaveLegalChars {
+        internal static string PasswordMustHaveLegalChars 
+		{
             get {
                 return ResourceManager.GetString("PasswordMustHaveLegalChars", resourceCulture);
             }

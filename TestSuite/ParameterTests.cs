@@ -415,5 +415,48 @@ namespace MySql.Data.MySqlClient.Tests
                 Assert.Fail(ex.Message);
             }
         }
+
+		[Test]
+		public void WithAndWithoutMarker()
+		{
+			try
+			{
+				MySqlCommand cmd = new MySqlCommand("INSERT INTO test (id, name) VALUES (?id, ?name)", conn);
+				cmd.Parameters.Add("id", 1);
+				Assert.AreEqual(-1, cmd.Parameters.IndexOf("?id"));
+				cmd.Parameters.Add("name", "test");
+				cmd.ExecuteNonQuery();
+
+				cmd.Parameters.Clear();
+				cmd.Parameters.Add("?id", 2);
+				Assert.AreEqual(-1, cmd.Parameters.IndexOf("id"));
+				cmd.Parameters.Add("?name", "test2");
+				cmd.ExecuteNonQuery();
+
+				cmd.CommandText = "SELECT COUNT(*) FROM test";
+				object count = cmd.ExecuteScalar();
+				Assert.AreEqual(2, count);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
+
+		[Test]
+		public void DoubleAddingParameters()
+		{
+			try
+			{
+				MySqlCommand cmd = new MySqlCommand("INSERT INTO test (id, name) VALUES (?id, ?name)", conn);
+				cmd.Parameters.Add("id", 1);
+				cmd.Parameters.Add("name", "test");
+				cmd.Parameters.Add("?id", 2);
+				Assert.Fail("Should not get here");
+			}
+			catch (Exception)
+			{
+			}
+		}
     }
 }

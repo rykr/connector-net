@@ -9,6 +9,12 @@ Version 1.0.10
     -----
     Added "Use Procedure Bodies" connection string option to allow calling procedures without
        using procedure metadata (if possible).
+    Reverted behavior that required parameter names to start with the parameter marker.  We 
+       apologize for this back and forth but we mistakenly changed the behavior to not
+       match what SqlClient supports.  We now support using either syntax for adding
+       parameters however we also respond exactly like SqlClient in that if you ask for the
+       index of a parameter using a syntax different than you added the parameter, the result
+       will be -1.
 
 Version 1.0.9
     

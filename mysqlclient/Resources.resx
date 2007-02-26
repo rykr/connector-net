@@ -258,4 +258,10 @@
 	<data name="TimeoutGettingConnection" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
 		<value>error connecting: Timeout expired.  The timeout period elapsed prior to obtaining a connection from the pool.  This may have occurred because all pooled connections were in use and max pool size was reached.</value>
 	</data>
+	<data name="ParameterAlreadyDefined" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+		<value>Parameter '{0}' has already been defined.</value>
+	</data>
+	<data name="ParameterMustBeDefined" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+		<value>Parameter '{0}' must be defined.</value>
+	</data>
 </root>

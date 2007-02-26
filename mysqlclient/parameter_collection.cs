@@ -361,8 +361,8 @@ namespace MySql.Data.MySqlClient
 					name = name.Substring(1, name.Length - 1);
 				if (name == inComingName)
 				{
-					_parms[i] = value;
-					return value;
+					throw new MySqlException(
+						String.Format(Resources.ParameterAlreadyDefined, value.ParameterName));
 				}
 			}
 
