@@ -90,6 +90,10 @@ namespace MySql.Data.MySqlClient
 		/// <returns>The newly added <see cref="MySqlParameter"/> object.</returns>
 		public MySqlParameter Add(MySqlParameter value)
 		{
+            Logger.LogInformation(
+                String.Format("Adding parameter with name {0} and value {1}",
+                value.ParameterName, value.Value));
+
 			if (value == null)
 				throw new ArgumentException("The MySqlParameterCollection only accepts non-null MySqlParameter type objects.", "value");
 
@@ -108,8 +112,8 @@ namespace MySql.Data.MySqlClient
 					name = name.Substring(1, name.Length - 1);
 				if (name == inComingName)
 				{
-					items[i] = value;
-					return value;
+                    throw new MySqlException(
+                        String.Format(Resources.ParameterAlreadyDefined, value.ParameterName));
 				}
 			}
 

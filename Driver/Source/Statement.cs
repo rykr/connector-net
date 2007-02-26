@@ -127,6 +127,27 @@ namespace MySql.Data.MySqlClient
         }
 
         /// <summary>
+        /// We use a separate method here because we want to support using parameter
+        /// names with and without a leading marker but we don't want the indexing
+        /// methods of MySqlParameterCollection to support that.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private MySqlParameter GetParameter(MySqlParameterCollection parameters, string name)
+        {
+            string parmName = name;
+            int index = parameters.IndexOf(name);
+            if (index == -1)
+            {
+                name = name.Substring(1);
+                index = Parameters.IndexOf(name);
+                if (index == -1)
+                    return null;
+            }
+            return parameters[index];
+        }
+
+        /// <summary>
         /// Serializes the given parameter to the given memory stream
         /// </summary>
         /// <remarks>
@@ -138,16 +159,17 @@ namespace MySql.Data.MySqlClient
         private bool SerializeParameter(MySqlParameterCollection parameters, 
             MySqlStream stream, string parmName)
         {
-            int index = parameters.IndexOf(parmName);
-            if (index == -1)
+            MySqlParameter parameter = GetParameter(parameters, parmName);
+            if (parameter == null)
             {
                 // if we are using old syntax, we can't throw exceptions for parameters
                 // not defined.
-                if (Connection.Settings.UseOldSyntax) 
+                if (Connection.Settings.UseOldSyntax)
                     return false;
-                throw new MySqlException("Parameter '" + parmName + "' must be defined");
+                throw new MySqlException(
+                    String.Format(Resources.ParameterMustBeDefined));
             }
-            MySqlParameter parameter = parameters[index];
+
             parameter.Serialize(stream, false);
             return true;
         }

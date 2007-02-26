@@ -394,6 +394,15 @@ namespace MySql.Data.MySqlClient {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parameter &apos;{0}&apos; has already been defined..
+        /// </summary>
+        internal static string ParameterAlreadyDefined {
+            get {
+                return ResourceManager.GetString("ParameterAlreadyDefined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Parameter cannot have a negative value.
         /// </summary>
         internal static string ParameterCannotBeNegative {
@@ -417,6 +426,15 @@ namespace MySql.Data.MySqlClient {
         internal static string ParameterIsInvalid {
             get {
                 return ResourceManager.GetString("ParameterIsInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parameter &apos;{0}&apos; must be defined..
+        /// </summary>
+        internal static string ParameterMustBeDefined {
+            get {
+                return ResourceManager.GetString("ParameterMustBeDefined", resourceCulture);
             }
         }
         
