@@ -360,8 +360,12 @@ namespace MySql.Data.MySqlClient
             // first we use our restrictions to get a list of tables that should be
             // consulted.  We save the keyname restriction since GetTables doesn't 
             // understand that.
-            string keyName = restrictions[3];
-            restrictions[3] = null;
+            string keyName = null;
+            if (restrictions != null && restrictions.Length >= 4)
+            {
+                keyName = restrictions[3];
+                restrictions[3] = null;
+            }
             DataTable tables = GetTables(restrictions);
 
             // now for each table retrieved, we call our helper function to
@@ -579,7 +583,7 @@ namespace MySql.Data.MySqlClient
                 connection.Settings.UseOldSyntax ? "@" : "?");
             row["ParameterNameMaxLength"] = 128;
             row["ParameterNamePattern"] = @"^[\p{Lo}\p{Lu}\p{Ll}\p{Lm}_@#][\p{Lo}\p{Lu}\p{Ll}\p{Lm}\p{Nd}\uff3f_@#\$]*(?=\s+|$)";
-            row["QuotedIdentifierPattern"] = @"(([^\[]|\]\])*)";
+            row["QuotedIdentifierPattern"] = @"(([^\`]|\`\`)*)";
             row["QuotedIdentifierCase"] = IdentifierCase.Insensitive;
             row["StatementSeparatorPattern"] = ";";
             row["StringLiteralPattern"] = "'(([^']|'')*)'";

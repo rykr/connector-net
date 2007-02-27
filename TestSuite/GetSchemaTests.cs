@@ -499,6 +499,35 @@ namespace MySql.Data.MySqlClient.Tests
             Assert.AreEqual("id", row["REFERENCED_COLUMN_NAME"]);
         }
 
+        /// <summary>
+        /// Bug #26660 MySqlConnection.GetSchema fails with NullReferenceException for Foreign Keys 
+        /// </summary>
+        [Test]
+        public void ForeignKeys()
+        {
+            execSQL("DROP TABLE IF EXISTS product_order");
+            execSQL("DROP TABLE IF EXISTS product");
+            execSQL("DROP TABLE IF EXISTS customer");
+            execSQL("CREATE TABLE product (category INT NOT NULL, id INT NOT NULL, " +
+                      "price DECIMAL, PRIMARY KEY(category, id)) TYPE=INNODB");
+            execSQL("CREATE TABLE customer (id INT NOT NULL, PRIMARY KEY (id)) TYPE=INNODB");
+            execSQL("CREATE TABLE product_order (no INT NOT NULL AUTO_INCREMENT, " +
+                "product_category INT NOT NULL, product_id INT NOT NULL, customer_id INT NOT NULL, " +
+                "PRIMARY KEY(no), INDEX (product_category, product_id), " +
+                "FOREIGN KEY (product_category, product_id) REFERENCES product(category, id) " +
+                "ON UPDATE CASCADE ON DELETE RESTRICT, INDEX (customer_id), " +
+                "FOREIGN KEY (customer_id) REFERENCES customer(id)) TYPE=INNODB");
+
+            try 
+            {
+                DataTable dt = conn.GetSchema("Foreign Keys");
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+
         [Test]
         public void MultiSingleForeignKey()
         {

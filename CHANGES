@@ -21,6 +21,7 @@ Version 5.0.4
   Bug #24373 High CPU utilization when no idle connection 
   Bug #24957 MySql.Data.Types.MySqlConversionException is not marked as Serializable. 
   Bug #25603 Critial ConnectionPool Error in Connector.Net 5.03 
+  Bug #26660 MySqlConnection.GetSchema fails with NullReferenceException for Foreign Keys 
 
   Other changes
   -------------
