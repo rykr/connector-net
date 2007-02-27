@@ -4,6 +4,7 @@ Version 1.0.10
     Bug #25605 BINARY and VARBINARY is returned as a string 
     Bug #24373 High CPU utilization when no idle connection 
     Bug #24957 MySql.Data.Types.MySqlConversionException is not marked as Serializable. 
+    Bug #25603 Critial ConnectionPool Error in Connector.Net 5.03 
     
     Other
     -----

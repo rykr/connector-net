@@ -106,17 +106,17 @@ namespace MySql.Data.MySqlClient
 		{
 			Driver driver = (Driver)idlePool.Dequeue();
 
+			// first check to see that the server is still alive
+			if (!driver.Ping())
+			{
+				driver.Close();
+				return null;
+			}
+
 			// if the user asks us to ping/reset pooled connections
 			// do so now
 			if (settings.ResetPooledConnections)
-			{
-				if (!driver.Ping())
-				{
-					driver.Close();
-					return null;
-				}
 				driver.Reset();
-			}
 
 			inUsePool.Add(driver);
 
@@ -128,12 +128,17 @@ namespace MySql.Data.MySqlClient
 		/// </summary>
 		private Driver GetPooledConnection()
 		{
-			// if we don't have an idle connection but we have room for a new
-			// one, then create it here.
-			if (!HasIdleConnections)
-				CreateNewPooledConnection();
+			while (true)
+			{
+				// if we don't have an idle connection but we have room for a new
+				// one, then create it here.
+				if (!HasIdleConnections)
+					CreateNewPooledConnection();
 
-			return CheckoutConnection();
+				Driver d = CheckoutConnection();
+				if (d != null)
+					return d;
+			}
 		}
 
 		/// <summary>
