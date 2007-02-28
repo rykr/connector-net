@@ -344,7 +344,7 @@ namespace MySql.Data.MySqlClient
 			else if (val is MySqlString)
 			{
 				MySqlDateTime d = new MySqlDateTime(MySqlDbType.Datetime);
-				d = d.ParseMySql((val as MySqlString).Value, true);
+				d = d.ParseMySql(GetString(index), true);
 				return d.GetDateTime();
 			}
 			throw new NotSupportedException("Unable to convert from type " + val.GetType().ToString() + " to DateTime");
