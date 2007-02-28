@@ -58,7 +58,7 @@ namespace MySql.Data.MySqlClient
         public virtual DataTable GetDatabases(string[] restrictions)
         {
             string sql = "SHOW DATABASES";
-            if (restrictions != null && restrictions.Length == 1)
+            if (restrictions != null && restrictions.Length >= 1)
                 sql = sql + " LIKE '" + restrictions[0] + "'";
             MySqlDataAdapter da = new MySqlDataAdapter(sql, connection);
             DataTable dt = new DataTable();
@@ -105,20 +105,25 @@ namespace MySql.Data.MySqlClient
 
             // we have to new up a new restriction array here since
             // GetDatabases takes the database in the first slot
-            string[] dbRestriction = new string[1] { restrictions[1] };
+            string[] dbRestriction = new string[4];
+            if (restrictions != null && restrictions.Length >= 2)
+                dbRestriction[0] = restrictions[1];
             DataTable databases = GetDatabases(dbRestriction);
+
+            if (restrictions != null)
+                Array.Copy(restrictions, dbRestriction, dbRestriction.Length);
 
             foreach (DataRow db in databases.Rows)
             {
-                restrictions[1] = db["SCHEMA_NAME"].ToString();
-                string table_type = restrictions[1].ToLower() == "information_schema" ?
+                dbRestriction[1] = db["SCHEMA_NAME"].ToString();
+                string table_type = dbRestriction[1].ToLower() == "information_schema" ?
                     "SYSTEM VIEW" : "BASE TABLE";
-                DataTable tables = FindTables(restrictions);
+                DataTable tables = FindTables(dbRestriction);
                 foreach (DataRow table in tables.Rows)
                 {
                     DataRow row = dt.NewRow();
                     row["TABLE_CATALOG"] = null;
-                    row["TABLE_SCHEMA"] = restrictions[1];
+                    row["TABLE_SCHEMA"] = dbRestriction[1];
                     row["TABLE_NAME"] = table[0];
                     row["TABLE_TYPE"] = table_type;
                     row["ENGINE"] = table[1];
@@ -366,14 +371,13 @@ namespace MySql.Data.MySqlClient
                 keyName = restrictions[3];
                 restrictions[3] = null;
             }
+
             DataTable tables = GetTables(restrictions);
 
             // now for each table retrieved, we call our helper function to
             // parse it's foreign keys
             foreach (DataRow table in tables.Rows)
-            {
                 GetForeignKeysOnTable(dt, table, keyName);
-            }
 
             return dt;
         }
