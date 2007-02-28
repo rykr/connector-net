@@ -99,17 +99,17 @@ namespace MySql.Data.Types
 
 			if (val is System.Byte[])
 				buffToWrite = (byte[])val;
-			else if (val is String)
+            else if (val is Char[])
+                buffToWrite = stream.Encoding.GetBytes(val as char[]);
+            else
 			{
-				string s = (val as string);
+                string s = val.ToString();
 				if (length == 0)
 					length = s.Length;
 				else
 					s = s.Substring(0, length);
 				buffToWrite = stream.Encoding.GetBytes(s);
 			}
-			else if (val is Char[])
-				buffToWrite = stream.Encoding.GetBytes(val as char[]);
 
 			// we assume zero length means write all of the value
 			if (length == 0)
