@@ -49,19 +49,19 @@ namespace MySql.Data.Types
 
 			if (ourValue is System.Byte[])
 				buffToWrite = (byte[])ourValue;
-			else if (ourValue is String) 
-			{
-				string s = (ourValue as string).Substring(0, length);
-				buffToWrite = writer.Encoding.GetBytes(s);
-				length = buffToWrite.Length;
-			}
 			else if (ourValue is Char[]) 
 			{
 				buffToWrite = writer.Encoding.GetBytes( (ourValue as char[]) );
 				length = buffToWrite.Length;
 			}
+			else
+			{
+				string s = ourValue.ToString().Substring(0, length);
+				buffToWrite = writer.Encoding.GetBytes(s);
+				length = buffToWrite.Length;
+			}
 
-			if ( buffToWrite == null )
+			if (buffToWrite == null)
 				throw new MySqlException( "Only byte arrays and strings can be serialized by MySqlBinary" );
 
 			if (binary) 
