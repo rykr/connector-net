@@ -371,14 +371,14 @@ namespace MySql.Data.MySqlClient
 			IMySqlValue val = GetFieldValue(column, true);
 			MySqlDateTime dt;
 
-			// we need to do this because functions like date_add return string
-			if (val is MySqlString)
+            if (val is MySqlDateTime)
+                dt = (MySqlDateTime)val;
+            else
 			{
-				string s = ((MySqlString)val).Value;
+                // we need to do this because functions like date_add return string
+                string s = GetString(column);
 				dt = MySqlDateTime.Parse(s, this.connection.driver.Version);
 			}
-			else
-				dt = (MySqlDateTime)val;
 
 			if (connection.Settings.ConvertZeroDateTime && !dt.IsValidDateTime)
 				return DateTime.MinValue;
