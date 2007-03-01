@@ -22,7 +22,6 @@
 
 using System;
 using System.Data.Common;
-using System.Windows.Forms;
 
 namespace MySql.Data.MySqlClient
 {
@@ -48,7 +47,6 @@ namespace MySql.Data.MySqlClient
         /// <returns>A new strongly typed instance of <b>DbCommandBuilder</b>.</returns>
         public override DbCommandBuilder CreateCommandBuilder()
         {
-//            MessageBox.Show("ClientFactory.CreatCommandBuilder");
             return new MySqlCommandBuilder();
         }
 
@@ -76,7 +74,6 @@ namespace MySql.Data.MySqlClient
         /// <returns>A new strongly typed instance of <b>DbDataAdapter</b>. </returns>
         public override DbDataAdapter CreateDataAdapter()
         {
-//            MessageBox.Show("ClientFactory.CreateDataAdapter");
             return new MySqlDataAdapter();
         }
 
