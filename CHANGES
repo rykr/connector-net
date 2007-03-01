@@ -1,4 +1,4 @@
-Version 5.0.4
+Version 5.0.4 2-28-2007
 
   Bugs fixed
   ----------
@@ -16,7 +16,6 @@ Version 5.0.4
   Bug #25907 DataType Column of DataTypes collection does'nt contain the correct CLR Datatype   
   Bug #25950 DataSourceInformation collection contains incorrect values 
   Bug #26430 Will not install under Vista   
-  Bug #25605 BINARY and VARBINARY is returned as a string 
   Bug #26152 Opening a connection is really slow 
   Bug #24373 High CPU utilization when no idle connection 
   Bug #24957 MySql.Data.Types.MySqlConversionException is not marked as Serializable. 

@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2006 MySQL AB
+// Copyright (C) 2004-2007 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -90,10 +90,6 @@ namespace MySql.Data.MySqlClient
 		/// <returns>The newly added <see cref="MySqlParameter"/> object.</returns>
 		public MySqlParameter Add(MySqlParameter value)
 		{
-            Logger.LogInformation(
-                String.Format("Adding parameter with name {0} and value {1}",
-                value.ParameterName, value.Value));
-
 			if (value == null)
 				throw new ArgumentException("The MySqlParameterCollection only accepts non-null MySqlParameter type objects.", "value");
 
@@ -132,7 +128,7 @@ namespace MySql.Data.MySqlClient
 				return value;
 			}
 
-			int index = items.Add(value);
+			returnParameterIndex = items.Add(value);
             return value;
 		}
 

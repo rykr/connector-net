@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2006 MySQL AB
+// Copyright (C) 2004-2007 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -283,17 +283,18 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			// create our procedure
 			execSQL("CREATE PROCEDURE spTest(OUT p INT) " +
-				"BEGIN  SELECT * FROM mysql.db; SET p=2; END");
+				"BEGIN SELECT 1; SET p=2; END");
 
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
 			cmd.Parameters.Add("?p", MySqlDbType.Int32);
 			cmd.Parameters[0].Direction = ParameterDirection.Output;
 			cmd.CommandType = CommandType.StoredProcedure;
-			MySqlDataReader reader = cmd.ExecuteReader();
-			Assert.AreEqual(true, reader.Read());
-			Assert.AreEqual(false, reader.NextResult());
-			Assert.AreEqual(false, reader.Read());
-			reader.Close();
+            using (MySqlDataReader reader = cmd.ExecuteReader())
+            {
+                Assert.AreEqual(true, reader.Read());
+                Assert.AreEqual(false, reader.NextResult());
+                Assert.AreEqual(false, reader.Read());
+            }
 			Assert.AreEqual(2, cmd.Parameters[0].Value);
 		}
 
@@ -436,7 +437,7 @@ namespace MySql.Data.MySqlClient.Tests
 		/// Bug #10644 Cannot call a stored function directly from Connector/Net 
 		/// Bug #25013 Return Value parameter not found 
         /// </summary>
-		[Test]
+        [Test]
 		public void CallingStoredFunctionasProcedure()
 		{
 			execSQL("CREATE FUNCTION fnTest(valin int) RETURNS INT " +
@@ -475,7 +476,7 @@ namespace MySql.Data.MySqlClient.Tests
 				object val = cmd.ExecuteScalar();
 				Assert.AreEqual(4, val);
 
-				cmd2.CommandText = "use mysql";
+                cmd2.CommandText = String.Format("use {0}", databases[1]);
 				cmd2.ExecuteNonQuery();
 
 				cmd.CommandText = String.Format("{0}.spTest", databases[0]);
@@ -702,6 +703,7 @@ namespace MySql.Data.MySqlClient.Tests
 			cmd.Parameters.AddWithValue("?str", "First record");
 			cmd.ExecuteNonQuery();
 
+            cmd.Parameters.Clear();
 			cmd.Parameters.AddWithValue("?id", 2);
 			cmd.Parameters.AddWithValue("?str", "Second record");
 			cmd.ExecuteNonQuery();
@@ -1087,7 +1089,6 @@ namespace MySql.Data.MySqlClient.Tests
 
                 MySqlCommand cmd = new MySqlCommand("spTest", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandTimeout = 0;
 
                 MySqlDataReader reader = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
                 reader.Read();
@@ -1120,7 +1121,6 @@ namespace MySql.Data.MySqlClient.Tests
                 "INSERT INTO test VALUES (NULL, 'test'); END");
 
             MySqlCommand cmd = new MySqlCommand("spTest", conn);
-            cmd.CommandTimeout = 0;
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.ExecuteNonQuery();
             Assert.AreEqual(2, cmd.LastInsertedId);

@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2006 MySQL AB
+// Copyright (C) 2004-2007 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -238,6 +238,7 @@ namespace MySql.Data.MySqlClient
 				case MySqlDbType.String:
                 case MySqlDbType.VarString:
 				case MySqlDbType.VarChar:
+                    return new MySqlString(type, true);
 				case MySqlDbType.Blob:
 				case MySqlDbType.MediumBlob:
 				case MySqlDbType.LongBlob:

@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2006 MySQL AB
+// Copyright (C) 2004-2007 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -607,14 +607,17 @@ namespace MySql.Data.MySqlClient.Tests
             object count = command.ExecuteScalar();
             Assert.AreEqual(1, count);
 
+            command.Parameters.Clear();
             command.Parameters.AddWithValue("?id", (byte)128);
             count = command.ExecuteScalar();
             Assert.AreEqual(1, count);
 
+            command.Parameters.Clear();
             command.Parameters.AddWithValue("?id", (byte)255);
             count = command.ExecuteScalar();
             Assert.AreEqual(1, count);
 
+            command.Parameters.Clear();
             command.Parameters.AddWithValue("?id", "255");
             count = command.ExecuteScalar();
             Assert.AreEqual(1, count);

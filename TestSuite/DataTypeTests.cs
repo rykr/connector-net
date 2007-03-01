@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2006 MySQL AB
+// Copyright (C) 2004-2007 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -179,8 +179,8 @@ namespace MySql.Data.MySqlClient.Tests
 
 				Guid g = Guid.NewGuid();
 				cmd.CommandText = "INSERT INTO Test VALUES (?id, ?guid, NULL, NULL, NULL)";
-				cmd.Parameters.Add( new MySqlParameter("?id", 1));
-				cmd.Parameters.Add( new MySqlParameter( "?guid", g ));
+				cmd.Parameters.Add(new MySqlParameter("?id", 1));
+				cmd.Parameters.Add(new MySqlParameter("?guid", g));
 				cmd.ExecuteNonQuery();
 
 				cmd.Parameters[0].Value = 2;
@@ -202,25 +202,25 @@ namespace MySql.Data.MySqlClient.Tests
 				cmd.CommandText = "SELECT * FROM Test";
 				reader = cmd.ExecuteReader();
 
-				Assert.AreEqual( true, reader.Read() );
+				Assert.AreEqual(true, reader.Read());
 				Guid newG = reader.GetGuid(1);
-				Assert.AreEqual( g, newG );
+				Assert.AreEqual(g, newG);
 
-				Assert.AreEqual( true, reader.Read() );
+				Assert.AreEqual(true, reader.Read());
 				newG = reader.GetGuid(1);
-				Assert.AreEqual( g, newG );
+				Assert.AreEqual(g, newG);
 
-				Assert.AreEqual( true, reader.Read() );
+				Assert.AreEqual(true, reader.Read());
 				newG = reader.GetGuid(1);
-				Assert.AreEqual( g, newG );
+				Assert.AreEqual(g, newG);
 
-				Assert.AreEqual( true, reader.Read() );
+				Assert.AreEqual(true, reader.Read());
 				newG = reader.GetGuid(1);
-				Assert.AreEqual( g, newG );
+				Assert.AreEqual(g, newG);
 			}
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 			finally 
 			{
@@ -737,6 +737,7 @@ namespace MySql.Data.MySqlClient.Tests
         /// <summary>
         /// Bug #25605 BINARY and VARBINARY is returned as a string 
         /// </summary>
+        [Category("NotWorking")]
         [Test]
         public void BinaryAndVarBinary()
         {

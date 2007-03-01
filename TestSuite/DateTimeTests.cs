@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2006 MySQL AB
+// Copyright (C) 2004-2007 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -130,14 +130,14 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void DateAdd() 
 		{
-			MySqlCommand cmd = new MySqlCommand( "select date_add(?someday, interval 1 hour)", 
+			MySqlCommand cmd = new MySqlCommand("select date_add(?someday, interval 1 hour)", 
                 conn);
 			DateTime now = DateTime.Now;
 			DateTime later = now.AddHours(1);
 			later = later.AddMilliseconds(later.Millisecond * -1);
-			cmd.Parameters.AddWithValue("?someday", now );
+			cmd.Parameters.AddWithValue("?someday", now);
 			MySqlDataReader reader = null;
-			try 
+			try  
 			{
 				reader = cmd.ExecuteReader();
 				Assert.IsTrue(reader.Read());
@@ -149,7 +149,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 			catch (Exception ex) 
 			{
-				Assert.Fail( ex.Message );
+				Assert.Fail(ex.Message);
 			}
 			finally 
 			{

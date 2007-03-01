@@ -1,4 +1,4 @@
-// Copyright (C) 2004-2006 MySQL AB
+// Copyright (C) 2004-2007 MySQL AB
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -27,6 +27,7 @@ using MySql.Data.Common;
 using System.Collections;
 using MySql.Data.Types;
 using System.Globalization;
+using System.Windows.Forms;
 
 namespace MySql.Data.MySqlClient
 {
@@ -137,6 +138,7 @@ namespace MySql.Data.MySqlClient
 
         public new MySqlCommand GetUpdateCommand()
         {
+//            MessageBox.Show("CommandBuilder.GetUpdateCommand");
             return (MySqlCommand)base.GetUpdateCommand();
         }
 
@@ -187,12 +189,14 @@ namespace MySql.Data.MySqlClient
 
         protected override string GetParameterName(int parameterOrdinal)
         {
+//            MessageBox.Show("GetParameterName");
             return String.Format("{0}p{1}", ParameterMarker,
                 parameterOrdinal.ToString(CultureInfo.InvariantCulture));
         }
 
         protected override string GetParameterPlaceholder(int parameterOrdinal)
         {
+//            MessageBox.Show("GetParameterPlaceHolder");
             return String.Format("{0}p{1}", ParameterMarker,
                 parameterOrdinal.ToString(CultureInfo.InvariantCulture));
         }
