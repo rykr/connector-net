@@ -273,7 +273,7 @@ namespace MySql.Data.MySqlClient.Tests
             DataTable dt = new DataTable();
             da.Fill(dt);
             dt.Columns[0].AutoIncrement = true;
-            //Assert.IsTrue(dt.Columns[0].AutoIncrement);
+            Assert.IsTrue(dt.Columns[0].AutoIncrement);
             dt.Columns[0].AutoIncrementSeed = -1;
             dt.Columns[0].AutoIncrementStep = -1;
             DataRow row = dt.NewRow();
@@ -294,5 +294,45 @@ namespace MySql.Data.MySqlClient.Tests
             Assert.AreEqual(1, dt.Rows[0]["id"]);
             Assert.AreEqual("Test", dt.Rows[0]["name"]);
         }
+
+        /// <summary>
+        /// Bug #25569 UpdateRowSource.FirstReturnedRecord does not work 
+        /// </summary>
+        [Test]
+        public void AutoIncrementColumnsOnInsert2()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test (id INT UNSIGNED NOT NULL " + 
+                "AUTO_INCREMENT PRIMARY KEY, name VARCHAR(20))");
+            MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+            MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
+            cb.ReturnGeneratedIdentifiers = true;
+
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            dt.Rows.Clear();
+
+            try
+            {
+                DataRow row = dt.NewRow();
+                row["name"] = "Test";
+                dt.Rows.Add(row);
+                da.Update(dt);
+                Assert.AreEqual(1, dt.Rows[0]["id"]);
+
+                row = dt.NewRow();
+                row["name"] = "Test2";
+                dt.Rows.Add(row);
+                da.Update(dt);
+                Assert.AreEqual(2, dt.Rows[1]["id"]);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+
+            Assert.AreEqual(1, dt.Rows[0]["id"]);
+        }
+
 	}
 }

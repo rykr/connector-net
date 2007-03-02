@@ -318,4 +318,7 @@
   <data name="ParameterMustBeDefined" xml:space="preserve">
     <value>Parameter '{0}' must be defined.</value>
   </data>
+  <data name="MixingUpdatedRowSource" xml:space="preserve">
+    <value>When MySqlCommandBuilder.ReturnGeneratedIdentifiers is true, MySqlCommand.UpdatedRowSource must be set to None.</value>
+  </data>
 </root>
