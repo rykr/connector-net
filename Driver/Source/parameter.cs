@@ -358,7 +358,7 @@ namespace MySql.Data.MySqlClient
 
 		internal void Serialize(MySqlStream stream, bool binary)
 		{
-			IMySqlValue v = MySqlField.GetIMySqlValue(mySqlDbType, true);
+			IMySqlValue v = MySqlField.GetIMySqlValue(mySqlDbType);
 
 			if (!binary && (paramValue == null || paramValue == DBNull.Value))
 				stream.WriteStringNoNull("NULL");

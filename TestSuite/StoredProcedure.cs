@@ -1158,5 +1158,40 @@ namespace MySql.Data.MySqlClient.Tests
                 }
             }
         }
+
+        [Test]
+        public void BinaryAndVarBinaryParameters()
+        {
+            execSQL("DROP PROCEDURE IF EXISTS spTest");
+            execSQL("CREATE PROCEDURE spTest(OUT out1 BINARY(20), OUT out2 VARBINARY(20)) " +
+                "BEGIN SET out1 = 'out1'; SET out2='out2'; END");
+
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand("spTest", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("out1", MySqlDbType.Binary);
+                cmd.Parameters[0].Direction = ParameterDirection.Output;
+                cmd.Parameters.Add("out2", MySqlDbType.VarBinary);
+                cmd.Parameters[1].Direction = ParameterDirection.Output;
+                cmd.ExecuteNonQuery();
+
+                byte[] out1 = (byte[])cmd.Parameters[0].Value;
+                Assert.AreEqual('o', out1[0]);
+                Assert.AreEqual('u', out1[1]);
+                Assert.AreEqual('t', out1[2]);
+                Assert.AreEqual('1', out1[3]);
+
+                out1 = (byte[])cmd.Parameters[1].Value;
+                Assert.AreEqual('o', out1[0]);
+                Assert.AreEqual('u', out1[1]);
+                Assert.AreEqual('t', out1[2]);
+                Assert.AreEqual('2', out1[3]);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
 	}
 }

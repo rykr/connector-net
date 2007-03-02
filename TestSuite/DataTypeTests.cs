@@ -737,7 +737,6 @@ namespace MySql.Data.MySqlClient.Tests
         /// <summary>
         /// Bug #25605 BINARY and VARBINARY is returned as a string 
         /// </summary>
-        [Category("NotWorking")]
         [Test]
         public void BinaryAndVarBinary()
         {
