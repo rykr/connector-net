@@ -116,35 +116,7 @@ namespace MySql.Data.MySqlClient
             foreach (DataRow db in databases.Rows)
             {
                 dbRestriction[1] = db["SCHEMA_NAME"].ToString();
-                string table_type = dbRestriction[1].ToLower() == "information_schema" ?
-                    "SYSTEM VIEW" : "BASE TABLE";
-                DataTable tables = FindTables(dbRestriction);
-                foreach (DataRow table in tables.Rows)
-                {
-                    DataRow row = dt.NewRow();
-                    row["TABLE_CATALOG"] = null;
-                    row["TABLE_SCHEMA"] = dbRestriction[1];
-                    row["TABLE_NAME"] = table[0];
-                    row["TABLE_TYPE"] = table_type;
-                    row["ENGINE"] = table[1];
-                    row["VERSION"] = table[2];
-                    row["ROW_FORMAT"] = table[3];
-                    row["TABLE_ROWS"] = table[4];
-                    row["AVG_ROW_LENGTH"] = table[5];
-                    row["DATA_LENGTH"] = table[6];
-                    row["MAX_DATA_LENGTH"] = table[7];
-                    row["INDEX_LENGTH"] = table[8];
-                    row["DATA_FREE"] = table[9];
-                    row["AUTO_INCREMENT"] = table[10];
-                    row["CREATE_TIME"] = table[11];
-                    row["UPDATE_TIME"] = table[12];
-                    row["CHECK_TIME"] = table[13];
-                    row["TABLE_COLLATION"] = table[14];
-                    row["CHECKSUM"] = table[15];
-                    row["CREATE_OPTIONS"] = table[16];
-                    row["TABLE_COMMENT"] = table[17];
-                    dt.Rows.Add(row);
-                }
+                FindTables(dt, dbRestriction);
             }
             return dt;
         }
@@ -722,27 +694,50 @@ namespace MySql.Data.MySqlClient
             }
         }
 
-        private DataTable FindTables(string[] restrictions)
+        private void FindTables(DataTable schemaTable, string[] restrictions)
         {
-            string[] dbres = new string[1];
-            if (restrictions != null && restrictions.Length >= 2)
-                dbres[0] = restrictions[1];
-            DataTable databases = GetDatabases(dbres);
+            StringBuilder sql = new StringBuilder();
+            StringBuilder where = new StringBuilder();
+            sql.AppendFormat("SHOW TABLE STATUS FROM `{0}`",
+                restrictions[1]);
+            if (restrictions != null && restrictions.Length >= 3 &&
+                restrictions[2] != null)
+                where.AppendFormat(" LIKE '{0}'", restrictions[2]);
+            sql.Append(where.ToString());
 
-            DataTable tables = new DataTable();
-            foreach (DataRow db in databases.Rows)
+            string table_type = restrictions[1].ToLower() == "information_schema" ?
+                "SYSTEM VIEW" : "BASE TABLE";
+
+            MySqlCommand cmd = new MySqlCommand(sql.ToString(), connection);
+            using (MySqlDataReader reader = cmd.ExecuteReader())
             {
-                StringBuilder sql = new StringBuilder();
-                StringBuilder where = new StringBuilder();
-                sql.AppendFormat("SHOW TABLE STATUS FROM `{0}`", db["SCHEMA_NAME"]);
-                if (restrictions != null && restrictions.Length >= 3 &&
-                    restrictions[2] != null)
-                    where.AppendFormat(" LIKE '{0}'", restrictions[2]);
-                sql.Append(where.ToString());
-                MySqlDataAdapter da = new MySqlDataAdapter(sql.ToString(), connection);
-                da.Fill(tables);
+                while (reader.Read())
+                {
+                    DataRow row = schemaTable.NewRow();
+                    row["TABLE_CATALOG"] = null;
+                    row["TABLE_SCHEMA"] = restrictions[1];
+                    row["TABLE_NAME"] = reader.GetString(0);
+                    row["TABLE_TYPE"] = table_type;
+                    row["ENGINE"] = reader.GetString(1);
+                    row["VERSION"] = reader.GetString(2);
+                    row["ROW_FORMAT"] = reader.GetString(3);
+                    row["TABLE_ROWS"] = reader.GetInt64(4);
+                    row["AVG_ROW_LENGTH"] = reader.GetInt64(5);
+                    row["DATA_LENGTH"] = reader.GetInt64(6);
+                    row["MAX_DATA_LENGTH"] = reader.GetInt64(7);
+                    row["INDEX_LENGTH"] = reader.GetInt64(8);
+                    row["DATA_FREE"] = reader.GetInt64(9);
+                    row["AUTO_INCREMENT"] = reader.GetInt64(10);
+                    row["CREATE_TIME"] = reader.GetDateTime(11);
+                    row["UPDATE_TIME"] = reader.GetDateTime(12);
+                    row["CHECK_TIME"] = reader.GetDateTime(13);
+                    row["TABLE_COLLATION"] = reader.GetString(14);
+                    row["CHECKSUM"] = reader.GetInt64(15);
+                    row["CREATE_OPTIONS"] = reader.GetString(16);
+                    row["TABLE_COMMENT"] = reader.GetString(17);
+                    schemaTable.Rows.Add(row);
+                }
             }
-            return tables;
         }
 
         protected virtual DataTable GetSchemaInternal(string collection, string[] restrictions)

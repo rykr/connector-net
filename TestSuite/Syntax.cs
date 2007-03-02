@@ -237,7 +237,7 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT CHAR(id) FROM Test GROUP BY val1,val2", conn);
 			DataTable dt = new DataTable();
 			da.Fill(dt);
-			Assert.AreEqual( "A", dt.Rows[0][0] );
+			Assert.AreEqual("A", dt.Rows[0][0]);
 		}
 
 		[Test]

@@ -373,6 +373,7 @@ namespace MySql.Data.MySqlClient
                 timedOut = false;
                 Timer t = null;
                 querySent.Reset();
+#if !DEBUG
                 if (connection.driver.Version.isAtLeast(5, 0, 0) &&
                      commandTimeout > 0)
                 {
@@ -380,6 +381,7 @@ namespace MySql.Data.MySqlClient
                          new TimerCallback(TimeoutExpired);
                     t = new Timer(timerDelegate, this, this.CommandTimeout * 1000, Timeout.Infinite);
                 }
+#endif
 
                 // execute the statement
                 statement.Execute();

@@ -222,9 +222,7 @@ namespace MySql.Data.MySqlClient
 					string newParameterName = parameterName.Substring(1);
 					index = IndexOf(newParameterName);
 					if (index != -1)
-						throw new ArgumentException(
-							String.Format(Resources.WrongParameterName, parameterName,
-							newParameterName));
+                        return (DbParameter)items[index];
 				}
 				throw new ArgumentException("Parameter '" + parameterName + "' not found in the collection.");
 			}

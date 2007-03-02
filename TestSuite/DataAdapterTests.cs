@@ -304,16 +304,16 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
 			cb.ToString();  // keep the compiler happy
 			DataTable dt = new DataTable();
-			da.Fill( dt );
+			da.Fill(dt);
 
-			Assert.AreEqual( String.Empty, dt.Rows[0]["name"] );
+			Assert.AreEqual(String.Empty, dt.Rows[0]["name"]);
 
 			dt.Rows[0]["name"] = "Test";
-			da.Update( dt );
+			da.Update(dt);
 
 			dt.Clear();
 			da.Fill(dt);
-			Assert.AreEqual( "Test", dt.Rows[0]["name"] );
+			Assert.AreEqual("Test", dt.Rows[0]["name"]);
 		}
 
 		[Test]
