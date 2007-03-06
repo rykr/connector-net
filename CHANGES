@@ -1,11 +1,11 @@
-Version 5.0.5
+Version 5.0.5 3/5/2007
 
   Bugs fixed
   ----------
   Bug #25605 BINARY and VARBINARY is returned as a string 
   Bug #25569 UpdateRowSource.FirstReturnedRecord does not work 
 
-Version 5.0.4 2-28-2007
+Version 5.0.4 *unreleased*
 
   Bugs fixed
   ----------

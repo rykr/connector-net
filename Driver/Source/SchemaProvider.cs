@@ -292,26 +292,30 @@ namespace MySql.Data.MySqlClient
             {
                 string sql = String.Format("SHOW INDEX FROM `{0}`.`{1}`", 
                     table["TABLE_SCHEMA"], table["TABLE_NAME"]);
-                MySqlDataAdapter da = new MySqlDataAdapter(sql, connection);
-                DataTable indexes = new DataTable();
-                da.Fill(indexes);
-                foreach (DataRow index in indexes.Rows)
+                MySqlCommand cmd = new MySqlCommand(sql, connection);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
                 {
-                    if (restrictions != null)
+                    while (reader.Read())
                     {
-                        if (restrictions.Length == 4 && restrictions[3] != null &&
-                        !index["KEY_NAME"].Equals(restrictions[3])) continue;
-                        if (restrictions.Length == 5 && restrictions[4] != null &&
-                            !index["COLUMN_NAME"].Equals(restrictions[4])) continue;
+                        string key_name = GetString(reader, reader.GetOrdinal("KEY_NAME"));
+                        string col_name = GetString(reader, reader.GetOrdinal("COLUMN_NAME"));
+
+                        if (restrictions != null)
+                        {
+                            if (restrictions.Length == 4 && restrictions[3] != null &&
+                            key_name != restrictions[3]) continue;
+                            if (restrictions.Length == 5 && restrictions[4] != null &&
+                                col_name != restrictions[4]) continue;
+                        }
+                        DataRow row = dt.NewRow();
+                        row["INDEX_CATALOG"] = null;
+                        row["INDEX_SCHEMA"] = table["TABLE_SCHEMA"];
+                        row["INDEX_NAME"] = key_name;
+                        row["TABLE_NAME"] = GetString(reader, reader.GetOrdinal("TABLE"));
+                        row["COLUMN_NAME"] = col_name;
+                        row["ORDINAL_POSITION"] = reader.GetValue(reader.GetOrdinal("SEQ_IN_INDEX"));
+                        dt.Rows.Add(row);
                     }
-                    DataRow row = dt.NewRow();
-                    row["INDEX_CATALOG"] = null;
-                    row["INDEX_SCHEMA"] = table["TABLE_SCHEMA"];
-                    row["INDEX_NAME"] = index["KEY_NAME"];
-                    row["TABLE_NAME"] = index["TABLE"];
-                    row["COLUMN_NAME"] = index["COLUMN_NAME"];
-                    row["ORDINAL_POSITION"] = index["SEQ_IN_INDEX"];
-                    dt.Rows.Add(row);
                 }
             }
 
@@ -718,26 +722,33 @@ namespace MySql.Data.MySqlClient
                     row["TABLE_SCHEMA"] = restrictions[1];
                     row["TABLE_NAME"] = reader.GetString(0);
                     row["TABLE_TYPE"] = table_type;
-                    row["ENGINE"] = reader.GetString(1);
-                    row["VERSION"] = reader.GetString(2);
-                    row["ROW_FORMAT"] = reader.GetString(3);
-                    row["TABLE_ROWS"] = reader.GetInt64(4);
-                    row["AVG_ROW_LENGTH"] = reader.GetInt64(5);
-                    row["DATA_LENGTH"] = reader.GetInt64(6);
-                    row["MAX_DATA_LENGTH"] = reader.GetInt64(7);
-                    row["INDEX_LENGTH"] = reader.GetInt64(8);
-                    row["DATA_FREE"] = reader.GetInt64(9);
-                    row["AUTO_INCREMENT"] = reader.GetInt64(10);
-                    row["CREATE_TIME"] = reader.GetDateTime(11);
-                    row["UPDATE_TIME"] = reader.GetDateTime(12);
-                    row["CHECK_TIME"] = reader.GetDateTime(13);
-                    row["TABLE_COLLATION"] = reader.GetString(14);
-                    row["CHECKSUM"] = reader.GetInt64(15);
-                    row["CREATE_OPTIONS"] = reader.GetString(16);
-                    row["TABLE_COMMENT"] = reader.GetString(17);
+                    row["ENGINE"] = GetString(reader, 1);
+                    row["VERSION"] = reader.GetValue(2);
+                    row["ROW_FORMAT"] = GetString(reader, 3);
+                    row["TABLE_ROWS"] = reader.GetValue(4);
+                    row["AVG_ROW_LENGTH"] = reader.GetValue(5);
+                    row["DATA_LENGTH"] = reader.GetValue(6);
+                    row["MAX_DATA_LENGTH"] = reader.GetValue(7);
+                    row["INDEX_LENGTH"] = reader.GetValue(8);
+                    row["DATA_FREE"] = reader.GetValue(9);
+                    row["AUTO_INCREMENT"] = reader.GetValue(10);
+                    row["CREATE_TIME"] = reader.GetValue(11);
+                    row["UPDATE_TIME"] = reader.GetValue(12);
+                    row["CHECK_TIME"] = reader.GetValue(13);
+                    row["TABLE_COLLATION"] = GetString(reader, 14);
+                    row["CHECKSUM"] = reader.GetValue(15);
+                    row["CREATE_OPTIONS"] = GetString(reader, 16);
+                    row["TABLE_COMMENT"] = GetString(reader, 17);
                     schemaTable.Rows.Add(row);
                 }
             }
+        }
+
+        private string GetString(MySqlDataReader reader, int index)
+        {
+            if (reader.IsDBNull(index))
+                return null;
+            return reader.GetString(index);
         }
 
         protected virtual DataTable GetSchemaInternal(string collection, string[] restrictions)

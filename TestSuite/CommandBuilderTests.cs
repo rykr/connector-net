@@ -319,12 +319,14 @@ namespace MySql.Data.MySqlClient.Tests
                 dt.Rows.Add(row);
                 da.Update(dt);
                 Assert.AreEqual(1, dt.Rows[0]["id"]);
+                Assert.AreEqual("Test", dt.Rows[0]["name"]);
 
                 row = dt.NewRow();
                 row["name"] = "Test2";
                 dt.Rows.Add(row);
                 da.Update(dt);
                 Assert.AreEqual(2, dt.Rows[1]["id"]);
+                Assert.AreEqual("Test2", dt.Rows[1]["name"]);
             }
             catch (Exception ex)
             {
