@@ -459,5 +459,24 @@ namespace MySql.Data.MySqlClient.Tests
             {
             }
         }
+
+        /// <summary>
+        /// Bug #26904 MySqlParameterCollection fails to add MySqlParameter that previously removed 
+        /// </summary>
+        [Test]
+        public void AddingParameterPreviouslyRemoved()
+        {
+            MySqlCommand cmd = new
+            MySqlCommand("Insert into sometable(s1, s2) values(?p1, ?p2)");
+
+            MySqlParameter param1 = cmd.CreateParameter();
+            param1.ParameterName = "?p1";
+            param1.DbType = DbType.String;
+            param1.Value = "Ali Gel";
+
+            cmd.Parameters.Add(param1);
+            cmd.Parameters.RemoveAt(0);
+            cmd.Parameters.Add(param1);
+        }
     }
 }
