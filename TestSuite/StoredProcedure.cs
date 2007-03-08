@@ -1193,5 +1193,21 @@ namespace MySql.Data.MySqlClient.Tests
                 Assert.Fail(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Bug #6902 Errors in parsing stored procedure parameters 
+        /// </summary>
+        [Test]
+        public void CommentsInDefinition()
+        {
+            execSQL(@"CREATE PROCEDURE spTest(action varchar(20),
+                     result varchar(10) /* Generic, result parameter */)
+                     BEGIN SELECT action, result; END");
+            MySqlCommand cmd = new MySqlCommand("spTest", conn);
+            cmd.Parameters.AddWithValue("?action", "parm1");
+            cmd.Parameters.AddWithValue("?result", "parm2");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.ExecuteNonQuery();
+        }
 	}
 }
