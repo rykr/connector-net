@@ -90,34 +90,7 @@ namespace MySql.Data.MySqlClient
 		/// <returns>The newly added <see cref="MySqlParameter"/> object.</returns>
 		public MySqlParameter Add(MySqlParameter value)
 		{
-			if (value == null)
-				throw new ArgumentException("The MySqlParameterCollection only accepts non-null MySqlParameter type objects.", "value");
-
-			if (value.Direction == ParameterDirection.ReturnValue)
-				return AddReturnParameter(value);
-
-			string inComingName = value.ParameterName.ToLower();
-			if (inComingName[0] == paramMarker)
-				inComingName = inComingName.Substring(1, inComingName.Length - 1);
-
-			for (int i = 0; i < items.Count; i++)
-			{
-				MySqlParameter p = (MySqlParameter)items[i];
-				string name = p.ParameterName.ToLower();
-				if (name[0] == paramMarker)
-					name = name.Substring(1, name.Length - 1);
-				if (name == inComingName)
-				{
-                    throw new MySqlException(
-                        String.Format(Resources.ParameterAlreadyDefined, value.ParameterName));
-				}
-			}
-
-			int index = items.Add(value);
-			hash.Add(value.ParameterName, index);
-			ciHash.Add(value.ParameterName, index);
-            value.Collection = this;
-			return value;
+            return InternalAdd(value, -1);
 		}
 
 		private MySqlParameter AddReturnParameter(MySqlParameter value)
@@ -388,7 +361,9 @@ namespace MySql.Data.MySqlClient
 		/// <param name="value"></param>
 		public override void Insert(int index, object value)
 		{
-			items.Insert(index, value);
+            if (!(value is MySqlParameter))
+                throw new MySqlException("Only MySqlParameter objects may be stored");
+            InternalAdd((MySqlParameter)value, index);
 		}
 
         /// <summary>
@@ -475,6 +450,41 @@ namespace MySql.Data.MySqlClient
             ciHash.Remove(oldName);
             hash.Add(newName, index);
             ciHash.Add(newName, index);
+        }
+
+        private MySqlParameter InternalAdd(MySqlParameter value, int index)
+        {
+            if (value == null)
+                throw new ArgumentException("The MySqlParameterCollection only accepts non-null MySqlParameter type objects.", "value");
+
+            if (value.Direction == ParameterDirection.ReturnValue)
+                return AddReturnParameter(value);
+
+            string inComingName = value.ParameterName.ToLower();
+            if (inComingName[0] == paramMarker)
+                inComingName = inComingName.Substring(1, inComingName.Length - 1);
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                MySqlParameter p = (MySqlParameter)items[i];
+                string name = p.ParameterName.ToLower();
+                if (name[0] == paramMarker)
+                    name = name.Substring(1, name.Length - 1);
+                if (name == inComingName)
+                {
+                    throw new MySqlException(
+                        String.Format(Resources.ParameterAlreadyDefined, value.ParameterName));
+                }
+            }
+
+            if (index == -1)
+                index = items.Add(value);
+            else
+                items.Insert(index, value);
+            hash.Add(value.ParameterName, index);
+            ciHash.Add(value.ParameterName, index);
+            value.Collection = this;
+            return value;
         }
 	}
 }

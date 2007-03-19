@@ -478,5 +478,17 @@ namespace MySql.Data.MySqlClient.Tests
             cmd.Parameters.RemoveAt(0);
             cmd.Parameters.Add(param1);
         }
+
+        /// <summary>
+        /// Bug #27135 MySqlParameterCollection and parameters added with Insert Method 
+        /// </summary>
+        [Test]
+        public void AddingParametersUsingInsert()
+        {
+            MySqlCommand cmd = new MySqlCommand();
+            cmd.Parameters.Insert(0, new MySqlParameter("?id", MySqlDbType.Int32));
+            MySqlParameter p = cmd.Parameters["?id"];
+            Assert.AreEqual("?id", p.ParameterName);
+        }
     }
 }
