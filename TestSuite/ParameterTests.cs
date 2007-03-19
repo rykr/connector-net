@@ -490,5 +490,23 @@ namespace MySql.Data.MySqlClient.Tests
             MySqlParameter p = cmd.Parameters["?id"];
             Assert.AreEqual("?id", p.ParameterName);
         }
+
+        /// <summary>
+        /// Bug #27187 cmd.Parameters.RemoveAt("Id") will cause an error if the last item is requested 
+        /// </summary>
+        [Test]
+        public void FindParameterAfterRemoval()
+        {
+            MySqlCommand cmd = new MySqlCommand();
+
+            cmd.Parameters.Add("?id1", MySqlDbType.Int32);
+            cmd.Parameters.Add("?id2", MySqlDbType.Int32);
+            cmd.Parameters.Add("?id3", MySqlDbType.Int32);
+            cmd.Parameters.Add("?id4", MySqlDbType.Int32);
+            cmd.Parameters.Add("?id5", MySqlDbType.Int32);
+            cmd.Parameters.Add("?id6", MySqlDbType.Int32);
+            cmd.Parameters.RemoveAt("?id1");
+            MySqlParameter p = cmd.Parameters["?id6"];
+        }
     }
 }

@@ -4,6 +4,7 @@ Version 5.0.6
   ----------
   Bug #27135 MySqlParameterCollection and parameters added with Insert Method 
   Bug #27253 Installer : Company info is different 
+  Bug #27187 cmd.Parameters.RemoveAt("Id") will cause an error if the last item is requested   
   
 Version 5.0.5 3/5/2007
 
