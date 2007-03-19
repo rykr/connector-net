@@ -2,12 +2,17 @@
 <?define ProductVersion="1.0.9"?>
 <?define ProductName="MySQL Connector Net $(var.ProductVersion)"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="D045B660-8A39-4338-8135-508B2978ABAE" Name="$(var.ProductName)" Manufacturer="MySQL" Version="$(var.ProductVersion)" Language="1033">
+  <Product Id="D045B660-8A39-4338-8135-508B2978ABAE" Name="$(var.ProductName)" 
+           Manufacturer="MySQL AB" Version="$(var.ProductVersion)" Language="1033">
 
-    <Package Compressed="yes" InstallerVersion="200" Languages="1033" SummaryCodepage="1252" />
+    <Package Compressed="yes" InstallerVersion="200" Languages="1033" 
+             SummaryCodepage="1252" Manufacturer ="MySQL AB" />
 
     <Media Id="1" EmbedCab="yes" Cabinet="ConnectorNet.cab" CompressionLevel="high" />
 
+    <Property Id="ARPURLINFOABOUT" Value="http://www.mysql.com" />
+    <Property Id="ARPURLUPDATEINFO" Value="http://dev.mysql.com"/>
+    
     <!-- First make sure that .NET 1.1 is installed -->
     <PropertyRef Id="NETFRAMEWORK11"/>
     <Condition Message="The .NET Framework 1.1 must be installed before installing this package.">Installed OR NETFRAMEWORK11</Condition>
