@@ -48,6 +48,7 @@ namespace MySql.Data.MySqlClient
 		private ProcedureCache procedureCache;
 		private PerformanceMonitor perfMonitor;
 		private MySqlPromotableTransaction currentTransaction;
+        private bool isExecutingBuggyQuery;
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/InfoMessage/*'/>
 		public event MySqlInfoMessageEventHandler InfoMessage;
@@ -114,7 +115,13 @@ namespace MySql.Data.MySqlClient
 			get { return perfMonitor; }
 		}
 
-		#endregion
+        internal bool IsExecutingBuggyQuery
+        {
+            get { return isExecutingBuggyQuery; }
+            set { isExecutingBuggyQuery = value; }
+        }
+
+        #endregion
 
 		#region Properties
 

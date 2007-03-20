@@ -433,5 +433,35 @@ namespace MySql.Data.MySqlClient.Tests
                 Assert.IsFalse(s.StartsWith("#"));
             }
         }
-	}
+
+        /// <summary>
+        /// Bug #27221 describe SQL command returns all byte array on MySQL versions older than 4.1.15 
+        /// </summary>
+        [Test]
+        public void Describe()
+        {
+            MySqlDataAdapter da = new MySqlDataAdapter("DESCRIBE test", conn);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+
+            Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
+            Assert.IsTrue(dt.Rows[0][1].GetType() == typeof(string));
+            Assert.IsTrue(dt.Rows[0][2].GetType() == typeof(string));
+            Assert.IsTrue(dt.Rows[0][3].GetType() == typeof(string));
+            Assert.IsTrue(dt.Rows[0][4].GetType() == typeof(string));
+            Assert.IsTrue(dt.Rows[0][5].GetType() == typeof(string));
+        }
+
+        [Test]
+        public void ShowTableStatus()
+        {
+            MySqlDataAdapter da = new MySqlDataAdapter(
+                String.Format("SHOW TABLE STATUS FROM {0} LIKE 'test'",
+                databases[0]), conn);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+
+            Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
+        }
+    }
 }

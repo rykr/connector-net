@@ -69,13 +69,15 @@ namespace MySql.Data.MySqlClient
 		protected byte scale;
 		protected MySqlDbType mySqlDbType;
 		protected DBVersion connVersion;
+        protected MySqlConnection connection;
         protected bool binaryOk;
 
 		#endregion
 
-		public MySqlField(DBVersion connVersion)
+		public MySqlField(MySqlConnection connection)
 		{
-			this.connVersion = connVersion;
+            this.connection = connection;
+            connVersion = connection.driver.Version;
 			maxLength = 1;
             binaryOk = true;
 		}
@@ -170,7 +172,6 @@ namespace MySql.Data.MySqlClient
 						Type == MySqlDbType.Blob || Type == MySqlDbType.LongBlob) &&
 						!IsBinary);
 			}
-
 		}
 
 		#endregion
@@ -203,7 +204,7 @@ namespace MySql.Data.MySqlClient
 
             // now determine if we really should be binary
             if (CharacterSetIndex == 63 && (colFlags & ColumnFlags.BINARY) != 0)
-                CheckForFunction();
+                CheckForExceptions();
 
             if (IsBinary)
             {
@@ -226,10 +227,12 @@ namespace MySql.Data.MySqlClient
             }
 		}
 
-        private void CheckForFunction()
+        private void CheckForExceptions()
         {
             string colName = OriginalColumnName.ToLower(CultureInfo.InvariantCulture);
             if (colName.StartsWith("char("))
+                binaryOk = false;
+            else if (connection.IsExecutingBuggyQuery)
                 binaryOk = false;
         }
 

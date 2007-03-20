@@ -28,6 +28,7 @@ using MySql.Data.Common;
 using System.ComponentModel;
 using System.Threading;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace MySql.Data.MySqlClient
 {
@@ -347,6 +348,21 @@ namespace MySql.Data.MySqlClient
 				throw new InvalidOperationException(Resources.CommandTextNotInitialized);
 
 			string sql = TrimSemicolons(cmdText);
+
+            // now we check to see if we are executing a query that is buggy
+            // in 4.1
+            connection.IsExecutingBuggyQuery = false;
+            if (!connection.driver.Version.isAtLeast(5, 0, 0) &&
+                connection.driver.Version.isAtLeast(4, 1, 0))
+            {
+                string snippet = sql;
+                if (snippet.Length > 17)
+                    snippet = sql.Substring(0, 17);
+                snippet = snippet.ToLower(CultureInfo.InvariantCulture);
+                connection.IsExecutingBuggyQuery = 
+                    snippet.StartsWith("describe") ||
+                    snippet.StartsWith("show table status");
+            }
 
 			if (statement == null || !statement.IsPrepared)
 			{

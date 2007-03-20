@@ -656,7 +656,7 @@ namespace MySql.Data.MySqlClient
 			else
 			{
 				stream.OpenPacket();
-				field = new MySqlField(this.Version);
+				field = new MySqlField(this.connection);
 
 				field.Encoding = encoding;
 				field.TableName = stream.ReadLenString();
@@ -681,7 +681,7 @@ namespace MySql.Data.MySqlClient
 
 		private MySqlField GetFieldMetaData41()
 		{
-			MySqlField field = new MySqlField(this.Version);
+			MySqlField field = new MySqlField(this.connection);
 
 			stream.OpenPacket();
 			field.Encoding = encoding;
@@ -700,9 +700,11 @@ namespace MySql.Data.MySqlClient
 				colFlags = (ColumnFlags)stream.ReadInteger(2);
 			else
 				colFlags = (ColumnFlags)stream.ReadByte();
-			field.SetTypeAndFlags(type, colFlags);
+
+            field.SetTypeAndFlags(type, colFlags);
 
 			field.Scale = (byte)stream.ReadByte();
+
 
             if (stream.HasMoreData)
             {
