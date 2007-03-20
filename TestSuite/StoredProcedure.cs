@@ -25,6 +25,7 @@ using NUnit.Framework;
 using System.Globalization;
 using System.Threading;
 using MySql.Data.Types;
+using System.Data.Common;
 
 namespace MySql.Data.MySqlClient.Tests
 {
@@ -1195,18 +1196,30 @@ namespace MySql.Data.MySqlClient.Tests
         }
 
         /// <summary>
-        /// Bug #6902 Errors in parsing stored procedure parameters 
+        /// Bug #27093 Exception when using large values in IN UInt64 parameters 
         /// </summary>
         [Test]
-        public void CommentsInDefinition()
+        public void UsingUInt64AsParam()
         {
-            execSQL(@"CREATE PROCEDURE spTest(action varchar(20),
-                     result varchar(10) /* Generic, result parameter */)
-                     BEGIN SELECT action, result; END");
-            MySqlCommand cmd = new MySqlCommand("spTest", conn);
-            cmd.Parameters.AddWithValue("?action", "parm1");
-            cmd.Parameters.AddWithValue("?result", "parm2");
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL(@"CREATE TABLE test(f1 bigint(20) unsigned NOT NULL,
+                      PRIMARY KEY(f1)) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+
+            execSQL(@"CREATE PROCEDURE spTest(in _val bigint unsigned)
+                      BEGIN insert into  test set f1=_val; END");
+
+            DbCommand cmd = new MySql.Data.MySqlClient.MySqlCommand();
+            cmd.Connection = conn;
             cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "spTest";
+            DbParameter param = cmd.CreateParameter();
+            param.DbType = DbType.UInt64;
+            param.Direction = ParameterDirection.Input;
+            param.ParameterName = "?_val";
+            ulong bigval = long.MaxValue;
+            bigval += 1000;
+            param.Value = bigval;
+            cmd.Parameters.Add(param);
             cmd.ExecuteNonQuery();
         }
 	}
