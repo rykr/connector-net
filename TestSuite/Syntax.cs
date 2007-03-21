@@ -237,6 +237,7 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT CHAR(id) FROM Test GROUP BY val1,val2", conn);
 			DataTable dt = new DataTable();
 			da.Fill(dt);
+            Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
 			Assert.AreEqual("A", dt.Rows[0][0]);
 		}
 
@@ -462,6 +463,22 @@ namespace MySql.Data.MySqlClient.Tests
             da.Fill(dt);
 
             Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
+        }
+
+        /// <summary>
+        /// Bug #26960 Connector .NET 5.0.5 / Visual Studio Plugin 1.1.2 
+        /// </summary>
+        [Test]
+        public void NullAsAType()
+        {
+            MySqlDataAdapter da = new MySqlDataAdapter(
+                @"SELECT 'localhost' as SERVER_NAME, 
+                null as CATALOG_NAME, database() as SCHEMA_NAME", conn);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
+            Assert.AreEqual(DBNull.Value, dt.Rows[0][1]);
+            Assert.IsTrue(dt.Rows[0][2].GetType() == typeof(string));
         }
     }
 }

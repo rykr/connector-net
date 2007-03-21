@@ -289,6 +289,7 @@ namespace MySql.Data.MySqlClient
                 case MySqlDbType.TinyText:
                 case MySqlDbType.MediumText:
                 case MySqlDbType.LongText:
+                case (MySqlDbType)Field_Type.NULL:
                     return new MySqlString(type, true);
 				case MySqlDbType.Blob:
 				case MySqlDbType.MediumBlob:
