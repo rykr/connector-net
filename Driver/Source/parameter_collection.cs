@@ -179,7 +179,7 @@ namespace MySql.Data.MySqlClient
 				{
 					string newParameterName = parameterName.Substring(1);
 					index = IndexOf(newParameterName);
-					if (index == -1)
+					if (index != -1)
                         return (DbParameter)items[index];
 				}
 				throw new ArgumentException("Parameter '" + parameterName + "' not found in the collection.");
