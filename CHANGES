@@ -3,6 +3,7 @@ Version 5.0.7
   Bugs fixed
   ----------
   Bug #27269 MySqlConnection.Clone does not mimic SqlConnection.Clone behaviour 
+  Bug #27289 Transaction is not rolledback when connection close 
   
   Other changes
   -------------

@@ -143,6 +143,32 @@ namespace MySql.Data.MySqlClient.Tests
 
 #endif
 
+        /// <summary>
+        /// Bug #27289 Transaction is not rolledback when connection close 
+        /// </summary>
+        [Test]
+        public void RollingBackOnClose()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL("CREATE TABLE test (id INT) TYPE=InnoDB");
+
+            string connStr = GetConnectionString(true) + ";pooling=true;";
+            MySqlConnection c = new MySqlConnection(connStr);
+            c.Open();
+            MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (1)", c);
+            MySqlTransaction tx = c.BeginTransaction();
+            cmd.ExecuteNonQuery();
+            c.Close();
+
+            MySqlConnection c2 = new MySqlConnection(connStr);
+            c2.Open();
+            MySqlCommand cmd2 = new MySqlCommand("SELECT COUNT(*) from test", c2);
+            MySqlTransaction tx2 = c2.BeginTransaction();
+            object count = cmd2.ExecuteScalar();
+            c2.Close();
+            Assert.AreEqual(0, count);
+        }
+
         /// <summary
         /// Bug #22042 mysql-connector-net-5.0.0-alpha BeginTransaction 
         /// </summary>

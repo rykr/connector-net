@@ -477,6 +477,12 @@ namespace MySql.Data.MySqlClient
 			if (dataReader != null)
 				dataReader.Close();
 
+            if ((driver.ServerStatus & ServerStatusFlags.InTransaction) != 0)
+            {
+                MySqlTransaction t = new MySqlTransaction(this, IsolationLevel.Unspecified);
+                t.Rollback();
+            }
+
 			if (settings.Pooling)
 				MySqlPoolManager.ReleaseConnection(driver);
 			else
