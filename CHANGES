@@ -1,3 +1,9 @@
+Version 5.0.7
+
+  Other changes
+  -------------
+  Installer now works if XML comments are found in machine.config
+
 Version 5.0.6 3/21/2007
 
   Bugs fixed
