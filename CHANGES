@@ -1,5 +1,9 @@
 Version 5.0.7
 
+  Bugs fixed
+  ----------
+  Bug #27269 MySqlConnection.Clone does not mimic SqlConnection.Clone behaviour 
+  
   Other changes
   -------------
   Installer now works if XML comments are found in machine.config

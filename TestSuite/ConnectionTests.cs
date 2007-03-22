@@ -265,13 +265,23 @@ namespace MySql.Data.MySqlClient.Tests
 
 		/// <summary>
 		/// Bug #10281 Clone issue with MySqlConnection 
+        /// Bug #27269 MySqlConnection.Clone does not mimic SqlConnection.Clone behaviour 
 		/// </summary>
 		[Test]
 		public void TestConnectionClone()
 		{
-			MySqlConnection c = new MySqlConnection();
-			MySqlConnection clone = (MySqlConnection) ((ICloneable)c).Clone();
-			clone.ToString();
+            MySqlConnection c = new MySqlConnection();
+            MySqlConnection clone = (MySqlConnection)((ICloneable)c).Clone();
+            clone.ToString();
+
+            string connStr = GetConnectionString(true);
+            connStr = connStr.Replace("persist security info=true", "persist security info=false");
+            c = new MySqlConnection(connStr);
+            c.Open();
+            c.Close();
+            MySqlConnection c2 = (MySqlConnection)((ICloneable)c).Clone();
+            c2.Open();
+            c2.Close();
 		}
 
 		/// <summary>

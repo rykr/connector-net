@@ -427,8 +427,7 @@ namespace MySql.Data.MySqlClient
 		object ICloneable.Clone()
 		{
 			MySqlConnection clone = new MySqlConnection();
-			clone.ConnectionString = this.ConnectionString;
-			//TODO:  how deep should this go?
+			clone.ConnectionString = settings.GetConnectionString(true);
 			return clone;
 		}
 		#endregion
