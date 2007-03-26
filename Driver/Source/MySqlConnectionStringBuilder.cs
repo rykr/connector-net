@@ -673,7 +673,7 @@ namespace MySql.Data.MySqlClient
 
         private Keyword GetKey(string key)
         {
-            string lowerKey = key.ToLower();
+            string lowerKey = key.ToLower(CultureInfo.InvariantCulture);
             switch (lowerKey)
             {
                 case "uid":
