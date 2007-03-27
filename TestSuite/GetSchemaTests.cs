@@ -70,6 +70,7 @@ namespace MySql.Data.MySqlClient.Tests
 
         /// <summary>
         /// Bug #25907 DataType Column of DataTypes collection does'nt contain the correct CLR Datatype 
+        /// Bug #25947 CreateFormat/CreateParameters Column of DataTypes collection incorrect for CHAR 
         /// </summary>
         [Test]
         public void DataTypes()
@@ -92,8 +93,14 @@ namespace MySql.Data.MySqlClient.Tests
                         Assert.AreEqual(typeof(System.Byte[]), systemType);
                     else if (type == "TIME")
                         Assert.AreEqual(typeof(System.TimeSpan), systemType);
-                    else if (type == "CHAR" || type == "SET" || 
-                             type == "VARCHAR" || type == "ENUM")
+                    else if (type == "CHAR" || type == "VARCHAR")
+                    {
+                        Assert.AreEqual(typeof(System.String), systemType);
+                        Assert.IsFalse(Convert.ToBoolean(row["IsFixedLength"]));
+                        string format = type + "({0})";
+                        Assert.AreEqual(format, row["CreateFormat"].ToString());
+                    }
+                    else if (type == "SET" || type == "ENUM")
                         Assert.AreEqual(typeof(System.String), systemType);
                     else if (type == "DOUBLE")
                         Assert.AreEqual(typeof(System.Double), systemType);
@@ -128,7 +135,10 @@ namespace MySql.Data.MySqlClient.Tests
                             Assert.AreEqual(typeof(System.Int64), systemType);
                     }
                     else if (type == "DECIMAL")
+                    {
                         Assert.AreEqual(typeof(System.Decimal), systemType);
+                        Assert.AreEqual("DECIMAL({0},{1})", row["CreateFormat"].ToString());
+                    }
                     else if (type == "TINYINT")
                         Assert.AreEqual(typeof(System.Byte), systemType);
                 }

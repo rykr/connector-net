@@ -6,7 +6,8 @@ Version 5.0.7
   Bug #27289 Transaction is not rolledback when connection close 
   Bug #26147 "User Id" problem during connection creation 
   Bug #27240 Property value characterset not retrieved/fetched in conn wizard 
-  
+  Bug #25947 CreateFormat/CreateParameters Column of DataTypes collection incorrect for CHAR 
+   
   Other changes
   -------------
   Installer now works if XML comments are found in machine.config
