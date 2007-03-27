@@ -364,6 +364,7 @@ namespace MySql.Data.MySqlClient
         /// Gets or sets the character set that should be used for sending queries to the server.
         /// </summary>
 #if !PocketPC && !MONO
+        [DisplayName("Character Set")]
         [Category("Advanced")]
         [Description("Character set this connection should use")]
 #endif
