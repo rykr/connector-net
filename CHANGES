@@ -11,7 +11,9 @@ Version 5.0.7
   Other changes
   -------------
   Installer now works if XML comments are found in machine.config
-
+  GetSchema will now attempt to unquote identifiers passed in as restrictions
+  The MySqlCommand object now properly clones the CommandType and CommandTimeout properties  
+  
 Version 5.0.6 3/21/2007
 
   Bugs fixed

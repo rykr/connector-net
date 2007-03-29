@@ -637,5 +637,21 @@ namespace MySql.Data.MySqlClient.Tests
                 Assert.Fail(ex.Message);
             }
         }
+
+        [Test]
+        public void UsingQuotedRestrictions()
+        {
+            execSQL("DROP TABLE IF EXISTS test1");
+            execSQL("CREATE TABLE test1 (id int)");
+
+            string[] restrictions = new string[4];
+            restrictions[1] = databases[0];
+            restrictions[2] = "`test1`";
+            DataTable dt = conn.GetSchema("Tables", restrictions);
+            Assert.IsTrue(dt.Rows.Count == 1);
+            Assert.AreEqual("Tables", dt.TableName);
+            Assert.AreEqual("test1", dt.Rows[0][2]);
+            Assert.AreEqual("`test1`", restrictions[2]);
+        }
     }
 }

@@ -691,6 +691,9 @@ namespace MySql.Data.MySqlClient
 		object ICloneable.Clone()
 		{
 			MySqlCommand clone = new MySqlCommand(cmdText, connection, curTransaction);
+            clone.CommandType = CommandType;
+            clone.CommandTimeout = CommandTimeout;
+
 			foreach (MySqlParameter p in parameters)
 			{
 				clone.Parameters.Add((p as ICloneable).Clone());
