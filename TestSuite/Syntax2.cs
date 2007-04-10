@@ -102,6 +102,7 @@ namespace MySql.Data.MySqlClient.Tests
             Assert.AreEqual(-1, cmd.LastInsertedId);
         }
 
+
 /*        [Category("NotWorking")]
         [Test]
         public void TestCase()

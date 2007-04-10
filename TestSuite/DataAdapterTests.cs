@@ -417,7 +417,14 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("CREATE TABLE test (id int, name VARCHAR(20) NOT NULL DEFAULT 'abc', dt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)");
 			
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
-			MySqlCommand insCmd = new MySqlCommand("INSERT INTO test VALUES (?id, ?name, ?dt)", conn);
+
+
+            DataTable dt = new DataTable();
+            da.FillSchema(dt, SchemaType.Source);
+            Assert.AreEqual(2, dt.Columns.Count);
+            Assert.AreEqual("abc", dt.Columns[1].DefaultValue);
+
+/*			MySqlCommand insCmd = new MySqlCommand("INSERT INTO test VALUES (?id, ?name, ?dt)", conn);
 			insCmd.Parameters.Add("?id", MySqlDbType.Int32, 0, "id");
 			insCmd.Parameters.Add("?name", MySqlDbType.VarChar, 20, "name");
 			insCmd.Parameters.Add("?dt", MySqlDbType.Datetime, 0, "dt");
@@ -468,7 +475,7 @@ namespace MySql.Data.MySqlClient.Tests
 			catch (Exception ex) 
 			{
 				Assert.Fail(ex.Message);
-			}
+			}*/
 		}
 
         /// <summary>
