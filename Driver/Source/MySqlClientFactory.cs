@@ -28,7 +28,7 @@ namespace MySql.Data.MySqlClient
     /// <summary>
     /// DBProviderFactory implementation for MysqlClient.
     /// </summary>
-    public sealed class MySqlClientFactory : DbProviderFactory
+    public sealed class MySqlClientFactory : DbProviderFactory, IServiceProvider
     {
         /// <summary>
         /// Gets an instance of the <see cref="MySqlClientFactory"/>. 
@@ -103,6 +103,18 @@ namespace MySql.Data.MySqlClient
         {
             get { return false; }
         }
+
+        #region IServiceProvider Members
+
+        object IServiceProvider.GetService(Type serviceType)
+        {
+            if (serviceType == typeof(DbProviderServices))
+                return new MySqlProviderServices();
+            else
+                return null;
+        }
+
+        #endregion
     }
 }
 

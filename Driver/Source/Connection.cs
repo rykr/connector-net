@@ -130,6 +130,11 @@ namespace MySql.Data.MySqlClient
 
 		#region Properties
 
+        protected override DbProviderFactory DbProviderFactory
+        {
+            get { return MySqlClientFactory.Instance; }
+        }
+
 #if !CF
 		[Browsable(false)]
 #endif

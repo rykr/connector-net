@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="MySqlClient" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
+  <EntityContainer Name="Schema">
+    <EntitySet Name="STables" EntityType="Self.Table" >
+      <DefiningQuery>
+        SELECT CONCAT(TABLE_SCHEMA, TABLE_NAME) AS Id,
+          TABLE_CATALOG AS Catalog, TABLE_SCHEMA AS Schema,
+          TABLE_NAME AS Name
+          FROM INFORMATION_SCHEMA.TABLES
+          WHERE TABLE_TYPE = 'BASE TABLE'
+      </DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="SColumns" EntityType="Self.Column" >
+      <DefiningQuery>
+        SELECT 
+              CONCAT(TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME) AS `Id`,
+              CONCAT(TABLE_SCHEMA, TABLE_NAME) AS `TableId`,
+              COLUMN_NAME AS `Name`,
+              ORDINAL_POSITION AS `Ordinal`,
+	            CASE IS_NULLABLE WHEN 'YES' THEN 1 ELSE 0 END AS `Nullable`,
+	            CASE
+					      WHEN DATA_TYPE IN ('varchar', 'varbinary') AND
+                                CHARACTER_MAXIMUM_LENGTH = -1 THEN
+							      CONCAT(DATA_TYPE, '(max)')
+					      ELSE
+						        DATA_TYPE
+				      END AS `Type`,
+	            CHARACTER_MAXIMUM_LENGTH AS `MaxLength`,
+	            NUMERIC_PRECISION AS `Precision`,
+	            NUMERIC_SCALE AS `Scale`              
+        FROM
+	            INFORMATION_SCHEMA.COLUMNS
+      </DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="SPrimaryKeys" EntityType="Self.PrimaryKey" >
+      <DefiningQuery>
+        SELECT 
+              CONCAT(kc.TABLE_SCHEMA, kc.TABLE_NAME, kc.COLUMN_NAME) AS `Id`,
+              CONCAT(kc.TABLE_SCHEMA, kc.TABLE_NAME, kc.COLUMN_NAME) AS `ColumnId`,
+              kc.CONSTRAINT_NAME AS `Name`,
+              kc.ORDINAL_POSITION AS `Ordinal`
+        FROM
+	            INFORMATION_SCHEMA.TABLE_CONSTRAINTS pk
+	            INNER JOIN
+	            INFORMATION_SCHEMA.KEY_COLUMN_USAGE kc ON
+		            kc.CONSTRAINT_SCHEMA = pk.CONSTRAINT_SCHEMA
+		            AND kc.CONSTRAINT_NAME = pk.CONSTRAINT_NAME
+        WHERE 	
+                pk.CONSTRAINT_TYPE = 'PRIMARY KEY'
+      </DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="SRelationships" EntityType="Self.Relationship" >
+      <DefiningQuery>
+        SELECT 
+              CONCAT(CONSTRAINT_SCHEMA, CONSTRAINT_NAME) AS `Id`,
+		          CONSTRAINT_NAME AS `Name`
+        FROM
+              INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
+      </DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="SRelationshipColumnMaps" EntityType="Self.RelationshipColumnMap" >
+      <DefiningQuery>
+        SELECT   
+            CONCAT(FC.CONSTRAINT_SCHEMA, FC.CONSTRAINT_NAME, 
+              CAST(FC.ORDINAL_POSITION AS CHAR(30))) AS `Id`,
+            CONCAT(PC.TABLE_SCHEMA, PC.TABLE_NAME, PC.COLUMN_NAME) AS `FromColumnId`,
+            CONCAT(FC.TABLE_SCHEMA, FC.TABLE_NAME, FC.COLUMN_NAME) AS `ToColumnId`,
+            CONCAT(FC.CONSTRAINT_SCHEMA, FC.CONSTRAINT_NAME) AS `RelationshipId`,
+            FC.ORDINAL_POSITION AS `MapOrdinal`
+        FROM 
+          INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS AS RC
+            INNER JOIN 
+          INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS PC /* PRIMARY KEY COLS*/
+            ON       RC.UNIQUE_CONSTRAINT_SCHEMA  = PC.CONSTRAINT_SCHEMA
+            AND      RC.UNIQUE_CONSTRAINT_NAME    = PC.CONSTRAINT_NAME
+            INNER JOIN 
+          INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS FC /* FOREIGN KEY COLS*/
+            ON       RC.CONSTRAINT_SCHEMA  = FC.CONSTRAINT_SCHEMA
+            AND      RC.CONSTRAINT_NAME    = FC.CONSTRAINT_NAME
+            AND      PC.ORDINAL_POSITION = FC.ORDINAL_POSITION
+       </DefiningQuery>
+    </EntitySet>
+    <AssociationSet Name="SColumnPrimaryKeys" Association="Self.ColumnPrimaryKey"/>
+    <AssociationSet Name="SRelationshipRelationshipColumnMaps" Association="Self.RelationshipRelationshipColumnMap"/>
+    <AssociationSet Name="SFromColumnRelationshipColumnMaps" Association="Self.FromColumnRelationshipColumnMap"/>
+    <AssociationSet Name="SToColumnRelationshipColumnMaps" Association="Self.ToColumnRelationshipColumnMap"/>
+    <AssociationSet Name="STableColumns" Association="Self.TableColumn"/>
+  </EntityContainer>
+  
+  <EntityType Name="Table" Key="Id">
+    <Property Name="Id" Nullable="false" Type="nvarchar(max)"/>
+    <Property Name="Catalog" Type="nvarchar" MaxLength="256"/>
+    <Property Name="Schema" Nullable="false" Type="nvarchar" MaxLength="256"/>
+    <Property Name="Name" Nullable="false" Type="nvarchar" MaxLength="256"/>
+  </EntityType>
+
+  <EntityType Name="Column" Key="Id">
+    <Property Name="Id" Nullable="false" Type="nvarchar(max)"/>
+    <Property Name="Name" Nullable="false" Type="nvarchar" MaxLength="256"/>
+    <Property Name="Ordinal" Nullable="false" Type="int" />
+    <Property Name="Nullable" Nullable="false" Type="bit" />
+    <Property Name="Type" Nullable="false" Type="nvarchar" MaxLength="256" />
+    <Property Name="MaxLength" Type="int" />
+    <Property Name="Precision" Type="int" />
+    <Property Name="Scale" Type="int" />
+    <Property Name="TableId" Nullable="false" Type="nvarchar(max)"/>
+  </EntityType>
+
+  <EntityType Name="PrimaryKey" Key="Id">
+    <Property Name="Id" Nullable="false" Type="nvarchar(max)"/>
+    <Property Name="ColumnId" Nullable="false" Type="nvarchar(max)"/>
+    <Property Name="Name" Nullable="false" MaxLength="256" Type="nvarchar" />
+    <Property Name="Ordinal" Nullable="false" Type="int" />
+    <NavigationProperty Relationship="Self.ColumnPrimaryKey" Name="Column" FromRole="PrimaryKey" ToRole="Column" />
+  </EntityType>
+  
+  <EntityType Name="Relationship" Key="Id">
+    <Property Name="Id" Nullable="false" Type="nvarchar(max)"/>
+    <Property Name="Name" Nullable="false" MaxLength="256" Type="nvarchar" />
+  </EntityType>
+
+  <EntityType Name="RelationshipColumnMap" Key="Id">
+    <Property Name="Id" Nullable="false" Type="nvarchar(max)"/>
+    <Property Name="MapOrdinal" Nullable="false" Type="int" />
+    <Property Name="RelationshipId" Nullable="false" Type="nvarchar(max)" />
+    <Property Name="FromColumnId" Nullable="false" Type="nvarchar(max)" />
+    <Property Name="ToColumnId" Nullable="false" Type="nvarchar(max)" />
+  </EntityType>
+
+  <Association Name="ColumnPrimaryKey">
+    <End Type="Self.Column" Role="Column" Multiplicity="1" />
+    <End Type="Self.PrimaryKey" Role="PrimaryKey" Multiplicity="0..1" />
+    <ReferentialConstraint FromRole="Column" FromProperty="Id"
+                           ToRole="PrimaryKey" ToProperty="Id"/>
+  </Association>
+
+  
+  <Association Name="RelationshipRelationshipColumnMap">
+    <End PluralRole="Relationships" Type="Self.Relationship" Role="Relationship" Multiplicity="1" />
+    <End PluralRole="RelationshipColumnMaps" Type="Self.RelationshipColumnMap" Role="RelationshipColumnMap" Multiplicity="*" />
+    <ReferentialConstraint FromRole="Relationship" 
+                           ToRole="RelationshipColumnMap" 
+                           FromProperty="Id" 
+                           ToProperty="RelationshipId"/>
+  </Association>
+ 
+  <Association Name="FromColumnRelationshipColumnMap">
+    <End PluralRole="Columns" Type="Self.Column" Role="Column" Multiplicity="1" />
+    <End PluralRole="RelationshipColumnMaps" Type="Self.RelationshipColumnMap" Role="RelationshipColumnMap" Multiplicity="*" />
+    <ReferentialConstraint FromRole="Column" 
+                           ToRole="RelationshipColumnMap" 
+                           FromProperty="Id" 
+                           ToProperty="FromColumnId"/>
+  </Association>
+
+  <Association Name="ToColumnRelationshipColumnMap">
+    <End PluralRole="Columns" Type="Self.Column" Role="Column" Multiplicity="1" />
+    <End PluralRole="RelationshipColumnMaps" Type="Self.RelationshipColumnMap" Role="RelationshipColumnMap" Multiplicity="*" />
+    <ReferentialConstraint FromRole="Column" 
+                           ToRole="RelationshipColumnMap" 
+                           FromProperty="Id" 
+                           ToProperty="ToColumnId"/>
+  </Association>
+
+  <Association Name="TableColumn">
+    <End Type="Self.Table" Role="Table" Multiplicity="1" />
+    <End Type="Self.Column" Role="Column" Multiplicity="*" />
+    <ReferentialConstraint FromRole="Table" ToRole="Column" FromProperty="Id" ToProperty="TableId"/>
+  </Association>
+
+</Schema>
