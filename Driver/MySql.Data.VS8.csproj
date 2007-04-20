@@ -1,7 +1,7 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>9.0.20209</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E9DF5ED1-4CBD-4226-B931-9A51610AC14D}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -26,8 +26,6 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <SignAssembly>true</SignAssembly>
-    <OldToolsVersion>2.0</OldToolsVersion>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\net-2.0\Debug\</OutputPath>
@@ -106,7 +104,6 @@
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>
-    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Design">
       <Name>System.Design</Name>
     </Reference>
@@ -122,8 +119,6 @@
     <None Include="..\CHANGES" />
     <None Include="..\README" />
     <None Include="cnet.snk" />
-    <EmbeddedResource Include="Properties\MySqlProviderServices.StoreSchemaDefinition.ssdl" />
-    <EmbeddedResource Include="Properties\MySqlProviderServices.StoreSchemaMapping.msl" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -227,8 +222,6 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Common.ConceptualSchemaDefinition.xml" />
-    <EmbeddedResource Include="Properties\MySqlProviderServices.ProviderManifest.xml" />
     <Content Include="Source\docs\MySqlCommand.xml" />
     <Content Include="Source\docs\MySqlCommandBuilder.xml" />
     <Content Include="Source\docs\MySqlConnection.xml" />
@@ -244,8 +237,6 @@
   <ItemGroup>
     <Compile Include="Properties\Resources.Designer.cs" />
     <Compile Include="Source\common\SqlTokenizer.cs" />
-    <Compile Include="Source\MySqlProviderServices.cs" />
-    <Compile Include="Source\SQL Generation\MySqlGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
