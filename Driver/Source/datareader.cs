@@ -681,6 +681,9 @@ namespace MySql.Data.MySqlClient
 					return dt.GetDateTime();
 			}
 
+            if (val is MySqlInt64)
+                return Convert.ToInt32(val.Value);
+
 			return val.Value;
 		}
 
