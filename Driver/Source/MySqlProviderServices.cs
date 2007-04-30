@@ -8,13 +8,14 @@ using System.Data.Metadata.Edm;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using OrcasSampleProvider;
 
 namespace MySql.Data.MySqlClient
 {
     internal class MySqlProviderServices : DbProviderServices
     {
         public override DbCommandDefinition CreateCommandDefinition(DbConnection connection, 
-            CommandTree commandTree)
+            DbCommandTree commandTree)
         {
             DbCommand prototype = CreateCommand(connection, commandTree);
             DbCommandDefinition result = this.CreateCommandDefinition(prototype);
@@ -26,7 +27,7 @@ namespace MySql.Data.MySqlClient
             if (connection == null)
                 throw new ArgumentNullException("connection");
             return this.GetXmlResource(
-                "OrcasSampleProvider.Resources.SampleProviderServices.ProviderManifest");
+                "MySql.Data.MySqlClient.Properties.MySqlProviderServices.ProviderManifest.xml");
         }
 
         private XmlReader GetXmlResource(string resourceName)
@@ -38,19 +39,19 @@ namespace MySql.Data.MySqlClient
 
         #region Internal methods
 
-        internal DbCommand CreateCommand(DbConnection connection, CommandTree commandTree)
+        internal DbCommand CreateCommand(DbConnection connection, DbCommandTree commandTree)
         {
             if (connection == null)
                 throw new ArgumentNullException("connection");
             if (commandTree == null)
                 throw new ArgumentNullException("commandTree");
 
-//            MySqlConnection conn = (MySqlConnection)connection;
             MySqlCommand command = new MySqlCommand();
 
             List<DbParameter> parameters;
-            command.CommandText = MySqlGenerator.GenerateSql(commandTree, out parameters);
+            command.CommandText = SqlGenerator.GenerateSql(commandTree, out parameters);
             command.CommandType = CommandType.Text;
+            command.Connection = (MySqlConnection)connection;
 
             // Now make sure we populate the command's parameters from the CQT's parameters:
             foreach (KeyValuePair<string, TypeUsage> queryParameter in commandTree.Parameters)
