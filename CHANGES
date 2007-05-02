@@ -10,6 +10,7 @@ Version 5.0.7
   Bug #27765 Logging does not work
   Bug #27679 MySqlCommandBuilder.DeriveParameters ignores UNSIGNED flag
   Bug #27668 FillSchema and Stored Proc with an out parameter
+  Bug #28167 Poor performance building connection string (thanks Maxim!)
    
   Other changes
   -------------
