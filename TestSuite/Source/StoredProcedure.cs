@@ -343,7 +343,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.IsNull(fillError);
 		}
 
-		private void da_FillError(object sender, FillErrorEventArgs e)
+		private static void da_FillError(object sender, FillErrorEventArgs e)
 		{
 			fillError = e.Errors.Message;
 			e.Continue = true;
@@ -508,7 +508,7 @@ namespace MySql.Data.MySqlClient.Tests
 			cmd.CommandType = CommandType.StoredProcedure;
 			object val = cmd.ExecuteScalar();
 			Assert.AreEqual(1, val, "Checking value");
-			Assert.IsTrue(val is System.Int32, "Checking type");
+			Assert.IsTrue(val is Int32, "Checking type");
 		}
 
 		/// <summary>
@@ -845,7 +845,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("CREATE PROCEDURE spTest(p int) BEGIN SELECT p; END");
 			MySqlParameter param1;
 			MySqlCommand command = new MySqlCommand("spTest", conn);
-			command.CommandType = System.Data.CommandType.StoredProcedure;
+			command.CommandType = CommandType.StoredProcedure;
 
 			param1 = command.Parameters.Add("?p", MySqlDbType.Int32);
 			param1.Value = 3;
@@ -1080,6 +1080,7 @@ namespace MySql.Data.MySqlClient.Tests
 
         /// <summary>
         /// Bug #25609 MySqlDataAdapter.FillSchema 
+        /// Bug #27668  	FillSchema and Stored Proc with an out parameter
         /// </summary>
         [Test]
         public void GetSchema()
@@ -1099,6 +1100,23 @@ namespace MySql.Data.MySqlClient.Tests
                 DataTable schema = new DataTable();
                 da.FillSchema(schema, SchemaType.Source);
                 Assert.AreEqual(2, schema.Columns.Count);
+
+                //Bug #27668  	FillSchema and Stored Proc with an out parameter
+                execSQL("DROP TABLE IF EXISTS test");
+                execSQL(@"CREATE TABLE test(id INT AUTO_INCREMENT, PRIMARY KEY (id)) ");
+                execSQL("DROP PROCEDURE IF EXISTS spTest");
+                execSQL(@"CREATE PROCEDURE spTest (OUT id INT)
+                    BEGIN INSERT INTO test VALUES (NULL); SET id=520; END");
+
+                cmd = new MySqlCommand("spTest", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("?id", MySqlDbType.Int32);
+                cmd.Parameters[0].Direction = ParameterDirection.Output;
+                da = new MySqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                cmd.ExecuteNonQuery();
+                da.Fill(dt);
+                da.FillSchema(dt, SchemaType.Mapped);
             }
             catch (Exception ex)
             {
@@ -1208,7 +1226,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL(@"CREATE PROCEDURE spTest(in _val bigint unsigned)
                       BEGIN insert into  test set f1=_val; END");
 
-            DbCommand cmd = new MySql.Data.MySqlClient.MySqlCommand();
+            DbCommand cmd = new MySqlCommand();
             cmd.Connection = conn;
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.CommandText = "spTest";
