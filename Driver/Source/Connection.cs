@@ -235,14 +235,15 @@ namespace MySql.Data.MySqlClient
             set
             {
                 if (this.State != ConnectionState.Closed)
-                    throw new MySqlException("Not allowed to change the 'ConnectionString' property while the connection (state=" + State + ").");
+                    throw new MySqlException(
+                        "Not allowed to change the 'ConnectionString' property while the connection (state=" + State +
+                        ").");
 
-                MySqlConnectionStringBuilder newSettings = 
-                    (MySqlConnectionStringBuilder)connectionStringCache[value];
-
-                if (null == newSettings) //!globalConnectionStringCache.TryGetValue(value, out newSettings))
+                MySqlConnectionStringBuilder newSettings;
+                lock (connectionStringCache)
                 {
-                    lock (connectionStringCache)
+                    newSettings = (MySqlConnectionStringBuilder)connectionStringCache[value];
+                    if (null == newSettings)
                     {
                         newSettings = new MySqlConnectionStringBuilder(value);
                         connectionStringCache.Add(value, newSettings);
