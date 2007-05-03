@@ -66,7 +66,7 @@ namespace MySql.Data.MySqlClient
         /// <see cref="KeyNotFoundException"/>.
         /// </param>
         public MySqlConnectionStringBuilder(string connectionString)
-            : base()
+            : this()
         {
             originalConnectionString = connectionString;
             persistConnString = new StringBuilder();
