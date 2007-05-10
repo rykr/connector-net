@@ -31,6 +31,8 @@ namespace MySql.Data.MySqlClient
     /// <include file='docs/MySqlConnectionStringBuilder.xml' path='docs/Class/*'/>
     public sealed class MySqlConnectionStringBuilder : DbConnectionStringBuilder
     {
+        private static Dictionary<Keyword, object> defaultValues = new Dictionary<Keyword, object>();
+
         string userId, password, server;
         string database, sharedMemName, pipeName, charSet;
         string optionFile;
@@ -46,6 +48,39 @@ namespace MySql.Data.MySqlClient
         bool useUsageAdvisor, useSSL;
         bool ignorePrepare;
         bool useProcedureBodies;
+
+        static MySqlConnectionStringBuilder()
+        {
+            defaultValues.Add(Keyword.ConnectionTimeout, 15);
+            defaultValues.Add(Keyword.Pooling, true);
+            defaultValues.Add(Keyword.Port, 3306);
+            defaultValues.Add(Keyword.Server, "");
+            defaultValues.Add(Keyword.PersistSecurityInfo, false);
+            defaultValues.Add(Keyword.ConnectionLifetime, 0);
+            defaultValues.Add(Keyword.ConnectionReset, false);
+            defaultValues.Add(Keyword.MinimumPoolSize, 0);
+            defaultValues.Add(Keyword.MaximumPoolSize, 100);
+            defaultValues.Add(Keyword.UserID, "");
+            defaultValues.Add(Keyword.Password, "");
+            defaultValues.Add(Keyword.UseUsageAdvisor, false);
+            defaultValues.Add(Keyword.CharacterSet, "");
+            defaultValues.Add(Keyword.Compress, false);
+            defaultValues.Add(Keyword.PipeName, "MYSQL");
+            defaultValues.Add(Keyword.Logging, false);
+            defaultValues.Add(Keyword.OldSyntax, false);
+            defaultValues.Add(Keyword.SharedMemoryName, "MYSQL");
+            defaultValues.Add(Keyword.AllowBatch, true);
+            defaultValues.Add(Keyword.ConvertZeroDatetime, false);
+            defaultValues.Add(Keyword.Database, "");
+            defaultValues.Add(Keyword.DriverType, MySqlDriverType.Native);
+            defaultValues.Add(Keyword.Protocol, MySqlConnectionProtocol.Sockets);
+            defaultValues.Add(Keyword.AllowZeroDatetime, false);
+            defaultValues.Add(Keyword.UsePerformanceMonitor, false);
+            defaultValues.Add(Keyword.ProcedureCacheSize, 25);
+            defaultValues.Add(Keyword.UseSSL, false);
+            defaultValues.Add(Keyword.IgnorePrepare, true);
+            defaultValues.Add(Keyword.UseProcedureBodies, true);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MySqlConnectionStringBuilder"/> class. 
@@ -84,8 +119,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public string Server
         {
-            get { return this.server; }
-            set { CheckNullAndSet("Server", value); server = value; }
+            get { return server; }
+            set
+            {
+                SetValue("Server", value); 
+                server = value;
+            }
         }
 
         /// <summary>
@@ -98,8 +137,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public string Database
         {
-            get { return this.database; }
-            set { CheckNullAndSet("Database", value); database = value; }
+            get { return database; }
+            set
+            {
+                SetValue("Database", value); 
+                database = value;
+            }
         }
 
         /// <summary>
@@ -114,8 +157,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public MySqlConnectionProtocol ConnectionProtocol
         {
-            get { return this.protocol; }
-            set { base["Protocol"] = value; protocol = value; }
+            get { return protocol; }
+            set
+            {
+                SetValue("Connection Protocol", value); 
+                protocol = value;
+            }
         }
 
         /// <summary>
@@ -126,11 +173,16 @@ namespace MySql.Data.MySqlClient
         [Category("Connection")]
         [DisplayName("Pipe Name")]
         [Description("Name of pipe to use when connecting with named pipes (Win32 only)")]
+        [DefaultValue("MYSQL")]
 #endif
         public string PipeName
         {
-            get { return this.pipeName; }
-            set { CheckNullAndSet("Pipe Name", value); pipeName = value; }
+            get { return pipeName; }
+            set
+            {
+                SetValue("Pipe Name", value); 
+                pipeName = value;
+            }
         }
 
         /// <summary>
@@ -145,8 +197,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public bool UseCompression
         {
-            get { return this.compress; }
-            set { base["compress"] = value; compress = value; }
+            get { return compress; }
+            set
+            {
+                SetValue("Use Compression", value); 
+                compress = value;
+            }
         }
 
         /// <summary>
@@ -161,8 +217,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public bool AllowBatch
         {
-            get { return this.allowBatch; }
-            set { base["allow batch"] = value; allowBatch = value; }
+            get { return allowBatch; }
+            set
+            {
+                SetValue("Allow Batch", value); 
+                allowBatch = value;
+            }
         }
 
         /// <summary>
@@ -175,8 +235,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public bool Logging
         {
-            get { return this.logging; }
-            set { base["logging"] = value; logging = value; }
+            get { return logging; }
+            set
+            {
+                SetValue("Logging", value); 
+                logging = value;
+            }
         }
 
         /// <summary>
@@ -191,8 +255,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public string SharedMemoryName
         {
-            get { return this.sharedMemName; }
-            set { CheckNullAndSet("Shared Memory Name", value); sharedMemName = value; }
+            get { return sharedMemName; }
+            set
+            {
+                SetValue("Shared Memory Name", value); 
+                sharedMemName = value;
+            }
         }
 
         /// <summary>
@@ -207,8 +275,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public bool UseOldSyntax
         {
-            get { return this.oldSyntax; }
-            set { base["Old Syntax"] = value; oldSyntax = value; }
+            get { return oldSyntax; }
+            set
+            {
+                SetValue("Use Old Syntax", value); 
+                oldSyntax = value;
+            }
         }
 
         /// <summary>
@@ -222,17 +294,16 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Driver Type")]
         [Description("Specifies the type of driver to use for this connection")]
         [DefaultValue(MySqlDriverType.Native)]
+        [Browsable(false)]
 #endif
         public MySqlDriverType DriverType
         {
-            get { return this.driverType; }
-            set { base["Driver Type"] = value; driverType = value; }
-        }
-
-        internal string OptionFile
-        {
-            get { return this.optionFile; }
-            set { CheckNullAndSet("Option File", value); optionFile = value; }
+            get { return driverType; }
+            set 
+            { 
+                SetValue("Driver Type", value); 
+                driverType = value; 
+            }
         }
 
         /// <summary>
@@ -246,8 +317,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public uint Port
         {
-            get { return this.port; }
-            set { base["Port"] = value; port = value; }
+            get { return port; }
+            set 
+            { 
+                SetValue("Port", value); 
+                port = value; 
+            }
         }
 
         /// <summary>
@@ -262,8 +337,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public uint ConnectionTimeout
         {
-            get { return this.connectionTimeout; }
-            set { base["Connection Timeout"] = value; connectionTimeout = value; }
+            get { return connectionTimeout; }
+            set 
+            {
+                SetValue("Connect Timeout", value); 
+                connectionTimeout = value; 
+            }
         }
 
         #endregion
@@ -280,8 +359,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public string UserID
         {
-            get { return this.userId; }
-            set { CheckNullAndSet("User Id", value); userId = value; }
+            get { return userId; }
+            set
+            {
+                SetValue("User Id", value); 
+                userId = value;
+            }
         }
 
         /// <summary>
@@ -293,8 +376,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public string Password
         {
-            get { return this.password; }
-            set { CheckNullAndSet("Password", value); password = value; }
+            get { return password; }
+            set
+            {
+                SetValue("Password", value); 
+                password = value;
+            }
         }
 
         /// <summary>
@@ -311,7 +398,11 @@ namespace MySql.Data.MySqlClient
         public bool PersistSecurityInfo
         {
             get { return persistSI; }
-            set { base["Persist Security Info"] = value; persistSI = value; }
+            set
+            {
+                SetValue("Persist Security Info", value); 
+                persistSI = value;
+            }
         }
 
 #if !PocketPC && !MONO
@@ -322,7 +413,11 @@ namespace MySql.Data.MySqlClient
         internal bool UseSSL
         {
             get { return useSSL; }
-            set { base["usessl"] = value; useSSL = value; }
+            set
+            {
+                SetValue("UseSSL", value); 
+                useSSL = value;
+            }
         }
 
         #endregion
@@ -340,8 +435,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public bool AllowZeroDateTime
         {
-            get { return this.allowZeroDatetime; }
-            set { base["Allow Zero DateTime"] = value; allowZeroDatetime = value; }
+            get { return allowZeroDatetime; }
+            set
+            {
+                SetValue("Allow Zero DateTime", value); 
+                allowZeroDatetime = value;
+            }
         }
 
         /// <summary>
@@ -356,8 +455,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public bool ConvertZeroDateTime
         {
-            get { return this.convertZeroDatetime; }
-            set { base["Convert Zero DateTime"] = value; convertZeroDatetime = value; }
+            get { return convertZeroDatetime; }
+            set
+            {
+                SetValue("Convert Zero DateTime", value); 
+                convertZeroDatetime = value;
+            }
         }
 
         /// <summary>
@@ -370,8 +473,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public string CharacterSet
         {
-            get { return this.charSet; }
-            set { CheckNullAndSet("Character Set", value); charSet = value; }
+            get { return charSet; }
+            set
+            {
+                SetValue("Character Set", value); 
+                charSet = value;
+            }
         }
 
         /// <summary>
@@ -386,7 +493,11 @@ namespace MySql.Data.MySqlClient
         public bool UseUsageAdvisor
         {
             get { return useUsageAdvisor; }
-            set { base["Use Usage Advisor"] = value; useUsageAdvisor = value; }
+            set
+            {
+                SetValue("Use Usage Advisor", value); 
+                useUsageAdvisor = value;
+            }
         }
 
         /// <summary>
@@ -401,8 +512,12 @@ namespace MySql.Data.MySqlClient
 #endif
         public uint ProcedureCacheSize
         {
-            get { return this.procCacheSize; }
-            set { base["Procedure Cache Size"] = value; procCacheSize = value; }
+            get { return procCacheSize; }
+            set
+            {
+                SetValue("Procedure Cache Size", value); 
+                procCacheSize = value;
+            }
         }
 
         /// <summary>
@@ -417,7 +532,11 @@ namespace MySql.Data.MySqlClient
         public bool UsePerformanceMonitor
         {
             get { return usePerfMon; }
-            set { base["Use Performance Monitor"] = value; usePerfMon = value; }
+            set
+            {
+                SetValue("Use Performance Monitor", value); 
+                usePerfMon = value;
+            }
         }
 
         /// <summary>
@@ -432,7 +551,11 @@ namespace MySql.Data.MySqlClient
         public bool IgnorePrepare
         {
             get { return ignorePrepare; }
-            set { base["Ignore Prepare"] = value; ignorePrepare = value; }
+            set
+            {
+                SetValue("Ignore Prepare", value); 
+                ignorePrepare = value;
+            }
         }
 
 #if !PocketPC && !MONO
@@ -444,7 +567,11 @@ namespace MySql.Data.MySqlClient
         public bool UseProcedureBodies
         {
             get { return useProcedureBodies; }
-            set { base["Use Procedure Bodies"] = value; useProcedureBodies = value; }
+            set
+            {
+                SetValue("Use Procedure Bodies", value); 
+                useProcedureBodies = value;
+            }
         }
 
         #endregion
@@ -464,7 +591,11 @@ namespace MySql.Data.MySqlClient
         public uint ConnectionLifeTime
         {
             get { return connectionLifetime; }
-            set { base["Connection Lifetime"] = value; connectionLifetime = value; }
+            set
+            {
+                SetValue("Connection Lifetime", value); 
+                connectionLifetime = value;
+            }
         }
 
         /// <summary>
@@ -479,7 +610,11 @@ namespace MySql.Data.MySqlClient
         public bool Pooling
         {
             get { return pooling; }
-            set { base["Pooling"] = value; pooling = value; }
+            set
+            {
+                SetValue("Pooling", value); 
+                pooling = value;
+            }
         }
 
         /// <summary>
@@ -494,7 +629,11 @@ namespace MySql.Data.MySqlClient
         public uint MinimumPoolSize
         {
             get { return minPoolSize; }
-            set { base["Minimum Pool Size"] = value; minPoolSize = value; }
+            set
+            {
+                SetValue("Minimum Pool Size", value); 
+                minPoolSize = value;
+            }
         }
 
         /// <summary>
@@ -509,7 +648,11 @@ namespace MySql.Data.MySqlClient
         public uint MaximumPoolSize
         {
             get { return maxPoolSize; }
-            set { base["Maximum Pool Size"] = value; maxPoolSize = value; }
+            set
+            {
+                SetValue("Maximum Pool Size", value); 
+                maxPoolSize = value;
+            }
         }
 
         /// <summary>
@@ -526,21 +669,18 @@ namespace MySql.Data.MySqlClient
         public bool ConnectionReset
         {
             get { return connectionReset; }
-            set { base["Connection Reset"] = value; connectionReset = value; }
+            set
+            {
+                SetValue("Connection Reset", value); 
+                connectionReset = value;
+            }
         }
 
         #endregion
 
         #region Conversion Routines
 
-        private void CheckNullAndSet(string keyword, object value)
-        {
-            if (value == null)
-                throw new ArgumentException(Resources.KeywordNoNull, keyword);
-            base[keyword] = value;
-        }
-
-        private uint ConvertToUInt(object value)
+        private static uint ConvertToUInt(object value)
         {
             try
             {
@@ -553,7 +693,7 @@ namespace MySql.Data.MySqlClient
             }
         }
 
-        private bool ConvertToBool(object value)
+        private static bool ConvertToBool(object value)
         {
             if (value is string)
             {
@@ -576,7 +716,7 @@ namespace MySql.Data.MySqlClient
             }
         }
 
-        private MySqlConnectionProtocol ConvertToProtocol(object value)
+        private static MySqlConnectionProtocol ConvertToProtocol(object value)
         {
             try
             {
@@ -602,49 +742,11 @@ namespace MySql.Data.MySqlClient
             throw new ArgumentException(Resources.ImproperValueFormat, value.ToString());
         }
 
-        private MySqlDriverType ConvertToDriverType(object value)
+        private static MySqlDriverType ConvertToDriverType(object value)
         {
             if (value is MySqlDriverType) return (MySqlDriverType)value;
             return (MySqlDriverType)Enum.Parse(
                  typeof(MySqlDriverType), value.ToString(), true);
-            throw new ArgumentException(Resources.ImproperValueFormat, value.ToString());
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void Reset()
-        {
-            connectionTimeout = 15;
-            pooling = true;
-            port = 3306;
-            server = String.Empty;
-            persistSI = false;
-            connectionLifetime = 0;
-            connectionReset = false;
-            minPoolSize = 0;
-            maxPoolSize = 100;
-            userId = "";
-            password = "";
-            useUsageAdvisor = false;
-            charSet = "";
-            compress = false;
-            pipeName = "MYSQL";
-            logging = false;
-            oldSyntax = false;
-            sharedMemName = "MYSQL";
-            allowBatch = true;
-            convertZeroDatetime = false;
-            database = "";
-            driverType = MySqlDriverType.Native;
-            protocol = MySqlConnectionProtocol.Sockets;
-            allowZeroDatetime = false;
-            usePerfMon = false;
-            procCacheSize = 25;
-            useSSL = false;
-            ignorePrepare = true;
-            useProcedureBodies = true;
         }
 
         #endregion
@@ -669,10 +771,13 @@ namespace MySql.Data.MySqlClient
         {
             base.Clear();
             persistConnString.Remove(0, persistConnString.Length);
-            Reset();
+
+            // set all the proper defaults
+            foreach (Keyword k in Enum.GetValues(typeof(Keyword)))
+                SetValue(k, defaultValues[k]);
         }
 
-        private Keyword GetKey(string key)
+        private static Keyword GetKey(string key)
         {
             string lowerKey = key.ToLower(CultureInfo.InvariantCulture);
             switch (lowerKey)
@@ -710,6 +815,7 @@ namespace MySql.Data.MySqlClient
                     return Keyword.PipeName;
                 case "logging":
                     return Keyword.Logging;
+                case "use old syntax":
                 case "old syntax":
                 case "oldsyntax":
                     return Keyword.OldSyntax;
@@ -743,6 +849,7 @@ namespace MySql.Data.MySqlClient
                 case "driver":
                     return Keyword.DriverType;
                 case "protocol":
+                case "connection protocol":
                     return Keyword.Protocol;
                 case "allow zero datetime":
                 case "allowzerodatetime":
@@ -801,43 +908,83 @@ namespace MySql.Data.MySqlClient
                 case Keyword.IgnorePrepare: return IgnorePrepare;
                 case Keyword.UseSSL: return UseSSL;
                 case Keyword.UseProcedureBodies: return UseProcedureBodies;
-                default: return null;  /* this will never happen */
+                default: return null;  
             }
+        }
+
+        private void SetValue(string keyword, object value)
+        {
+            if (value == null)
+                throw new ArgumentException(Resources.KeywordNoNull, keyword);
+            Keyword kw = GetKey(keyword);
+            SetValue(kw, value);
+            base[keyword] = value;
+            if (kw != Keyword.Password)
+                persistConnString.AppendFormat("{0}={1};", keyword, value);
         }
 
         private void SetValue(Keyword kw, object value)
         {
             switch (kw)
             {
-                case Keyword.UserID: UserID = (string)value; break;
-                case Keyword.Password: Password = (string)value; break;
-                case Keyword.Port: Port = ConvertToUInt(value); break;
-                case Keyword.Server: Server = (string)value; break;
-                case Keyword.UseUsageAdvisor: UseUsageAdvisor = ConvertToBool(value); break;
-                case Keyword.CharacterSet: CharacterSet = (string)value; break;
-                case Keyword.Compress: UseCompression = ConvertToBool(value); break;
-                case Keyword.PipeName: PipeName = (string)value; break;
-                case Keyword.Logging: Logging = ConvertToBool(value); break;
-                case Keyword.OldSyntax: UseOldSyntax = ConvertToBool(value); break;
-                case Keyword.SharedMemoryName: SharedMemoryName = (string)value; break;
-                case Keyword.AllowBatch: AllowBatch = ConvertToBool(value); break;
-                case Keyword.ConvertZeroDatetime: ConvertZeroDateTime = ConvertToBool(value); break;
-                case Keyword.PersistSecurityInfo: PersistSecurityInfo = ConvertToBool(value); break;
-                case Keyword.Database: Database = (string)value; break;
-                case Keyword.ConnectionTimeout: ConnectionTimeout = ConvertToUInt(value); break;
-                case Keyword.Pooling: Pooling = ConvertToBool(value); break;
-                case Keyword.MinimumPoolSize: MinimumPoolSize = ConvertToUInt(value); break;
-                case Keyword.MaximumPoolSize: MaximumPoolSize = ConvertToUInt(value); break;
-                case Keyword.ConnectionLifetime: ConnectionLifeTime = ConvertToUInt(value); break;
-                case Keyword.DriverType: DriverType = ConvertToDriverType(value); break;
-                case Keyword.Protocol: ConnectionProtocol = ConvertToProtocol(value); break;
-                case Keyword.ConnectionReset: ConnectionReset = ConvertToBool(value); break;
-                case Keyword.UsePerformanceMonitor: UsePerformanceMonitor = ConvertToBool(value); break;
-                case Keyword.AllowZeroDatetime: AllowZeroDateTime = ConvertToBool(value); break;
-                case Keyword.ProcedureCacheSize: ProcedureCacheSize = ConvertToUInt(value); break;
-                case Keyword.IgnorePrepare: IgnorePrepare = ConvertToBool(value); break;
-                case Keyword.UseSSL: UseSSL = ConvertToBool(value); break;
-                case Keyword.UseProcedureBodies: UseProcedureBodies = ConvertToBool(value); break;
+                case Keyword.UserID: 
+                    userId = (string)value; break;
+                case Keyword.Password: 
+                    password = (string)value; break;
+                case Keyword.Port: 
+                    port = ConvertToUInt(value); break;
+                case Keyword.Server: 
+                    server = (string)value; break;
+                case Keyword.UseUsageAdvisor: 
+                    useUsageAdvisor = ConvertToBool(value); break;
+                case Keyword.CharacterSet: 
+                    charSet = (string)value; break;
+                case Keyword.Compress: 
+                    compress = ConvertToBool(value); break;
+                case Keyword.PipeName: 
+                    pipeName = (string)value; break;
+                case Keyword.Logging: 
+                    logging = ConvertToBool(value); break;
+                case Keyword.OldSyntax: 
+                    oldSyntax = ConvertToBool(value); break;
+                case Keyword.SharedMemoryName: 
+                    sharedMemName = (string)value; break;
+                case Keyword.AllowBatch: 
+                    allowBatch = ConvertToBool(value); break;
+                case Keyword.ConvertZeroDatetime: 
+                    convertZeroDatetime = ConvertToBool(value); break;
+                case Keyword.PersistSecurityInfo: 
+                    persistSI = ConvertToBool(value); break;
+                case Keyword.Database: 
+                    database = (string)value; break;
+                case Keyword.ConnectionTimeout: 
+                    connectionTimeout = ConvertToUInt(value); break;
+                case Keyword.Pooling: 
+                    pooling = ConvertToBool(value); break;
+                case Keyword.MinimumPoolSize: 
+                    minPoolSize = ConvertToUInt(value); break;
+                case Keyword.MaximumPoolSize: 
+                    maxPoolSize = ConvertToUInt(value); break;
+                case Keyword.ConnectionLifetime: 
+                    connectionLifetime = ConvertToUInt(value); break;
+                case Keyword.DriverType: 
+                    driverType = ConvertToDriverType(value); break;
+                case Keyword.Protocol: 
+                    protocol = ConvertToProtocol(value); break;
+                case Keyword.ConnectionReset: 
+                    connectionReset = ConvertToBool(value); break;
+                case Keyword.UsePerformanceMonitor: 
+                    usePerfMon = ConvertToBool(value); break;
+                case Keyword.AllowZeroDatetime: 
+                    allowZeroDatetime = ConvertToBool(value); break;
+                case Keyword.ProcedureCacheSize: 
+                    procCacheSize = ConvertToUInt(value); break;
+                case Keyword.IgnorePrepare: 
+                    ignorePrepare = ConvertToBool(value); break;
+                case Keyword.UseSSL: 
+                    useSSL = ConvertToBool(value); break;
+                case Keyword.UseProcedureBodies: 
+                    useProcedureBodies = ConvertToBool(value); break;
             }
         }
 
@@ -856,13 +1003,106 @@ namespace MySql.Data.MySqlClient
             }
             set
             {
-                Keyword kw = GetKey(key);
-                if (kw != Keyword.Password)
-                    persistConnString.AppendFormat("{0}={1};", key, value);
-                SetValue(kw, value);
+                if (value == null)
+                    Remove(key);
+                else
+                    SetValue(key, value);
             }
         }
+
+        protected override void GetProperties(System.Collections.Hashtable propertyDescriptors)
+        {
+            base.GetProperties(propertyDescriptors);
+
+            // use a custom type descriptor for connection protocol
+            PropertyDescriptor pd = (PropertyDescriptor)propertyDescriptors["Connection Protocol"];
+            Attribute[] myAttr = new Attribute[pd.Attributes.Count];
+            pd.Attributes.CopyTo(myAttr, 0);
+            ConnectionProtocolDescriptor mypd;
+            mypd = new ConnectionProtocolDescriptor(pd.Name, myAttr);
+            propertyDescriptors["Connection Protocol"] = mypd;
+        }
+
+        public override bool Remove(string keyword)
+        {
+            // first we need to set this keys value to the default
+            Keyword kw = GetKey(keyword);
+            SetValue(kw, defaultValues[kw]);
+
+            // then we remove this keyword from the base collection
+            return base.Remove(keyword);
+        }
+
+        public override bool TryGetValue(string keyword, out object value)
+        {
+            try
+            {
+                Keyword kw = GetKey(keyword);
+                value = GetValue(kw);
+                return true;
+            }
+            catch (ArgumentException)
+            {
+            }
+            value = null;
+            return false;
+        }
     }
+
+    #region ConnectionProtocolDescriptor
+
+    internal class ConnectionProtocolDescriptor : PropertyDescriptor
+    {
+        public ConnectionProtocolDescriptor(string name, Attribute[] attr) : base(name, attr)
+        {
+        }
+
+        public override bool CanResetValue(object component)
+        {
+            return true;
+        }
+
+        public override Type ComponentType
+        {
+            get { return typeof(MySqlConnectionStringBuilder); }
+        }
+
+        public override object GetValue(object component)
+        {
+            MySqlConnectionStringBuilder cb = (MySqlConnectionStringBuilder) component;
+            return cb.ConnectionProtocol;
+        }
+
+        public override bool IsReadOnly
+        {
+            get { return false; }
+        }
+
+        public override Type PropertyType
+        {
+            get { return typeof(MySqlConnectionProtocol); }
+        }
+
+        public override void ResetValue(object component)
+        {
+            MySqlConnectionStringBuilder cb = (MySqlConnectionStringBuilder)component;
+            cb.ConnectionProtocol = MySqlConnectionProtocol.Sockets;
+        }
+
+        public override void SetValue(object component, object value)
+        {
+            MySqlConnectionStringBuilder cb = (MySqlConnectionStringBuilder)component;
+            cb.ConnectionProtocol = (MySqlConnectionProtocol) value;
+        }
+
+        public override bool ShouldSerializeValue(object component)
+        {
+            MySqlConnectionStringBuilder cb = (MySqlConnectionStringBuilder)component;
+            return cb.ConnectionProtocol != MySqlConnectionProtocol.Sockets;
+        }
+    }
+
+    #endregion
 
     internal enum Keyword
     {
@@ -896,17 +1136,4 @@ namespace MySql.Data.MySqlClient
         UseSSL,
         UseProcedureBodies
     }
-
-/*    internal class ProtocolConverter : TypeConverter.StringConverter
-    {
-        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
-        {
-            return true;
-        }
-
-        public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
-        {
-            return new StandardValuesCollection(new string[] { "Sockets", "NamedPipe", "UnixSocket", "SharedMemory" });
-        }
-    }*/
 }
