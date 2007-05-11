@@ -27,32 +27,32 @@ using System.Data.Common;
 
 namespace MySql.Data.MySqlClient.Tests
 {
-	[TestFixture]
-	public class Transactions : BaseTest
-	{
-		[TestFixtureSetUp]
-		public void FixtureSetup()
-		{
-			Open();
+    [TestFixture]
+    public class Transactions : BaseTest
+    {
+        [TestFixtureSetUp]
+        public void FixtureSetup()
+        {
+            Open();
 
-			execSQL("DROP TABLE IF EXISTS Test");
-			createTable("CREATE TABLE Test (key2 VARCHAR(1), name VARCHAR(100), name2 VARCHAR(100))", "INNODB");
-		}
+            execSQL("DROP TABLE IF EXISTS Test");
+            createTable("CREATE TABLE Test (key2 VARCHAR(1), name VARCHAR(100), name2 VARCHAR(100))", "INNODB");
+        }
 
-		[TestFixtureTearDown]
-		public void FixtureTeardown()
-		{
-			Close();
-		}
+        [TestFixtureTearDown]
+        public void FixtureTeardown()
+        {
+            Close();
+        }
 
 #if NET20
 
-        void TransactionScopeInternal(bool commit) 
+        void TransactionScopeInternal(bool commit)
         {
             MySqlConnection c = new MySqlConnection(GetConnectionString(true));
             MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES ('a', 'name', 'name2')", c);
 
-            try 
+            try
             {
                 using (TransactionScope ts = new TransactionScope())
                 {
@@ -189,6 +189,74 @@ namespace MySql.Data.MySqlClient.Tests
             catch (Exception ex)
             {
                 Assert.Fail(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Bug #26754  	EnlistTransaction throws false MySqlExeption "Already enlisted"
+        /// </summary>
+        [Test]
+        public void EnlistTransactionNullTest()
+        {
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand();
+                cmd.Connection = conn;
+                cmd.Connection.EnlistTransaction(null);
+            }
+            catch { }
+
+            using (TransactionScope ts = new TransactionScope())
+            {
+                MySqlCommand cmd = new MySqlCommand();
+                cmd.Connection = conn;
+                try
+                {
+                    cmd.Connection.EnlistTransaction(Transaction.Current);
+                }
+                catch (MySqlException)
+                {
+                    Assert.Fail("No exception should have been thrown");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Bug #26754  	EnlistTransaction throws false MySqlExeption "Already enlisted"
+        /// </summary>
+        [Test]
+        public void EnlistTransactionWNestedTrxTest()
+        {
+            MySqlTransaction t = conn.BeginTransaction();
+
+            using (TransactionScope ts = new TransactionScope())
+            {
+                MySqlCommand cmd = new MySqlCommand();
+                cmd.Connection = conn;
+                try
+                {
+                    cmd.Connection.EnlistTransaction(Transaction.Current);
+                }
+                catch (InvalidOperationException) 
+                { 
+                    /* caught NoNestedTransactions */  
+                }
+            }
+
+            t.Rollback();
+
+            using (TransactionScope ts = new TransactionScope())
+            {
+                MySqlCommand cmd = new MySqlCommand();
+                cmd.Connection = conn;
+                try
+                {
+                    cmd.Connection.EnlistTransaction(Transaction.Current);
+                }
+                catch (MySqlException)
+                {
+                    Assert.Fail("No exception should have been thrown");
+                }
             }
         }
     }

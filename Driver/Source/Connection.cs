@@ -269,6 +269,10 @@ namespace MySql.Data.MySqlClient
         /// </param>
         public override void EnlistTransaction(System.Transactions.Transaction transaction)
         {
+            // if the transaction given to us is null, then there is nothing to do.
+            if (transaction == null)
+                return;
+
             if (currentTransaction != null)
             {
                 if (currentTransaction.BaseTransaction == transaction)
@@ -277,15 +281,16 @@ namespace MySql.Data.MySqlClient
                 throw new MySqlException("Already enlisted");
             }
 
-            currentTransaction = new MySqlPromotableTransaction(this, transaction);
-            transaction.EnlistPromotableSinglePhase(currentTransaction);
+            MySqlPromotableTransaction t = new MySqlPromotableTransaction(this, transaction);
+            transaction.EnlistPromotableSinglePhase(t);
+            currentTransaction = t;
         }
 #endif
 
         /// <include file='docs/MySqlConnection.xml' path='docs/BeginTransaction/*'/>
         public new MySqlTransaction BeginTransaction()
         {
-            return this.BeginTransaction(IsolationLevel.RepeatableRead);
+            return BeginTransaction(IsolationLevel.RepeatableRead);
         }
 
         /// <include file='docs/MySqlConnection.xml' path='docs/BeginTransaction1/*'/>
@@ -477,7 +482,6 @@ namespace MySql.Data.MySqlClient
         /// <include file='docs/MySqlConnection.xml' path='docs/Close/*'/>
         public override void Close()
         {
-            //TODO: rollback any pending transaction
             if (State == ConnectionState.Closed) return;
 
             if (dataReader != null)
