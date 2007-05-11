@@ -116,6 +116,7 @@ namespace MySql.Data.MySqlClient
 #if !PocketPC && !MONO
         [Category("Connection")]
         [Description("Server to connect to")]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public string Server
         {
@@ -134,6 +135,7 @@ namespace MySql.Data.MySqlClient
 #if !PocketPC && !MONO
         [Category("Connection")]
         [Description("Database to use initially")]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public string Database
         {
@@ -154,6 +156,7 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Connection Protocol")]
         [Description("Protocol to use for connection to MySQL")]
         [DefaultValue(MySqlConnectionProtocol.Sockets)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public MySqlConnectionProtocol ConnectionProtocol
         {
@@ -174,6 +177,7 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Pipe Name")]
         [Description("Name of pipe to use when connecting with named pipes (Win32 only)")]
         [DefaultValue("MYSQL")]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public string PipeName
         {
@@ -194,6 +198,7 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Use Compression")]
         [Description("Should the connection ues compression")]
         [DefaultValue(false)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool UseCompression
         {
@@ -214,6 +219,7 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Allow Batch")]
         [Description("Allows execution of multiple SQL commands in a single statement")]
         [DefaultValue(true)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool AllowBatch
         {
@@ -232,6 +238,7 @@ namespace MySql.Data.MySqlClient
         [Category("Connection")]
         [Description("Enables output of diagnostic messages")]
         [DefaultValue(false)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool Logging
         {
@@ -252,6 +259,7 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Shared Memory Name")]
         [Description("Name of the shared memory object to use")]
         [DefaultValue("MYSQL")]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public string SharedMemoryName
         {
@@ -272,6 +280,7 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Use Old Syntax")]
         [Description("Allows the use of old style @ syntax for parameters")]
         [DefaultValue(false)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool UseOldSyntax
         {
@@ -294,6 +303,7 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Driver Type")]
         [Description("Specifies the type of driver to use for this connection")]
         [DefaultValue(MySqlDriverType.Native)]
+        [RefreshProperties(RefreshProperties.All)]
         [Browsable(false)]
 #endif
         public MySqlDriverType DriverType
@@ -314,6 +324,7 @@ namespace MySql.Data.MySqlClient
         [Category("Connection")]
         [Description("Port to use for TCP/IP connections")]
         [DefaultValue(3306)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public uint Port
         {
@@ -334,6 +345,7 @@ namespace MySql.Data.MySqlClient
         [Description("The length of time (in seconds) to wait for a connection " +
              "to the server before terminating the attempt and generating an error.")]
         [DefaultValue(15)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public uint ConnectionTimeout
         {
@@ -354,8 +366,9 @@ namespace MySql.Data.MySqlClient
         /// </summary>
 #if !PocketPC && !MONO
         [Category("Security")]
-        [DisplayName("User ID")]
+        [DisplayName("User Id")]
         [Description("Indicates the user ID to be used when connecting to the data source.")]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public string UserID
         {
@@ -373,6 +386,7 @@ namespace MySql.Data.MySqlClient
 #if !PocketPC && !MONO
         [Category("Security")]
         [Description("Indicates the password to be used when connecting to the data source.")]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public string Password
         {
@@ -394,6 +408,7 @@ namespace MySql.Data.MySqlClient
         [Description("When false, security-sensitive information, such as the password, " +
              "is not returned as part of the connection if the connection is open or " +
              "has ever been in an open state.")]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool PersistSecurityInfo
         {
@@ -409,6 +424,7 @@ namespace MySql.Data.MySqlClient
         [Category("Authentication")]
         [Description("Should the connection use SSL.  This currently has no effect.")]
         [DefaultValue(false)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         internal bool UseSSL
         {
@@ -432,13 +448,14 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Allow Zero Datetime")]
         [Description("Should zero datetimes be supported")]
         [DefaultValue(false)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool AllowZeroDateTime
         {
             get { return allowZeroDatetime; }
             set
             {
-                SetValue("Allow Zero DateTime", value); 
+                SetValue("Allow Zero Datetime", value); 
                 allowZeroDatetime = value;
             }
         }
@@ -452,13 +469,14 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Convert Zero Datetime")]
         [Description("Should illegal datetime values be converted to DateTime.MinValue")]
         [DefaultValue(false)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool ConvertZeroDateTime
         {
             get { return convertZeroDatetime; }
             set
             {
-                SetValue("Convert Zero DateTime", value); 
+                SetValue("Convert Zero Datetime", value); 
                 convertZeroDatetime = value;
             }
         }
@@ -470,6 +488,7 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Character Set")]
         [Category("Advanced")]
         [Description("Character set this connection should use")]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public string CharacterSet
         {
@@ -489,6 +508,7 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Use Usage Advisor")]
         [Description("Logs inefficient database operations")]
         [DefaultValue(false)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool UseUsageAdvisor
         {
@@ -509,6 +529,7 @@ namespace MySql.Data.MySqlClient
         [Description("Indicates how many stored procedures can be cached at one time. " +
                 "A value of 0 effectively disables the procedure cache.")]
         [DefaultValue(25)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public uint ProcedureCacheSize
         {
@@ -528,6 +549,7 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Use Performance Monitor")]
         [Description("Indicates that performance counters should be updated during execution.")]
         [DefaultValue(false)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool UsePerformanceMonitor
         {
@@ -547,6 +569,7 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Ignore Prepare")]
         [Description("Instructs the provider to ignore any attempts to prepare a command.")]
         [DefaultValue(true)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool IgnorePrepare
         {
@@ -563,6 +586,7 @@ namespace MySql.Data.MySqlClient
         [DisplayName("Use Procedure Bodies")]
         [Description("Indicates if stored procedure bodies will be available for parameter detection.")]
         [DefaultValue(true)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool UseProcedureBodies
         {
@@ -583,10 +607,11 @@ namespace MySql.Data.MySqlClient
         /// </summary>
 #if !PocketPC && !MONO
         [Category("Pooling")]
-        [DisplayName("Load Balance Timeout")]
+        [DisplayName("Connection Lifetime")]
         [Description("The minimum amount of time (in seconds) for this connection to " +
              "live in the pool before being destroyed.")]
         [DefaultValue(0)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public uint ConnectionLifeTime
         {
@@ -606,6 +631,7 @@ namespace MySql.Data.MySqlClient
         [Description("When true, the connection object is drawn from the appropriate " +
              "pool, or if necessary, is created and added to the appropriate pool.")]
         [DefaultValue(true)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool Pooling
         {
@@ -622,9 +648,10 @@ namespace MySql.Data.MySqlClient
         /// </summary>
 #if !PocketPC && !MONO
         [Category("Pooling")]
-        [DisplayName("Min Pool Size")]
+        [DisplayName("Minimum Pool Size")]
         [Description("The minimum number of connections allowed in the pool.")]
         [DefaultValue(0)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public uint MinimumPoolSize
         {
@@ -641,9 +668,10 @@ namespace MySql.Data.MySqlClient
         /// </summary>
 #if !PocketPC && !MONO
         [Category("Pooling")]
-        [DisplayName("Max Pool Size")]
+        [DisplayName("Maximum Pool Size")]
         [Description("The maximum number of connections allowed in the pool.")]
         [DefaultValue(100)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public uint MaximumPoolSize
         {
@@ -665,6 +693,7 @@ namespace MySql.Data.MySqlClient
         [Description("When true, indicates the connection state is reset when " +
              "removed from the pool.")]
         [DefaultValue(true)]
+        [RefreshProperties(RefreshProperties.All)]
 #endif
         public bool ConnectionReset
         {
