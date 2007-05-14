@@ -19,12 +19,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 
 using System;
-using System.IO;
 using MySql.Data.Common;
-//using System.Security.Cryptography;
-//#if CF
-//using OpenNETCF.Security.Cryptography;
-//#endif
 
 namespace MySql.Data.MySqlClient
 {
@@ -319,7 +314,7 @@ namespace MySql.Data.MySqlClient
 			for (int i=0; i < P.Length; i++) 
 			{
 				if (P[i] == ' ' || P[i] == '\t') continue;
-				long temp = (long)(0xff & P[i]);
+				long temp = 0xff & P[i];
 				val1 ^= (((val1 & 63)+inc)*temp) + (val1 << 8);
 				val2 += (val2 << 8) ^ val1;
 				inc += temp;

@@ -20,8 +20,6 @@
 
 using System;
 using System.IO;
-using MySql.Data.Common;
-using System.Diagnostics;
 using zlib;
 
 namespace MySql.Data.MySqlClient
@@ -115,7 +113,7 @@ namespace MySql.Data.MySqlClient
                 PrepareNextPacket();
             }
             int countToRead = Math.Min(count, maxInPos-inPos);
-            int countRead = 0;
+            int countRead;
             if (zInStream != null)
                 countRead = zInStream.read(buffer, offset, countToRead);
             else
@@ -171,7 +169,7 @@ namespace MySql.Data.MySqlClient
 
         private void CompressAndSendCache()
         {
-            long compressedLength = 0, uncompressedLength = 0;
+            long compressedLength, uncompressedLength;
 
             // we need to save the sequence byte that is written
             byte[] cacheBuffer = cache.GetBuffer();
@@ -184,7 +182,10 @@ namespace MySql.Data.MySqlClient
             // now we set our compressed and uncompressed lengths
             // based on if our compression is going to help or not
             if (compressedBuffer == null)
+            {
                 compressedLength = cache.Length;
+                uncompressedLength = 0;
+            }
             else
             {
                 compressedLength = compressedBuffer.Length;

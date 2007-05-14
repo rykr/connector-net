@@ -64,8 +64,8 @@ namespace MySql.Data.MySqlClient
 		 */
 		internal MySqlDataReader(MySqlCommand cmd, PreparableStatement statement, CommandBehavior behavior)
 		{
-			this.command = cmd;
-			connection = (MySqlConnection)command.Connection;
+			command = cmd;
+			connection = command.Connection;
 			commandBehavior = behavior;
 			driver = connection.driver;
 			affectedRows = -1;
@@ -77,7 +77,7 @@ namespace MySql.Data.MySqlClient
 
 		internal long InsertedId
 		{
-			get { return this.lastInsertId; }
+			get { return lastInsertId; }
 		}
 
 		internal CommandBehavior Behavior
@@ -258,7 +258,7 @@ namespace MySql.Data.MySqlClient
 
 			MySqlBinary binary = (MySqlBinary)val;
 			if (buffer == null)
-				return (long)binary.Value.Length;
+				return binary.Value.Length;
 
 			if (bufferIndex >= buffer.Length || bufferIndex < 0)
 				throw new IndexOutOfRangeException("Buffer index must be a valid index in buffer");
@@ -268,7 +268,7 @@ namespace MySql.Data.MySqlClient
 				((ulong)dataIndex >= (ulong)binary.Value.Length && (ulong)binary.Value.Length > 0))
 				throw new IndexOutOfRangeException("Data index must be a valid index in the field");
 
-			byte[] bytes = (byte[])binary.Value;
+			byte[] bytes = binary.Value;
 
 			// adjust the length so we don't run off the end
 			if ((ulong)binary.Value.Length < (ulong)(dataIndex + length))
@@ -276,7 +276,7 @@ namespace MySql.Data.MySqlClient
 				length = (int)((ulong)binary.Value.Length - (ulong)dataIndex);
 			}
 
-			Array.Copy(bytes, (int)dataIndex, buffer, (int)bufferIndex, (int)length);
+			Array.Copy(bytes, (int)dataIndex, buffer, bufferIndex, length);
 
 			return length;
 		}
@@ -377,7 +377,7 @@ namespace MySql.Data.MySqlClient
 			{
                 // we need to do this because functions like date_add return string
                 string s = GetString(column);
-				dt = MySqlDateTime.Parse(s, this.connection.driver.Version);
+				dt = MySqlDateTime.Parse(s, connection.driver.Version);
 			}
 
 			if (connection.Settings.ConvertZeroDateTime && !dt.IsValidDateTime)
@@ -687,14 +687,14 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// Gets all attribute columns in the collection for the current row.
 		/// </summary>
-		/// <param name="values"></param>
+		/// <param name="valueArray"></param>
 		/// <returns></returns>
-		public override int GetValues(object[] values)
+		public override int GetValues(object[] valueArray)
 		{
 			if (!hasRead) return 0;
-			int numCols = Math.Min(values.Length, fields.Length);
+			int numCols = Math.Min(valueArray.Length, fields.Length);
 			for (int i = 0; i < numCols; i++)
-				values[i] = GetValue(i);
+				valueArray[i] = GetValue(i);
 
 			return numCols;
 		}
@@ -758,7 +758,7 @@ namespace MySql.Data.MySqlClient
 
 		IDataReader IDataRecord.GetData(int i)
 		{
-			return base.GetData(i);
+			return GetData(i);
 		}
 
 		/// <summary>
@@ -908,9 +908,9 @@ namespace MySql.Data.MySqlClient
 				throw new MySqlException("Invalid attempt to access a field before calling Read()");
 
 			// keep count of how many columns we have left to access
-			this.uaFieldsUsed[index] = true;
+			uaFieldsUsed[index] = true;
 
-			if ((this.commandBehavior & CommandBehavior.SequentialAccess) != 0 &&
+			if ((commandBehavior & CommandBehavior.SequentialAccess) != 0 &&
 				 index != seqIndex)
 			{
 				if (index < seqIndex)
@@ -943,7 +943,7 @@ namespace MySql.Data.MySqlClient
 				connection.UsageAdvisor.ReadPartialResultSet(command.CommandText);
 
 			bool readAll = true;
-			foreach (bool b in this.uaFieldsUsed)
+			foreach (bool b in uaFieldsUsed)
 				readAll &= b;
 			if (!readAll)
 				connection.UsageAdvisor.ReadPartialRowSet(command.CommandText, uaFieldsUsed, fields);

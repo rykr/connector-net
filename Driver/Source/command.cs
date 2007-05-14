@@ -21,13 +21,9 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.IO;
 using System.Collections;
-using System.Text;
-using MySql.Data.Common;
 using System.ComponentModel;
 using System.Threading;
-using System.Diagnostics;
 using System.Globalization;
 
 namespace MySql.Data.MySqlClient
@@ -35,7 +31,7 @@ namespace MySql.Data.MySqlClient
 	/// <include file='docs/mysqlcommand.xml' path='docs/ClassSummary/*'/>
 #if !PocketPC
 	[System.Drawing.ToolboxBitmap(typeof(MySqlCommand), "MySqlClient.resources.command.bmp")]
-	[System.ComponentModel.DesignerCategory("Code")]
+	[DesignerCategory("Code")]
 #endif
 	public sealed class MySqlCommand : DbCommand, ICloneable
 	{
@@ -46,7 +42,6 @@ namespace MySql.Data.MySqlClient
 		long updatedRowCount;
 		UpdateRowSource updatedRowSource;
 		MySqlParameterCollection parameters;
-		private ArrayList parameterMap;
 		private int cursorPageSize;
 		private IAsyncResult asyncResult;
 		private bool designTimeVisible;
@@ -63,7 +58,6 @@ namespace MySql.Data.MySqlClient
 		{
 			designTimeVisible = true;
 			cmdType = CommandType.Text;
-			parameterMap = new ArrayList();
 			parameters = new MySqlParameterCollection();
 			updatedRowSource = UpdateRowSource.Both;
 			cursorPageSize = 0;
@@ -157,7 +151,7 @@ namespace MySql.Data.MySqlClient
 		public override CommandType CommandType
 		{
 			get { return cmdType; }
-			set { cmdType = value; SyncCommandType(true); }
+			set { cmdType = value; }
 		}
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/IsPrepared/*'/>
@@ -185,7 +179,7 @@ namespace MySql.Data.MySqlClient
 				* is reset.
 				*/
 				if (connection != value)
-					this.Transaction = null;
+					Transaction = null;
 
 				connection = (MySqlConnection)value;
 				if (connection != null)
@@ -212,7 +206,7 @@ namespace MySql.Data.MySqlClient
 		public new MySqlTransaction Transaction
 		{
 			get { return curTransaction; }
-			set { curTransaction = (MySqlTransaction)value; }
+			set { curTransaction = value; }
 		}
 
 		/*		/// <include file='docs/mysqlcommand.xml' path='docs/UpdatedRowSource/*'/>
@@ -239,22 +233,12 @@ namespace MySql.Data.MySqlClient
 			if (!connection.driver.Version.isAtLeast(5, 0, 0))
 				throw new NotSupportedException(Resources.CancelNotSupported);
 
-			MySqlConnection c = new MySqlConnection(connection.Settings.GetConnectionString(true));
-			try
+			using(MySqlConnection c = new MySqlConnection(connection.Settings.GetConnectionString(true)))
 			{
 				c.Open();
 				MySqlCommand cmd = new MySqlCommand(String.Format("KILL QUERY {0}",
 					 connection.ServerThread), c);
 				cmd.ExecuteNonQuery();
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-			finally
-			{
-				if (c != null)
-					c.Close();
 			}
 		}
 
@@ -302,7 +286,7 @@ namespace MySql.Data.MySqlClient
 			{
 				reader.Close();
 				lastInsertedId = reader.InsertedId;
-				this.updatedRowCount = reader.RecordsAffected;
+				updatedRowCount = reader.RecordsAffected;
 			}
 			return (int)updatedRowCount;
 		}
@@ -435,26 +419,15 @@ namespace MySql.Data.MySqlClient
 			lastInsertedId = -1;
 			object val = null;
 
-            MySqlDataReader reader = ExecuteReader();
-            if (reader == null) return null;
-
-            try
+            using(MySqlDataReader reader = ExecuteReader())
             {
+                if (reader == null) return null;
+
                 if (reader.Read())
                     val = reader.GetValue(0);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                if (reader != null)
-                {
-                    reader.Close();
-                    lastInsertedId = reader.InsertedId;
-                }
-                reader = null;
+
+                reader.Close();
+                lastInsertedId = reader.InsertedId;
             }
 
 			return val;
@@ -475,7 +448,7 @@ namespace MySql.Data.MySqlClient
         }
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/Prepare2/*'/>
-		private void Prepare(int cursorPageSize)
+		private void Prepare(int pageSize)
 		{
 			if (!connection.driver.Version.isAtLeast(5, 0, 0) && cursorPageSize > 0)
 				throw new InvalidOperationException("Nested commands are only supported on MySQL 5.0 and later");
@@ -514,7 +487,7 @@ namespace MySql.Data.MySqlClient
 		internal delegate int AsyncExecuteNonQueryDelegate();
 		internal delegate MySqlDataReader AsyncExecuteReaderDelegate(CommandBehavior behavior);
 
-		private string TrimSemicolons(string sql)
+		private static string TrimSemicolons(string sql)
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder(sql);
 			int start = 0;
@@ -612,23 +585,18 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// Finishes asynchronous execution of a SQL statement. 
 		/// </summary>
-		/// <param name="asyncResult">The <see cref="IAsyncResult"/> returned by the call 
+		/// <param name="asResult">The <see cref="IAsyncResult"/> returned by the call 
 		/// to <see cref="BeginExecuteNonQuery()"/>.</param>
 		/// <returns></returns>
-		public int EndExecuteNonQuery(IAsyncResult asyncResult)
+		public int EndExecuteNonQuery(IAsyncResult asResult)
 		{
-			asyncResult.AsyncWaitHandle.WaitOne();
+			asResult.AsyncWaitHandle.WaitOne();
 			return (int)updatedRowCount;
 		}
 
 		#endregion
 
 		#region Private Methods
-
-		private void SyncCommandType(bool cmdTypeSet)
-		{
-			int i = (int)CommandType;
-		}
 
 		/*		private ArrayList PrepareSqlBuffers(string sql)
 				{
@@ -706,7 +674,7 @@ namespace MySql.Data.MySqlClient
 
 		public new void Dispose()
 		{
-			base.Dispose(true);
+			Dispose(true);
 		}
 
 		#endregion
@@ -721,11 +689,11 @@ namespace MySql.Data.MySqlClient
 		{
 			get
 			{
-				return this.designTimeVisible;
+				return designTimeVisible;
 			}
 			set
 			{
-				this.designTimeVisible = value;
+				designTimeVisible = value;
 			}
 		}
 
@@ -737,11 +705,11 @@ namespace MySql.Data.MySqlClient
 		{
 			get
 			{
-				return this.updatedRowSource;
+				return updatedRowSource;
 			}
 			set
 			{
-				this.updatedRowSource = value;
+				updatedRowSource = value;
 			}
 		}
 
@@ -752,24 +720,24 @@ namespace MySql.Data.MySqlClient
 
 		protected override DbConnection DbConnection
 		{
-			get { return this.Connection; }
-			set { this.Connection = (MySqlConnection)value; }
+			get { return Connection; }
+			set { Connection = (MySqlConnection)value; }
 		}
 
 		protected override DbParameterCollection DbParameterCollection
 		{
-			get { return this.Parameters; }
+			get { return Parameters; }
 		}
 
 		protected override DbTransaction DbTransaction
 		{
-			get { return this.Transaction; }
-			set { this.Transaction = (MySqlTransaction)value; }
+			get { return Transaction; }
+			set { Transaction = (MySqlTransaction)value; }
 		}
 
 		protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
 		{
-			return this.ExecuteReader(behavior);
+			return ExecuteReader(behavior);
 		}
 	}
 }

@@ -23,8 +23,6 @@ using System.ComponentModel;
 using System.Data.Common;
 using System.Data;
 using System.Text;
-using MySql.Data.Common;
-using System.Collections;
 using MySql.Data.Types;
 using System.Globalization;
 
@@ -33,7 +31,7 @@ namespace MySql.Data.MySqlClient
     /// <include file='docs/MySqlCommandBuilder.xml' path='docs/class/*'/>
 #if !PocketPC
     [ToolboxItem(false)]
-    [System.ComponentModel.DesignerCategory("Code")]
+    [DesignerCategory("Code")]
 #endif
     public sealed class MySqlCommandBuilder : DbCommandBuilder
     {
@@ -70,7 +68,7 @@ namespace MySql.Data.MySqlClient
         {
             get
             {
-                return (DataAdapter.SelectCommand.Connection as MySqlConnection).ParameterMarker;
+                return DataAdapter.SelectCommand.Connection.ParameterMarker;
             }
         }
 
@@ -149,16 +147,28 @@ namespace MySql.Data.MySqlClient
             return ParameterDirection.InputOutput;
         }
 
+        /// <summary>
+        /// Gets the automatically generated MySqlCommand object required to perform deletions on the database. 
+        /// </summary>
+        /// <returns>The automatically generated MySqlCommand object required to perform deletions. </returns>
         public new MySqlCommand GetDeleteCommand()
         {
             return (MySqlCommand)base.GetDeleteCommand();
         }
 
+        /// <summary>
+        /// Gets the automatically generated MySqlCommand object required to perform updates on the database. 
+        /// </summary>
+        /// <returns>The automatically generated MySqlCommand object required to perform updates. </returns>
         public new MySqlCommand GetUpdateCommand()
         {
             return (MySqlCommand)base.GetUpdateCommand();
         }
 
+        /// <summary>
+        /// Gets the automatically generated MySqlCommand object required to perform inserts on the database. 
+        /// </summary>
+        /// <returns>The automatically generated MySqlCommand object required to perform inserts. </returns>
         public new MySqlCommand GetInsertCommand()
         {
             return (MySqlCommand)GetInsertCommand(false);
@@ -193,12 +203,6 @@ namespace MySql.Data.MySqlClient
             return sb.ToString();
         }
 
-        protected override DbCommand InitializeCommand(DbCommand command)
-        {
-            return base.InitializeCommand(command);
-        }
-
-
         protected override void ApplyParameterInfo(DbParameter parameter, DataRow row,
             StatementType statementType, bool whereClause)
         {
@@ -227,7 +231,7 @@ namespace MySql.Data.MySqlClient
 
         private void RowUpdating(object sender, MySqlRowUpdatingEventArgs args)
         {
-            base.RowUpdatingHandler(args);
+            RowUpdatingHandler(args);
 
             if (args.StatementType != StatementType.Insert) return;
 

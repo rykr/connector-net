@@ -114,9 +114,7 @@ namespace MySql.Data.MySqlClient
 
 		public static Driver Create(MySqlConnectionStringBuilder settings)
 		{
-			Driver d = null;
-			if (settings.DriverType == MySqlDriverType.Native)
-				d = new NativeDriver(settings);
+			Driver d = new NativeDriver(settings);
 			d.Open();
 			return d;
 		}
@@ -144,9 +142,9 @@ namespace MySql.Data.MySqlClient
 				MySqlPoolManager.RemoveConnection(this);
 		}
 
-		public virtual void Configure(MySqlConnection connection)
+		public virtual void Configure(MySqlConnection conn)
 		{
-			this.connection = connection;
+			connection = conn;
 
             bool firstConfigure = false;
             // if we have not already configured our server variables
@@ -270,16 +268,13 @@ namespace MySql.Data.MySqlClient
 			ArrayList errors = new ArrayList();
 
 			MySqlCommand cmd = new MySqlCommand("SHOW WARNINGS", connection);
-			MySqlDataReader reader = null;
-			try
+			using (MySqlDataReader reader = cmd.ExecuteReader())
 			{
-				reader = cmd.ExecuteReader();
 				while (reader.Read())
 				{
 					errors.Add(new MySqlError(reader.GetString(0),
 						reader.GetInt32(1), reader.GetString(2)));
 				}
-				reader.Close();
 
 				hasWarnings = false;
 				// MySQL resets warnings before each statement, so a batch could indicate
@@ -291,14 +286,6 @@ namespace MySql.Data.MySqlClient
 				if (connection != null)
 					connection.OnInfoMessage(args);
 
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-			finally
-			{
-				if (reader != null) reader.Close();
 			}
 		}
 
