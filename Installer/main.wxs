@@ -2,7 +2,7 @@
 <?define ProductVersion="5.0.7"?>
 <?define ProductName="MySQL Connector Net $(var.ProductVersion)"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="efbb2251-22cc-4484-9b49-07ed25248cb6" Name="$(var.ProductName)" 
+  <Product Id="2337b1dc-358a-4ee6-a292-80a872dd911e" Name="$(var.ProductName)" 
            Manufacturer="MySQL AB" Version="$(var.ProductVersion)" Language="1033">
 
     <Package Compressed="yes" InstallerVersion="200" Languages="1033" 
@@ -44,7 +44,7 @@
 
     <!-- Top level junk - readme, changelog, etc -->
     <DirectoryRef Id='INSTALLDIR'>
-      <Component Id="BaseComponents" Guid="2448b1b1-f2ec-4153-96c6-bcaae7692ef9" DiskId="1">
+      <Component Id="BaseComponents" Guid="c2c8d5f7-e57c-4820-ba05-0d7444b29c1d" DiskId="1">
         <File Id="ChangeLog" Name="CHANGES" Source="..\CHANGES" />
         <File Id="RelNotes" Name="Release Notes.txt" Source="..\Release Notes.txt" />
         <?if $(var.IsGPL) = true ?>
@@ -62,7 +62,7 @@
 
     <!-- .Net 2.0 Binaries -->
     <DirectoryRef Id='BinNet20'>
-      <Component Id="Net20" Guid="0e8af006-273c-49bb-b7c1-ec1737260a5a">
+      <Component Id="Net20" Guid="93f09ec1-bfa0-471a-ae8b-540e038b254d">
         <File Id="CoreBin20" Name="MySql.Data.dll"
               Source="..\Driver\bin\net-2.0\$(var.build)\mysql.data.dll" DiskId="1"/>
         <RegistryKey Id="VSRegistry" Root="HKLM" Action="createAndRemoveOnUninstall"
@@ -70,7 +70,7 @@
           <RegistryValue Id="VSRegistryValue" Value="[BinNet20]" Type="string" Action="write"/>
         </RegistryKey>
       </Component>
-      <Component Id="GAC20" Guid="58f70e4a-96f7-4b67-bdab-9b77a60f9c09">
+      <Component Id="GAC20" Guid="07723a4a-b120-435f-b500-3ba04ba1dc0e">
         <File Id="GAC20" Name="MySql.Data.dll"
               Source="..\Driver\bin\net-2.0\$(var.build)\mysql.data.dll" DiskId="1" Assembly=".net" KeyPath="yes"/>
       </Component>
@@ -78,7 +78,7 @@
 
     <!-- Start menu junk -->
     <DirectoryRef Id='ShortCutDir'>
-      <Component Id="StartMenuComponent" Guid="31e1c7c6-e06d-4214-82ca-58e67e5232e2">
+      <Component Id="StartMenuComponent" Guid="65690da7-c13e-4e5c-9337-356835695f60">
         <Shortcut Id="S100" Name="Documentation" Description="Complete documentation for the connector"
 					Target="[DocsDir]/MySql.Data.chm" Directory="ShortCutDir" />
         <Shortcut Id="S101" Name="ChangeLog" Description="Complete changelog for the connector" Directory="ShortCutDir"
@@ -89,7 +89,7 @@
     </DirectoryRef>
 
     <DirectoryRef Id='DocsDir'>
-      <Component Id="Docs" Guid="8f9d25c7-1eba-4391-b764-eb1f7d39243e">
+      <Component Id="Docs" Guid="58ade562-5d7e-4454-aa2b-f0a8d853c751">
         <File Id="CoreCHM" Name="MySql.Data.chm" Source="..\doc\MySql.Data.chm" DiskId="1" />
       </Component>
     </DirectoryRef>
