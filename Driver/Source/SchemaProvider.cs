@@ -667,7 +667,7 @@ namespace MySql.Data.MySqlClient
             dt.Columns.Add(new DataColumn("Reserved Word", typeof(string)));
 
             Stream str = Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                "MySql.Data.MySqlClient.ReservedWords.txt");
+                "MySql.Data.MySqlClient.Properties.ReservedWords.txt");
             StreamReader sr = new StreamReader(str);
             string line = sr.ReadLine();
             while (line != null)

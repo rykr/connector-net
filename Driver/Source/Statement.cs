@@ -131,11 +131,11 @@ namespace MySql.Data.MySqlClient
         /// names with and without a leading marker but we don't want the indexing
         /// methods of MySqlParameterCollection to support that.
         /// </summary>
+        /// <param name="parameters"></param>
         /// <param name="name"></param>
         /// <returns></returns>
         private MySqlParameter GetParameter(MySqlParameterCollection parameters, string name)
         {
-            string parmName = name;
             int index = parameters.IndexOf(name);
             if (index == -1)
             {

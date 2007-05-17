@@ -117,8 +117,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\CharSetMap.cs" />
     <Compile Include="Source\command.cs">
+      <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Source\CommandBuilder.cs" />
+    <Compile Include="Source\CommandBuilder.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Source\common\ContextString.cs" />
     <Compile Include="Source\common\NamedPipeStream.cs" />
     <Compile Include="Source\common\NativeMethods.cs" />
@@ -208,6 +211,7 @@
     <Content Include="docs\MySqlParameter.xml" />
     <Content Include="docs\MySqlParameterCollection.xml" />
     <Content Include="docs\MySqlTransaction.xml" />
+    <Content Include="Properties\ReservedWords.txt" />
     <Content Include="Source\docs\MySqlCommand.xml" />
     <Content Include="Source\docs\MySqlCommandBuilder.xml" />
     <Content Include="Source\docs\MySqlConnection.xml" />
@@ -219,7 +223,6 @@
     <Content Include="Source\docs\MySqlParameter.xml" />
     <Content Include="Source\docs\MySqlParameterCollection.xml" />
     <Content Include="Source\docs\MySqlTransaction.xml" />
-    <Content Include="Source\ReservedWords.txt" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\common\Cache.cs" />
