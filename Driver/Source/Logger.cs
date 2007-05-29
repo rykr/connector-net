@@ -35,9 +35,6 @@ namespace MySql.Data.MySqlClient
 
 		static public void LogCommand( DBCmd cmd, string text)
 		{
-			if (text.Length > 300)
-				text = text.Substring(0, 300);
-
 			string msg = String.Format("Executing command {0} with text ='{1}'",
 				cmd.ToString(), text);
 			//TODO: check this

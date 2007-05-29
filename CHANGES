@@ -1,3 +1,9 @@
+Version 5.0.8
+  Bugs fixed
+  ----------
+  Bug #28706 Log messages are truncated  
+  
+  
 Version 5.0.7 5/16/2007
 
   Bugs fixed
