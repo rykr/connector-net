@@ -197,5 +197,13 @@ namespace MySql.Data.MySqlClient
 			stripped_sql = newSQL.ToString();
 			return parameterMap;
 		}
+
+        public virtual void CloseStatement()
+        {
+            if (!IsPrepared) return;
+
+            Driver.CloseStatement(statementId);
+            statementId = 0;
+        }
 	}
 }

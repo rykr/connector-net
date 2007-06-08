@@ -853,5 +853,13 @@ namespace MySql.Data.MySqlClient
 			return true;
 		}
 
+        public override void CloseStatement(int id)
+        {
+            stream.StartOutput(5, true);
+            stream.WriteByte((byte)DBCmd.CLOSE_STMT);
+            stream.WriteInteger((long)id, 4);
+            stream.Flush();
+        }
+
 	}
 }

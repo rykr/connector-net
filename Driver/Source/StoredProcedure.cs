@@ -191,6 +191,8 @@ namespace MySql.Data.MySqlClient
 
 		public override void Close()
 		{
+            base.Close();
+
 			if (outSelect.Length == 0) return;
 
 			char marker = Connection.ParameterMarker;
