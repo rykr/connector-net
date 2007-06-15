@@ -67,7 +67,9 @@ namespace MySql.Data.MySqlClient
 
 		public void ReadPartialRowSet(string cmdText, bool[] uaFieldsUsed, MySqlField[] fields)
 		{
-			LogUAHeader(cmdText);
+            if (!conn.Settings.UseUsageAdvisor) return;
+
+            LogUAHeader(cmdText);
 			Logger.WriteLine("Reason: Every column was not accessed.  Consider a more focused query.");
 			Logger.Write("Fields not accessed: ");
 			for (int i = 0; i < uaFieldsUsed.Length; i++)
@@ -80,7 +82,9 @@ namespace MySql.Data.MySqlClient
 		public void Converting(string cmdText, string columnName,
 									  string fromType, string toType)
 		{
-			LogUAHeader(cmdText);
+            if (!conn.Settings.UseUsageAdvisor) return;
+
+            LogUAHeader(cmdText);
 			Logger.WriteLine("Reason: Performing unnecessary conversion on field "
 									  + columnName + ".");
 			Logger.WriteLine("From: " + fromType + " to " + toType);
