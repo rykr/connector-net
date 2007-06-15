@@ -210,8 +210,7 @@ namespace MySql.Data.MySqlClient
 			{
 				int toRead = (int)Math.Min((ulong)tempBuf.Length, (inLength - inPos));
 				Read(tempBuf, 0, toRead);
-				inPos += (ulong)toRead;
-			}
+            }
 		}
 
 		/// <summary>
@@ -319,6 +318,7 @@ namespace MySql.Data.MySqlClient
 				{
 					buffer[offset++] = (byte)ReadByte();
 					count--;
+                    totalRead++;
 					continue;
 				}
 
