@@ -15,6 +15,9 @@ Version 5.0.8
   - Changed behavior of ConnectionString property.  It now only returns the connection
     string given to it.  It will not attempt to track changes to the current
     database when the users uses the ChangeDatabase method. (Bug #29123)
+  - Fixed problem with calling stored procedures in databases that have hyphens
+    in their names.  We were not using backticks to quote the database and sproc name
+    when querying for metadata. (Bug #29526)
     
 Version 5.0.7 5/16/2007
 
