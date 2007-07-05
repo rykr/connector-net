@@ -38,6 +38,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]
+[assembly: AllowPartiallyTrustedCallers()]
 
 //
 // Version information for an assembly consists of the following four values:
