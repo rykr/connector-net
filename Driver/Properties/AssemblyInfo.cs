@@ -37,6 +37,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]
+#if !PocketPC
+[assembly: AllowPartiallyTrustedCallers()]
+#endif
 
 //
 // Version information for an assembly consists of the following four values:
@@ -49,7 +52,7 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("5.0.7.0")]
+[assembly: AssemblyVersion("5.0.7.1")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 
