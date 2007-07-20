@@ -38,7 +38,6 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]
-[assembly: AllowPartiallyTrustedCallers()]
 
 //
 // Version information for an assembly consists of the following four values:
@@ -51,7 +50,7 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("1.0.9")]
+[assembly: AssemblyVersion("1.0.10")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

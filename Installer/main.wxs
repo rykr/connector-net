@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?define ProductVersion="1.0.9"?>
+<?define ProductVersion="1.0.10"?>
 <?define ProductName="MySQL Connector Net $(var.ProductVersion)"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="D045B660-8A39-4338-8135-508B2978ABAE" Name="$(var.ProductName)" 
