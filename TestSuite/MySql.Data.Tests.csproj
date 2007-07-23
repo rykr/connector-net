@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{92CB29DF-61DE-4277-8DC6-D3587C7311EE}"
     >
@@ -85,7 +85,7 @@
                     HintPath = "..\..\..\..\..\Program Files\NUnit 2.2.8\bin\nunit.framework.dll"
                 />
                 <Reference
-                    Name = "MySql.Data.2003"
+                    Name = "MySql.Data"
                     Project = "{5EAEFBC4-8389-4120-BAB3-9B27174F6F6F}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
