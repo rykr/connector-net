@@ -133,7 +133,8 @@ namespace MySql.Data.MySqlClient
 				// if we don't have an idle connection but we have room for a new
 				// one, then create it here.
 				if (!HasIdleConnections)
-					CreateNewPooledConnection();
+					if (!CreateNewPooledConnection())
+						return null;
 
 				Driver d = CheckoutConnection();
 				if (d != null)
@@ -144,10 +145,19 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// It is assumed that this method is only called from inside an active lock.
 		/// </summary>
-		private void CreateNewPooledConnection()
+		private bool CreateNewPooledConnection()
 		{
-			Driver driver = Driver.Create(settings);
+			Driver driver = null;
+			try 
+			{
+				driver = Driver.Create(settings);
+			}
+			catch (Exception)
+			{
+				return false;
+			}
 			idlePool.Enqueue(driver);
+			return true;
 		}
 
 		public void ReleaseConnection(Driver driver)
@@ -183,7 +193,10 @@ namespace MySql.Data.MySqlClient
 			// or room to make a new connection
 			lock (lockObject)
 			{
-				return GetPooledConnection();
+				Driver d = GetPooledConnection();
+				if (d == null)
+					poolGate.Release();
+				return d;
 			}
 		}
 	}
