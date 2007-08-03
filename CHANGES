@@ -8,6 +8,10 @@ Version 1.0.10
     - Fixed problem where an attempt to open a connection max pool size times while
       the server is down will prevent any further attempts due to the pool semaphore
       being full. (Bug #29409)       
+    - Fixed problem where attempting to load a reader into a datatable using a table 
+      with a multi-column primary key would result in multiple constraints being added
+      to the datatable. No test case added to the 1.0 tree as loading a datatable
+      with a reader is a .Net 2.0 thing. (bug #30204)
     
     Other
     -----
