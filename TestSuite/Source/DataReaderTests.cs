@@ -855,5 +855,35 @@ namespace MySql.Data.MySqlClient.Tests
                 Assert.IsFalse(reader.IsDBNull(1));
             }
         }
+
+        /// <summary>
+        /// Bug #30204  	Incorrect ConstraintException
+        /// </summary>
+        [Test]
+        public void ConstraintWithLoadingReader()
+        {
+            execSQL("DROP TABLE IF EXISTS test");
+            execSQL(@"CREATE TABLE test (ID_A int(11) NOT NULL,
+				ID_B int(11) NOT NULL, PRIMARY KEY (ID_A,ID_B)
+				) ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+
+            MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+            DataTable dt = new DataTable();
+
+            using (MySqlDataReader reader = cmd.ExecuteReader())
+            {
+                dt.Load(reader);
+            }
+
+            DataRow row = dt.NewRow();
+            row["ID_A"] = 2;
+            row["ID_B"] = 3;
+            dt.Rows.Add(row);
+
+            row = dt.NewRow();
+            row["ID_A"] = 2;
+            row["ID_B"] = 4;
+            dt.Rows.Add(row);
+        }
 	}
 }
