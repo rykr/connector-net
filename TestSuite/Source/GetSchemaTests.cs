@@ -28,18 +28,6 @@ namespace MySql.Data.MySqlClient.Tests
 	[NUnit.Framework.TestFixture]
 	public class GetSchemaTests : BaseTest
 	{
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
-		{
-			Open();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown() 
-		{
-			Close();
-		}
-
         [Test]
         public void Collections()
         {
@@ -161,17 +149,17 @@ namespace MySql.Data.MySqlClient.Tests
             foreach (DataRow row in dt.Rows)
             {
                 string dbName = row[1].ToString().ToLower();
-                if (dbName == databases[0])
+                if (dbName == database0.ToLower())
                     foundZero = true;
-                else if (dbName == databases[1])
+                else if (dbName == database1.ToLower())
                     foundOne = true;
             }
             Assert.IsTrue(foundZero);
             Assert.IsTrue(foundOne);
 
-            dt = conn.GetSchema("Databases", new string[1] { databases[0] });
+            dt = conn.GetSchema("Databases", new string[1] { database0 });
             Assert.AreEqual(1, dt.Rows.Count);
-            Assert.AreEqual(databases[0], dt.Rows[0][1].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), dt.Rows[0][1].ToString().ToLower());
         }
 
         [Test]
@@ -181,7 +169,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE TABLE test1 (id int)");
 
             string[] restrictions = new string[4];
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "test1";
             DataTable dt = conn.GetSchema("Tables", restrictions);
             Assert.IsTrue(dt.Rows.Count == 1);
@@ -197,21 +185,21 @@ namespace MySql.Data.MySqlClient.Tests
                 "col3 varchar(50) character set utf8, col4 tinyint unsigned)");
 
             string[] restrictions = new string[4];
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "test";
             DataTable dt = conn.GetSchema("Columns", restrictions);
             Assert.IsTrue(dt.Rows.Count == 4);
             Assert.AreEqual("Columns", dt.TableName);
             
             // first column
-            Assert.AreEqual(databases[0].ToUpper(), dt.Rows[0]["TABLE_SCHEMA"].ToString().ToUpper());
+            Assert.AreEqual(database0.ToUpper(), dt.Rows[0]["TABLE_SCHEMA"].ToString().ToUpper());
             Assert.AreEqual("COL1", dt.Rows[0]["COLUMN_NAME"].ToString().ToUpper());
             Assert.AreEqual(1, dt.Rows[0]["ORDINAL_POSITION"]);
             Assert.AreEqual("YES", dt.Rows[0]["IS_NULLABLE"]);
             Assert.AreEqual("INT", dt.Rows[0]["DATA_TYPE"].ToString().ToUpper());
 
             // second column
-            Assert.AreEqual(databases[0].ToUpper(), dt.Rows[1]["TABLE_SCHEMA"].ToString().ToUpper());
+            Assert.AreEqual(database0.ToUpper(), dt.Rows[1]["TABLE_SCHEMA"].ToString().ToUpper());
             Assert.AreEqual("COL2", dt.Rows[1]["COLUMN_NAME"].ToString().ToUpper());
             Assert.AreEqual(2, dt.Rows[1]["ORDINAL_POSITION"]);
             Assert.AreEqual("YES", dt.Rows[1]["IS_NULLABLE"]);
@@ -221,7 +209,7 @@ namespace MySql.Data.MySqlClient.Tests
             Assert.AreEqual(5, dt.Rows[1]["NUMERIC_SCALE"]);
 
             // third column
-            Assert.AreEqual(databases[0].ToUpper(), dt.Rows[2]["TABLE_SCHEMA"].ToString().ToUpper());
+            Assert.AreEqual(database0.ToUpper(), dt.Rows[2]["TABLE_SCHEMA"].ToString().ToUpper());
             Assert.AreEqual("COL3", dt.Rows[2]["COLUMN_NAME"].ToString().ToUpper());
             Assert.AreEqual(3, dt.Rows[2]["ORDINAL_POSITION"]);
             Assert.AreEqual("YES", dt.Rows[2]["IS_NULLABLE"]);
@@ -229,7 +217,7 @@ namespace MySql.Data.MySqlClient.Tests
             Assert.AreEqual("VARCHAR(50)", dt.Rows[2]["COLUMN_TYPE"].ToString().ToUpper());
 
             // fourth column
-            Assert.AreEqual(databases[0].ToUpper(), dt.Rows[3]["TABLE_SCHEMA"].ToString().ToUpper());
+            Assert.AreEqual(database0.ToUpper(), dt.Rows[3]["TABLE_SCHEMA"].ToString().ToUpper());
             Assert.AreEqual("COL4", dt.Rows[3]["COLUMN_NAME"].ToString().ToUpper());
             Assert.AreEqual(4, dt.Rows[3]["ORDINAL_POSITION"]);
             Assert.AreEqual("YES", dt.Rows[3]["IS_NULLABLE"]);
@@ -244,7 +232,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE PROCEDURE spTest (id int) BEGIN SELECT 1; END");
 
             string[] restrictions = new string[4];
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "spTest";
             DataTable dt = conn.GetSchema("Procedures", restrictions);
             Assert.IsTrue(dt.Rows.Count == 1);
@@ -260,7 +248,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE FUNCTION spFunc (id int) RETURNS INT BEGIN RETURN 1; END");
 
             string[] restrictions = new string[4];
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "spFunc";
             DataTable dt = conn.GetSchema("Procedures", restrictions);
             Assert.IsTrue(dt.Rows.Count == 1);
@@ -276,12 +264,12 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE PROCEDURE spTest (id int, name varchar(50)) BEGIN SELECT 1; END");
 
             string[] restrictions = new string[5];
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "spTest";
             DataTable dt = conn.GetSchema("Procedure Parameters", restrictions);
             Assert.IsTrue(dt.Rows.Count == 2);
             Assert.AreEqual("Procedure Parameters", dt.TableName);
-            Assert.AreEqual(databases[0].ToLower(), dt.Rows[0]["ROUTINE_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), dt.Rows[0]["ROUTINE_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("sptest", dt.Rows[0]["ROUTINE_NAME"].ToString().ToLower());
             Assert.AreEqual("?id", dt.Rows[0]["PARAMETER_NAME"].ToString().ToLower());
             Assert.AreEqual(1, dt.Rows[0]["ORDINAL_POSITION"]);
@@ -292,7 +280,7 @@ namespace MySql.Data.MySqlClient.Tests
             dt.Clear();
             dt = conn.GetSchema("Procedure Parameters", restrictions);
             Assert.AreEqual(1, dt.Rows.Count);
-            Assert.AreEqual(databases[0].ToLower(), dt.Rows[0]["ROUTINE_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), dt.Rows[0]["ROUTINE_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("sptest", dt.Rows[0]["ROUTINE_NAME"].ToString().ToLower());
             Assert.AreEqual("?name", dt.Rows[0]["PARAMETER_NAME"].ToString().ToLower());
             Assert.AreEqual(2, dt.Rows[0]["ORDINAL_POSITION"]);
@@ -303,19 +291,19 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE FUNCTION spFunc (id int) RETURNS INT BEGIN RETURN 1; END");
 
             restrictions[4] = null;
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "spFunc";
             dt = conn.GetSchema("Procedure Parameters", restrictions);
             Assert.IsTrue(dt.Rows.Count == 2);
             Assert.AreEqual("Procedure Parameters", dt.TableName);
-            Assert.AreEqual(databases[0].ToLower(), dt.Rows[0]["ROUTINE_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), dt.Rows[0]["ROUTINE_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("spfunc", dt.Rows[0]["ROUTINE_NAME"].ToString().ToLower());
             Assert.AreEqual("?id", dt.Rows[0]["PARAMETER_NAME"].ToString().ToLower());
             Assert.AreEqual(1, dt.Rows[0]["ORDINAL_POSITION"]);
             Assert.AreEqual("IN", dt.Rows[0]["PARAMETER_MODE"]);
             Assert.AreEqual("NO", dt.Rows[0]["IS_RESULT"]);
 
-            Assert.AreEqual(databases[0].ToLower(), dt.Rows[1]["ROUTINE_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), dt.Rows[1]["ROUTINE_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("spfunc", dt.Rows[1]["ROUTINE_NAME"].ToString().ToLower());
             Assert.AreEqual(0, dt.Rows[1]["ORDINAL_POSITION"]);
             Assert.AreEqual("YES", dt.Rows[1]["IS_RESULT"]);
@@ -329,7 +317,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE TABLE test (id int, PRIMARY KEY(id))");
             string[] restrictions = new string[4];
             restrictions[2] = "test";
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             DataTable dt = conn.GetSchema("Indexes", restrictions);
             Assert.AreEqual(1, dt.Rows.Count);
             Assert.AreEqual("test", dt.Rows[0]["TABLE_NAME"]);
@@ -366,7 +354,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE TABLE test (id int, PRIMARY KEY(id))");
             string[] restrictions = new string[5];
             restrictions[2] = "test";
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             DataTable dt = conn.GetSchema("IndexColumns", restrictions);
             Assert.AreEqual(1, dt.Rows.Count);
             Assert.AreEqual("test", dt.Rows[0]["TABLE_NAME"]);
@@ -376,7 +364,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE TABLE test (id int, id1 int, id2 int, " +
                 "INDEX key1 (id1, id2))");
             restrictions[2] = "test";
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[4] = "id2";
             dt = conn.GetSchema("IndexColumns", restrictions);
             Assert.AreEqual(1, dt.Rows.Count);
@@ -385,7 +373,7 @@ namespace MySql.Data.MySqlClient.Tests
             Assert.AreEqual(2, dt.Rows[0]["ORDINAL_POSITION"]);
 
             restrictions = new string[3];
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "test";
             dt = conn.GetSchema("IndexColumns", restrictions);
             Assert.AreEqual(2, dt.Rows.Count);
@@ -405,7 +393,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE VIEW vw AS SELECT Now() as theTime");
 
             string[] restrictions = new string[4];
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "vw";
             DataTable dt = conn.GetSchema("Views", restrictions);
             Assert.IsTrue(dt.Rows.Count == 1);
@@ -421,12 +409,12 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE VIEW vw AS SELECT Now() as theTime");
 
             string[] restrictions = new string[4];
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "vw";
             DataTable dt = conn.GetSchema("ViewColumns", restrictions);
             Assert.IsTrue(dt.Rows.Count == 1);
             Assert.AreEqual("ViewColumns", dt.TableName);
-            Assert.AreEqual(databases[0].ToLower(), dt.Rows[0]["VIEW_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), dt.Rows[0]["VIEW_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("vw", dt.Rows[0]["VIEW_NAME"]);
             Assert.AreEqual("theTime", dt.Rows[0]["COLUMN_NAME"]);
         }
@@ -439,12 +427,12 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE PROCEDURE spTest(id int, IN id2 INT(11), " +
                 "INOUT io1 VARCHAR(20), OUT out1 FLOAT) BEGIN END");
             string[] restrictions = new string[4];
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "spTest";
             DataTable procs = conn.GetSchema("PROCEDURES", restrictions);
             Assert.AreEqual(1, procs.Rows.Count);
             Assert.AreEqual("spTest", procs.Rows[0][0]);
-            Assert.AreEqual(databases[0].ToLower(), procs.Rows[0][2].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), procs.Rows[0][2].ToString().ToLower());
             Assert.AreEqual("spTest", procs.Rows[0][3]);
 
             DataTable parameters = conn.GetSchema("PROCEDURE PARAMETERS", restrictions);
@@ -454,10 +442,10 @@ namespace MySql.Data.MySqlClient.Tests
             Assert.AreEqual(DBNull.Value, parameters.Rows[2][0]);
             Assert.AreEqual(DBNull.Value, parameters.Rows[3][0]);
 
-            Assert.AreEqual(databases[0].ToLower(), parameters.Rows[0][1].ToString().ToLower());
-            Assert.AreEqual(databases[0].ToLower(), parameters.Rows[1][1].ToString().ToLower());
-            Assert.AreEqual(databases[0].ToLower(), parameters.Rows[2][1].ToString().ToLower());
-            Assert.AreEqual(databases[0].ToLower(), parameters.Rows[3][1].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), parameters.Rows[0][1].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), parameters.Rows[1][1].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), parameters.Rows[2][1].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), parameters.Rows[3][1].ToString().ToLower());
 
             Assert.AreEqual("spTest", parameters.Rows[0][2]);
             Assert.AreEqual("spTest", parameters.Rows[1][2]);
@@ -503,20 +491,20 @@ namespace MySql.Data.MySqlClient.Tests
                 "CONSTRAINT c1 FOREIGN KEY (parent_id) REFERENCES parent(id) ON DELETE CASCADE) TYPE=INNODB");
             string[] restrictions = new string[4];
             restrictions[0] = null;
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "child";
             DataTable dt = conn.GetSchema("Foreign Keys", restrictions);
             Assert.AreEqual(1, dt.Rows.Count);
             DataRow row = dt.Rows[0];
             Assert.AreEqual(DBNull.Value, row["CONSTRAINT_CATALOG"]);
-            Assert.AreEqual(databases[0].ToLower(), row["CONSTRAINT_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), row["CONSTRAINT_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("c1", row["CONSTRAINT_NAME"]);
             Assert.AreEqual(DBNull.Value, row["TABLE_CATALOG"]);
-            Assert.AreEqual(databases[0].ToLower(), row["TABLE_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), row["TABLE_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("child", row["TABLE_NAME"]);
             Assert.AreEqual("parent_id", row["COLUMN_NAME"]);
             Assert.AreEqual(0, row["ORDINAL_POSITION"]);
-            Assert.AreEqual(databases[0].ToLower(), row["REFERENCED_TABLE_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), row["REFERENCED_TABLE_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("parent", row["REFERENCED_TABLE_NAME"]);
             Assert.AreEqual("id", row["REFERENCED_COLUMN_NAME"]);
         }
@@ -568,46 +556,46 @@ namespace MySql.Data.MySqlClient.Tests
 
             string[] restrictions = new string[4];
             restrictions[0] = null;
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "product_order";
             DataTable dt = conn.GetSchema("Foreign Keys", restrictions);
             Assert.AreEqual(3, dt.Rows.Count);
             DataRow row = dt.Rows[0];
             Assert.AreEqual(DBNull.Value, row["CONSTRAINT_CATALOG"]);
-            Assert.AreEqual(databases[0].ToLower(), row["CONSTRAINT_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), row["CONSTRAINT_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("product_order_ibfk_1", row["CONSTRAINT_NAME"]);
             Assert.AreEqual(DBNull.Value, row["TABLE_CATALOG"]);
-            Assert.AreEqual(databases[0].ToLower(), row["TABLE_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), row["TABLE_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("product_order", row["TABLE_NAME"]);
             Assert.AreEqual("product_category", row["COLUMN_NAME"]);
             Assert.AreEqual(0, row["ORDINAL_POSITION"]);
-            Assert.AreEqual(databases[0].ToLower(), row["REFERENCED_TABLE_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), row["REFERENCED_TABLE_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("product", row["REFERENCED_TABLE_NAME"]);
             Assert.AreEqual("category", row["REFERENCED_COLUMN_NAME"]);
 
             row = dt.Rows[1];
             Assert.AreEqual(DBNull.Value, row["CONSTRAINT_CATALOG"]);
-            Assert.AreEqual(databases[0].ToLower(), row["CONSTRAINT_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), row["CONSTRAINT_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("product_order_ibfk_1", row["CONSTRAINT_NAME"]);
             Assert.AreEqual(DBNull.Value, row["TABLE_CATALOG"]);
-            Assert.AreEqual(databases[0].ToLower(), row["TABLE_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), row["TABLE_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("product_order", row["TABLE_NAME"]);
             Assert.AreEqual("product_id", row["COLUMN_NAME"]);
             Assert.AreEqual(1, row["ORDINAL_POSITION"]);
-            Assert.AreEqual(databases[0].ToLower(), row["REFERENCED_TABLE_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), row["REFERENCED_TABLE_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("product", row["REFERENCED_TABLE_NAME"]);
             Assert.AreEqual("id", row["REFERENCED_COLUMN_NAME"]);
 
             row = dt.Rows[2];
             Assert.AreEqual(DBNull.Value, row["CONSTRAINT_CATALOG"]);
-            Assert.AreEqual(databases[0].ToLower(), row["CONSTRAINT_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), row["CONSTRAINT_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("product_order_ibfk_2", row["CONSTRAINT_NAME"]);
             Assert.AreEqual(DBNull.Value, row["TABLE_CATALOG"]);
-            Assert.AreEqual(databases[0].ToLower(), row["TABLE_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), row["TABLE_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("product_order", row["TABLE_NAME"]);
             Assert.AreEqual("customer_id", row["COLUMN_NAME"]);
             Assert.AreEqual(0, row["ORDINAL_POSITION"]);
-            Assert.AreEqual(databases[0].ToLower(), row["REFERENCED_TABLE_SCHEMA"].ToString().ToLower());
+            Assert.AreEqual(database0.ToLower(), row["REFERENCED_TABLE_SCHEMA"].ToString().ToLower());
             Assert.AreEqual("customer", row["REFERENCED_TABLE_NAME"]);
             Assert.AreEqual("id", row["REFERENCED_COLUMN_NAME"]);
         }
@@ -633,7 +621,7 @@ namespace MySql.Data.MySqlClient.Tests
             try
             {
                 string[] restrictions = new string[4];
-                restrictions[1] = databases[0];
+                restrictions[1] = database0;
                 restrictions[2] = "test1";
                 DataTable dt = conn.GetSchema("Triggers", restrictions);
                 Assert.IsTrue(dt.Rows.Count == 1);
@@ -657,7 +645,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("CREATE TABLE test1 (id int)");
 
             string[] restrictions = new string[4];
-            restrictions[1] = databases[0];
+            restrictions[1] = database0;
             restrictions[2] = "`test1`";
             DataTable dt = conn.GetSchema("Tables", restrictions);
             Assert.IsTrue(dt.Rows.Count == 1);

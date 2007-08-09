@@ -28,13 +28,11 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class PreparedStatements : BaseTest
 	{
-		[TestFixtureSetUp]
-		public void FixtureSetup()
-		{
-			Open();
-
-			execSQL("DROP TABLE IF EXISTS Test");
-		}
+        protected override void Setup()
+        {
+            base.Setup();
+            execSQL("DROP TABLE IF EXISTS Test");
+        }
 
 		[Test]
 		public void Simple() 
@@ -559,7 +557,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[Category("4.1")]
 		public void ParameterLengths()
 		{
-            execSQL("DROP TABLE test");
+            execSQL("DROP TABLE IF EXISTS test");
 			execSQL("CREATE TABLE test (id int, name VARCHAR(255))");
 
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (?id, ?name)", conn);

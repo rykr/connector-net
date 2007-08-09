@@ -32,18 +32,6 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture] 
 	public class ConnectionTests : BaseTest
 	{
-		[TestFixtureSetUp]
-		public void FixtureSetup()
-		{
-			Open();
-		}
-
-		[TestFixtureTearDown]
-		public void FixtureTearDown()
-		{
-			Close();
-		}
-
 		[Test]
 		public void TestConnectionStrings()
 		{
@@ -141,11 +129,11 @@ namespace MySql.Data.MySqlClient.Tests
 			c.Open();
 			Assert.IsTrue(c.State == ConnectionState.Open);
 
-			Assert.AreEqual(databases[0], c.Database.ToLower());
+			Assert.AreEqual(database0.ToLower(), c.Database.ToLower());
 
-			c.ChangeDatabase(databases[1]);
+			c.ChangeDatabase(database1);
 
-			Assert.AreEqual(databases[1], c.Database.ToLower());
+			Assert.AreEqual(database1.ToLower(), c.Database.ToLower());
 
 			c.Close();
 		}

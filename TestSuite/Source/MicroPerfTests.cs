@@ -28,18 +28,11 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class MicroPerfTests : BaseTest
 	{
-        [TestFixtureSetUp]
-        public void TestFixtureSetUp()
+        protected override void Setup()
         {
-            Open();
+            base.Setup();
             execSQL("DROP TABLE IF EXISTS Test");
             execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
-        }
-
-        [TestFixtureTearDown]
-        public void TestFixtureTearDown()
-        {
-            Close();
         }
 
         [Explicit]
