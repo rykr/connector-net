@@ -55,6 +55,11 @@ namespace MySql.Data.MySqlClient
 			isOpen = false;
 		}
 
+        ~NativeDriver()
+        {
+            Close();
+        }
+
 		public ClientFlags Flags
 		{
 			get { return connectionFlags; }
@@ -464,27 +469,30 @@ namespace MySql.Data.MySqlClient
 			serverStatus |= ServerStatusFlags.AnotherQuery;
 		}
 
-		public override void Close()
-		{
-            try
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                if (isOpen)
+                try
                 {
-                    ExecuteCommand(DBCmd.QUIT, null, 0);
+                    if (isOpen)
+                    {
+                        ExecuteCommand(DBCmd.QUIT, null, 0);
+                    }
+
+                    if (stream != null)
+                        stream.Close();
+                    stream = null;
                 }
-
-                if (stream != null)
-                    stream.Close();
-                stream = null;
-                base.Close();
+                catch (Exception)
+                {
+                    // we are just going to eat any exceptions
+                    // generated here
+                }
             }
-            catch (Exception)
-            {
-                // we are just going to eat any exceptions
-                // generated here
-            }
-		}
 
+            base.Dispose(disposing);
+        }
 
 		public override bool Ping()
 		{

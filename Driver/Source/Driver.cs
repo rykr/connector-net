@@ -29,7 +29,7 @@ namespace MySql.Data.MySqlClient
 	/// <summary>
 	/// Summary description for BaseDriver.
 	/// </summary>
-	internal abstract class Driver
+	internal abstract class Driver : IDisposable 
 	{
 		protected int threadId;
 		protected DBVersion version;
@@ -135,11 +135,8 @@ namespace MySql.Data.MySqlClient
 
 		public virtual void Close()
 		{
-			isOpen = false;
-
-			// if we are pooling, then release ourselves
-			if (connectionString.Pooling)
-				MySqlPoolManager.RemoveConnection(this);
+            Dispose(true);
+            GC.SuppressFinalize(this);
 		}
 
 		public virtual void Configure(MySqlConnection conn)
@@ -308,5 +305,24 @@ namespace MySql.Data.MySqlClient
 
 		#endregion
 
-	}
+
+        #region IDisposable Members
+
+        protected virtual void Dispose(bool disposing)
+        {
+            // if we are pooling, then release ourselves
+            if (connectionString.Pooling)
+                MySqlPoolManager.RemoveConnection(this);
+
+            isOpen = false;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
+    }
 }
