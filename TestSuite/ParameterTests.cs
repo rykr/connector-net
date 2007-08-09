@@ -458,5 +458,29 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 			}
 		}
+
+		[Category("4.1")]
+		[Test]
+		public void UTF8Quoting()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL(@"CREATE TABLE test (`id` int(10) unsigned NOT NULL auto_increment,
+				`name` varchar(30) default NULL, PRIMARY KEY  (`id`)
+				) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;");
+	
+			string connStr = GetConnectionString(true) + ";charset=utf8";
+			MySqlConnection c = new MySqlConnection(connStr);
+			c.Open();
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (NULL, 'Test’value')", c);
+			cmd.ExecuteNonQuery();
+
+			cmd.CommandText = "SELECT * FROM test";
+			using (MySqlDataReader reader = cmd.ExecuteReader())
+			{
+				reader.Read();
+				Assert.AreEqual("Test’value", reader.GetString(1));
+			}
+			c.Close();
+		}
     }
 }

@@ -53,12 +53,12 @@ namespace MySql.Data.MySqlClient.Tests
             password = "test";
             host = "localhost";
             databases[0] = "test";
-            databases[1] = "mysql";
+            databases[1] = "test2";
             port = 3306;
             pipeName = "MYSQL";
             memoryName = "MYSQL";
-            rootUser = "su";
-            rootPassword = "su";
+            rootUser = "root";
+            rootPassword = "";
 
 #if NET20
             string strPort = ConfigurationManager.AppSettings["port"];
