@@ -74,16 +74,6 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class ThreadingTests : BaseTest
 	{
-		[TestFixtureSetUp]
-		public void FixtureSetup()
-		{
-		}
-
-		[TestFixtureTearDown]
-		public void FixtureTearDown()
-		{
-		}
-
 		private ManualResetEvent ev;
 
 		private void MultipleThreadsWorker()

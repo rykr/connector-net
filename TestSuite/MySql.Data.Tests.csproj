@@ -154,6 +154,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "DbConfig.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "EventTests.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

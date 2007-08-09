@@ -32,20 +32,13 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class SimpleTransactions : BaseTest
 	{
-		[TestFixtureSetUp]
-		public void FixtureSetup()
+		protected override void Setup()
 		{
-			Open();
-
+			base.Setup ();
 			execSQL("DROP TABLE IF EXISTS Test");
 			createTable("CREATE TABLE Test (key2 VARCHAR(1), name VARCHAR(100), name2 VARCHAR(100))", "INNODB");
 		}
 
-		[TestFixtureTearDown]
-		public void FixtureTeardown()
-		{
-			Close();
-		}
 
 		[Test]
 		public void TestReader()

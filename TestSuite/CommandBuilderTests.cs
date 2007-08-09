@@ -28,16 +28,10 @@ namespace MySql.Data.MySqlClient.Tests
 	public class CommandBuilderTests : BaseTest
 	{
 		[TestFixtureSetUp]
-		public void FixtureSetup()
+		protected override void FixtureSetup()
 		{
             csAdditions += ";logging=true;";
-			Open();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown()
-		{
-			Close();
+			base.FixtureSetup();
 		}
 
 		protected override void Setup()
@@ -186,10 +180,10 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("INSERT INTO test (id, name) VALUES (2,'test2')");
 			execSQL("INSERT INTO test (id, name) VALUES (3,'test3')");
 
-            conn.ChangeDatabase(databases[1]);
+            conn.ChangeDatabase(DbConfig.Database1);
 
 			MySqlDataAdapter da = new MySqlDataAdapter(
-                String.Format("SELECT id, name FROM {0}.test", databases[0]), conn);
+                String.Format("SELECT id, name FROM {0}.test", DbConfig.Database0), conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
 			cb.ToString();
 			DataSet ds = new DataSet();
@@ -201,7 +195,7 @@ namespace MySql.Data.MySqlClient.Tests
 			ds.Merge(changes);
 			ds.AcceptChanges();
 
-			conn.ChangeDatabase(databases[0]);
+			conn.ChangeDatabase(DbConfig.Database0);
 		}
 
 		/// <summary>

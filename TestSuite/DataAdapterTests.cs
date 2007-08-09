@@ -32,13 +32,6 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class DataAdapterTests : BaseTest
 	{
-
-		[TestFixtureSetUp]
-		public void FixtureSetup()
-		{
-			Open();
-		}
-
 		[SetUp]
 		protected override void Setup()
 		{
@@ -49,7 +42,6 @@ namespace MySql.Data.MySqlClient.Tests
 					 "id2 INT NOT NULL, name VARCHAR(100), dt DATETIME, tm TIME, " +
 					 "ts TIMESTAMP, OriginalId INT, PRIMARY KEY(id, id2))");
 		}
-
 
 		[Test]
 		public void TestFill()

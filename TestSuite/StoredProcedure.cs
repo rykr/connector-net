@@ -38,18 +38,13 @@ namespace MySql.Data.MySqlClient.Tests
         private static string fillError = null;
 
         [TestFixtureSetUp]
-        public void FixtureSetup()
+        protected override void FixtureSetup()
         {
             csAdditions = ";pooling=false;procedure cache size=0;";
-            Open();
+			base.FixtureSetup();
         }
 
-        [TestFixtureTearDown]
-        public void TestFixtureTearDown()
-        {
-            Close();
-        }
-
+		[SetUp]
         protected override void Setup()
         {
             base.Setup();
@@ -467,7 +462,7 @@ namespace MySql.Data.MySqlClient.Tests
 			try
 			{
 				c.Open();
-				MySqlCommand cmd2 = new MySqlCommand(String.Format("use {0}", databases[0]), c);
+				MySqlCommand cmd2 = new MySqlCommand(String.Format("use {0}", DbConfig.Database0), c);
 				cmd2.ExecuteNonQuery();
 
 				MySqlCommand cmd = new MySqlCommand("spTest", c);
@@ -475,10 +470,10 @@ namespace MySql.Data.MySqlClient.Tests
 				object val = cmd.ExecuteScalar();
 				Assert.AreEqual(4, val);
 
-				cmd2.CommandText = String.Format("use {0}", databases[1]);
+				cmd2.CommandText = String.Format("use {0}", DbConfig.Database1);
 				cmd2.ExecuteNonQuery();
 
-				cmd.CommandText = String.Format("{0}.spTest", databases[0]);
+				cmd.CommandText = String.Format("{0}.spTest", DbConfig.Database0);
 				val = cmd.ExecuteScalar();
 				Assert.AreEqual(4, val);
 			}
@@ -1006,10 +1001,10 @@ namespace MySql.Data.MySqlClient.Tests
         {
             suExecSQL(String.Format(
                 "GRANT ALL ON {0}.* to 'testuser'@'%' identified by 'testuser'",
-                databases[0]));
+                DbConfig.Database0));
             suExecSQL(String.Format(
                 "GRANT ALL ON {0}.* to 'testuser'@'localhost' identified by 'testuser'",
-                databases[0]));
+                DbConfig.Database0));
 
             execSQL("DROP PROCEDURE IF EXISTS spTest");
             execSQL("CREATE PROCEDURE spTest(id int, OUT outid int, INOUT inoutid int) " +

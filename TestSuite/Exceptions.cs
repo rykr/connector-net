@@ -29,21 +29,12 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class Exceptions : BaseTest
 	{
-		[TestFixtureSetUp]
-		public void FixtureSetup()
+		protected override void Setup()
 		{
-			Open();
-
+			base.Setup ();
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100))");
 		}
-
-		[TestFixtureTearDown]
-		public void FixtureTeardown()
-		{
-			Close();
-		}
-
 
 		[Test]
 		public void Timeout()

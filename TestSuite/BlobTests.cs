@@ -32,18 +32,6 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class BlobTests : BaseTest
 	{
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
-		{
-			Open();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown()
-		{
-			Close();
-		}
-
 		protected override void Setup()
 		{
 			base.Setup();

@@ -28,18 +28,6 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class Syntax : BaseTest
 	{
-		[TestFixtureSetUp]
-		public void FixtureSetup()
-		{
-			Open();
-		}
-
-		[TestFixtureTearDown]
-		public void FixtureTeardown()
-		{
-			Close();
-		}
-
 		[SetUp]
 		protected override void Setup()
 		{

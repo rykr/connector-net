@@ -32,18 +32,6 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class DataReaderTests : BaseTest
 	{
-		[TestFixtureSetUp]
-		public void TestFixtureSetUp()
-		{
-			Open();
-		}
-
-		[TestFixtureTearDown]
-		public void TestFixtureTearDown()
-		{
-			Close();
-		}
-
 		[SetUp]
 		protected override void Setup()
 		{
@@ -224,7 +212,8 @@ namespace MySql.Data.MySqlClient.Tests
 				reader = cmd.ExecuteReader();
 				DataTable dt = reader.GetSchemaTable();
 				Assert.AreEqual(true, dt.Rows[0]["IsAutoIncrement"], "Checking auto increment");
-				Assert.AreEqual(true, dt.Rows[0]["IsUnique"], "Checking IsUnique");
+				Assert.IsFalse((bool)dt.Rows[0]["IsUnique"], "Checking IsUnique");
+				Assert.IsTrue((bool)dt.Rows[0]["IsKey"]);
 				Assert.AreEqual(false, dt.Rows[0]["AllowDBNull"], "Checking AllowDBNull");
 				Assert.AreEqual(false, dt.Rows[1]["AllowDBNull"], "Checking AllowDBNull");
 				Assert.AreEqual(255, dt.Rows[1]["ColumnSize"]);
@@ -819,7 +808,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("DROP TABLE IF EXISTS test");
 			execSQL("CREATE TABLE test (id int, PRIMARY KEY(id))");
 			MySqlCommand cmd = new MySqlCommand(
-                String.Format("SHOW INDEX FROM test FROM {0}", databases[0]), conn);
+                String.Format("SHOW INDEX FROM test FROM {0}", DbConfig.Database0), conn);
 			MySqlDataReader reader = null;
 			try
 			{

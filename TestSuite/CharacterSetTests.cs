@@ -31,16 +31,10 @@ namespace MySql.Data.MySqlClient.Tests
 	public class CharacterSetTests : BaseTest
 	{
 		[TestFixtureSetUp]
-		public void FixtureSetup()
+		protected override void FixtureSetup()
 		{
 			csAdditions = ";pooling=false;";
-			Open();
-		}
-
-		[TestFixtureTearDown]
-		public void FixtureTeardown()
-		{
-			Close();
+			base.FixtureSetup();
 		}
 
 		[Test]

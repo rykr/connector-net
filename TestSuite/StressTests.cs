@@ -33,20 +33,14 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class StressTests : BaseTest
 	{
-		[TestFixtureSetUp]
-		public void FixtureSetup()
+		protected override void Setup()
 		{
-			Open();
+			base.Setup ();
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id INT NOT NULL, name varchar(100), blob1 LONGBLOB, text1 TEXT, " +
 				"PRIMARY KEY(id))");
 		}
 
-		[TestFixtureTearDown]
-		public void FixtureTearDown()
-		{
-			Close();
-		}
 
 		[Test]
 		public void TestMultiPacket()
