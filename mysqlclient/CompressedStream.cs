@@ -48,6 +48,7 @@ namespace MySql.Data.MySqlClient
 			this.baseStream = baseStream;
 			localByte = new byte[1];
 			cache = new MemoryStream();
+            inBufferRef = new WeakReference(inBuffer, false);
 		}
 
 		#region Properties
