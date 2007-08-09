@@ -280,20 +280,21 @@ namespace MySql.Data.MySqlClient.Tests
         [Test]
         public void ExecuteReader()
         {
-            // create our procedure
-            execSQL("CREATE PROCEDURE spTest(OUT p INT) " +
-                "BEGIN  SELECT * FROM mysql.db; SET p=2; END");
+			// create our procedure
+			execSQL("CREATE PROCEDURE spTest(OUT p INT) " +
+				"BEGIN SELECT 1; SET p=2; END");
 
-            MySqlCommand cmd = new MySqlCommand("spTest", conn);
-            cmd.Parameters.Add("?p", MySqlDbType.Int32);
-            cmd.Parameters[0].Direction = ParameterDirection.Output;
-            cmd.CommandType = CommandType.StoredProcedure;
-            MySqlDataReader reader = cmd.ExecuteReader();
-            Assert.AreEqual(true, reader.Read());
-            Assert.AreEqual(false, reader.NextResult());
-            Assert.AreEqual(false, reader.Read());
-            reader.Close();
-            Assert.AreEqual(2, cmd.Parameters[0].Value);
+			MySqlCommand cmd = new MySqlCommand("spTest", conn);
+			cmd.Parameters.Add("?p", MySqlDbType.Int32);
+			cmd.Parameters[0].Direction = ParameterDirection.Output;
+			cmd.CommandType = CommandType.StoredProcedure;
+			using (MySqlDataReader reader = cmd.ExecuteReader())
+			{
+				Assert.AreEqual(true, reader.Read());
+				Assert.AreEqual(false, reader.NextResult());
+				Assert.AreEqual(false, reader.Read());
+			}
+			Assert.AreEqual(2, cmd.Parameters[0].Value);
         }
 
         [Test]
@@ -458,38 +459,38 @@ namespace MySql.Data.MySqlClient.Tests
         [Test]
         public void NoDefaultDatabase()
         {
-            // create our procedure
-            execSQL("CREATE PROCEDURE spTest() BEGIN  SELECT 4; END");
+			// create our procedure
+			execSQL("CREATE PROCEDURE spTest() BEGIN  SELECT 4; END");
 
-            string newConnStr = GetConnectionString(false);
-            MySqlConnection c = new MySqlConnection(newConnStr);
-            try
-            {
-                c.Open();
-                MySqlCommand cmd2 = new MySqlCommand("use test", c);
-                cmd2.ExecuteNonQuery();
+			string newConnStr = GetConnectionString(false);
+			MySqlConnection c = new MySqlConnection(newConnStr);
+			try
+			{
+				c.Open();
+				MySqlCommand cmd2 = new MySqlCommand(String.Format("use {0}", databases[0]), c);
+				cmd2.ExecuteNonQuery();
 
-                MySqlCommand cmd = new MySqlCommand("spTest", c);
-                cmd.CommandType = CommandType.StoredProcedure;
-                object val = cmd.ExecuteScalar();
-                Assert.AreEqual(4, val);
+				MySqlCommand cmd = new MySqlCommand("spTest", c);
+				cmd.CommandType = CommandType.StoredProcedure;
+				object val = cmd.ExecuteScalar();
+				Assert.AreEqual(4, val);
 
-                cmd2.CommandText = "use mysql";
-                cmd2.ExecuteNonQuery();
+				cmd2.CommandText = String.Format("use {0}", databases[1]);
+				cmd2.ExecuteNonQuery();
 
-                cmd.CommandText = "test.spTest";
-                val = cmd.ExecuteScalar();
-                Assert.AreEqual(4, val);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                c.Close();
-            }
-        }
+				cmd.CommandText = String.Format("{0}.spTest", databases[0]);
+				val = cmd.ExecuteScalar();
+				Assert.AreEqual(4, val);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				c.Close();
+			}
+		}
 
         /// <summary>
         /// Bug #13590  	ExecuteScalar returns only Int64 regardless of actual SQL type
@@ -698,6 +699,7 @@ namespace MySql.Data.MySqlClient.Tests
             cmd.Parameters.Add("?str", "First record");
             cmd.ExecuteNonQuery();
 
+			cmd.Parameters.Clear();
             cmd.Parameters.Add("?id", 2);
             cmd.Parameters.Add("?str", "Second record");
             cmd.ExecuteNonQuery();

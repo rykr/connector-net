@@ -313,7 +313,7 @@ namespace MySql.Data.MySqlClient
 		{
 			if (valueObject == null)
 			{
-				valueObject = MySqlValue.GetMySqlValue(mySqlDbType, true);
+				valueObject = MySqlValue.GetMySqlValue(mySqlDbType);
 
 				MySqlDecimal dec = (valueObject as MySqlDecimal);
 				if (dec != null)

@@ -54,6 +54,11 @@ namespace MySql.Data.MySqlClient
 			maxPacketSize = 1047552;
 		}
 
+		~NativeDriver()
+		{
+			Close();
+		}
+
 		public ClientFlags Flags
 		{
 			get { return connectionFlags; }
@@ -350,19 +355,29 @@ namespace MySql.Data.MySqlClient
 			return rs;
 		}
 
-		public override void Close()
+		protected override void Dispose(bool disposing)
 		{
-			if (isOpen)
+			if (disposing)
 			{
-				ExecuteCommand(DBCmd.QUIT, null, 0);
+				try
+				{
+					if (isOpen)
+					{
+						ExecuteCommand(DBCmd.QUIT, null, 0);
 
-				writer.Stream.Close();
-				reader.Stream.Close();
+						writer.Stream.Close();
+						reader.Stream.Close();
+					}
+				}
+				catch (Exception)
+				{
+					// we are just going to eat any exceptions
+					// generated here
+				}
 			}
 
-			base.Close();
+			base.Dispose(disposing);
 		}
-
 
 		public override bool Ping()
 		{
@@ -546,13 +561,12 @@ namespace MySql.Data.MySqlClient
 				field.ColumnLength = reader.ReadNBytes();
 				MySqlDbType type = (MySqlDbType)reader.ReadNBytes();
 				reader.ReadByte();
+				ColumnFlags colFlags;
 				if ((Flags & ClientFlags.LONG_FLAG) != 0)
-					field.Flags = (ColumnFlags)reader.ReadInteger(2);
+					colFlags = (ColumnFlags)reader.ReadInteger(2);
 				else
-					field.Flags = (ColumnFlags)reader.ReadByte();
-
-				// we delay this because setting the type causes the internal type object to be created
-				field.Type = type;
+					colFlags = (ColumnFlags)reader.ReadByte();
+				field.SetTypeAndFlags(type, colFlags);
 
 				field.Scale = (byte)reader.ReadByte();
 				if (!version.isAtLeast(3, 23, 15) && version.isAtLeast(3, 23, 0))
@@ -575,21 +589,24 @@ namespace MySql.Data.MySqlClient
 			field.ColumnName = reader.ReadLenString();
 			field.OriginalColumnName = reader.ReadLenString();
 			reader.ReadByte();
-			field.CharactetSetIndex = reader.ReadInteger(2);
+			field.CharacterSetIndex = reader.ReadInteger(2);
 			field.ColumnLength = reader.ReadInteger(4);
-			field.Type = (MySqlDbType)reader.ReadByte();
+
+			MySqlDbType type = (MySqlDbType)reader.ReadByte();
+			ColumnFlags colFlags;
 			if ((Flags & ClientFlags.LONG_FLAG) != 0)
-				field.Flags = (ColumnFlags)reader.ReadInteger(2);
+				colFlags = (ColumnFlags)reader.ReadInteger(2);
 			else
-				field.Flags = (ColumnFlags)reader.ReadByte();
+				colFlags = (ColumnFlags)reader.ReadByte();
+			field.SetTypeAndFlags(type, colFlags);
 
 			field.Scale = (byte)reader.ReadByte();
 
 			if (charSets != null)
 			{
-				CharacterSet cs = CharSetMap.GetChararcterSet(this.Version, (string)charSets[field.CharactetSetIndex]);
+				CharacterSet cs = CharSetMap.GetChararcterSet(this.Version, (string)charSets[field.CharacterSetIndex]);
 				field.MaxLength = cs.byteCount;
-				field.Encoding = CharSetMap.GetEncoding(this.version, (string)charSets[field.CharactetSetIndex]);
+				field.Encoding = CharSetMap.GetEncoding(this.version, (string)charSets[field.CharacterSetIndex]);
 			}
 
 			return field;

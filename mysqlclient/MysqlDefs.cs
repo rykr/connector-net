@@ -150,18 +150,54 @@ namespace MySql.Data.MySqlClient
 		VarChar = 253,
 		/// <summary><b>Obsolete</b>  Use VarChar type</summary>
 		Char = 254,
+		String = 254,
 		/// <summary></summary>
 		Geometry = 255,
-		/// <summary></summary>
-		UByte = 1024,
-		/// <summary></summary>
-		UInt16 = 1025,
-		/// <summary></summary>
-		UInt24 = 1026,
-		/// <summary></summary>
-		UInt32 = 1027,
-		/// <summary></summary>
-		UInt64 = 1028
+		/// <summary>
+		/// Unsigned 8-bit value.
+		/// </summary>
+		UByte = 501,
+		/// <summary>
+		/// Unsigned 16-bit value.
+		/// </summary>
+		UInt16 = 502,
+		/// <summary>
+		/// Unsigned 24-bit value.
+		/// </summary>
+		UInt24 = 509,
+		/// <summary>
+		/// Unsigned 32-bit value.
+		/// </summary>
+		UInt32 = 503,
+		/// <summary>
+		/// Unsigned 64-bit value.
+		/// </summary>
+		UInt64 = 508,
+		/// <summary>
+		/// Fixed length binary string.
+		/// </summary>
+		Binary = 600,
+		/// <summary>
+		/// Variable length binary string.
+		/// </summary>
+		VarBinary = 601,
+		/// <summary>
+		/// A text column with a maximum length of 255 (2^8 - 1) characters.
+		/// </summary>
+		TinyText = 749,
+		/// <summary>
+		/// A text column with a maximum length of 16777215 (2^24 - 1) characters.
+		/// </summary>
+		MediumText = 750,
+		/// <summary>
+		/// A text column with a maximum length of 4294967295 or 
+		/// 4G (2^32 - 1) characters.
+		/// </summary>
+		LongText = 751,
+		/// <summary>
+		/// A text column with a maximum length of 65535 (2^16 - 1) characters.
+		/// </summary>
+		Text = 752
 	};
 
 

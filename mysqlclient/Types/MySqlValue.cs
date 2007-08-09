@@ -109,7 +109,7 @@ namespace MySql.Data.Types
 			return ValueAsObject.ToString();
 		}
 
-		internal static MySqlValue GetMySqlValue( MySqlDbType type, bool binary )
+		internal static MySqlValue GetMySqlValue(MySqlDbType type)
 		{
 			switch (type) 
 			{
@@ -159,15 +159,24 @@ namespace MySql.Data.Types
 
 				case MySqlDbType.Set:
 				case MySqlDbType.Enum:
-				case MySqlDbType.Char:
-                case MySqlDbType.VarString:
-				case MySqlDbType.VarChar: 
+				case MySqlDbType.String:
+				case MySqlDbType.VarString:
+				case MySqlDbType.VarChar:
+				case MySqlDbType.Text:
+				case MySqlDbType.TinyText:
+				case MySqlDbType.MediumText:
+				case MySqlDbType.LongText:
+				case (MySqlDbType)Field_Type.NULL:
+					return new MySqlString(null, type);
 				case MySqlDbType.Blob:
 				case MySqlDbType.MediumBlob:
 				case MySqlDbType.LongBlob:
+				case MySqlDbType.TinyBlob:
+				case MySqlDbType.Binary:
+				case MySqlDbType.VarBinary:
+					return new MySqlBinary(null, type);
 				default:
-					if (binary) return new MySqlBinary( null, type );
-					return new MySqlString( null, type );
+					throw new MySqlException("Unknown data type");
 			}
 		}
 

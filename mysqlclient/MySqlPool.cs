@@ -180,6 +180,25 @@ namespace MySql.Data.MySqlClient
 			}
 		}
 
+		/// <summary>
+		/// Removes a connection from the in use pool.  The only situations where this method 
+		/// would be called are when a connection that is in use gets some type of fatal exception
+		/// or when the connection is being returned to the pool and it's too old to be 
+		/// returned.
+		/// </summary>
+		/// <param name="driver"></param>
+		public void RemoveConnection(Driver driver)
+		{
+			lock (lockObject)
+			{
+				if (inUsePool.Contains(driver))
+				{
+					inUsePool.Remove(driver);
+					poolGate.Release();
+				}
+			}
+		}
+
 		public Driver GetConnection() 
 		{
 			int ticks = (int)settings.ConnectionTimeout * 1000;

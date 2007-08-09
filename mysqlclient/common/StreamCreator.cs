@@ -150,7 +150,10 @@ namespace MySql.Data.Common
 				socket.Close();
 				return null;
 			}
-			return new NetworkStream(socket, true);
+			NetworkStream stream = new NetworkStream(socket, true);
+			GC.SuppressFinalize(socket);
+			GC.SuppressFinalize(stream);
+			return stream;
 		}
 
 	}

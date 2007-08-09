@@ -81,7 +81,7 @@ namespace MySql.Data.MySqlClient
 
 		#region Properties
 
-		public int CharactetSetIndex
+		public int CharacterSetIndex
 		{
 			get { return charSetIndex; }
 			set { charSetIndex = value; }
@@ -149,7 +149,12 @@ namespace MySql.Data.MySqlClient
 
 		public bool IsBinary
 		{
-			get { return (colFlags & ColumnFlags.BINARY) > 0; }
+			get 
+			{ 
+				if (connVersion.isAtLeast(4,1,0))
+					return (CharacterSetIndex == 63);
+				return (colFlags & ColumnFlags.BINARY) > 0; 
+			}
 		}
 
 		public bool IsUnsigned
@@ -171,6 +176,45 @@ namespace MySql.Data.MySqlClient
 
 		#endregion
 
+		public void SetTypeAndFlags(MySqlDbType type, ColumnFlags flags)
+		{
+			colFlags = flags;
+			mySqlDbType = type;
+
+			// if our type is an unsigned number, then we need
+			// to bump it up into our unsigned types
+			// we're trusting that the server is not going to set the UNSIGNED
+			// flag unless we are a number
+			if (IsUnsigned)
+			{
+				switch (type)
+				{
+					case MySqlDbType.Byte:
+						mySqlDbType = MySqlDbType.UByte; break;
+					case MySqlDbType.Int16:
+						mySqlDbType = MySqlDbType.UInt16; break;
+					case MySqlDbType.Int24:
+						mySqlDbType = MySqlDbType.UInt24; break;
+					case MySqlDbType.Int32:
+						mySqlDbType = MySqlDbType.UInt32; break;
+					case MySqlDbType.Int64:
+						mySqlDbType = MySqlDbType.UInt64; break;
+				}
+			}
+
+			if (IsBlob && !IsBinary)
+			{
+				if (type == MySqlDbType.TinyBlob)
+					mySqlDbType = MySqlDbType.TinyText;
+				else if (type == MySqlDbType.MediumBlob)
+					mySqlDbType = MySqlDbType.MediumText;
+				else if (type == MySqlDbType.Blob)
+					mySqlDbType = MySqlDbType.Text;
+				else if (type == MySqlDbType.LongBlob)
+					mySqlDbType = MySqlDbType.LongText;
+			}
+		}
+
 		public MySqlDbType ProviderType()
 		{
 			if (IsUnsigned)
@@ -189,7 +233,7 @@ namespace MySql.Data.MySqlClient
 
 		public MySqlValue GetValueObject()
 		{
-			MySqlValue valueObject = MySqlValue.GetMySqlValue(ProviderType(), IsBinary);
+			MySqlValue valueObject = MySqlValue.GetMySqlValue(ProviderType());
 			return valueObject;
 		}
 

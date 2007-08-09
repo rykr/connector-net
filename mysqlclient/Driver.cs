@@ -29,7 +29,7 @@ namespace MySql.Data.MySqlClient
 	/// <summary>
 	/// Summary description for BaseDriver.
 	/// </summary>
-	internal abstract class Driver
+	internal abstract class Driver: IDisposable
 	{
 		protected int threadId;
 		protected DBVersion version;
@@ -145,8 +145,9 @@ namespace MySql.Data.MySqlClient
 
 		public virtual void Close()
 		{
-			isOpen = false;
-        }
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
 
 		/// <summary>
 		/// I don't like this setup but can't think of a better way of doing
@@ -316,6 +317,25 @@ namespace MySql.Data.MySqlClient
 
 		public abstract void ReadFieldMetadata(int count, ref MySqlField[] fields);
 		public abstract bool Ping();
+		#endregion
+
+		#region IDisposable Members
+
+		protected virtual void Dispose(bool disposing)
+		{
+			// if we are pooling, then release ourselves
+			if (connectionString.Pooling)
+				MySqlPoolManager.RemoveConnection(this);
+
+			isOpen = false;
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
 		#endregion
 
 	}
