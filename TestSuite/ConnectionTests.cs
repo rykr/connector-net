@@ -129,11 +129,11 @@ namespace MySql.Data.MySqlClient.Tests
             c.Open();
             Assert.IsTrue(c.State == ConnectionState.Open);
 
-            Assert.AreEqual(DbConfig.Database0.ToLower(), c.Database.ToLower());
+            Assert.AreEqual(database0.ToLower(), c.Database.ToLower());
 
-            c.ChangeDatabase(DbConfig.Database1);
+            c.ChangeDatabase(database1);
 
-            Assert.AreEqual(DbConfig.Database1.ToLower(), c.Database.ToLower());
+            Assert.AreEqual(database1.ToLower(), c.Database.ToLower());
 
             c.Close();
         }

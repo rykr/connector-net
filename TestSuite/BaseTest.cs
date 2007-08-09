@@ -43,6 +43,8 @@ namespace MySql.Data.MySqlClient.Tests
         protected string memoryName;
         protected string rootUser;
         protected string rootPassword;
+		protected string database0;
+		protected string database1;
 
         public BaseTest()
         {
@@ -55,6 +57,11 @@ namespace MySql.Data.MySqlClient.Tests
             memoryName = "MYSQL";
             rootUser = "root";
             rootPassword = "";
+
+			database0 = System.IO.Path.GetFileNameWithoutExtension(
+				System.IO.Path.GetTempFileName());
+			database1 = System.IO.Path.GetFileNameWithoutExtension(
+				System.IO.Path.GetTempFileName());
 
 #if NET20
             string strPort = ConfigurationManager.AppSettings["port"];
@@ -84,17 +91,17 @@ namespace MySql.Data.MySqlClient.Tests
 			rootConn.Open();
 
 			// now create our databases
-			suExecSQL("CREATE DATABASE " + DbConfig.Database0);
-			suExecSQL("CREATE DATABASE " + DbConfig.Database1);
+			suExecSQL("CREATE DATABASE " + database0);
+			suExecSQL("CREATE DATABASE " + database1);
 
 			// now allow our user to access them
 			suExecSQL(String.Format(@"GRANT ALL ON {0}.* to 'test'@'localhost' 
-				identified by 'test'", DbConfig.Database0));
+				identified by 'test'", database0));
 			suExecSQL(String.Format(@"GRANT ALL ON {0}.* to 'test'@'localhost' 
-				identified by 'test'", DbConfig.Database1));
+				identified by 'test'", database1));
 			suExecSQL("FLUSH PRIVILEGES");
 
-			rootConn.ChangeDatabase(DbConfig.Database0);
+			rootConn.ChangeDatabase(database0);
 
 			Open();
 		}
@@ -102,8 +109,8 @@ namespace MySql.Data.MySqlClient.Tests
 		[TestFixtureTearDown]
 		protected virtual void TestFixtureTearDown()
 		{
-			suExecSQL("DROP DATABASE " + DbConfig.Database0);
-			suExecSQL("DROP DATABASE " + DbConfig.Database1);
+			suExecSQL("DROP DATABASE " + database0);
+			suExecSQL("DROP DATABASE " + database1);
 
 			rootConn.Close();
 			Close();
@@ -119,7 +126,7 @@ namespace MySql.Data.MySqlClient.Tests
             string connStr = String.Format("server={0};user id={1};password={2};" +
                  "persist security info=true;{3}", host, user, password, csAdditions);
             if (includedb)
-                connStr += String.Format("database={0};", DbConfig.Database0);
+                connStr += String.Format("database={0};", database0);
             connStr += GetConnectionInfo();
             return connStr;
         }
@@ -129,7 +136,7 @@ namespace MySql.Data.MySqlClient.Tests
             string connStr = String.Format("server={0};user id={1};" +
                  "persist security info=true;{2}", host, user, csAdditions);
             if (includedb)
-                connStr += String.Format("database={0};", DbConfig.Database0);
+                connStr += String.Format("database={0};", database0);
             if (pw != null)
                 connStr += String.Format("password={0};", pw);
             connStr += GetConnectionInfo();
