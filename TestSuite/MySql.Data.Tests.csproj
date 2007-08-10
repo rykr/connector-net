@@ -80,14 +80,14 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
-                    Name = "nunit.framework"
-                    AssemblyName = "nunit.framework"
-                    HintPath = "..\..\..\..\..\Program Files\NUnit 2.2.8\bin\nunit.framework.dll"
-                />
-                <Reference
                     Name = "MySql.Data"
                     Project = "{5EAEFBC4-8389-4120-BAB3-9B27174F6F6F}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "nunit.framework"
+                    AssemblyName = "nunit.framework"
+                    HintPath = "..\..\..\..\..\Program Files\NUnit 2.4.2\bin\nunit.framework.dll"
                 />
             </References>
         </Build>
