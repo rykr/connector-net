@@ -163,7 +163,6 @@
     <echo message="Testing MySQL 5.0"/>
     <property name="excludes" value="NotWorking"/>
     <property name="config" value="mysql-50.config"/>
-    <!--<property name="doCoverage" value="true"/>-->
     <call target="testdb"/>
 
     <echo message="Testing MySQL 5.1"/>
