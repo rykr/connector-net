@@ -188,7 +188,7 @@ namespace MySql.Data.MySqlClient.Tests
 			restrictions[1] = database0;
 			restrictions[2] = "test";
 			DataTable dt = conn.GetSchema("Columns", restrictions);
-			Assert.IsTrue(dt.Rows.Count == 4);
+			Assert.AreEqual(4, dt.Rows.Count);
 			Assert.AreEqual("Columns", dt.TableName);
 			
 			// first column
