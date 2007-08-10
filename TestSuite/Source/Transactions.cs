@@ -27,230 +27,230 @@ using System.Data.Common;
 
 namespace MySql.Data.MySqlClient.Tests
 {
-    [TestFixture]
-    public class Transactions : BaseTest
-    {
-        protected override void Setup()
-        {
-            base.Setup();
+	[TestFixture]
+	public class Transactions : BaseTest
+	{
+		protected override void Setup()
+		{
+			base.Setup();
 
-            execSQL("DROP TABLE IF EXISTS Test");
-            createTable("CREATE TABLE Test (key2 VARCHAR(1), name VARCHAR(100), name2 VARCHAR(100))", "INNODB");
-        }
+			execSQL("DROP TABLE IF EXISTS Test");
+			createTable("CREATE TABLE Test (key2 VARCHAR(1), name VARCHAR(100), name2 VARCHAR(100))", "INNODB");
+		}
 
 #if NET20
 
-        void TransactionScopeInternal(bool commit)
-        {
-            MySqlConnection c = new MySqlConnection(GetConnectionString(true));
-            MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES ('a', 'name', 'name2')", c);
+		void TransactionScopeInternal(bool commit)
+		{
+			MySqlConnection c = new MySqlConnection(GetConnectionString(true));
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES ('a', 'name', 'name2')", c);
 
-            try
-            {
-                using (TransactionScope ts = new TransactionScope())
-                {
-                    c.Open();
+			try
+			{
+				using (TransactionScope ts = new TransactionScope())
+				{
+					c.Open();
 
-                    cmd.ExecuteNonQuery();
+					cmd.ExecuteNonQuery();
 
-                    if (commit)
-                        ts.Complete();
-                }
+					if (commit)
+						ts.Complete();
+				}
 
-                cmd.CommandText = "SELECT COUNT(*) FROM test";
-                object count = cmd.ExecuteScalar();
-                Assert.AreEqual(commit ? 1 : 0, count);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                if (c != null)
-                    c.Close();
-            }
-        }
+				cmd.CommandText = "SELECT COUNT(*) FROM test";
+				object count = cmd.ExecuteScalar();
+				Assert.AreEqual(commit ? 1 : 0, count);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				if (c != null)
+					c.Close();
+			}
+		}
 
-        [Test]
-        public void TransactionScopeRollback()
-        {
-            TransactionScopeInternal(false);
-        }
+		[Test]
+		public void TransactionScopeRollback()
+		{
+			TransactionScopeInternal(false);
+		}
 
-        [Test]
-        public void TransactionScopeCommit()
-        {
-            TransactionScopeInternal(true);
-        }
+		[Test]
+		public void TransactionScopeCommit()
+		{
+			TransactionScopeInternal(true);
+		}
 
-        void TransactionScopeMultipleInternal(bool commit)
-        {
-            MySqlConnection c1 = new MySqlConnection(GetConnectionString(true));
-            MySqlConnection c2 = new MySqlConnection(GetConnectionString(true));
-            MySqlCommand cmd1 = new MySqlCommand("INSERT INTO test VALUES ('a', 'name', 'name2')", c1);
-            MySqlCommand cmd2 = new MySqlCommand("INSERT INTO test VALUES ('b', 'name', 'name2')", c1);
+		void TransactionScopeMultipleInternal(bool commit)
+		{
+			MySqlConnection c1 = new MySqlConnection(GetConnectionString(true));
+			MySqlConnection c2 = new MySqlConnection(GetConnectionString(true));
+			MySqlCommand cmd1 = new MySqlCommand("INSERT INTO test VALUES ('a', 'name', 'name2')", c1);
+			MySqlCommand cmd2 = new MySqlCommand("INSERT INTO test VALUES ('b', 'name', 'name2')", c1);
 
-            try
-            {
-                using (TransactionScope ts = new TransactionScope())
-                {
-                    c1.Open();
-                    cmd1.ExecuteNonQuery();
+			try
+			{
+				using (TransactionScope ts = new TransactionScope())
+				{
+					c1.Open();
+					cmd1.ExecuteNonQuery();
 
-                    c2.Open();
-                    cmd2.ExecuteNonQuery();
+					c2.Open();
+					cmd2.ExecuteNonQuery();
 
-                    if (commit)
-                        ts.Complete();
-                }
+					if (commit)
+						ts.Complete();
+				}
 
-                cmd1.CommandText = "SELECT COUNT(*) FROM test";
-                object count = cmd1.ExecuteScalar();
-                Assert.AreEqual(commit ? 2 : 0, count);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                if (c1 != null)
-                    c1.Close();
-                if (c2 != null)
-                    c2.Close();
-            }
-        }
+				cmd1.CommandText = "SELECT COUNT(*) FROM test";
+				object count = cmd1.ExecuteScalar();
+				Assert.AreEqual(commit ? 2 : 0, count);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				if (c1 != null)
+					c1.Close();
+				if (c2 != null)
+					c2.Close();
+			}
+		}
 
-        [Test]
-        public void TransactionScopeMultipleRollback()
-        {
-            TransactionScopeMultipleInternal(false);
-        }
+		[Test]
+		public void TransactionScopeMultipleRollback()
+		{
+			TransactionScopeMultipleInternal(false);
+		}
 
-        [Test]
-        public void TransactionScopeMultipleCommit()
-        {
-            TransactionScopeMultipleInternal(true);
-        }
+		[Test]
+		public void TransactionScopeMultipleCommit()
+		{
+			TransactionScopeMultipleInternal(true);
+		}
 
 #endif
 
-        /// <summary>
-        /// Bug #27289 Transaction is not rolledback when connection close 
-        /// </summary>
-        [Test]
-        public void RollingBackOnClose()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test (id INT) TYPE=InnoDB");
+		/// <summary>
+		/// Bug #27289 Transaction is not rolledback when connection close 
+		/// </summary>
+		[Test]
+		public void RollingBackOnClose()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (id INT) TYPE=InnoDB");
 
-            string connStr = GetConnectionString(true) + ";pooling=true;";
-            MySqlConnection c = new MySqlConnection(connStr);
-            c.Open();
-            MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (1)", c);
-            MySqlTransaction tx = c.BeginTransaction();
-            cmd.ExecuteNonQuery();
-            c.Close();
+			string connStr = GetConnectionString(true) + ";pooling=true;";
+			MySqlConnection c = new MySqlConnection(connStr);
+			c.Open();
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (1)", c);
+			MySqlTransaction tx = c.BeginTransaction();
+			cmd.ExecuteNonQuery();
+			c.Close();
 
-            MySqlConnection c2 = new MySqlConnection(connStr);
-            c2.Open();
-            MySqlCommand cmd2 = new MySqlCommand("SELECT COUNT(*) from test", c2);
-            MySqlTransaction tx2 = c2.BeginTransaction();
-            object count = cmd2.ExecuteScalar();
-            c2.Close();
-            Assert.AreEqual(0, count);
-        }
+			MySqlConnection c2 = new MySqlConnection(connStr);
+			c2.Open();
+			MySqlCommand cmd2 = new MySqlCommand("SELECT COUNT(*) from test", c2);
+			MySqlTransaction tx2 = c2.BeginTransaction();
+			object count = cmd2.ExecuteScalar();
+			c2.Close();
+			Assert.AreEqual(0, count);
+		}
 
-        /// <summary
-        /// Bug #22042 mysql-connector-net-5.0.0-alpha BeginTransaction 
-        /// </summary>
-        void Bug22042()
-        {
-            DbProviderFactory factory =
-                new MySql.Data.MySqlClient.MySqlClientFactory();
-            DbConnection conexion = factory.CreateConnection();
+		/// <summary
+		/// Bug #22042 mysql-connector-net-5.0.0-alpha BeginTransaction 
+		/// </summary>
+		void Bug22042()
+		{
+			DbProviderFactory factory =
+				new MySql.Data.MySqlClient.MySqlClientFactory();
+			DbConnection conexion = factory.CreateConnection();
 
-            try
-            {
-                conexion.ConnectionString = GetConnectionString(true);
-                conexion.Open();
-                DbTransaction trans = conexion.BeginTransaction();
-                trans.Rollback();
-                conexion.Close();
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-        }
+			try
+			{
+				conexion.ConnectionString = GetConnectionString(true);
+				conexion.Open();
+				DbTransaction trans = conexion.BeginTransaction();
+				trans.Rollback();
+				conexion.Close();
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
 
-        /// <summary>
-        /// Bug #26754  	EnlistTransaction throws false MySqlExeption "Already enlisted"
-        /// </summary>
-        [Test]
-        public void EnlistTransactionNullTest()
-        {
-            try
-            {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = conn;
-                cmd.Connection.EnlistTransaction(null);
-            }
-            catch { }
+		/// <summary>
+		/// Bug #26754  	EnlistTransaction throws false MySqlExeption "Already enlisted"
+		/// </summary>
+		[Test]
+		public void EnlistTransactionNullTest()
+		{
+			try
+			{
+				MySqlCommand cmd = new MySqlCommand();
+				cmd.Connection = conn;
+				cmd.Connection.EnlistTransaction(null);
+			}
+			catch { }
 
-            using (TransactionScope ts = new TransactionScope())
-            {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = conn;
-                try
-                {
-                    cmd.Connection.EnlistTransaction(Transaction.Current);
-                }
-                catch (MySqlException)
-                {
-                    Assert.Fail("No exception should have been thrown");
-                }
-            }
-        }
+			using (TransactionScope ts = new TransactionScope())
+			{
+				MySqlCommand cmd = new MySqlCommand();
+				cmd.Connection = conn;
+				try
+				{
+					cmd.Connection.EnlistTransaction(Transaction.Current);
+				}
+				catch (MySqlException)
+				{
+					Assert.Fail("No exception should have been thrown");
+				}
+			}
+		}
 
-        /// <summary>
-        /// Bug #26754  	EnlistTransaction throws false MySqlExeption "Already enlisted"
-        /// </summary>
-        [Test]
-        public void EnlistTransactionWNestedTrxTest()
-        {
-            MySqlTransaction t = conn.BeginTransaction();
+		/// <summary>
+		/// Bug #26754  	EnlistTransaction throws false MySqlExeption "Already enlisted"
+		/// </summary>
+		[Test]
+		public void EnlistTransactionWNestedTrxTest()
+		{
+			MySqlTransaction t = conn.BeginTransaction();
 
-            using (TransactionScope ts = new TransactionScope())
-            {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = conn;
-                try
-                {
-                    cmd.Connection.EnlistTransaction(Transaction.Current);
-                }
-                catch (InvalidOperationException) 
-                { 
-                    /* caught NoNestedTransactions */  
-                }
-            }
+			using (TransactionScope ts = new TransactionScope())
+			{
+				MySqlCommand cmd = new MySqlCommand();
+				cmd.Connection = conn;
+				try
+				{
+					cmd.Connection.EnlistTransaction(Transaction.Current);
+				}
+				catch (InvalidOperationException) 
+				{ 
+					/* caught NoNestedTransactions */  
+				}
+			}
 
-            t.Rollback();
+			t.Rollback();
 
-            using (TransactionScope ts = new TransactionScope())
-            {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = conn;
-                try
-                {
-                    cmd.Connection.EnlistTransaction(Transaction.Current);
-                }
-                catch (MySqlException)
-                {
-                    Assert.Fail("No exception should have been thrown");
-                }
-            }
-        }
-    }
+			using (TransactionScope ts = new TransactionScope())
+			{
+				MySqlCommand cmd = new MySqlCommand();
+				cmd.Connection = conn;
+				try
+				{
+					cmd.Connection.EnlistTransaction(Transaction.Current);
+				}
+				catch (MySqlException)
+				{
+					Assert.Fail("No exception should have been thrown");
+				}
+			}
+		}
+	}
 }

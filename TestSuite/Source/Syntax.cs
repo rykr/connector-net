@@ -127,8 +127,8 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlConnection c = new MySqlConnection(connString);
 			c.Open();
 
-            MySqlCommand cmd = new MySqlCommand("SET max_allowed_packet=250000000", c);
-            cmd.ExecuteNonQuery();
+			MySqlCommand cmd = new MySqlCommand("SET max_allowed_packet=250000000", c);
+			cmd.ExecuteNonQuery();
 
 			string path = Path.GetTempFileName();
 			StreamWriter sw = new StreamWriter(path);
@@ -225,7 +225,7 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlDataAdapter da = new MySqlDataAdapter("SELECT CHAR(id) FROM Test GROUP BY val1,val2", conn);
 			DataTable dt = new DataTable();
 			da.Fill(dt);
-            Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
+			Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
 			Assert.AreEqual("A", dt.Rows[0][0]);
 		}
 
@@ -349,171 +349,171 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(1000, cnt);
 		}
 
-        [Test]
-        public void AutoIncrement()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test (testID int(11) NOT NULL auto_increment, testName varchar(100) default '', " +
-                    "PRIMARY KEY  (testID)) ENGINE=InnoDB DEFAULT CHARSET=latin1");
-            MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (NULL, 'test')", conn);
-            cmd.ExecuteNonQuery();
-            cmd.CommandText = "SELECT @@IDENTITY as 'Identity'";
-            MySqlDataReader reader = null;
-            try
-            {
-                reader = cmd.ExecuteReader();
-                reader.Read();
-                int ident = Int32.Parse(reader.GetValue(0).ToString());
-                Assert.AreEqual(1, ident);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                if (reader != null)
-                    reader.Close();
-            }
-        }
-        
-        /// <summary>
-        /// Bug #21521 # Symbols not allowed in column/table names. 
-        /// </summary>
-        [Test]
-        public void CommentSymbolInTableName()
-        {
-            try
-            {
-                execSQL("DROP TABLE IF EXISTS test");
-                execSQL("CREATE TABLE test (`PO#` int(11) NOT NULL auto_increment, " +
-                    "`PODate` date default NULL, PRIMARY KEY  (`PO#`))");
-                execSQL("INSERT INTO test ( `PO#`, `PODate` ) " +
-                    "VALUES ( NULL, '2006-01-01' )");
+		[Test]
+		public void AutoIncrement()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (testID int(11) NOT NULL auto_increment, testName varchar(100) default '', " +
+					"PRIMARY KEY  (testID)) ENGINE=InnoDB DEFAULT CHARSET=latin1");
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (NULL, 'test')", conn);
+			cmd.ExecuteNonQuery();
+			cmd.CommandText = "SELECT @@IDENTITY as 'Identity'";
+			MySqlDataReader reader = null;
+			try
+			{
+				reader = cmd.ExecuteReader();
+				reader.Read();
+				int ident = Int32.Parse(reader.GetValue(0).ToString());
+				Assert.AreEqual(1, ident);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				if (reader != null)
+					reader.Close();
+			}
+		}
+		
+		/// <summary>
+		/// Bug #21521 # Symbols not allowed in column/table names. 
+		/// </summary>
+		[Test]
+		public void CommentSymbolInTableName()
+		{
+			try
+			{
+				execSQL("DROP TABLE IF EXISTS test");
+				execSQL("CREATE TABLE test (`PO#` int(11) NOT NULL auto_increment, " +
+					"`PODate` date default NULL, PRIMARY KEY  (`PO#`))");
+				execSQL("INSERT INTO test ( `PO#`, `PODate` ) " +
+					"VALUES ( NULL, '2006-01-01' )");
 
-                string sql = "SELECT `PO#` AS PurchaseOrderNumber, " +
-                    "`PODate` AS OrderDate FROM  test";
-                MySqlCommand cmd = new MySqlCommand(sql, conn);
-                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                Assert.AreEqual(1, dt.Rows.Count);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-        }
+				string sql = "SELECT `PO#` AS PurchaseOrderNumber, " +
+					"`PODate` AS OrderDate FROM  test";
+				MySqlCommand cmd = new MySqlCommand(sql, conn);
+				MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+				DataTable dt = new DataTable();
+				da.Fill(dt);
+				Assert.AreEqual(1, dt.Rows.Count);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
 
-        /// <summary>
-        /// Bug #25178 Addition message in error 
-        /// </summary>
-        [Test]
-        public void ErrorMessage()
-        {
-            MySqlCommand cmd = new MySqlCommand("SELEKT NOW() as theTime", conn);
-            try
-            {
-                object o = cmd.ExecuteScalar();
-            }
-            catch (MySqlException ex)
-            {
-                string s = ex.Message;
-                Assert.IsFalse(s.StartsWith("#"));
-            }
-        }
+		/// <summary>
+		/// Bug #25178 Addition message in error 
+		/// </summary>
+		[Test]
+		public void ErrorMessage()
+		{
+			MySqlCommand cmd = new MySqlCommand("SELEKT NOW() as theTime", conn);
+			try
+			{
+				object o = cmd.ExecuteScalar();
+			}
+			catch (MySqlException ex)
+			{
+				string s = ex.Message;
+				Assert.IsFalse(s.StartsWith("#"));
+			}
+		}
 
-        /// <summary>
-        /// Bug #27221 describe SQL command returns all byte array on MySQL versions older than 4.1.15 
-        /// </summary>
-        [Test]
-        public void Describe()
-        {
-            MySqlDataAdapter da = new MySqlDataAdapter("DESCRIBE test", conn);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
+		/// <summary>
+		/// Bug #27221 describe SQL command returns all byte array on MySQL versions older than 4.1.15 
+		/// </summary>
+		[Test]
+		public void Describe()
+		{
+			MySqlDataAdapter da = new MySqlDataAdapter("DESCRIBE test", conn);
+			DataTable dt = new DataTable();
+			da.Fill(dt);
 
-            Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
-            Assert.IsTrue(dt.Rows[0][1].GetType() == typeof(string));
-            Assert.IsTrue(dt.Rows[0][2].GetType() == typeof(string));
-            Assert.IsTrue(dt.Rows[0][3].GetType() == typeof(string));
-            Assert.IsTrue(dt.Rows[0][4].GetType() == typeof(string));
-            Assert.IsTrue(dt.Rows[0][5].GetType() == typeof(string));
-        }
+			Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
+			Assert.IsTrue(dt.Rows[0][1].GetType() == typeof(string));
+			Assert.IsTrue(dt.Rows[0][2].GetType() == typeof(string));
+			Assert.IsTrue(dt.Rows[0][3].GetType() == typeof(string));
+			Assert.IsTrue(dt.Rows[0][4].GetType() == typeof(string));
+			Assert.IsTrue(dt.Rows[0][5].GetType() == typeof(string));
+		}
 
-        [Test]
-        public void ShowTableStatus()
-        {
-            MySqlDataAdapter da = new MySqlDataAdapter(
-                String.Format("SHOW TABLE STATUS FROM {0} LIKE 'test'",
-                database0), conn);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
+		[Test]
+		public void ShowTableStatus()
+		{
+			MySqlDataAdapter da = new MySqlDataAdapter(
+				String.Format("SHOW TABLE STATUS FROM {0} LIKE 'test'",
+				database0), conn);
+			DataTable dt = new DataTable();
+			da.Fill(dt);
 
-            Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
-        }
+			Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
+		}
 
-        /// <summary>
-        /// Bug #26960 Connector .NET 5.0.5 / Visual Studio Plugin 1.1.2 
-        /// </summary>
-        [Test]
-        public void NullAsAType()
-        {
-            MySqlDataAdapter da = new MySqlDataAdapter(
-                @"SELECT 'localhost' as SERVER_NAME, 
-                null as CATALOG_NAME, database() as SCHEMA_NAME", conn);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
-            Assert.AreEqual(DBNull.Value, dt.Rows[0][1]);
-            Assert.IsTrue(dt.Rows[0][2].GetType() == typeof(string));
-        }
+		/// <summary>
+		/// Bug #26960 Connector .NET 5.0.5 / Visual Studio Plugin 1.1.2 
+		/// </summary>
+		[Test]
+		public void NullAsAType()
+		{
+			MySqlDataAdapter da = new MySqlDataAdapter(
+				@"SELECT 'localhost' as SERVER_NAME, 
+				null as CATALOG_NAME, database() as SCHEMA_NAME", conn);
+			DataTable dt = new DataTable();
+			da.Fill(dt);
+			Assert.IsTrue(dt.Rows[0][0].GetType() == typeof(string));
+			Assert.AreEqual(DBNull.Value, dt.Rows[0][1]);
+			Assert.IsTrue(dt.Rows[0][2].GetType() == typeof(string));
+		}
 
-        [Test]
-        public void SpaceInDatabaseName()
-        {
-            string dbName = System.IO.Path.GetFileNameWithoutExtension(
-                System.IO.Path.GetTempFileName()) + " x";
-            try
-            {
-                suExecSQL(String.Format("CREATE DATABASE `{0}`", dbName));
-                suExecSQL(String.Format("GRANT ALL ON `{0}`.* to 'test'@'localhost' identified by 'test'",
-                    dbName));
-                suExecSQL("FLUSH PRIVILEGES");
+		[Test]
+		public void SpaceInDatabaseName()
+		{
+			string dbName = System.IO.Path.GetFileNameWithoutExtension(
+				System.IO.Path.GetTempFileName()) + " x";
+			try
+			{
+				suExecSQL(String.Format("CREATE DATABASE `{0}`", dbName));
+				suExecSQL(String.Format("GRANT ALL ON `{0}`.* to 'test'@'localhost' identified by 'test'",
+					dbName));
+				suExecSQL("FLUSH PRIVILEGES");
 
-                string connStr = GetConnectionString(false) + ";database=" + dbName;
-                MySqlConnection c = new MySqlConnection(connStr);
-                c.Open();
-                c.Close();
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                suExecSQL(String.Format("DROP DATABASE `{0}`", dbName));
-            }
-        }
+				string connStr = GetConnectionString(false) + ";database=" + dbName;
+				MySqlConnection c = new MySqlConnection(connStr);
+				c.Open();
+				c.Close();
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				suExecSQL(String.Format("DROP DATABASE `{0}`", dbName));
+			}
+		}
 
-        /// <summary>
-        /// Bug #28448  	show processlist; returns byte arrays in the resulting data table
-        /// </summary>
-        [Test]
-        public void ShowProcessList()
-        {
-            MySqlCommand cmd = new MySqlCommand("show processlist", conn);
-            DataTable dt = new DataTable();
+		/// <summary>
+		/// Bug #28448  	show processlist; returns byte arrays in the resulting data table
+		/// </summary>
+		[Test]
+		public void ShowProcessList()
+		{
+			MySqlCommand cmd = new MySqlCommand("show processlist", conn);
+			DataTable dt = new DataTable();
 
-            using (MySqlDataReader rdr = cmd.ExecuteReader())
-            {
-                dt.Load(rdr);
-            }
-            DataRow row = dt.Rows[0];
+			using (MySqlDataReader rdr = cmd.ExecuteReader())
+			{
+				dt.Load(rdr);
+			}
+			DataRow row = dt.Rows[0];
 
-            Assert.IsTrue(row["User"].GetType().Name == "String");
-            Assert.IsTrue(row["Host"].GetType().Name == "String");
-            Assert.IsTrue(row["Command"].GetType().Name == "String");
-        }
+			Assert.IsTrue(row["User"].GetType().Name == "String");
+			Assert.IsTrue(row["Host"].GetType().Name == "String");
+			Assert.IsTrue(row["Command"].GetType().Name == "String");
+		}
 	}
 }

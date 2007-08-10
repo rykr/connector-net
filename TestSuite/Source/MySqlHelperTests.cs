@@ -31,12 +31,12 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class MySqlHelperTests : BaseTest
 	{
-        protected override void Setup()
-        {
-            base.Setup();
-            execSQL("DROP TABLE IF EXISTS Test");
-            execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
-        }
+		protected override void Setup()
+		{
+			base.Setup();
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
+		}
 
 		/// <summary>
 		/// Bug #11490  	certain incorrect queries trigger connection must be valid and open message
@@ -49,10 +49,10 @@ namespace MySql.Data.MySqlClient.Tests
 
 			try 
 			{
-                StringBuilder sb = new StringBuilder();
-                for (int i=0; i < 254; i++)
-                    sb.Append('a');
-                string sql = "INSERT INTO test (name) VALUES ('" + sb.ToString() + "')";
+				StringBuilder sb = new StringBuilder();
+				for (int i=0; i < 254; i++)
+					sb.Append('a');
+				string sql = "INSERT INTO test (name) VALUES ('" + sb.ToString() + "')";
 				reader = MySqlHelper.ExecuteReader(this.GetConnectionString(true), sql);
 			}
 			catch (Exception ex)

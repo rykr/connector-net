@@ -33,13 +33,13 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture] 
 	public class StressTests : BaseTest
 	{
-        protected override void Setup()
-        {
-            base.Setup();
-            execSQL("DROP TABLE IF EXISTS Test");
-            execSQL("CREATE TABLE Test (id INT NOT NULL, name varchar(100), blob1 LONGBLOB, text1 TEXT, " +
-                "PRIMARY KEY(id))");
-        }
+		protected override void Setup()
+		{
+			base.Setup();
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (id INT NOT NULL, name varchar(100), blob1 LONGBLOB, text1 TEXT, " +
+				"PRIMARY KEY(id))");
+		}
 
 		[Test]
 		public void TestMultiPacket()
@@ -52,7 +52,7 @@ namespace MySql.Data.MySqlClient.Tests
 			byte[] dataIn = Utils.CreateBlob(len);
 			byte[] dataIn2 = Utils.CreateBlob(len);
 
-            MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?id, NULL, ?blob, NULL )", conn);
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test VALUES (?id, NULL, ?blob, NULL )", conn);
 			cmd.Parameters.Add(new MySqlParameter("?id", 1));
 			cmd.Parameters.Add(new MySqlParameter("?blob", dataIn));
 			try 
@@ -70,36 +70,36 @@ namespace MySql.Data.MySqlClient.Tests
 
 			cmd.CommandText = "SELECT * FROM Test";
 
-            try
-            {
-                using (MySqlDataReader reader = cmd.ExecuteReader())
-                {
-                    reader.Read();
-                    byte[] dataOut = new byte[len];
-                    long count = reader.GetBytes(2, 0, dataOut, 0, len);
-                    Assert.AreEqual(len, count);
+			try
+			{
+				using (MySqlDataReader reader = cmd.ExecuteReader())
+				{
+					reader.Read();
+					byte[] dataOut = new byte[len];
+					long count = reader.GetBytes(2, 0, dataOut, 0, len);
+					Assert.AreEqual(len, count);
 
-                    for (int i = 0; i < len; i++)
-                        Assert.AreEqual(dataIn[i], dataOut[i]);
+					for (int i = 0; i < len; i++)
+						Assert.AreEqual(dataIn[i], dataOut[i]);
 
-                    reader.Read();
-                    count = reader.GetBytes(2, 0, dataOut, 0, len);
-                    Assert.AreEqual(len, count);
+					reader.Read();
+					count = reader.GetBytes(2, 0, dataOut, 0, len);
+					Assert.AreEqual(len, count);
 
-                    for (int i = 0; i < len; i++)
-                        Assert.AreEqual(dataIn2[i], dataOut[i]);
-                }
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
+					for (int i = 0; i < len; i++)
+						Assert.AreEqual(dataIn2[i], dataOut[i]);
+				}
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
 		}
 
 		[Test]
 		public void TestSequence()
 		{
-            MySqlCommand cmd = new MySqlCommand("insert into Test (id, name) values (?id, 'test')", conn);
+			MySqlCommand cmd = new MySqlCommand("insert into Test (id, name) values (?id, 'test')", conn);
 			cmd.Parameters.Add( new MySqlParameter("?id", 1));
 
 			for (int i=1; i <= 8000; i++)
@@ -134,57 +134,57 @@ namespace MySql.Data.MySqlClient.Tests
 				if (reader != null) reader.Close();
 			}
 		}
-    }
+	}
 
-    #region Configs
+	#region Configs
 
 	[Category("Compressed")]
-    public class StressTestsSocketCompressed : StressTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("port={0};compress=true", port);
-        }
-    }
+	public class StressTestsSocketCompressed : StressTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("port={0};compress=true", port);
+		}
+	}
 
 	[Category("Pipe")]
-    public class StressTestsPipe : StressTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("protocol=pipe;pipe name={0}", pipeName);
-        }
-    }
+	public class StressTestsPipe : StressTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("protocol=pipe;pipe name={0}", pipeName);
+		}
+	}
 
-    [Category("Compressed")]
-    [Category("Pipe")]
-    public class StressTestsPipeCompressed : StressTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("protocol=pipe;pipe name={0};compress=true", pipeName);
-        }
-    }
+	[Category("Compressed")]
+	[Category("Pipe")]
+	public class StressTestsPipeCompressed : StressTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("protocol=pipe;pipe name={0};compress=true", pipeName);
+		}
+	}
 
-    [Category("SharedMemory")]
-    public class StressTestsSharedMemory : StressTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("protocol=memory; shared memory name={0}", memoryName);
-        }
-    }
+	[Category("SharedMemory")]
+	public class StressTestsSharedMemory : StressTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("protocol=memory; shared memory name={0}", memoryName);
+		}
+	}
 
-    [Category("Compressed")]
-    [Category("SharedMemory")]
-    public class StressTestsSharedMemoryCompressed : StressTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("protocol=memory; shared memory name={0};compress=true", memoryName);
-        }
-    }
+	[Category("Compressed")]
+	[Category("SharedMemory")]
+	public class StressTestsSharedMemoryCompressed : StressTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("protocol=memory; shared memory name={0};compress=true", memoryName);
+		}
+	}
 
-    #endregion
+	#endregion
 
 }

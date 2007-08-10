@@ -39,21 +39,21 @@ namespace MySql.Data.MySqlClient.Tests
 		public void FixtureSetup()
 		{
 			csAdditions = ";pooling=false;use performance monitor=true;";
-            base.FixtureSetup();
+			base.FixtureSetup();
 		}
 
-        protected override void Setup()
-        {
-            base.Setup();
-            execSQL("DROP TABLE IF EXISTS Test; CREATE TABLE Test (id INT, name VARCHAR(100))");
-        }
+		protected override void Setup()
+		{
+			base.Setup();
+			execSQL("DROP TABLE IF EXISTS Test; CREATE TABLE Test (id INT, name VARCHAR(100))");
+		}
 
-        /// <summary>
-        /// This test doesn't work from the CI setup currently
-        /// </summary>
+		/// <summary>
+		/// This test doesn't work from the CI setup currently
+		/// </summary>
 		[Test]
 		[Category("5.0")]
-        [Category("NotWorking")]
+		[Category("NotWorking")]
 		public void ProcedureFromCache()
 		{
 			execSQL("DROP PROCEDURE IF EXISTS spTest");

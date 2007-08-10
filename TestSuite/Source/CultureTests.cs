@@ -30,23 +30,23 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class CultureTests : BaseTest
 	{
-        protected override void Setup()
-        {
-            base.Setup();
-            execSQL("DROP TABLE IF EXISTS Test");
-            execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
-        }
+		protected override void Setup()
+		{
+			base.Setup();
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
+		}
 
 		[Test]
 		public void TestFloats() 
 		{
 			InternalTestFloats(false);
-        }
+		}
 
-        [Category("4.1")]
-        [Test]
-        public void TestFloatsPrepared()
-        {
+		[Category("4.1")]
+		[Test]
+		public void TestFloatsPrepared()
+		{
 			InternalTestFloats(true);
 		}
 
@@ -57,7 +57,7 @@ namespace MySql.Data.MySqlClient.Tests
 			CultureInfo c = new CultureInfo("de-DE");
 			Thread.CurrentThread.CurrentCulture = c;
 			Thread.CurrentThread.CurrentUICulture = c;
-            
+
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (fl FLOAT, db DOUBLE, dec1 DECIMAL(5,2))");
 
@@ -122,40 +122,40 @@ namespace MySql.Data.MySqlClient.Tests
 			Thread.CurrentThread.CurrentUICulture = curUICulture;
 		}
 
-        /// <summary>
-        /// Bug #29931  	Connector/NET does not handle Saudi Hijri calendar correctly
-        /// </summary>
-        [Test]
-        public void ArabicCalendars()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test(dt DATETIME)");
-            execSQL("INSERT INTO test VALUES ('2007-01-01 12:30:45')");
+		/// <summary>
+		/// Bug #29931  	Connector/NET does not handle Saudi Hijri calendar correctly
+		/// </summary>
+		[Test]
+		public void ArabicCalendars()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test(dt DATETIME)");
+			execSQL("INSERT INTO test VALUES ('2007-01-01 12:30:45')");
 
-            CultureInfo curCulture = Thread.CurrentThread.CurrentCulture;
-            CultureInfo curUICulture = Thread.CurrentThread.CurrentUICulture;
-            CultureInfo c = new CultureInfo("ar-SA");
-            Thread.CurrentThread.CurrentCulture = c;
-            Thread.CurrentThread.CurrentUICulture = c;
+			CultureInfo curCulture = Thread.CurrentThread.CurrentCulture;
+			CultureInfo curUICulture = Thread.CurrentThread.CurrentUICulture;
+			CultureInfo c = new CultureInfo("ar-SA");
+			Thread.CurrentThread.CurrentCulture = c;
+			Thread.CurrentThread.CurrentUICulture = c;
 
-            try
-            {
-                MySqlCommand cmd = new MySqlCommand("SELECT dt FROM test", conn);
-                DateTime dt = (DateTime)cmd.ExecuteScalar();
-                Assert.AreEqual(2007, dt.Year);
-                Assert.AreEqual(1, dt.Month);
-                Assert.AreEqual(1, dt.Day);
-                Assert.AreEqual(12, dt.Hour);
-                Assert.AreEqual(30, dt.Minute);
-                Assert.AreEqual(45, dt.Second);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
+			try
+			{
+				MySqlCommand cmd = new MySqlCommand("SELECT dt FROM test", conn);
+				DateTime dt = (DateTime)cmd.ExecuteScalar();
+				Assert.AreEqual(2007, dt.Year);
+				Assert.AreEqual(1, dt.Month);
+				Assert.AreEqual(1, dt.Day);
+				Assert.AreEqual(12, dt.Hour);
+				Assert.AreEqual(30, dt.Minute);
+				Assert.AreEqual(45, dt.Second);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
 
-            Thread.CurrentThread.CurrentCulture = curCulture;
-            Thread.CurrentThread.CurrentUICulture = curUICulture;
-        }
-    }
+			Thread.CurrentThread.CurrentCulture = curCulture;
+			Thread.CurrentThread.CurrentUICulture = curUICulture;
+		}
+	}
 }

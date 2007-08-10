@@ -28,11 +28,11 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class PreparedStatements : BaseTest
 	{
-        protected override void Setup()
-        {
-            base.Setup();
-            execSQL("DROP TABLE IF EXISTS Test");
-        }
+		protected override void Setup()
+		{
+			base.Setup();
+			execSQL("DROP TABLE IF EXISTS Test");
+		}
 
 		[Test]
 		public void Simple() 
@@ -191,63 +191,63 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			execSQL("DROP TABLE IF EXISTS Test"); 
 			execSQL("CREATE TABLE Test (id int NOT NULL AUTO_INCREMENT, " +
-                    "id2 int NOT NULL, name varchar(50) DEFAULT NULL, " +
-                    "id3 int DEFAULT NULL, PRIMARY KEY (id))");
+					"id2 int NOT NULL, name varchar(50) DEFAULT NULL, " +
+					"id3 int DEFAULT NULL, PRIMARY KEY (id))");
 
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, id2, name, id3) " +
-                                                "VALUES(?id, ?id2, ?name,?id3)", conn);
+												"VALUES(?id, ?id2, ?name,?id3)", conn);
 
-            MySqlParameter id = new MySqlParameter();
-            id.ParameterName = "?id";
-            id.DbType = DbType.Int32;
-            id.Value = DBNull.Value;
+			MySqlParameter id = new MySqlParameter();
+			id.ParameterName = "?id";
+			id.DbType = DbType.Int32;
+			id.Value = DBNull.Value;
 
-            MySqlParameter id2 = new MySqlParameter();
-            id2.ParameterName = "?id2";
-            id2.DbType = DbType.Int32;
-            id2.Value = 2;
+			MySqlParameter id2 = new MySqlParameter();
+			id2.ParameterName = "?id2";
+			id2.DbType = DbType.Int32;
+			id2.Value = 2;
 
-            MySqlParameter name = new MySqlParameter();
-            name.ParameterName = "?name";
-            name.DbType = DbType.String;
-            name.Value = "Test";
+			MySqlParameter name = new MySqlParameter();
+			name.ParameterName = "?name";
+			name.DbType = DbType.String;
+			name.Value = "Test";
 
-            MySqlParameter id3 = new MySqlParameter();
-            id3.ParameterName = "?id3";
-            id3.DbType = DbType.Int32;
-            id3.Value = 3;
+			MySqlParameter id3 = new MySqlParameter();
+			id3.ParameterName = "?id3";
+			id3.DbType = DbType.Int32;
+			id3.Value = 3;
 
-            try
-            {
-                cmd.Parameters.Add(id);
-                cmd.Parameters.Add(id2);
-                cmd.Parameters.Add(name);
-                cmd.Parameters.Add(id3);
-                cmd.Prepare();
-                Assert.AreEqual(1, cmd.ExecuteNonQuery());
+			try
+			{
+				cmd.Parameters.Add(id);
+				cmd.Parameters.Add(id2);
+				cmd.Parameters.Add(name);
+				cmd.Parameters.Add(id3);
+				cmd.Prepare();
+				Assert.AreEqual(1, cmd.ExecuteNonQuery());
 
-                cmd.Parameters.Clear();
+				cmd.Parameters.Clear();
 
-                id3.Value = DBNull.Value;
-                name.Value = DBNull.Value;
-                cmd.Parameters.Add(id);
-                cmd.Parameters.Add(id2);
-                cmd.Parameters.Add(id3);
-                cmd.Parameters.Add(name);
+				id3.Value = DBNull.Value;
+				name.Value = DBNull.Value;
+				cmd.Parameters.Add(id);
+				cmd.Parameters.Add(id2);
+				cmd.Parameters.Add(id3);
+				cmd.Parameters.Add(name);
 
-                cmd.Prepare();
-                Assert.AreEqual(1, cmd.ExecuteNonQuery());
+				cmd.Prepare();
+				Assert.AreEqual(1, cmd.ExecuteNonQuery());
 
-                cmd.CommandText = "SELECT id3 FROM Test WHERE id=1";
-                Assert.AreEqual(3, cmd.ExecuteScalar());
+				cmd.CommandText = "SELECT id3 FROM Test WHERE id=1";
+				Assert.AreEqual(3, cmd.ExecuteScalar());
 
-                cmd.CommandText = "SELECT name FROM Test WHERE id=2";
-                Assert.AreEqual(DBNull.Value, cmd.ExecuteScalar());
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
+				cmd.CommandText = "SELECT name FROM Test WHERE id=2";
+				Assert.AreEqual(DBNull.Value, cmd.ExecuteScalar());
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
 		}
 
 		[Test]
@@ -502,53 +502,53 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(42, dt.Rows[0]["score"]);
 		}
 
-        /// <summary>
-        /// Bug #19261  	Supplying Input Parameters
-        /// </summary>
-        [Test]
-        [Category("4.1")]
-        public void MoreParametersOutOfOrder()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE `test` (`BlackListID` int(11) NOT NULL auto_increment, " +
-                    "`SubscriberID` int(11) NOT NULL, `Phone` varchar(50) default NULL, " +
-                    "`ContactID` int(11) default NULL, " +
-                    "`AdminJunk` tinyint(1) NOT NULL default '0', " +
-                    "PRIMARY KEY  (`BlackListID`), KEY `SubscriberID` (`SubscriberID`))");
+		/// <summary>
+		/// Bug #19261  	Supplying Input Parameters
+		/// </summary>
+		[Test]
+		[Category("4.1")]
+		public void MoreParametersOutOfOrder()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE `test` (`BlackListID` int(11) NOT NULL auto_increment, " +
+					"`SubscriberID` int(11) NOT NULL, `Phone` varchar(50) default NULL, " +
+					"`ContactID` int(11) default NULL, " +
+					"`AdminJunk` tinyint(1) NOT NULL default '0', " +
+					"PRIMARY KEY  (`BlackListID`), KEY `SubscriberID` (`SubscriberID`))");
 
-            IDbCommand cmd = conn.CreateCommand();
-            cmd.CommandText = "INSERT INTO `test`(`SubscriberID`,`Phone`,`ContactID`, " +
-                "`AdminJunk`) VALUES (?SubscriberID,?Phone,?ContactID, ?AdminJunk);";
+			IDbCommand cmd = conn.CreateCommand();
+			cmd.CommandText = "INSERT INTO `test`(`SubscriberID`,`Phone`,`ContactID`, " +
+				"`AdminJunk`) VALUES (?SubscriberID,?Phone,?ContactID, ?AdminJunk);";
 
-            MySqlParameter oParameterSubscriberID = new MySqlParameter();
-            oParameterSubscriberID.ParameterName = "?SubscriberID";
-            oParameterSubscriberID.DbType = DbType.Int32;
-            oParameterSubscriberID.Value = 1;
+			MySqlParameter oParameterSubscriberID = new MySqlParameter();
+			oParameterSubscriberID.ParameterName = "?SubscriberID";
+			oParameterSubscriberID.DbType = DbType.Int32;
+			oParameterSubscriberID.Value = 1;
 
-            MySqlParameter oParameterPhone = new MySqlParameter();
-            oParameterPhone.ParameterName = "?Phone";
-            oParameterPhone.DbType = DbType.String;
-            oParameterPhone.Value = DBNull.Value;
+			MySqlParameter oParameterPhone = new MySqlParameter();
+			oParameterPhone.ParameterName = "?Phone";
+			oParameterPhone.DbType = DbType.String;
+			oParameterPhone.Value = DBNull.Value;
 
-            MySqlParameter oParameterContactID = new MySqlParameter();
-            oParameterContactID.ParameterName = "?ContactID";
-            oParameterContactID.DbType = DbType.Int32;
-            oParameterContactID.Value = DBNull.Value;
+			MySqlParameter oParameterContactID = new MySqlParameter();
+			oParameterContactID.ParameterName = "?ContactID";
+			oParameterContactID.DbType = DbType.Int32;
+			oParameterContactID.Value = DBNull.Value;
 
-            MySqlParameter oParameterAdminJunk = new MySqlParameter();
-            oParameterAdminJunk.ParameterName = "?AdminJunk";
-            oParameterAdminJunk.DbType = DbType.Boolean;
-            oParameterAdminJunk.Value = true;
+			MySqlParameter oParameterAdminJunk = new MySqlParameter();
+			oParameterAdminJunk.ParameterName = "?AdminJunk";
+			oParameterAdminJunk.DbType = DbType.Boolean;
+			oParameterAdminJunk.Value = true;
 
-            cmd.Parameters.Add(oParameterSubscriberID);
-            cmd.Parameters.Add(oParameterPhone);
-            cmd.Parameters.Add(oParameterAdminJunk);
-            cmd.Parameters.Add(oParameterContactID);
+			cmd.Parameters.Add(oParameterSubscriberID);
+			cmd.Parameters.Add(oParameterPhone);
+			cmd.Parameters.Add(oParameterAdminJunk);
+			cmd.Parameters.Add(oParameterContactID);
 
-            cmd.Prepare();
-            int cnt = cmd.ExecuteNonQuery();
-            Assert.AreEqual(1, cnt);
-        }
+			cmd.Prepare();
+			int cnt = cmd.ExecuteNonQuery();
+			Assert.AreEqual(1, cnt);
+		}
 
 		/// <summary>
 		/// Bug #16627 Index and length must refer to a location within the string." when executing c
@@ -557,7 +557,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[Category("4.1")]
 		public void ParameterLengths()
 		{
-            execSQL("DROP TABLE IF EXISTS test");
+			execSQL("DROP TABLE IF EXISTS test");
 			execSQL("CREATE TABLE test (id int, name VARCHAR(255))");
 
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (?id, ?name)", conn);
@@ -578,251 +578,251 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual("short string", dt.Rows[0]["name"]);
 		}
 
-        /// <summary>
-        /// Bug #18570  	Unsigned tinyint (NET byte) incorrectly determined param type from param val
-        /// </summary>
-        [Test]
-        [Category("4.1")]
-        public void UnsignedTinyInt()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test(ID TINYINT UNSIGNED NOT NULL, " +
-	            "Name VARCHAR(50) NOT NULL,	PRIMARY KEY (ID), UNIQUE (ID), " +
-                "UNIQUE (Name))");
-            execSQL("INSERT INTO test VALUES ('127', 'name1')");
-            execSQL("INSERT INTO test VALUES ('128', 'name2')");
-            execSQL("INSERT INTO test VALUES ('255', 'name3')");
+		/// <summary>
+		/// Bug #18570  	Unsigned tinyint (NET byte) incorrectly determined param type from param val
+		/// </summary>
+		[Test]
+		[Category("4.1")]
+		public void UnsignedTinyInt()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test(ID TINYINT UNSIGNED NOT NULL, " +
+				"Name VARCHAR(50) NOT NULL,	PRIMARY KEY (ID), UNIQUE (ID), " +
+				"UNIQUE (Name))");
+			execSQL("INSERT INTO test VALUES ('127', 'name1')");
+			execSQL("INSERT INTO test VALUES ('128', 'name2')");
+			execSQL("INSERT INTO test VALUES ('255', 'name3')");
 
-            string sql = " SELECT count(*) FROM TEST WHERE ID = ?id";
+			string sql = " SELECT count(*) FROM TEST WHERE ID = ?id";
 
-            MySqlCommand command = new MySqlCommand();
-            command.CommandText = sql;
-            command.CommandType = CommandType.Text;
-            command.Connection = (MySqlConnection)conn;
-            command.Prepare();
+			MySqlCommand command = new MySqlCommand();
+			command.CommandText = sql;
+			command.CommandType = CommandType.Text;
+			command.Connection = (MySqlConnection)conn;
+			command.Prepare();
 
-            command.Parameters.AddWithValue("?id", (byte)127);
-            object count = command.ExecuteScalar();
-            Assert.AreEqual(1, count);
+			command.Parameters.AddWithValue("?id", (byte)127);
+			object count = command.ExecuteScalar();
+			Assert.AreEqual(1, count);
 
-            command.Parameters.Clear();
-            command.Parameters.AddWithValue("?id", (byte)128);
-            count = command.ExecuteScalar();
-            Assert.AreEqual(1, count);
+			command.Parameters.Clear();
+			command.Parameters.AddWithValue("?id", (byte)128);
+			count = command.ExecuteScalar();
+			Assert.AreEqual(1, count);
 
-            command.Parameters.Clear();
-            command.Parameters.AddWithValue("?id", (byte)255);
-            count = command.ExecuteScalar();
-            Assert.AreEqual(1, count);
+			command.Parameters.Clear();
+			command.Parameters.AddWithValue("?id", (byte)255);
+			count = command.ExecuteScalar();
+			Assert.AreEqual(1, count);
 
-            command.Parameters.Clear();
-            command.Parameters.AddWithValue("?id", "255");
-            count = command.ExecuteScalar();
-            Assert.AreEqual(1, count);
-        }
+			command.Parameters.Clear();
+			command.Parameters.AddWithValue("?id", "255");
+			count = command.ExecuteScalar();
+			Assert.AreEqual(1, count);
+		}
 
-        /// <summary>
-        /// Bug #16934 Unsigned values > 2^63 (UInt64) cannot be used in prepared statements
-        /// </summary>
-        [Test]
-        [Category("4.1")]
-        public void UnsignedValues()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test (ulVal BIGINT UNSIGNED, lVal INT UNSIGNED, " +
-                "mVal MEDIUMINT UNSIGNED, sVal SMALLINT UNSIGNED)");
+		/// <summary>
+		/// Bug #16934 Unsigned values > 2^63 (UInt64) cannot be used in prepared statements
+		/// </summary>
+		[Test]
+		[Category("4.1")]
+		public void UnsignedValues()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (ulVal BIGINT UNSIGNED, lVal INT UNSIGNED, " +
+				"mVal MEDIUMINT UNSIGNED, sVal SMALLINT UNSIGNED)");
 
-            MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (?ulVal, " +
-                "?lVal, ?mVal, ?sVal)", conn);
-            cmd.Parameters.Add("?ulVal", MySqlDbType.UInt64);
-            cmd.Parameters.Add("?lVal", MySqlDbType.UInt32);
-            cmd.Parameters.Add("?mVal", MySqlDbType.UInt24);
-            cmd.Parameters.Add("?sVal", MySqlDbType.UInt16);
-            cmd.Prepare();
-            cmd.Parameters[0].Value = UInt64.MaxValue;
-            cmd.Parameters[1].Value = UInt32.MaxValue;
-            cmd.Parameters[2].Value = 16777215;
-            cmd.Parameters[3].Value = UInt16.MaxValue;
-            Assert.AreEqual(1, cmd.ExecuteNonQuery());
-            cmd.CommandText = "SELECT * FROM test";
-            cmd.CommandType = CommandType.Text;
-            MySqlDataReader reader = null;
-            try
-            {
-                reader = cmd.ExecuteReader();
-                reader.Read();
-                Assert.AreEqual(UInt64.MaxValue, reader.GetUInt64(0));
-                Assert.AreEqual(UInt32.MaxValue, reader.GetUInt32(1));
-                Assert.AreEqual(16777215, reader.GetUInt32(2));
-                Assert.AreEqual(UInt16.MaxValue, reader.GetUInt16(3));
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                if (reader != null)
-                    reader.Close();
-            }
-        }
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES (?ulVal, " +
+				"?lVal, ?mVal, ?sVal)", conn);
+			cmd.Parameters.Add("?ulVal", MySqlDbType.UInt64);
+			cmd.Parameters.Add("?lVal", MySqlDbType.UInt32);
+			cmd.Parameters.Add("?mVal", MySqlDbType.UInt24);
+			cmd.Parameters.Add("?sVal", MySqlDbType.UInt16);
+			cmd.Prepare();
+			cmd.Parameters[0].Value = UInt64.MaxValue;
+			cmd.Parameters[1].Value = UInt32.MaxValue;
+			cmd.Parameters[2].Value = 16777215;
+			cmd.Parameters[3].Value = UInt16.MaxValue;
+			Assert.AreEqual(1, cmd.ExecuteNonQuery());
+			cmd.CommandText = "SELECT * FROM test";
+			cmd.CommandType = CommandType.Text;
+			MySqlDataReader reader = null;
+			try
+			{
+				reader = cmd.ExecuteReader();
+				reader.Read();
+				Assert.AreEqual(UInt64.MaxValue, reader.GetUInt64(0));
+				Assert.AreEqual(UInt32.MaxValue, reader.GetUInt32(1));
+				Assert.AreEqual(16777215, reader.GetUInt32(2));
+				Assert.AreEqual(UInt16.MaxValue, reader.GetUInt16(3));
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				if (reader != null)
+					reader.Close();
+			}
+		}
 
-        /// <summary>
-        /// Bug #18391 Better error handling for the .NET class "MySqlCommand" needed. 
-        /// </summary>
-        [Test]
-        public void PrepareEmptyString()
-        {
-            try
-            {
-                MySqlCommand cmd = new MySqlCommand("", conn);
-                cmd.Prepare();
-                cmd.ExecuteNonQuery();
-                Assert.Fail("Should not get here");
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-        }
+		/// <summary>
+		/// Bug #18391 Better error handling for the .NET class "MySqlCommand" needed. 
+		/// </summary>
+		[Test]
+		public void PrepareEmptyString()
+		{
+			try
+			{
+				MySqlCommand cmd = new MySqlCommand("", conn);
+				cmd.Prepare();
+				cmd.ExecuteNonQuery();
+				Assert.Fail("Should not get here");
+			}
+			catch (InvalidOperationException)
+			{
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
 
-        /// <summary>
-        /// Bug #14115 Prepare() with compound statements breaks 
-        /// </summary>
-        [Test]
-        public void CompoundStatements()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE IF NOT EXISTS test ("+
-	            "id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT," +
-	            "test1 INT UNSIGNED, test2 INT UNSIGNED)");
+		/// <summary>
+		/// Bug #14115 Prepare() with compound statements breaks 
+		/// </summary>
+		[Test]
+		public void CompoundStatements()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE IF NOT EXISTS test ("+
+				"id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT," +
+				"test1 INT UNSIGNED, test2 INT UNSIGNED)");
 
-            try
-            {
-                MySqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "INSERT INTO test VALUES (NULL, ?t1, ?t2);" +
-                    "SELECT last_insert_id()";
-                cmd.Parameters.Add("?t1", MySqlDbType.Int32);
-                cmd.Parameters.Add("?t2", MySqlDbType.Int32);
-                cmd.Prepare();
-                Assert.Fail("Should not reach here");
-            }
-            catch (Exception)
-            {
-            }
-        }
+			try
+			{
+				MySqlCommand cmd = conn.CreateCommand();
+				cmd.CommandText = "INSERT INTO test VALUES (NULL, ?t1, ?t2);" +
+					"SELECT last_insert_id()";
+				cmd.Parameters.Add("?t1", MySqlDbType.Int32);
+				cmd.Parameters.Add("?t2", MySqlDbType.Int32);
+				cmd.Prepare();
+				Assert.Fail("Should not reach here");
+			}
+			catch (Exception)
+			{
+			}
+		}
 
-        [Test]
-        public void SchemaOnly()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test (id INT, name VARCHAR(50))");
+		[Test]
+		public void SchemaOnly()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (id INT, name VARCHAR(50))");
 
-            MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
-            cmd.Prepare();
-            using (MySqlDataReader reader = cmd.ExecuteReader(CommandBehavior.SchemaOnly))
-            {
-                reader.Read();
-            }
-        }
+			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+			cmd.Prepare();
+			using (MySqlDataReader reader = cmd.ExecuteReader(CommandBehavior.SchemaOnly))
+			{
+				reader.Read();
+			}
+		}
 
-        private int GetPreparedStatementCount()
-        {
-            MySqlCommand cmd = new MySqlCommand("SHOW GLOBAL STATUS LIKE 'Prepared%'", conn);
-            using (MySqlDataReader reader = cmd.ExecuteReader())
-            {
-                reader.Read();
-                string s = reader.GetString(1);
-                return Int32.Parse(s);
-            }
-        }
+		private int GetPreparedStatementCount()
+		{
+			MySqlCommand cmd = new MySqlCommand("SHOW GLOBAL STATUS LIKE 'Prepared%'", conn);
+			using (MySqlDataReader reader = cmd.ExecuteReader())
+			{
+				reader.Read();
+				string s = reader.GetString(1);
+				return Int32.Parse(s);
+			}
+		}
 
-        [Category("5.0")]
-        [Test]
-        public void ClosingCommandsProperly()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test (id INT, name VARCHAR(50))");
+		[Category("5.0")]
+		[Test]
+		public void ClosingCommandsProperly()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (id INT, name VARCHAR(50))");
 
-            string connStr = GetConnectionString(true) +
-                ";ignore prepare=false";
-            using (MySqlConnection c = new MySqlConnection(connStr))
-            {
-                c.Open();
+			string connStr = GetConnectionString(true) +
+				";ignore prepare=false";
+			using (MySqlConnection c = new MySqlConnection(connStr))
+			{
+				c.Open();
 
-                int initialCount = GetPreparedStatementCount();
+				int initialCount = GetPreparedStatementCount();
 
-                for (int i = 0; i < 10; i++)
-                {
-                    using (MySqlCommand cmd =
-                        new MySqlCommand("INSERT INTO test VALUES (?id, ?name)", c))
-                    {
-                        cmd.Parameters.Add("?id", MySqlDbType.Int32);
-                        cmd.Parameters.Add("?name", MySqlDbType.VarChar);
-                        cmd.Prepare();
-                        cmd.Parameters[0].Value = i;
-                        cmd.Parameters[1].Value = "foobar";
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-                c.Ping();
-                Assert.AreEqual(initialCount, GetPreparedStatementCount());
-            }
-        }
-    }
+				for (int i = 0; i < 10; i++)
+				{
+					using (MySqlCommand cmd =
+						new MySqlCommand("INSERT INTO test VALUES (?id, ?name)", c))
+					{
+						cmd.Parameters.Add("?id", MySqlDbType.Int32);
+						cmd.Parameters.Add("?name", MySqlDbType.VarChar);
+						cmd.Prepare();
+						cmd.Parameters[0].Value = i;
+						cmd.Parameters[1].Value = "foobar";
+						cmd.ExecuteNonQuery();
+					}
+				}
+				c.Ping();
+				Assert.AreEqual(initialCount, GetPreparedStatementCount());
+			}
+		}
+	}
 
-    #region Configs
+	#region Configs
 
-    [Category("Compressed")]
-    public class PreparedStatementsSocketCompressed : PreparedStatements
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("port={0};compress=true", port);
-        }
-    }
+	[Category("Compressed")]
+	public class PreparedStatementsSocketCompressed : PreparedStatements
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("port={0};compress=true", port);
+		}
+	}
 
-    [Category("Pipe")]
-    public class PreparedStatementsPipe : PreparedStatements
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("protocol=pipe;pipe name={0}", pipeName);
-        }
-    }
+	[Category("Pipe")]
+	public class PreparedStatementsPipe : PreparedStatements
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("protocol=pipe;pipe name={0}", pipeName);
+		}
+	}
 
-    [Category("Compressed")]
-    [Category("Pipe")]
-    public class PreparedStatementsPipeCompressed : PreparedStatements
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("protocol=pipe;pipe name={0};compress=true", pipeName);
-        }
-    }
+	[Category("Compressed")]
+	[Category("Pipe")]
+	public class PreparedStatementsPipeCompressed : PreparedStatements
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("protocol=pipe;pipe name={0};compress=true", pipeName);
+		}
+	}
 
-    [Category("SharedMemory")]
-    public class PreparedStatementsSharedMemory : PreparedStatements
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("protocol=memory; shared memory name={0}", memoryName);
-        }
-    }
+	[Category("SharedMemory")]
+	public class PreparedStatementsSharedMemory : PreparedStatements
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("protocol=memory; shared memory name={0}", memoryName);
+		}
+	}
 
-    [Category("Compressed")]
-    [Category("SharedMemory")]
-    public class PreparedStatementsSharedMemoryCompressed : PreparedStatements
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("protocol=memory; shared memory name={0};compress=true", memoryName);
-        }
-    }
+	[Category("Compressed")]
+	[Category("SharedMemory")]
+	public class PreparedStatementsSharedMemoryCompressed : PreparedStatements
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("protocol=memory; shared memory name={0};compress=true", memoryName);
+		}
+	}
 
-    #endregion
+	#endregion
 
 }

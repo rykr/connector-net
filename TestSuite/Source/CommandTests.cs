@@ -29,12 +29,12 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class CommandTests : BaseTest
 	{
-        protected override void Setup()
-        {
-            base.Setup();
-            execSQL("DROP TABLE IF EXISTS Test");
-            execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
-        }
+		protected override void Setup()
+		{
+			base.Setup();
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (id int NOT NULL, name VARCHAR(100))");
+		}
 
 		[Test]
 		public void InsertTest()
@@ -143,11 +143,11 @@ namespace MySql.Data.MySqlClient.Tests
 			MySqlTransaction txn = conn.BeginTransaction();
 			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", conn);
 
-            MySqlCommand clone = new MySqlCommand(cmd.CommandText, (MySqlConnection)cmd.Connection,
-                (MySqlTransaction)cmd.Transaction);
-            clone.Parameters.AddWithValue("?test", 1);
-            txn.Rollback();
-        }
+			MySqlCommand clone = new MySqlCommand(cmd.CommandText, (MySqlConnection)cmd.Connection,
+				(MySqlTransaction)cmd.Transaction);
+			clone.Parameters.AddWithValue("?test", 1);
+			txn.Rollback();
+		}
 
 		[Test]
 		public void CloneCommand() 
@@ -282,178 +282,178 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-        /// <summary>
-        /// Bug# 8119.  Unable to reproduce but left in anyway
-        /// </summary>
-        [Category("NotWorking")]
-        [Test]
-        public void ReallyBigCommandString()
-        {
-            System.Text.StringBuilder sql = new System.Text.StringBuilder();
+		/// <summary>
+		/// Bug# 8119.  Unable to reproduce but left in anyway
+		/// </summary>
+		[Category("NotWorking")]
+		[Test]
+		public void ReallyBigCommandString()
+		{
+			System.Text.StringBuilder sql = new System.Text.StringBuilder();
 
-            for (int i = 0; i < 10; i++)
-                sql.Append("DROP TABLE IF EXISTS idx" + i + ";CREATE TABLE idx" + i + "(aa int not null auto_increment primary key, a int, b varchar(50), c int);");
+			for (int i = 0; i < 10; i++)
+				sql.Append("DROP TABLE IF EXISTS idx" + i + ";CREATE TABLE idx" + i + "(aa int not null auto_increment primary key, a int, b varchar(50), c int);");
 
-            int c = 0;
-            for (int z = 0; z < 100; z++) 
-                for (int x = 0; x < 10; x++, c++)
-                {
-                    string s = String.Format("INSERT INTO idx{0} (a, b, c) values ({1}, 'field{1}', {2});",
-                        x, z, c);
-                    sql.Append(s);
-                }
+			int c = 0;
+			for (int z = 0; z < 100; z++) 
+				for (int x = 0; x < 10; x++, c++)
+				{
+					string s = String.Format("INSERT INTO idx{0} (a, b, c) values ({1}, 'field{1}', {2});",
+						x, z, c);
+					sql.Append(s);
+				}
 
-            try
-            {
-                MySqlCommand cmd = new MySqlCommand(sql.ToString(), conn);
-                cmd.ExecuteNonQuery();
+			try
+			{
+				MySqlCommand cmd = new MySqlCommand(sql.ToString(), conn);
+				cmd.ExecuteNonQuery();
 
-                for (int i = 0; i < 10; i++)
-                {
-                    cmd.CommandText = "SELECT COUNT(*) FROM idx" + i;
-                    object count = cmd.ExecuteScalar();
-                    Assert.AreEqual(100, count);
-                    execSQL("DROP TABLE IF EXISTS idx" + i);
-                }
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
+				for (int i = 0; i < 10; i++)
+				{
+					cmd.CommandText = "SELECT COUNT(*) FROM idx" + i;
+					object count = cmd.ExecuteScalar();
+					Assert.AreEqual(100, count);
+					execSQL("DROP TABLE IF EXISTS idx" + i);
+				}
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
 
-        }
+		}
 
-        /// <summary>
-        /// Bug #7248 There is already an open DataReader associated with this Connection which must 
-        /// </summary>
-        [Test]
-        public void GenWarnings()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test (id INT, dt DATETIME)");
-            execSQL("INSERT INTO test VALUES (1, NOW())");
-            execSQL("INSERT INTO test VALUES (2, NOW())");
-            execSQL("INSERT INTO test VALUES (3, NOW())");
+		/// <summary>
+		/// Bug #7248 There is already an open DataReader associated with this Connection which must 
+		/// </summary>
+		[Test]
+		public void GenWarnings()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (id INT, dt DATETIME)");
+			execSQL("INSERT INTO test VALUES (1, NOW())");
+			execSQL("INSERT INTO test VALUES (2, NOW())");
+			execSQL("INSERT INTO test VALUES (3, NOW())");
 
-            MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test WHERE dt = '" +
-                DateTime.Now + "'", conn);
-            DataSet ds = new DataSet();
-            da.Fill(ds);
-        }
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test WHERE dt = '" +
+				DateTime.Now + "'", conn);
+			DataSet ds = new DataSet();
+			da.Fill(ds);
+		}
 
-        /// <summary>
-        /// Bug #11991 ExecuteScalar 
-        /// </summary>
-        [Test]
-        public void CloseReaderAfterFailedConvert()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test (dt DATETIME)");
-            execSQL("INSERT INTO test VALUES ('00-00-0000 00:00:00')");
+		/// <summary>
+		/// Bug #11991 ExecuteScalar 
+		/// </summary>
+		[Test]
+		public void CloseReaderAfterFailedConvert()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (dt DATETIME)");
+			execSQL("INSERT INTO test VALUES ('00-00-0000 00:00:00')");
 
-            MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
-            try
-            {
-                object o = cmd.ExecuteScalar();
-            }
-            catch (Exception)
-            {
-            }
+			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+			try
+			{
+				object o = cmd.ExecuteScalar();
+			}
+			catch (Exception)
+			{
+			}
 
-            try
-            {
-                IDbTransaction trans = conn.BeginTransaction();
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-        }
+			try
+			{
+				IDbTransaction trans = conn.BeginTransaction();
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
 
-        /// <summary>
-        /// Bug #25443 ExecuteScalar() hangs when more than one bad result 
-        /// </summary>
-        [Test]
-        public void ExecuteWithOneBadQuery()
-        {
-            MySqlCommand command = new MySqlCommand("SELECT 1; SELECT * FROM foo", conn);
-            try
-            {
-                command.ExecuteScalar();
-            }
-            catch (MySqlException)
-            {
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
+		/// <summary>
+		/// Bug #25443 ExecuteScalar() hangs when more than one bad result 
+		/// </summary>
+		[Test]
+		public void ExecuteWithOneBadQuery()
+		{
+			MySqlCommand command = new MySqlCommand("SELECT 1; SELECT * FROM foo", conn);
+			try
+			{
+				command.ExecuteScalar();
+			}
+			catch (MySqlException)
+			{
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
 
-            // now try using ExecuteNonQuery
-            try
-            {
-                command.ExecuteNonQuery();
-            }
-            catch (MySqlException)
-            {
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-        }
+			// now try using ExecuteNonQuery
+			try
+			{
+				command.ExecuteNonQuery();
+			}
+			catch (MySqlException)
+			{
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
 	}
 
 
-    #region Configs
+	#region Configs
 
-    [Category("Compressed")]
-    public class CommandTestsSocketCompressed : CommandTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("port={0};compress=true", port);
-        }
-    }
+	[Category("Compressed")]
+	public class CommandTestsSocketCompressed : CommandTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("port={0};compress=true", port);
+		}
+	}
 
-    [Category("Pipe")]
-    public class CommandTestsPipe : CommandTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("protocol=pipe;pipe name={0}", pipeName);
-        }
-    }
+	[Category("Pipe")]
+	public class CommandTestsPipe : CommandTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("protocol=pipe;pipe name={0}", pipeName);
+		}
+	}
 
-    [Category("Compressed")]
-    [Category("Pipe")]
-    public class CommandTestsPipeCompressed : CommandTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("protocol=pipe;pipe name={0};compress=true", pipeName);
-        }
-    }
+	[Category("Compressed")]
+	[Category("Pipe")]
+	public class CommandTestsPipeCompressed : CommandTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("protocol=pipe;pipe name={0};compress=true", pipeName);
+		}
+	}
 
-    [Category("SharedMemory")]
-    public class CommandTestsSharedMemory : CommandTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("protocol=memory; shared memory name={0}", memoryName);
-        }
-    }
+	[Category("SharedMemory")]
+	public class CommandTestsSharedMemory : CommandTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("protocol=memory; shared memory name={0}", memoryName);
+		}
+	}
 
-    [Category("Compressed")]
-    [Category("SharedMemory")]
-    public class CommandTestsSharedMemoryCompressed : CommandTests
-    {
-        protected override string GetConnectionInfo()
-        {
-            return String.Format("protocol=memory; shared memory name={0};compress=true", memoryName);
-        }
-    }
+	[Category("Compressed")]
+	[Category("SharedMemory")]
+	public class CommandTestsSharedMemoryCompressed : CommandTests
+	{
+		protected override string GetConnectionInfo()
+		{
+			return String.Format("protocol=memory; shared memory name={0};compress=true", memoryName);
+		}
+	}
 
-    #endregion
+	#endregion
 
 }

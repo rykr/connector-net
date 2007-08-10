@@ -95,13 +95,13 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void TestPersistSecurityInfoCachingPasswords() 
 		{
-            string connStr = GetConnectionString(true);
+			string connStr = GetConnectionString(true);
 			MySqlConnection c = new MySqlConnection(connStr);
 			c.Open();
 			c.Close();
 
 			// this shouldn't work
-            connStr = GetConnectionStringEx(user, "bad_password", true);
+			connStr = GetConnectionStringEx(user, "bad_password", true);
 			c = new MySqlConnection(connStr);
 			try 
 			{
@@ -115,7 +115,7 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 
 			// this should work
-            connStr = GetConnectionString(true);
+			connStr = GetConnectionString(true);
 			c = new MySqlConnection(connStr);
 			c.Open();
 			c.Close();
@@ -124,7 +124,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void ChangeDatabase() 
 		{
-            string connStr = GetConnectionString(true);
+			string connStr = GetConnectionString(true);
 			MySqlConnection c = new MySqlConnection(connStr + ";pooling=false");
 			c.Open();
 			Assert.IsTrue(c.State == ConnectionState.Open);
@@ -143,7 +143,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			MySqlConnection c = new MySqlConnection( 
 				"server=1.1.1.1;user id=bogus;pwd=bogus;Connection timeout=5;" +
-                "pooling=false");
+				"pooling=false");
 			DateTime start = DateTime.Now;
 			try 
 			{
@@ -156,17 +156,17 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-        [Category("NotWorking")]
-        [Test]
-        public void AnonymousLogin()
-        {
-            suExecSQL(String.Format("GRANT ALL ON *.* to ''@'{0}' IDENTIFIED BY 'set_to_blank'", host));
-            suExecSQL("UPDATE mysql.user SET password='' WHERE password='set_to_blank'");
+		[Category("NotWorking")]
+		[Test]
+		public void AnonymousLogin()
+		{
+			suExecSQL(String.Format("GRANT ALL ON *.* to ''@'{0}' IDENTIFIED BY 'set_to_blank'", host));
+			suExecSQL("UPDATE mysql.user SET password='' WHERE password='set_to_blank'");
 
-            MySqlConnection c = new MySqlConnection(String.Empty);
-            c.Open();
-            c.Close();
-        }
+			MySqlConnection c = new MySqlConnection(String.Empty);
+			c.Open();
+			c.Close();
+		}
 
 		[Test]
 		public void ConnectInVariousWays()
@@ -182,11 +182,11 @@ namespace MySql.Data.MySqlClient.Tests
 				c.Close();
 
 				suExecSQL("GRANT ALL ON *.* to 'nopass'@'%'");
-                suExecSQL("GRANT ALL ON *.* to 'nopass'@'localhost'");
-                suExecSQL("FLUSH PRIVILEGES");
+				suExecSQL("GRANT ALL ON *.* to 'nopass'@'localhost'");
+				suExecSQL("FLUSH PRIVILEGES");
 
 				// connect with no password
-                connStr2 = GetConnectionStringEx("nopass", null, false);
+				connStr2 = GetConnectionStringEx("nopass", null, false);
 				c = new MySqlConnection(connStr2);
 				c.Open();
 				c.Close();
@@ -212,14 +212,14 @@ namespace MySql.Data.MySqlClient.Tests
 		[Category("4.1")]
 		public void ConnectingAsUTF8()
 		{
-            string connStr = GetConnectionString(true) + ";charset=utf8";
+			string connStr = GetConnectionString(true) + ";charset=utf8";
 			MySqlConnection c = new MySqlConnection(connStr);
 			c.Open();
 
 			MySqlCommand cmd = new MySqlCommand("DROP TABLE IF EXISTS test", c);
 			cmd.ExecuteNonQuery();
-            cmd.CommandText = "CREATE TABLE test (id varbinary(16), active bit) CHARACTER SET utf8";
-            cmd.ExecuteNonQuery();
+			cmd.CommandText = "CREATE TABLE test (id varbinary(16), active bit) CHARACTER SET utf8";
+			cmd.ExecuteNonQuery();
 			cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x1234567890 AS Binary), true)";
 			cmd.ExecuteNonQuery();
 			cmd.CommandText = "INSERT INTO test (id, active) VALUES (CAST(0x123456789a AS Binary), true)";
@@ -253,23 +253,23 @@ namespace MySql.Data.MySqlClient.Tests
 
 		/// <summary>
 		/// Bug #10281 Clone issue with MySqlConnection 
-        /// Bug #27269 MySqlConnection.Clone does not mimic SqlConnection.Clone behaviour 
+		/// Bug #27269 MySqlConnection.Clone does not mimic SqlConnection.Clone behaviour 
 		/// </summary>
 		[Test]
 		public void TestConnectionClone()
 		{
-            MySqlConnection c = new MySqlConnection();
-            MySqlConnection clone = (MySqlConnection)((ICloneable)c).Clone();
-            clone.ToString();
+			MySqlConnection c = new MySqlConnection();
+			MySqlConnection clone = (MySqlConnection)((ICloneable)c).Clone();
+			clone.ToString();
 
-            string connStr = GetConnectionString(true);
-            connStr = connStr.Replace("persist security info=true", "persist security info=false");
-            c = new MySqlConnection(connStr);
-            c.Open();
-            c.Close();
-            MySqlConnection c2 = (MySqlConnection)((ICloneable)c).Clone();
-            c2.Open();
-            c2.Close();
+			string connStr = GetConnectionString(true);
+			connStr = connStr.Replace("persist security info=true", "persist security info=false");
+			c = new MySqlConnection(connStr);
+			c.Open();
+			c.Close();
+			MySqlConnection c2 = (MySqlConnection)((ICloneable)c).Clone();
+			c2.Open();
+			c2.Close();
 		}
 
 		/// <summary>
@@ -284,11 +284,11 @@ namespace MySql.Data.MySqlClient.Tests
 			string connStr = s.Substring(0, start);
 			connStr += s.Substring(end, s.Length - (end));
 
-            string p = "password";
-            if (connStr.IndexOf("pwd") != -1)
-                p = "pwd";
-            else if (connStr.IndexOf("passwd") != -1)
-                p = "passwd";
+			string p = "password";
+			if (connStr.IndexOf("pwd") != -1)
+				p = "pwd";
+			else if (connStr.IndexOf("passwd") != -1)
+				p = "passwd";
 
 			string newConnStr = connStr + ";persist security info=true";
 			MySqlConnection conn2 = new MySqlConnection(newConnStr);
@@ -297,12 +297,12 @@ namespace MySql.Data.MySqlClient.Tests
 			conn2.Close();
 			Assert.IsTrue(conn2.ConnectionString.IndexOf(p) != -1);
 
-            newConnStr = connStr + ";persist security info=false";
-            conn2 = new MySqlConnection(newConnStr);
-            Assert.IsTrue(conn2.ConnectionString.IndexOf(p) != -1);
-            conn2.Open();
-            conn2.Close();
-            Assert.IsTrue(conn2.ConnectionString.IndexOf(p) == -1);
+			newConnStr = connStr + ";persist security info=false";
+			conn2 = new MySqlConnection(newConnStr);
+			Assert.IsTrue(conn2.ConnectionString.IndexOf(p) != -1);
+			conn2.Open();
+			conn2.Close();
+			Assert.IsTrue(conn2.ConnectionString.IndexOf(p) == -1);
 		}
 
 		/// <summary>
@@ -325,9 +325,9 @@ namespace MySql.Data.MySqlClient.Tests
 		public void ConnectWithQuotePassword()
 		{
 			suExecSQL("GRANT ALL ON *.* to 'quotedUser'@'%' IDENTIFIED BY '\"'");
-            suExecSQL("GRANT ALL ON *.* to 'quotedUser'@'localhost' IDENTIFIED BY '\"'");
-            string connStr = GetConnectionStringEx("quotedUser", null, false);
-            connStr += ";pwd='\"'";
+			suExecSQL("GRANT ALL ON *.* to 'quotedUser'@'localhost' IDENTIFIED BY '\"'");
+			string connStr = GetConnectionStringEx("quotedUser", null, false);
+			connStr += ";pwd='\"'";
 			MySqlConnection c = new MySqlConnection(connStr);
 			try 
 			{
@@ -341,49 +341,49 @@ namespace MySql.Data.MySqlClient.Tests
 			suExecSQL("DELETE FROM mysql.user WHERE user='quotedUser'");
 		}
 
-        /// <summary>
-        /// Bug #24802 Error Handling 
-        /// </summary>
-        [Test]
-        public void TestConnectingSocketBadHostName()
-        {
-            string connStr = "server=foobar;user id=foouser;password=;database=Test;" +
-                "pooling=false";
-            MySqlConnection c = new MySqlConnection(connStr);
-            try
-            {
-                c.Open();
-            }
-            catch (MySqlException ex)
-            {
-                Assert.AreEqual((int)MySqlErrorCode.UnableToConnectToHost, ex.Number);
-            }
-            catch (Exception e)
-            {
-                Assert.Fail(e.Message);
-            }
-        }
+		/// <summary>
+		/// Bug #24802 Error Handling 
+		/// </summary>
+		[Test]
+		public void TestConnectingSocketBadHostName()
+		{
+			string connStr = "server=foobar;user id=foouser;password=;database=Test;" +
+				"pooling=false";
+			MySqlConnection c = new MySqlConnection(connStr);
+			try
+			{
+				c.Open();
+			}
+			catch (MySqlException ex)
+			{
+				Assert.AreEqual((int)MySqlErrorCode.UnableToConnectToHost, ex.Number);
+			}
+			catch (Exception e)
+			{
+				Assert.Fail(e.Message);
+			}
+		}
 
-        /// <summary>
-        /// Bug #29123  	Connection String grows with each use resulting in OutOfMemoryException
-        /// </summary>
-        [Test]
-        public void ConnectionStringNotAffectedByChangeDatabase()
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                string connStr = GetConnectionString(true) + ";pooling=false";
-                connStr = connStr.Replace("database", "Initial Catalog");
-                connStr = connStr.Replace("persist security info=true",
-                    "persist security info=false");
-                using (MySqlConnection c = new MySqlConnection(connStr))
-                {
-                    c.Open();
-                    string str = c.ConnectionString;
-                    int index = str.IndexOf("Database=");
-                    Assert.AreEqual(-1, index);
-                }
-            }
-        }
-    }
+		/// <summary>
+		/// Bug #29123  	Connection String grows with each use resulting in OutOfMemoryException
+		/// </summary>
+		[Test]
+		public void ConnectionStringNotAffectedByChangeDatabase()
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				string connStr = GetConnectionString(true) + ";pooling=false";
+				connStr = connStr.Replace("database", "Initial Catalog");
+				connStr = connStr.Replace("persist security info=true",
+					"persist security info=false");
+				using (MySqlConnection c = new MySqlConnection(connStr))
+				{
+					c.Open();
+					string str = c.ConnectionString;
+					int index = str.IndexOf("Database=");
+					Assert.AreEqual(-1, index);
+				}
+			}
+		}
+	}
 }

@@ -37,9 +37,9 @@ namespace MySql.Data.MySqlClient.Tests
 		protected override void Setup()
 		{
 			base.Setup();
-            execSQL("DROP TABLE IF EXISTS Test");
-            execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), d DATE, dt DATETIME, b1 LONGBLOB, PRIMARY KEY(id))");
-        }
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(100), d DATE, dt DATETIME, b1 LONGBLOB, PRIMARY KEY(id))");
+		}
 
 
 		[Test]
@@ -97,7 +97,7 @@ namespace MySql.Data.MySqlClient.Tests
 			int len = 50000;
 			byte[] bytes = Utils.CreateBlob(len);
 			MySqlCommand cmd = new MySqlCommand(
-                "INSERT INTO Test (id, name, b1) VALUES(1, 'Test', ?b1)", conn);
+				"INSERT INTO Test (id, name, b1) VALUES(1, 'Test', ?b1)", conn);
 			cmd.Parameters.AddWithValue("?b1", bytes);
 			cmd.ExecuteNonQuery();
 
@@ -162,7 +162,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("INSERT INTO Test (id, name, b1) VALUES (2, 'Test1', NULL)");
 
 			MySqlCommand cmd = new MySqlCommand(
-                "SELECT * FROM Test WHERE id=1; SELECT * FROM Test WHERE id=2", conn);
+				"SELECT * FROM Test WHERE id=1; SELECT * FROM Test WHERE id=2", conn);
 			MySqlDataReader reader = cmd.ExecuteReader(CommandBehavior.SingleResult);
 			bool result = reader.Read();
 			Assert.AreEqual(true, result);
@@ -177,8 +177,8 @@ namespace MySql.Data.MySqlClient.Tests
 		public void GetSchema() 
 		{
 			string sql = "CREATE TABLE test2(id INT UNSIGNED AUTO_INCREMENT " +
-                "NOT NULL, name VARCHAR(255) NOT NULL, name2 VARCHAR(40), fl FLOAT, " +
-                "dt DATETIME, PRIMARY KEY(id))";
+				"NOT NULL, name VARCHAR(255) NOT NULL, name2 VARCHAR(40), fl FLOAT, " +
+				"dt DATETIME, PRIMARY KEY(id))";
 
 			execSQL("DROP TABLE IF EXISTS test2");
 			execSQL(sql);
@@ -193,12 +193,12 @@ namespace MySql.Data.MySqlClient.Tests
 				DataTable dt = reader.GetSchemaTable();
 				Assert.AreEqual(true, dt.Rows[0]["IsAutoIncrement"], "Checking auto increment");
 				Assert.IsFalse((bool)dt.Rows[0]["IsUnique"], "Checking IsUnique");
-                Assert.IsTrue((bool)dt.Rows[0]["IsKey"]);
+				Assert.IsTrue((bool)dt.Rows[0]["IsKey"]);
 				Assert.AreEqual(false, dt.Rows[0]["AllowDBNull"], "Checking AllowDBNull");
 				Assert.AreEqual(false, dt.Rows[1]["AllowDBNull"], "Checking AllowDBNull");
-                Assert.AreEqual(255, dt.Rows[1]["ColumnSize"]);
-                Assert.AreEqual(40, dt.Rows[2]["ColumnSize"]);
-            }
+				Assert.AreEqual(255, dt.Rows[1]["ColumnSize"]);
+				Assert.AreEqual(40, dt.Rows[2]["ColumnSize"]);
+			}
 			catch (Exception ex) 
 			{
 				Assert.Fail(ex.Message);
@@ -340,56 +340,56 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-        [Test]
-        public void ConsecutiveNulls()
-        {
-            execSQL("INSERT INTO Test (id, name, dt) VALUES (1, 'Test', NULL)");
-            execSQL("INSERT INTO Test (id, name, dt) VALUES (2, NULL, now())");
-            execSQL("INSERT INTO Test (id, name, dt) VALUES (3, 'Test2', NULL)");
+		[Test]
+		public void ConsecutiveNulls()
+		{
+			execSQL("INSERT INTO Test (id, name, dt) VALUES (1, 'Test', NULL)");
+			execSQL("INSERT INTO Test (id, name, dt) VALUES (2, NULL, now())");
+			execSQL("INSERT INTO Test (id, name, dt) VALUES (3, 'Test2', NULL)");
 
-            MySqlCommand cmd = new MySqlCommand("SELECT id, name, dt FROM Test", conn);
-            MySqlDataReader reader = null;
-            try
-            {
-                reader = cmd.ExecuteReader();
-                reader.Read();
-                Assert.AreEqual(1, reader.GetValue(0));
-                Assert.AreEqual("Test", reader.GetValue(1));
-                Assert.AreEqual("Test", reader.GetString(1));
-                Assert.AreEqual(DBNull.Value, reader.GetValue(2));
-                reader.Read();
-                Assert.AreEqual(2, reader.GetValue(0));
-                Assert.AreEqual(DBNull.Value, reader.GetValue(1));
-                try
-                {
-                    reader.GetString(1);
-                    Assert.Fail("Should not get here");
-                }
-                catch (Exception) { }
-                Assert.IsFalse(reader.IsDBNull(2));
-                reader.Read();
-                Assert.AreEqual(3, reader.GetValue(0));
-                Assert.AreEqual("Test2", reader.GetValue(1));
-                Assert.AreEqual("Test2", reader.GetString(1));
-                Assert.AreEqual(DBNull.Value, reader.GetValue(2));
-                try
-                {
-                    reader.GetMySqlDateTime(2);
-                    Assert.Fail("Should not get here");
-                }
-                catch (Exception) { }
-                Assert.IsFalse(reader.Read());
-                Assert.IsFalse(reader.NextResult());
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                if (reader != null) reader.Close();
-            }
-        }
+			MySqlCommand cmd = new MySqlCommand("SELECT id, name, dt FROM Test", conn);
+			MySqlDataReader reader = null;
+			try
+			{
+				reader = cmd.ExecuteReader();
+				reader.Read();
+				Assert.AreEqual(1, reader.GetValue(0));
+				Assert.AreEqual("Test", reader.GetValue(1));
+				Assert.AreEqual("Test", reader.GetString(1));
+				Assert.AreEqual(DBNull.Value, reader.GetValue(2));
+				reader.Read();
+				Assert.AreEqual(2, reader.GetValue(0));
+				Assert.AreEqual(DBNull.Value, reader.GetValue(1));
+				try
+				{
+					reader.GetString(1);
+					Assert.Fail("Should not get here");
+				}
+				catch (Exception) { }
+				Assert.IsFalse(reader.IsDBNull(2));
+				reader.Read();
+				Assert.AreEqual(3, reader.GetValue(0));
+				Assert.AreEqual("Test2", reader.GetValue(1));
+				Assert.AreEqual("Test2", reader.GetString(1));
+				Assert.AreEqual(DBNull.Value, reader.GetValue(2));
+				try
+				{
+					reader.GetMySqlDateTime(2);
+					Assert.Fail("Should not get here");
+				}
+				catch (Exception) { }
+				Assert.IsFalse(reader.Read());
+				Assert.IsFalse(reader.NextResult());
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				if (reader != null) reader.Close();
+			}
+		}
 
 		[Test]
 		public void HungDataReader() 
@@ -428,10 +428,10 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 				reader = cmd.ExecuteReader(CommandBehavior.SequentialAccess);
 				Assert.IsTrue(reader.Read());
-                Assert.IsFalse(reader.IsDBNull(0));
-                int i = reader.GetInt32(0);
+				Assert.IsFalse(reader.IsDBNull(0));
+				int i = reader.GetInt32(0);
 				string s = reader.GetString(1);
-                Assert.AreEqual(1, i);
+				Assert.AreEqual(1, i);
 				Assert.AreEqual("test1", s);
 
 				// this next line should throw an exception
@@ -779,37 +779,37 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-        /// <summary>
-        /// Bug #19294 IDataRecord.GetString method should return null for null values
-        /// </summary>
-        [Test]
-        public void GetStringOnNull()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test (id int, PRIMARY KEY(id))");
-            MySqlCommand cmd = new MySqlCommand(
-                String.Format("SHOW INDEX FROM test FROM {0}", database0), conn);
-            MySqlDataReader reader = null;
-            try
-            {
-                reader = cmd.ExecuteReader();
-                reader.Read();
-                string s = reader.GetString(reader.GetOrdinal("Sub_part"));
-                Assert.Fail("We should not get here");
-            }
-            catch (System.Data.SqlTypes.SqlNullValueException)
-            {
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                if (reader != null)
-                    reader.Close();
-            }
-        }
+		/// <summary>
+		/// Bug #19294 IDataRecord.GetString method should return null for null values
+		/// </summary>
+		[Test]
+		public void GetStringOnNull()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (id int, PRIMARY KEY(id))");
+			MySqlCommand cmd = new MySqlCommand(
+				String.Format("SHOW INDEX FROM test FROM {0}", database0), conn);
+			MySqlDataReader reader = null;
+			try
+			{
+				reader = cmd.ExecuteReader();
+				reader.Read();
+				string s = reader.GetString(reader.GetOrdinal("Sub_part"));
+				Assert.Fail("We should not get here");
+			}
+			catch (System.Data.SqlTypes.SqlNullValueException)
+			{
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally
+			{
+				if (reader != null)
+					reader.Close();
+			}
+		}
 
 		/// <summary>
 		/// Bug #23538 Exception thrown when GetSchemaTable is called and "fields" is null. 
@@ -829,50 +829,50 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-        /// <summary>
-        /// Bug #24765  	Retrieving empty fields results in check for isDBNull
-        /// </summary>
-        [Test]
-        public void IsDbNullOnNonNullFields()
-        {
-            execSQL("INSERT INTO test (id, name) VALUES (1, '')");
+		/// <summary>
+		/// Bug #24765  	Retrieving empty fields results in check for isDBNull
+		/// </summary>
+		[Test]
+		public void IsDbNullOnNonNullFields()
+		{
+			execSQL("INSERT INTO test (id, name) VALUES (1, '')");
 
-            MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
-            using (MySqlDataReader reader = cmd.ExecuteReader())
-            {
-                Assert.IsTrue(reader.Read());
-                Assert.IsFalse(reader.IsDBNull(1));
-            }
-        }
+			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+			using (MySqlDataReader reader = cmd.ExecuteReader())
+			{
+				Assert.IsTrue(reader.Read());
+				Assert.IsFalse(reader.IsDBNull(1));
+			}
+		}
 
-        /// <summary>
-        /// Bug #30204  	Incorrect ConstraintException
-        /// </summary>
-        [Test]
-        public void ConstraintWithLoadingReader()
-        {
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL(@"CREATE TABLE test (ID_A int(11) NOT NULL,
+		/// <summary>
+		/// Bug #30204  	Incorrect ConstraintException
+		/// </summary>
+		[Test]
+		public void ConstraintWithLoadingReader()
+		{
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL(@"CREATE TABLE test (ID_A int(11) NOT NULL,
 				ID_B int(11) NOT NULL, PRIMARY KEY (ID_A,ID_B)
 				) ENGINE=MyISAM DEFAULT CHARSET=latin1;");
 
-            MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
-            DataTable dt = new DataTable();
+			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+			DataTable dt = new DataTable();
 
-            using (MySqlDataReader reader = cmd.ExecuteReader())
-            {
-                dt.Load(reader);
-            }
+			using (MySqlDataReader reader = cmd.ExecuteReader())
+			{
+				dt.Load(reader);
+			}
 
-            DataRow row = dt.NewRow();
-            row["ID_A"] = 2;
-            row["ID_B"] = 3;
-            dt.Rows.Add(row);
+			DataRow row = dt.NewRow();
+			row["ID_A"] = 2;
+			row["ID_B"] = 3;
+			dt.Rows.Add(row);
 
-            row = dt.NewRow();
-            row["ID_A"] = 2;
-            row["ID_B"] = 4;
-            dt.Rows.Add(row);
-        }
+			row = dt.NewRow();
+			row["ID_A"] = 2;
+			row["ID_B"] = 4;
+			dt.Rows.Add(row);
+		}
 	}
 }

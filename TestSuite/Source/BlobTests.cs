@@ -373,11 +373,11 @@ namespace MySql.Data.MySqlClient.Tests
 			try
 			{
 				c.Open();
-                MySqlCommand cmd = new MySqlCommand("SET max_allowed_packet=500000", c);
-                cmd.ExecuteNonQuery();
+				MySqlCommand cmd = new MySqlCommand("SET max_allowed_packet=500000", c);
+				cmd.ExecuteNonQuery();
 
 				byte[] image = Utils.CreateBlob(1000000);
-                cmd.CommandText = "INSERT INTO test VALUES(NULL, ?image)";
+				cmd.CommandText = "INSERT INTO test VALUES(NULL, ?image)";
 				cmd.Parameters.AddWithValue("?image", image);
 				cmd.ExecuteNonQuery();
 				Assert.Fail("This should have thrown an exception");
@@ -401,7 +401,7 @@ namespace MySql.Data.MySqlClient.Tests
 	{
 		protected override string GetConnectionInfo()
 		{
-            return String.Format("port={0};compress=true", port);
+			return String.Format("port={0};compress=true", port);
 		}
 	}
 
@@ -410,7 +410,7 @@ namespace MySql.Data.MySqlClient.Tests
 	{
 		protected override string GetConnectionInfo()
 		{
-            return String.Format("protocol=pipe;pipe name={0}", pipeName);
+			return String.Format("protocol=pipe;pipe name={0}", pipeName);
 		}
 	}
 
@@ -420,8 +420,8 @@ namespace MySql.Data.MySqlClient.Tests
 	{
 		protected override string GetConnectionInfo()
 		{
-            return String.Format("protocol=pipe;pipe name={0};compress=true", pipeName);
-        }
+			return String.Format("protocol=pipe;pipe name={0};compress=true", pipeName);
+		}
 	}
 
 	[Category("SharedMemory")]
@@ -429,7 +429,7 @@ namespace MySql.Data.MySqlClient.Tests
 	{
 		protected override string GetConnectionInfo()
 		{
-            return String.Format("protocol=memory; shared memory name={0}", memoryName);
+			return String.Format("protocol=memory; shared memory name={0}", memoryName);
 		}
 	}
 
@@ -439,8 +439,8 @@ namespace MySql.Data.MySqlClient.Tests
 	{
 		protected override string GetConnectionInfo()
 		{
-            return String.Format("protocol=memory; shared memory name={0};compress=true", memoryName);
-        }
+			return String.Format("protocol=memory; shared memory name={0};compress=true", memoryName);
+		}
 	}
 
 	#endregion

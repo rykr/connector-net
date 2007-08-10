@@ -30,12 +30,12 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class EventTests : BaseTest
 	{
-        protected override void Setup()
-        {
-            base.Setup();
-            execSQL("DROP TABLE IF EXISTS Test");
-            execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
-        }
+		protected override void Setup()
+		{
+			base.Setup();
+			execSQL("DROP TABLE IF EXISTS Test");
+			execSQL("CREATE TABLE Test (id INT NOT NULL, name VARCHAR(250), PRIMARY KEY(id))");
+		}
 
 		[Test]
 		[Category("4.1")]
@@ -43,8 +43,8 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			conn.InfoMessage += new MySqlInfoMessageEventHandler(WarningsInfoMessage);
 
-            execSQL("DROP TABLE IF EXISTS test");
-            execSQL("CREATE TABLE test (name VARCHAR(10))");
+			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("CREATE TABLE test (name VARCHAR(10))");
 
 			MySqlCommand cmd = new MySqlCommand("INSERT INTO test VALUES ('12345678901')", conn);
 			MySqlDataReader reader = null;

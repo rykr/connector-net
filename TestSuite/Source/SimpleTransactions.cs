@@ -32,12 +32,12 @@ namespace MySql.Data.MySqlClient.Tests
 	[TestFixture]
 	public class SimpleTransactions : BaseTest
 	{
-        protected override void Setup()
-        {
-            base.Setup();
-            execSQL("DROP TABLE IF EXISTS Test");
-            createTable("CREATE TABLE Test (key2 VARCHAR(1), name VARCHAR(100), name2 VARCHAR(100))", "INNODB");
-        }
+		protected override void Setup()
+		{
+			base.Setup();
+			execSQL("DROP TABLE IF EXISTS Test");
+			createTable("CREATE TABLE Test (key2 VARCHAR(1), name VARCHAR(100), name2 VARCHAR(100))", "INNODB");
+		}
 
 		[Test]
 		public void TestReader() 
@@ -69,47 +69,47 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
-        /// <summary>
-        /// Bug #22400 Nested transactions 
-        /// </summary>
-        [Test]
-        public void NestedTransactions()
-        {
-            MySqlTransaction t1 = conn.BeginTransaction();
-            try
-            {
-                MySqlTransaction t2 = conn.BeginTransaction();
-                Assert.Fail("Exception should have been thrown");
-                t2.Rollback();
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            finally 
-            {
-                t1.Rollback();
-            }
-        }
+		/// <summary>
+		/// Bug #22400 Nested transactions 
+		/// </summary>
+		[Test]
+		public void NestedTransactions()
+		{
+			MySqlTransaction t1 = conn.BeginTransaction();
+			try
+			{
+				MySqlTransaction t2 = conn.BeginTransaction();
+				Assert.Fail("Exception should have been thrown");
+				t2.Rollback();
+			}
+			catch (InvalidOperationException)
+			{
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+			finally 
+			{
+				t1.Rollback();
+			}
+		}
 
-        [Test]
-        public void BeginTransactionOnPreviouslyOpenConnection()
-        {
-            string connStr = GetConnectionString(true);
-            MySqlConnection c = new MySqlConnection(connStr);
-            c.Open();
-            c.Close();
-            try
-            {
-                MySqlTransaction t = c.BeginTransaction();
-            }
-            catch (Exception ex)
-            {
-                Assert.AreEqual("The connection is not open.", ex.Message);
-            }
-        }
+		[Test]
+		public void BeginTransactionOnPreviouslyOpenConnection()
+		{
+			string connStr = GetConnectionString(true);
+			MySqlConnection c = new MySqlConnection(connStr);
+			c.Open();
+			c.Close();
+			try
+			{
+				MySqlTransaction t = c.BeginTransaction();
+			}
+			catch (Exception ex)
+			{
+				Assert.AreEqual("The connection is not open.", ex.Message);
+			}
+		}
 	}
 }
