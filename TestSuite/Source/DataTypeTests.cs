@@ -135,12 +135,12 @@ namespace MySql.Data.MySqlClient.Tests
                     cmd.Prepare();
 				reader = cmd.ExecuteReader();
 				Assert.IsTrue(reader.Read());
-				Assert.AreEqual(2.3, reader.GetFloat(0));
+				Assert.AreEqual(2.3, (decimal)reader.GetFloat(0));
 				Assert.AreEqual(4.6, reader.GetDouble(1));
 				Assert.AreEqual(23.82, reader.GetDecimal(2));
 
 				Assert.IsTrue(reader.Read());
-				Assert.AreEqual(1.5, reader.GetFloat(0));
+				Assert.AreEqual(1.5, (decimal)reader.GetFloat(0));
 				Assert.AreEqual(47.85, reader.GetDouble(1));
 				Assert.AreEqual(123.85, reader.GetDecimal(2));
 			}

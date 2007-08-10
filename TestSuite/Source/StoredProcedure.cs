@@ -150,7 +150,7 @@ namespace MySql.Data.MySqlClient.Tests
 			Assert.AreEqual(33, cmd.Parameters[1].Value);
 			Assert.AreEqual(new DateTime(2004, 6, 5, 7, 58, 9),
 					 Convert.ToDateTime(cmd.Parameters[2].Value));
-			Assert.AreEqual(1.2, cmd.Parameters[3].Value);
+			Assert.AreEqual(1.2, (decimal)(float)cmd.Parameters[3].Value);
 			Assert.AreEqual("test", cmd.Parameters[4].Value);
 			Assert.AreEqual(66, cmd.Parameters[5].Value);
 
