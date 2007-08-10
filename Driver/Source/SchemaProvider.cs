@@ -127,7 +127,8 @@ namespace MySql.Data.MySqlClient
             DataTable databases = GetDatabases(dbRestriction);
 
             if (restrictions != null)
-                Array.Copy(restrictions, dbRestriction, dbRestriction.Length);
+                Array.Copy(restrictions, dbRestriction, 
+					Math.Min(dbRestriction.Length, restrictions.Length));
 
             foreach (DataRow db in databases.Rows)
             {
