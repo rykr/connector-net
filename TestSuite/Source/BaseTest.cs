@@ -103,6 +103,10 @@ namespace MySql.Data.MySqlClient.Tests
 				identified by 'test'", database0));
             suExecSQL(String.Format(@"GRANT ALL ON `{0}`.* to 'test'@'localhost' 
 				identified by 'test'", database1));
+			suExecSQL(String.Format(@"GRANT ALL ON `{0}`.* to 'test'@'%' 
+				identified by 'test'", database0));
+			suExecSQL(String.Format(@"GRANT ALL ON `{0}`.* to 'test'@'%' 
+				identified by 'test'", database1));
 			suExecSQL("FLUSH PRIVILEGES");
 
 			rootConn.ChangeDatabase(database0);
