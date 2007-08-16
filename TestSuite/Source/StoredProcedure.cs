@@ -689,7 +689,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			execSQL("DROP PROCEDURE IF EXISTS spTest");
 			execSQL("CREATE PROCEDURE spTest(id int, str VARCHAR(45)) " +
-					 "BEGIN INSERT INTO test VALUES(id, str); END");
+					 "BEGIN INSERT INTO Test VALUES(id, str); END");
 
 			MySqlCommand cmd = new MySqlCommand("spTest", conn);
 			cmd.CommandType = CommandType.StoredProcedure;
@@ -703,7 +703,7 @@ namespace MySql.Data.MySqlClient.Tests
 			cmd.Parameters.AddWithValue("?str", "Second record");
 			cmd.ExecuteNonQuery();
 
-			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 
@@ -723,7 +723,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("CREATE TABLE Test (id integer(9), state varchar(2))");
 			execSQL("CREATE PROCEDURE spTest(IN p1 integer(9), IN p2 varchar(2)) " +
 				"BEGIN " +
-				"INSERT INTO test (id, state) VALUES (p1, p2); " +
+				"INSERT INTO Test (id, state) VALUES (p1, p2); " +
 				"END");
 
 			MySqlCommand cmd = conn.CreateCommand();
@@ -1081,7 +1081,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			try
 			{
-				execSQL("CREATE PROCEDURE spTest() BEGIN SELECT * FROM test; END");
+				execSQL("CREATE PROCEDURE spTest() BEGIN SELECT * FROM Test; END");
 
 				MySqlCommand cmd = new MySqlCommand("spTest", conn);
 				cmd.CommandType = CommandType.StoredProcedure;
@@ -1096,11 +1096,11 @@ namespace MySql.Data.MySqlClient.Tests
 				Assert.AreEqual(2, schema.Columns.Count);
 
 				//Bug #27668  	FillSchema and Stored Proc with an out parameter
-				execSQL("DROP TABLE IF EXISTS test");
-				execSQL(@"CREATE TABLE test(id INT AUTO_INCREMENT, PRIMARY KEY (id)) ");
+				execSQL("DROP TABLE IF EXISTS Test");
+				execSQL(@"CREATE TABLE Test(id INT AUTO_INCREMENT, PRIMARY KEY (id)) ");
 				execSQL("DROP PROCEDURE IF EXISTS spTest");
 				execSQL(@"CREATE PROCEDURE spTest (OUT id INT)
-					BEGIN INSERT INTO test VALUES (NULL); SET id=520; END");
+					BEGIN INSERT INTO Test VALUES (NULL); SET id=520; END");
 
 				cmd = new MySqlCommand("spTest", conn);
 				cmd.CommandType = CommandType.StoredProcedure;
@@ -1241,31 +1241,15 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void CatalogWithHyphens()
 		{
-			string dbName = System.IO.Path.GetFileNameWithoutExtension(
-				System.IO.Path.GetTempFileName()) + "-x";
-			try
-			{
-				// create the database
-				suExecSQL(String.Format("CREATE DATABASE `{0}`", dbName));
-				suExecSQL(String.Format("GRANT ALL ON `{0}`.* to 'test'@'localhost' identified by 'test'",
-					dbName));
-				suExecSQL("FLUSH PRIVILEGES");
+			// make sure this test is valid
+			Assert.IsTrue(database0.IndexOf('-') != -1);
 
-				string connStr = GetConnectionString(false) + ";database=" + dbName;
-				MySqlConnection c = new MySqlConnection(connStr);
-				c.Open();
+			MySqlCommand cmd = new MySqlCommand("CREATE PROCEDURE spTest() BEGIN SELECT 1; END", conn);
+			cmd.ExecuteNonQuery();
 
-				MySqlCommand cmd = new MySqlCommand("CREATE PROCEDURE spTest() BEGIN SELECT 1; END", c);
-				cmd.ExecuteNonQuery();
-
-				cmd.CommandText = "spTest";
-				cmd.CommandType = CommandType.StoredProcedure;
-				Assert.AreEqual(1, cmd.ExecuteScalar());
-			}
-			finally
-			{
-				suExecSQL(String.Format("DROP DATABASE `{0}`", dbName));
-			}
+			cmd.CommandText = "spTest";
+			cmd.CommandType = CommandType.StoredProcedure;
+			Assert.AreEqual(1, cmd.ExecuteScalar());
 		}
 	}
 }

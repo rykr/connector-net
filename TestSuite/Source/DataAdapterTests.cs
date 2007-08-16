@@ -664,7 +664,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("INSERT INTO Test (id, id2, name) VALUES (NULL, 10, 'Name 10')");
 			execSQL("INSERT INTO Test (id, id2, name) VALUES (NULL, 11, 'Name 11')");
 
-			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
 			DataTable dt = new DataTable();
 			da.Fill(0, 10, dt);
 			Assert.AreEqual(10, dt.Rows.Count);

@@ -681,8 +681,8 @@ namespace MySql.Data.MySqlClient.Tests
 
 			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (b MEDIUMINT UNSIGNED PRIMARY KEY)");
-			execSQL("INSERT INTO test VALUES(20)");
-			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test WHERE (b > ?id)", conn);
+			execSQL("INSERT INTO Test VALUES(20)");
+			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test WHERE (b > ?id)", conn);
 			cmd.Parameters.Add("?id", MySqlDbType.UInt16).Value = 10;
 			MySqlDataReader dr = null;
 			try

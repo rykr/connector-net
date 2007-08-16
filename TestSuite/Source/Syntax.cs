@@ -233,15 +233,15 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void Sum()
 		{
-			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("DROP TABLE IF EXISTS Test");
 
-			execSQL("CREATE TABLE test (field1 mediumint(9) default '0', field2 float(9,3) " +
+			execSQL("CREATE TABLE Test (field1 mediumint(9) default '0', field2 float(9,3) " +
 				"default '0.000', field3 double(15,3) default '0.000') engine=innodb ");
-			execSQL("INSERT INTO test values (1,1,1)");
+			execSQL("INSERT INTO Test values (1,1,1)");
 
 			MySqlDataReader reader = null;
 
-			MySqlCommand cmd2 = new MySqlCommand("SELECT sum(field2) FROM test", conn);
+			MySqlCommand cmd2 = new MySqlCommand("SELECT sum(field2) FROM Test", conn);
 			try 
 			{
 				reader = cmd2.ExecuteReader();
@@ -259,7 +259,7 @@ namespace MySql.Data.MySqlClient.Tests
 				reader = null;
 			}
 
-			execSQL("DROP TABLE IF EXISTS test");
+			execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id int, count int)");
 			execSQL("INSERT INTO Test VALUES (1, 21)");
 			execSQL("INSERT INTO Test VALUES (1, 33)");
@@ -430,7 +430,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void Describe()
 		{
-			MySqlDataAdapter da = new MySqlDataAdapter("DESCRIBE test", conn);
+			MySqlDataAdapter da = new MySqlDataAdapter("DESCRIBE Test", conn);
 			DataTable dt = new DataTable();
 			da.Fill(dt);
 
@@ -479,6 +479,8 @@ namespace MySql.Data.MySqlClient.Tests
 			{
 				suExecSQL(String.Format("CREATE DATABASE `{0}`", dbName));
 				suExecSQL(String.Format("GRANT ALL ON `{0}`.* to 'test'@'localhost' identified by 'test'",
+					dbName));
+				suExecSQL(String.Format("GRANT ALL ON `{0}`.* to 'test'@'%' identified by 'test'",
 					dbName));
 				suExecSQL("FLUSH PRIVILEGES");
 
