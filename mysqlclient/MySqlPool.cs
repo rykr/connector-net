@@ -21,6 +21,7 @@
 using System;
 using MySql.Data.Common;
 using System.Collections;
+using System.Diagnostics;
 
 namespace MySql.Data.MySqlClient
 {
@@ -133,8 +134,7 @@ namespace MySql.Data.MySqlClient
 				// if we don't have an idle connection but we have room for a new
 				// one, then create it here.
 				if (!HasIdleConnections)
-					if (!CreateNewPooledConnection())
-						return null;
+					CreateNewPooledConnection();
 
 				Driver d = CheckoutConnection();
 				if (d != null)
@@ -145,32 +145,24 @@ namespace MySql.Data.MySqlClient
 		/// <summary>
 		/// It is assumed that this method is only called from inside an active lock.
 		/// </summary>
-		private bool CreateNewPooledConnection()
+		private void CreateNewPooledConnection()
 		{
-			Driver driver = null;
-			try 
-			{
-				driver = Driver.Create(settings);
-			}
-			catch (Exception)
-			{
-				return false;
-			}
+			Driver driver = Driver.Create(settings);
 			idlePool.Enqueue(driver);
-			return true;
 		}
 
 		public void ReleaseConnection(Driver driver)
 		{
 			lock (lockObject)
 			{
-				if (!inUsePool.Contains(driver) ||
-                    idlePool.Contains(driver))
-					return;
+				if (inUsePool.Contains(driver))
+					inUsePool.Remove(driver);
 
-				inUsePool.Remove(driver);
 				if (driver.IsTooOld)
+				{
 					driver.Close();
+					Debug.Assert(!idlePool.Contains(driver));
+				}
 				else
 					idlePool.Enqueue(driver);
 
@@ -212,10 +204,18 @@ namespace MySql.Data.MySqlClient
 			// or room to make a new connection
 			lock (lockObject)
 			{
-				Driver d = GetPooledConnection();
-				if (d == null)
+				try
+				{
+					Driver d = GetPooledConnection();
+					return d;
+				}
+				catch (Exception ex)
+				{
+					if (settings.Logging)
+						Logger.LogException(ex);
 					poolGate.Release();
-				return d;
+					throw;
+				}			
 			}
 		}
 	}

@@ -23,7 +23,8 @@ Version 1.0.10
        parameters however we also respond exactly like SqlClient in that if you ask for the
        index of a parameter using a syntax different than you added the parameter, the result
        will be -1.
-
+    Changed installer to Inno Setup
+    
 Version 1.0.9
     
     Bugs fixed or addressed
