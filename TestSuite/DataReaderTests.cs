@@ -275,7 +275,7 @@ namespace MySql.Data.MySqlClient.Tests
 				Assert.IsFalse(reader.NextResult(), "Trying NextResult");
 				reader.Close();
 
-				cmd.CommandText = "SELECT * FROM test where id=1";
+				cmd.CommandText = "SELECT * FROM Test where id=1";
 				reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
 				Assert.IsTrue(reader.Read());
 				Assert.AreEqual("test1", reader.GetString(1));
@@ -731,7 +731,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("INSERT INTO Test (id,name) VALUES(2,'test2')");
 			execSQL("INSERT INTO Test (id,name) VALUES(3,'test3')");
 
-			MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+			MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", conn);
 			MySqlDataReader reader = null;
 			try
 			{
@@ -855,9 +855,9 @@ namespace MySql.Data.MySqlClient.Tests
         [Test]
         public void IsDbNullOnNonNullFields()
         {
-            execSQL("INSERT INTO test (id, name) VALUES (1, '')");
+            execSQL("INSERT INTO Test (id, name) VALUES (1, '')");
 
-            MySqlCommand cmd = new MySqlCommand("SELECT * FROM test", conn);
+            MySqlCommand cmd = new MySqlCommand("SELECT * FROM Test", conn);
             using (MySqlDataReader reader = cmd.ExecuteReader())
             {
                 Assert.IsTrue(reader.Read());

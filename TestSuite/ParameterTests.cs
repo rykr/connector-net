@@ -257,7 +257,7 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void AllowUnnamedParameters()
 		{
-			MySqlCommand cmd = new MySqlCommand("INSERT INTO test (id,name) VALUES (?id, ?name)", conn);
+			MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id,name) VALUES (?id, ?name)", conn);
 
 			MySqlParameter p = new MySqlParameter();
 			p.ParameterName = "?id";
@@ -271,10 +271,10 @@ namespace MySql.Data.MySqlClient.Tests
 
 			cmd.ExecuteNonQuery();
 
-			cmd.CommandText = "SELECT id FROM test";
+			cmd.CommandText = "SELECT id FROM Test";
 			Assert.AreEqual(1, cmd.ExecuteScalar());
 
-			cmd.CommandText = "SELECT name FROM test";
+			cmd.CommandText = "SELECT name FROM Test";
 			Assert.AreEqual("test", cmd.ExecuteScalar());
 		}
 
@@ -369,7 +369,7 @@ namespace MySql.Data.MySqlClient.Tests
         [Test]
         public void UnTypedParameterBeingReused()
         {
-            MySqlCommand cmd = new MySqlCommand("INSERT INTO test (id, dt) VALUES (?id, ?dt)", conn);
+            MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, dt) VALUES (?id, ?dt)", conn);
             cmd.Parameters.Add("?id", 1);
             MySqlParameter p = cmd.CreateParameter();
             p.ParameterName = "?dt";
@@ -381,7 +381,7 @@ namespace MySql.Data.MySqlClient.Tests
             p.Value = DateTime.Now;
             cmd.ExecuteNonQuery();
 
-            cmd.CommandText = "SELECT * FROM test";
+            cmd.CommandText = "SELECT * FROM Test";
             cmd.Parameters.Clear();
             using (MySqlDataReader reader = cmd.ExecuteReader())
             {
@@ -398,12 +398,12 @@ namespace MySql.Data.MySqlClient.Tests
         {
             try
             {
-                MySqlCommand cmd = new MySqlCommand("INSERT INTO test (id, name) VALUES (?id, ?name)", conn);
+                MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, name) VALUES (?id, ?name)", conn);
                 cmd.Parameters.Add("?id", 1);
                 cmd.Parameters.Add("?name", "test");
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = "INSERT INTO test (id, name, dt) VALUES (?id1, ?name1, ?id)";
+                cmd.CommandText = "INSERT INTO Test (id, name, dt) VALUES (?id1, ?name1, ?id)";
                 cmd.Parameters[0].ParameterName = "?id1";
                 cmd.Parameters[0].Value = 2;
                 cmd.Parameters[1].ParameterName = "?name1";
@@ -421,7 +421,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			try
 			{
-				MySqlCommand cmd = new MySqlCommand("INSERT INTO test (id, name) VALUES (?id, ?name)", conn);
+				MySqlCommand cmd = new MySqlCommand("INSERT INTO Test (id, name) VALUES (?id, ?name)", conn);
 				cmd.Parameters.Add("id", 1);
 				Assert.AreEqual(-1, cmd.Parameters.IndexOf("?id"));
 				cmd.Parameters.Add("name", "test");
@@ -433,7 +433,7 @@ namespace MySql.Data.MySqlClient.Tests
 				cmd.Parameters.Add("?name", "test2");
 				cmd.ExecuteNonQuery();
 
-				cmd.CommandText = "SELECT COUNT(*) FROM test";
+				cmd.CommandText = "SELECT COUNT(*) FROM Test";
 				object count = cmd.ExecuteScalar();
 				Assert.AreEqual(2, count);
 			}

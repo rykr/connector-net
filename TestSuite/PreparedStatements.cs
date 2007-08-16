@@ -405,7 +405,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("INSERT INTO Test VALUES( 1, 2)");
 			// create the command and prepare the statement
 			IDbCommand cmd = conn.CreateCommand();
-			cmd.CommandText = "SELECT * FROM test where one = ?p1";
+			cmd.CommandText = "SELECT * FROM Test where one = ?p1";
 			// create the parameter
 			IDbDataParameter p1 = cmd.CreateParameter();
 			p1.ParameterName = "?p1";
@@ -601,7 +601,7 @@ namespace MySql.Data.MySqlClient.Tests
 			execSQL("INSERT INTO test VALUES ('128', 'name2')");
 			execSQL("INSERT INTO test VALUES ('255', 'name3')");
 
-			string sql = " SELECT count(*) FROM TEST WHERE ID = ?id";
+			string sql = " SELECT count(*) FROM test WHERE ID = ?id";
 
 			MySqlCommand command = new MySqlCommand();
 			command.CommandText = sql;

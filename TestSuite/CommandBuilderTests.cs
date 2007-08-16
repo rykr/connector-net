@@ -136,11 +136,11 @@ namespace MySql.Data.MySqlClient.Tests
 		[Test]
 		public void UsingFunctions()
 		{
-			execSQL("INSERT INTO test (id, name) VALUES (1,'test1')");
-			execSQL("INSERT INTO test (id, name) VALUES (2,'test2')");
-			execSQL("INSERT INTO test (id, name) VALUES (3,'test3')");
+			execSQL("INSERT INTO Test (id, name) VALUES (1,'test1')");
+			execSQL("INSERT INTO Test (id, name) VALUES (2,'test2')");
+			execSQL("INSERT INTO Test (id, name) VALUES (3,'test3')");
 
-			MySqlDataAdapter da = new MySqlDataAdapter("SELECT id, name, now() as ServerTime FROM test", conn);
+			MySqlDataAdapter da = new MySqlDataAdapter("SELECT id, name, now() as ServerTime FROM Test", conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
 			DataTable dt = new DataTable();
 			da.Fill(dt);
@@ -148,7 +148,7 @@ namespace MySql.Data.MySqlClient.Tests
 			dt.Rows[0]["id"] = 4;
 			da.Update(dt);
 
-			da.SelectCommand.CommandText = "SELECT id, name, CONCAT(name, '  boo') as newname from test where id=4";
+			da.SelectCommand.CommandText = "SELECT id, name, CONCAT(name, '  boo') as newname from Test where id=4";
 			dt.Clear();
 			da.Fill(dt);
 			Assert.AreEqual(1, dt.Rows.Count);
@@ -159,12 +159,12 @@ namespace MySql.Data.MySqlClient.Tests
 			da.Update(dt);
 
 			dt.Clear();
-			da.SelectCommand.CommandText = "SELECT * FROM test WHERE id=5";
+			da.SelectCommand.CommandText = "SELECT * FROM Test WHERE id=5";
 			da.Fill(dt);
 			Assert.AreEqual(1, dt.Rows.Count);
 			Assert.AreEqual("test1", dt.Rows[0]["name"]);
 
-			da.SelectCommand.CommandText = "SELECT *, now() as stime FROM test WHERE id<4";
+			da.SelectCommand.CommandText = "SELECT *, now() as stime FROM Test WHERE id<4";
 			cb = new MySqlCommandBuilder(da, true);
 			da.InsertCommand = cb.GetInsertCommand();
 		}
@@ -176,14 +176,14 @@ namespace MySql.Data.MySqlClient.Tests
 		[Category("4.1")]
 		public void DifferentDatabase()
 		{
-			execSQL("INSERT INTO test (id, name) VALUES (1,'test1')");
-			execSQL("INSERT INTO test (id, name) VALUES (2,'test2')");
-			execSQL("INSERT INTO test (id, name) VALUES (3,'test3')");
+			execSQL("INSERT INTO Test (id, name) VALUES (1,'test1')");
+			execSQL("INSERT INTO Test (id, name) VALUES (2,'test2')");
+			execSQL("INSERT INTO Test (id, name) VALUES (3,'test3')");
 
             conn.ChangeDatabase(database1);
 
 			MySqlDataAdapter da = new MySqlDataAdapter(
-                String.Format("SELECT id, name FROM `{0}`.test", database0), conn);
+                String.Format("SELECT id, name FROM `{0}`.Test", database0), conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
 			cb.ToString();
 			DataSet ds = new DataSet();

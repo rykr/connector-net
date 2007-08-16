@@ -685,7 +685,7 @@ namespace MySql.Data.MySqlClient.Tests
         {
             execSQL("DROP PROCEDURE IF EXISTS spTest");
             execSQL("CREATE PROCEDURE spTest(id int, str VARCHAR(45)) " +
-                     "BEGIN INSERT INTO test VALUES(id, str); END");
+                     "BEGIN INSERT INTO Test VALUES(id, str); END");
 
             MySqlCommand cmd = new MySqlCommand("spTest", conn);
             cmd.CommandType = CommandType.StoredProcedure;
@@ -699,7 +699,7 @@ namespace MySql.Data.MySqlClient.Tests
             cmd.Parameters.Add("?str", "Second record");
             cmd.ExecuteNonQuery();
 
-            MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM test", conn);
+            MySqlDataAdapter da = new MySqlDataAdapter("SELECT * FROM Test", conn);
             DataTable dt = new DataTable();
             da.Fill(dt);
 
@@ -718,7 +718,7 @@ namespace MySql.Data.MySqlClient.Tests
             execSQL("DROP TABLE IF EXISTS Test");
             execSQL("CREATE TABLE Test (id integer(9), state varchar(2))");
             execSQL("CREATE PROCEDURE spTest(IN p1 integer(9), IN p2 varchar(2)) " +
-                "BEGIN INSERT INTO test (id, state) VALUES (p1, p2); END");
+                "BEGIN INSERT INTO Test (id, state) VALUES (p1, p2); END");
 
             MySqlCommand cmd = conn.CreateCommand();
             cmd.CommandType = CommandType.StoredProcedure;
@@ -1075,7 +1075,7 @@ namespace MySql.Data.MySqlClient.Tests
         {
             try
             {
-                execSQL("CREATE PROCEDURE spTest() BEGIN SELECT * FROM test; END");
+                execSQL("CREATE PROCEDURE spTest() BEGIN SELECT * FROM Test; END");
 
                 MySqlCommand cmd = new MySqlCommand("spTest", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -1145,5 +1145,22 @@ namespace MySql.Data.MySqlClient.Tests
 				}
 			}
 		}
-    }
+
+		/// <summary>
+		/// Bug #29526  	syntax error: "show create procedure" with catalog names containing hyphens
+		/// </summary>
+		[Test]
+		public void CatalogWithHyphens()
+		{
+			// make sure this test is valid
+			Assert.IsTrue(database0.IndexOf('-') != -1);
+
+			MySqlCommand cmd = new MySqlCommand("CREATE PROCEDURE spTest() BEGIN SELECT 1; END", conn);
+			cmd.ExecuteNonQuery();
+
+			cmd.CommandText = "spTest";
+			cmd.CommandType = CommandType.StoredProcedure;
+			Assert.AreEqual(1, cmd.ExecuteScalar());
+		}
+	}
 }
