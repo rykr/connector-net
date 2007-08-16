@@ -1,4 +1,5 @@
-Version 5.0.8
+Version 5.0.8   8/16/2007
+
   Bug #28706 Log messages are truncated  
   - Fixed a problem with compression over a network.  We were letting the inflate stream read
     directly from the network stream.  Under certain situations, two bytes were being left unread
