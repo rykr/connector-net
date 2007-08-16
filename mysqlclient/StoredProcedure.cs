@@ -53,15 +53,26 @@ namespace MySql.Data.MySqlClient
 			return null;
 		}
 
+		private string CleanSymbol(string name)
+		{
+			if (!name.StartsWith("`")) return name;
+			name = name.Remove(0, 1);
+			name = name.Remove(name.Length-1, 1);
+			return name;
+		}
+
 		private string GetRoutineType(ref string spName)
 		{
 			int dotIndex = spName.IndexOf('.');
-			string schema = spName.Substring(0, dotIndex);
+			string schema = null;
+
+			if (dotIndex != -1)
+				schema = CleanSymbol(spName.Substring(0, dotIndex));
 			if (schema == null || schema == String.Empty)
 				schema = "database()";
-			else
-				schema = String.Format("'{0}'", schema);
-			string name = spName.Substring(dotIndex + 1);
+			else schema = String.Format("'{0}'", schema);
+
+			string name = CleanSymbol(spName.Substring(dotIndex + 1));
 
 			MySqlCommand cmd = new MySqlCommand(String.Format("SELECT ROUTINE_SCHEMA, ROUTINE_TYPE FROM " +
 				 "INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_SCHEMA={0} AND " +
@@ -73,7 +84,7 @@ namespace MySql.Data.MySqlClient
 				reader.Read();
 				object oSchema = reader.GetValue(0);
 				if (schema == "database()")
-					spName = oSchema.ToString() + "." + name;
+					spName = String.Format("`{0}`.`{1}`", oSchema.ToString(), name);
 				return reader.GetString(1);
 			}
 			catch (Exception)

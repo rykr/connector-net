@@ -145,7 +145,7 @@ namespace MySql.Data.MySqlClient
             // retrieve the proc definitino from the cache.
             string spName = command.CommandText;
             if (spName.IndexOf(".") == -1)
-                spName = command.Connection.Database + "." + spName;
+                spName = String.Format("`{0}`.`{1}`", command.Connection.Database, spName);
             ArrayList parameters = command.Connection.ProcedureCache.GetProcedure(command.Connection, spName);
 
 			command.Parameters.Clear();

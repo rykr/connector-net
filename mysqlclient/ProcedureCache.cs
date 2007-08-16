@@ -56,7 +56,7 @@ namespace MySql.Data.MySqlClient
 		{
 			int dotIndex = spName.IndexOf('.');
 			if (dotIndex == -1)
-				spName = conn.Database + "." + spName;
+				spName = String.Format("`{0}`.`{1}`", conn.Database, spName);
 
 			int hash = spName.GetHashCode();
 			ArrayList array = (ArrayList)procHash[hash];

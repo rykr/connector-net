@@ -258,7 +258,7 @@ namespace MySql.Data.MySqlClient
 			if (state != ConnectionState.Open)
 				throw new InvalidOperationException(Resources.ConnectionNotOpen);
 
-            MySqlCommand cmd = new MySqlCommand(String.Format("USE {0}", databaseName), this);
+            MySqlCommand cmd = new MySqlCommand(String.Format("USE `{0}`", databaseName), this);
             cmd.ExecuteNonQuery();
 
 			//driver.SetDatabase(databaseName);

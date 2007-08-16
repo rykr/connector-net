@@ -183,7 +183,7 @@ namespace MySql.Data.MySqlClient.Tests
             conn.ChangeDatabase(database1);
 
 			MySqlDataAdapter da = new MySqlDataAdapter(
-                String.Format("SELECT id, name FROM {0}.test", database0), conn);
+                String.Format("SELECT id, name FROM `{0}`.test", database0), conn);
 			MySqlCommandBuilder cb = new MySqlCommandBuilder(da);
 			cb.ToString();
 			DataSet ds = new DataSet();
