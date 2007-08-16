@@ -463,7 +463,7 @@ namespace MySql.Data.MySqlClient.Tests
 			try
 			{
 				c.Open();
-				MySqlCommand cmd2 = new MySqlCommand(String.Format("use {0}", database0), c);
+				MySqlCommand cmd2 = new MySqlCommand(String.Format("use `{0}`", database0), c);
 				cmd2.ExecuteNonQuery();
 
 				MySqlCommand cmd = new MySqlCommand("spTest", c);
@@ -471,10 +471,10 @@ namespace MySql.Data.MySqlClient.Tests
 				object val = cmd.ExecuteScalar();
 				Assert.AreEqual(4, val);
 
-				cmd2.CommandText = String.Format("use {0}", database1);
+				cmd2.CommandText = String.Format("use `{0}`", database1);
 				cmd2.ExecuteNonQuery();
 
-				cmd.CommandText = String.Format("{0}.spTest", database0);
+				cmd.CommandText = String.Format("`{0}`.spTest", database0);
 				val = cmd.ExecuteScalar();
 				Assert.AreEqual(4, val);
 			}
@@ -1005,10 +1005,10 @@ namespace MySql.Data.MySqlClient.Tests
 		public void RunWithoutSelectPrivsThrowException()
 		{
 			suExecSQL(String.Format(
-				"GRANT ALL ON {0}.* to 'testuser'@'%' identified by 'testuser'",
+				"GRANT ALL ON `{0}`.* to 'testuser'@'%' identified by 'testuser'",
 				database0));
 			suExecSQL(String.Format(
-				"GRANT ALL ON {0}.* to 'testuser'@'localhost' identified by 'testuser'",
+				"GRANT ALL ON `{0}`.* to 'testuser'@'localhost' identified by 'testuser'",
 				database0));
 
 			execSQL("DROP PROCEDURE IF EXISTS spTest");
