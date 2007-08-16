@@ -4,8 +4,6 @@
 
 	<include buildfile="Client.build"/>
 
-	<echo message="${datetime::to-string(datetime::now())}"/>
-
 	<!-- first remove all previous packages -->
 	<delete dir="packages" failonerror="false"/>
 	<mkdir dir="packages"/>
@@ -17,6 +15,11 @@
 		<exec program="sandcastlebuilderconsole.exe" commandline="help.shfb" failonerror="true" workingdir="Documentation"/>
 		<call target="all"/>
 	</target>
+
+	<!-- construct our version id from the assembly version -->
+	<property name="version" value="${assemblyname::get-version(assemblyname::get-assembly-name('driver/bin/net-2.0/release/mysql.data.dll'))}"/>
+	<property name="ver" value="${string::substring(version, 0, string::last-index-of(version, '.'))}"/>
+	<echo message="ver = ${ver}"/>
 
 	<!-- packaging targets -->
 	<target name="all" depends="GPL, Commercial">
