@@ -1,6 +1,6 @@
-MySQL Connector/Net 1.0.9
+MySQL Connector/Net 1.0.10
 MySQL AB's ADO.Net Driver for MySQL
-Copyright (c) 2004-2006 MySQL AB
+Copyright (c) 2004-2007 MySQL AB
 
 CONTENTS
 
@@ -11,15 +11,7 @@ CONTENTS
 RELEASE NOTES
 
 Please see the CHANGES file for a detailed list of bugs fixed and changes made 
-to this release.  Here is a brief list of the major changes found in this release.
-
-  - Metadata for stored procedures is now cached.  Use the 'procedure cache' 
-    connection string option to adjust.
-  - Queries that use a great number of parameters are many times faster than with 
-    1.0.7
-  - Shared memory connections now work
-  - ICSharpZipLib is no longer used in the connector and is not shipped starting with 1.0.8
-  - Tons of bugs have been fixed.
+to this release.
 
 LICENSE
 

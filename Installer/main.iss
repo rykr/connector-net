@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=MySQL Connector/Net
-AppVersion={#VERSION}
+AppVersion=1.0.10
 AppVerName=MySQL Connector/Net {#SetupSetting("AppVersion")}
 AppPublisher=MySQL, Inc.
 AppPublisherURL=http://www.mysql.com.com/
@@ -19,7 +19,7 @@ PrivilegesRequired=admin
 WizardImageFile=Bitmaps\dlgbmp-is.bmp
 WizardImageStretch=false
 WizardSmallImageFile=compiler:wizmodernsmallimage-is.bmp
-VersionInfoVersion={#VERSION}
+VersionInfoVersion=1.0.10
 
 [Languages]
 Name: english; MessagesFile: compiler:Default.isl
@@ -47,17 +47,16 @@ Source: binary\installtools.dll; DestDir: {app}; Attribs: hidden
 [Icons]
 Name: {group}\{cm:UninstallProgram,MySQL Connector Net}; Filename: {uninstallexe}
 Name: {group}\Change Log; Filename: {app}\CHANGES
-Name: {group}\Release Notes; Filename: {app}\Release Notes.txt
 Name: {group}\Help; Filename: {app}\Documentation\MySql.Data.chm
 
 [Registry]
-Root: HKLM; Subkey: Software\MySQL AB\MySQL Connector/Net {#VERSION}; Flags: uninsdeletekey
-Root: HKLM; Subkey: Software\MySQL AB\MySQL Connector/Net {#VERSION}; ValueType: string; ValueName: Location; ValueData: {app}
-Root: HKLM; Subkey: Software\MySQL AB\MySQL Connector/Net {#VERSION}; ValueType: string; ValueName: Version; ValueData: {#SetupSetting('AppVersion')}
+Root: HKLM; Subkey: Software\MySQL AB\MySQL Connector/Net {#SetupSetting("AppVersion")}; Flags: uninsdeletekey
+Root: HKLM; Subkey: Software\MySQL AB\MySQL Connector/Net {#SetupSetting("AppVersion")}; ValueType: string; ValueName: Location; ValueData: {app}
+Root: HKLM; Subkey: Software\MySQL AB\MySQL Connector/Net {#SetupSetting("AppVersion")}; ValueType: string; ValueName: Version; ValueData: {#SetupSetting('AppVersion')}
 
 ; make our assembly visible to Visual Studio
-Root: HKLM; Subkey: Software\Microsoft\.NETFramework\AssemblyFolders\MySQL Connector/Net {#VERSION}; Flags: uninsdeletekey
-Root: HKLM; Subkey: Software\Microsoft\.NETFramework\AssemblyFolders\MySQL Connector/Net {#VERSION}; ValueType: string; ValueData: "{app}\Binaries\.NET 1.1"
+Root: HKLM; Subkey: Software\Microsoft\.NETFramework\AssemblyFolders\MySQL Connector/Net {#SetupSetting("AppVersion")}; Flags: uninsdeletekey
+Root: HKLM; Subkey: Software\Microsoft\.NETFramework\AssemblyFolders\MySQL Connector/Net {#SetupSetting("AppVersion")}; ValueType: string; ValueData: "{app}\Binaries\.NET 1.1"
 
 [Code]
 #include "misc.iss"
