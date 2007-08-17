@@ -130,7 +130,6 @@
 		<property name="nunit.dir" value="${nunit1.dir}"/>
 		<property name="framework" value="net-1.1"/>
 		<call target="testclient"/>
-		<call target="fxcop"/>
 	</target>
 
 	<target name="test-net-2.0" depends="net-2.0">
