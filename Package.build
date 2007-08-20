@@ -58,11 +58,11 @@
 
 		<!-- now rename the snapshot builds to include date -->
 		<move file="packages/snapshots/mysql-connector-net-${ver}.exe" 
-		      tofile="packages/snapshots/mysql-connector-net-${ver}-${datetime::get-year(datetime::now())}${string::pad-left(convert::to-string(datetime::get-month(datetime::now())), 2, '0')}${string::pad-left(convert::to-string(datetime::get-day(datetime::now())), 2, '0')}.exe" />
+		      tofile="packages/snapshots/mysql-connector-net-${ver}-${datetime::get-year(datetime::now())}${string::pad-left(int::to-string(datetime::get-month(datetime::now())), 2, '0')}${string::pad-left(int::to-string(datetime::get-day(datetime::now())), 2, '0')}.exe" />
 		<move file="packages/snapshots/mysql-connector-net-${ver}-src.zip" 
-		      tofile="packages/snapshots/mysql-connector-net-${ver}-${datetime::get-year(datetime::now())}${string::pad-left(convert::to-string(datetime::get-month(datetime::now())), 2, '0')}${string::pad-left(convert::to-string(datetime::get-day(datetime::now())), 2, '0')}-src.zip" />
+		      tofile="packages/snapshots/mysql-connector-net-${ver}-${datetime::get-year(datetime::now())}${string::pad-left(int::to-string(datetime::get-month(datetime::now())), 2, '0')}${string::pad-left(int::to-string(datetime::get-day(datetime::now())), 2, '0')}-src.zip" />
 		<move file="packages/snapshots/mysql-connector-net-${ver}-noinstall.zip" 
-		      tofile="packages/snapshots/mysql-connector-net-${ver}-${datetime::get-year(datetime::now())}${string::pad-left(convert::to-string(datetime::get-month(datetime::now())), 2, '0')}${string::pad-left(convert::to-string(datetime::get-day(datetime::now())), 2, '0')}-noinstall.zip" />
+		      tofile="packages/snapshots/mysql-connector-net-${ver}-${datetime::get-year(datetime::now())}${string::pad-left(int::to-string(datetime::get-month(datetime::now())), 2, '0')}${string::pad-left(int::to-string(datetime::get-day(datetime::now())), 2, '0')}-noinstall.zip" />
 
 	</target>
 
