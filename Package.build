@@ -99,7 +99,9 @@
 				<exclude name="COPYING" unless="${IsGPL}"/>
 				<exclude name="EXCEPTIONS" unless="${IsGPL}"/>
 				<exclude name="License.txt" if="${IsGPL}"/>
-				<exclude name="*.Design.*"/>
+				<exclude name="MySQLEULA.txt" if="${IsGPL}"/>
+				<exclude name="*.Design*"/>
+				<exclude name="notused/**"/>
 
 				<include name="**/**"/>
 			</fileset>
