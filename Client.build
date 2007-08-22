@@ -26,7 +26,7 @@
 	</if>
 
 	<if test="${not property::exists('defines')}">
-		<property name="defines" value=""/>
+		<property name="defines" value="FINAL"/>
 	</if>
 	
     <if test="${not property::exists('build.dir')}">
