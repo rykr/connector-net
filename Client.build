@@ -250,7 +250,9 @@
 		<delete failonerror="false">
 			<fileset>
 				<include name="bin/**" />
-            </fileset>
+				<include name="mysqlclient/bin/**"/>
+				<include name="testsuite/bin/**"/>
+		            </fileset>
         </delete>
     </target>
     
