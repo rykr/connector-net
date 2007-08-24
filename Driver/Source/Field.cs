@@ -145,7 +145,14 @@ namespace MySql.Data.MySqlClient
 
 		public bool IsBlob
 		{
-			get { return (colFlags & ColumnFlags.BLOB) > 0; }
+			get
+			{
+				return (mySqlDbType >= MySqlDbType.TinyBlob &&
+				mySqlDbType <= MySqlDbType.Blob) ||
+				(mySqlDbType >= MySqlDbType.TinyText &&
+				mySqlDbType <= MySqlDbType.Text) ||
+				(colFlags & ColumnFlags.BLOB) > 0;
+			}
 		}
 
 		public bool IsBinary
