@@ -677,7 +677,7 @@ namespace MySql.Data.MySqlClient
 				// When executing query statements, the result byte that is returned
 				// from MySql is the column count.  That is why we reference the LastResult
 				// property here to dimension our field array
-				connection.SetState(ConnectionState.Fetching);
+				connection.SetState(ConnectionState.Fetching, true);
 
 				// load in our field defs and set our internal variables so we know
 				// what we can do (canRead, hasRows)
@@ -688,7 +688,7 @@ namespace MySql.Data.MySqlClient
 			catch (Exception ex)
 			{
 				if (ex is MySqlException && !(ex as MySqlException).IsFatal)
-					connection.SetState(ConnectionState.Open);
+					connection.SetState(ConnectionState.Open, true);
 				else
 					connection.Terminate();
 				throw;
@@ -696,7 +696,7 @@ namespace MySql.Data.MySqlClient
 			finally
 			{
 				if (connection.State != ConnectionState.Closed && connection.State != ConnectionState.Open)
-					connection.SetState(ConnectionState.Open);
+					connection.SetState(ConnectionState.Open, true);
 			}
 		}
 
@@ -712,7 +712,7 @@ namespace MySql.Data.MySqlClient
 			if (!canRead) return false;
 			readCount++;
 
-			connection.SetState(ConnectionState.Fetching);
+			connection.SetState(ConnectionState.Fetching, true);
 
 			try
 			{
@@ -743,7 +743,7 @@ namespace MySql.Data.MySqlClient
 			}
 			finally
 			{
-				connection.SetState(ConnectionState.Open);
+				connection.SetState(ConnectionState.Open, true);
 			}
 			return true;
 		}

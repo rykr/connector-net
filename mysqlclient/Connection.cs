@@ -265,11 +265,11 @@ namespace MySql.Data.MySqlClient
 			settings.Database = databaseName;
 		}
 
-		internal void SetState(ConnectionState newState)
+		internal void SetState(ConnectionState newState, bool broadcast)
 		{
 			ConnectionState oldState = state;
 			state = newState;
-			if (this.StateChange != null)
+			if (this.StateChange != null && broadcast)
 				StateChange(this, new StateChangeEventArgs(oldState, newState));
 		}
 
@@ -291,7 +291,7 @@ namespace MySql.Data.MySqlClient
 			if (state == ConnectionState.Open)
 				throw new InvalidOperationException(Resources.ConnectionAlreadyOpen);
 
-			SetState(ConnectionState.Connecting);
+			SetState(ConnectionState.Connecting, true);
 
 			try
 			{
@@ -309,7 +309,7 @@ namespace MySql.Data.MySqlClient
 			}
 			catch (Exception)
 			{
-				SetState(ConnectionState.Closed);
+				SetState(ConnectionState.Closed, true);
 				throw;
 			}
 
@@ -317,11 +317,12 @@ namespace MySql.Data.MySqlClient
 			if (driver.Settings.UseOldSyntax)
 				Logger.LogWarning("You are using old syntax that will be removed in future versions");
 
-			SetState(ConnectionState.Open);
+			SetState(ConnectionState.Open, false);
 			driver.Configure(this);
 			if (settings.Database != null && settings.Database.Length != 0)
 				ChangeDatabase(settings.Database);
 			hasBeenOpen = true;
+			SetState(ConnectionState.Open, true);
 		}
 
 		internal void Terminate()
@@ -335,7 +336,7 @@ namespace MySql.Data.MySqlClient
 			}
 			catch (Exception) { }
 
-			SetState(ConnectionState.Closed);
+			SetState(ConnectionState.Closed, true);
 		}
 
 		/// <include file='docs/MySqlConnection.xml' path='docs/Close/*'/>
