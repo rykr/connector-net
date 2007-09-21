@@ -2,7 +2,9 @@ Version 5.0.9
 
   - Fixed problem where fields that were blobs but did not include the BLOB flag were treated
     as binary when they should have been treated as text.  (Bug #30233)
-
+  - Changed from using Array.Copy to Buffer.BlockCopy in MySqlDataReader.GetBytes.  This
+    helps with memory usage as we expect the source and destination arrays to not be overlapping.
+    (Bug #31090)
 
 Version 5.0.8   8/16/2007
 
