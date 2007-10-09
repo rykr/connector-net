@@ -7,6 +7,8 @@ Version 5.0.9
     (Bug #31090)
   - Fixed problem that prevented commands from being executed from the state change
     handler.  Not sure why you would want to do this but...  (bug #30964)
+  - Fixed issue where column name metadata was not using the charset given on the connection string
+    (Bug #31185)
 
 Version 5.0.8   8/16/2007
 

@@ -168,6 +168,7 @@ namespace MySql.Data.MySqlClient
 		{
 			base.Configure(connection);
 			stream.MaxPacketSize = (ulong)maxPacketSize;
+			stream.Encoding = Encoding;
 		}
 
 		public override void Open()
