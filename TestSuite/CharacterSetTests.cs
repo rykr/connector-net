@@ -166,5 +166,31 @@ namespace MySql.Data.MySqlClient.Tests
 				Assert.AreEqual("Numéro", dt.Columns[0].ColumnName);
 			}
 		}
+
+		/// <summary>
+		/// Bug #31117  	Connector/Net exceptions do not support server charset
+		/// </summary>
+		[Test]
+		public void NonLatin1Exception()
+		{
+			string connStr = GetConnectionString(true) + ";charset=utf8";
+
+			execSQL("CREATE TABLE Test (id int)");
+
+			using (MySqlConnection c = new MySqlConnection(connStr))
+			{
+				c.Open();
+
+				try
+				{
+					MySqlCommand cmd = new MySqlCommand("select `Numéro` from Test", c);
+					cmd.ExecuteScalar();
+				}
+				catch (Exception ex)
+				{
+					Assert.AreEqual("Unknown column 'Numéro' in 'field list'", ex.Message);
+				}
+			}
+		}	
 	}
 }
