@@ -148,5 +148,23 @@ namespace MySql.Data.MySqlClient.Tests
 			}
 		}
 
+		/// <summary>
+		/// Bug #31185  	columns names are incorrect when using the 'AS' clause and name with accents
+		/// </summary>
+		[Test]
+		public void UTF8AsColumnNames()
+		{
+			string connStr = GetConnectionString(true) + ";charset=utf8";
+			using (MySqlConnection c = new MySqlConnection(connStr))
+			{
+				c.Open();
+
+				MySqlDataAdapter da = new MySqlDataAdapter("select now() as 'Numéro'", c);
+				DataTable dt = new DataTable();
+				da.Fill(dt);
+
+				Assert.AreEqual("Numéro", dt.Columns[0].ColumnName);
+			}
+		}
 	}
 }
