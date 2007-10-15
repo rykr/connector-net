@@ -9,7 +9,10 @@ Version 5.0.9
     handler.  Not sure why you would want to do this but...  (bug #30964)
   - Fixed issue where column name metadata was not using the charset given on the connection string
     (Bug #31185)
-
+  - Fixed problem with installer where the installation might report a failure to
+    remove the performance counters if the performance counter category had already 
+    been removed for some reason    
+    
 Version 5.0.8   8/16/2007
 
   Bug #28706 Log messages are truncated  
