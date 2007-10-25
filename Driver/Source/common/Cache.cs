@@ -19,6 +19,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 
 using System.Collections.Specialized;
+using System.Collections;
+using System.Globalization;
+using System;
 
 namespace MySql.Data.Common
 {
@@ -26,7 +29,8 @@ namespace MySql.Data.Common
     {
         private int capacity;
 
-        public Cache(int initialCapacity, int capacity) : base(initialCapacity)
+        public Cache(int initialCapacity, int capacity) : 
+            base(initialCapacity, StringComparer.CurrentCulture)
         {
             this.capacity = capacity;
         }

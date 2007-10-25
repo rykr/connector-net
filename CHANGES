@@ -14,6 +14,10 @@ Version 5.0.9
     been removed for some reason    
   - Fixed problem with installer where attempting to install over a failed uninstall 
     could leave multiple clients registered in machine.config.  (Bug #31731) 
+  - Fixed problem with connection string caching where our collection class was 
+    using case insensitive semantics and this causes cases where a user orginally
+    used the wrong case for a user id and then fixed it to still get access denied
+    errors. (Bug #31433)    
     
 Version 5.0.8   8/16/2007
 
