@@ -12,6 +12,8 @@ Version 5.0.9
   - Fixed problem with installer where the installation might report a failure to
     remove the performance counters if the performance counter category had already 
     been removed for some reason    
+  - Fixed problem with installer where attempting to install over a failed uninstall 
+    could leave multiple clients registered in machine.config.  (Bug #31731) 
     
 Version 5.0.8   8/16/2007
 
