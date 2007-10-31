@@ -213,6 +213,15 @@ namespace MySql.Data.MySqlClient
             }
 		}
 
+        public void SendEntirePacketDirectly(byte[] buffer, int count)
+        {
+            buffer[0] = (byte)(count & 0xff);
+            buffer[1] = (byte)((count >> 8) & 0xff);
+            buffer[2] = (byte)((count >> 16) & 0xff);
+            buffer[3] = sequenceByte++;
+            baseStream.Write(buffer, 0, count + 4);
+        }
+
 		/// <summary>
 		/// StartOutput is used to reset the write state of the stream.
 		/// </summary>

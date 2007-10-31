@@ -18,6 +18,7 @@ Version 5.0.9
     using case insensitive semantics and this causes cases where a user orginally
     used the wrong case for a user id and then fixed it to still get access denied
     errors. (Bug #31433)    
+  - improved the speed of load data local infile significantly    
     
 Version 5.0.8   8/16/2007
 
