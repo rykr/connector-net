@@ -1262,7 +1262,9 @@ namespace MySql.Data.MySqlClient.Tests
 					END");
 			MySqlCommand command = new MySqlCommand("spTest", conn);
 			command.CommandType = CommandType.StoredProcedure;
-			MySqlDataReader reader = command.ExecuteReader(); 
+            using (MySqlDataReader reader = command.ExecuteReader())
+            {
+            }
 		}
 
         /// <summary>
