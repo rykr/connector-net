@@ -57,11 +57,11 @@ namespace MySql.Data.MySqlClient
             : this(msg, inner)
         {
             errorCode = errno;
+            Data.Add("Server Error Code", errno);
         }
 
-		internal MySqlException(string msg, int errno) : this(msg)
+		internal MySqlException(string msg, int errno) : this(msg, errno, null)
 		{
-			errorCode = errno;
 		}
 
 #if !PocketPC
