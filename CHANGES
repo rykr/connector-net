@@ -22,6 +22,8 @@ Version 5.0.9
   - fixed MySqlDateTime.ToString() to properly return the date value (Bug #32010)    
   - fixed problem where string parameters who have their size set after their value could cause exceptions
     (Bug #32094)    
+  - fixed problem where old code was preventing creating parameter objects with non-input direction using
+    just a constructor (Bug #32093)     
     
 Version 5.0.8   8/16/2007
 
