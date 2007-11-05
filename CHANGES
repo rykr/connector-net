@@ -6,6 +6,8 @@ Version 1.0.11
     (Bug #31090)
   - Fixed problem that prevented commands from being executed from the state change
     handler.  Not sure why you would want to do this but...  (bug #30964)
+  - Removed code that set the Fetching state so that running a query from the state
+    change handler would work in the case that the new state is open        
         
 Version 1.0.10
     Bugs
