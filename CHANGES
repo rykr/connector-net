@@ -8,7 +8,9 @@ Version 1.0.11
     handler.  Not sure why you would want to do this but...  (bug #30964)
   - Removed code that set the Fetching state so that running a query from the state
     change handler would work in the case that the new state is open        
-        
+  - fixed problem where string parameters who have their size set after their value could cause exceptions
+    (Bug #32094) 
+            
 Version 1.0.10
     Bugs
     ----

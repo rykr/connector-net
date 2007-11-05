@@ -49,7 +49,10 @@ namespace MySql.Data.Types
 		{
 			string v = value.ToString();
 			if (length > 0)
+			{
+				length = Math.Min(length, v.Length);
 				v = v.Substring(0, length);
+			}
 
 			if (binary)
 				writer.WriteLenString( v );
