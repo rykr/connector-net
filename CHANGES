@@ -10,7 +10,9 @@ Version 1.0.11
     change handler would work in the case that the new state is open        
   - fixed problem where string parameters who have their size set after their value could cause exceptions
     (Bug #32094) 
-            
+  - fixed problem where old code was preventing creating parameter objects with non-input direction using
+    just a constructor (Bug #32093)  
+                
 Version 1.0.10
     Bugs
     ----
