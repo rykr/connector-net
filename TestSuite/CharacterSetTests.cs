@@ -175,6 +175,7 @@ namespace MySql.Data.MySqlClient.Tests
 		{
 			string connStr = GetConnectionString(true) + ";charset=utf8";
 
+            execSQL("DROP TABLE IF EXISTS Test");
 			execSQL("CREATE TABLE Test (id int)");
 
 			using (MySqlConnection c = new MySqlConnection(connStr))
