@@ -36,6 +36,7 @@ namespace MySql.Data.MySqlClient
 #endif
 	public sealed class MySqlParameterCollection : DbParameterCollection
 	{
+        private const char DefaultParameterMarker = '?';
         private ArrayList items = new ArrayList();
         private Hashtable indexHash;
         private MySqlCommand owningCommand;
@@ -54,7 +55,12 @@ namespace MySql.Data.MySqlClient
 
 		internal char ParameterMarker
 		{
-			get { return owningCommand.Connection.ParameterMarker; }
+			get 
+            { 
+                return owningCommand.Connection != null ? 
+                owningCommand.Connection.ParameterMarker : 
+                DefaultParameterMarker; 
+            }
 		}
 
 		#region Public Methods
