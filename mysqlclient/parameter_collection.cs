@@ -45,8 +45,9 @@ namespace MySql.Data.MySqlClient
 		private Hashtable ciHash;
 		private Hashtable hash;
         private int returnParameterIndex;
+		private MySqlCommand owningCommand;
 
-		internal MySqlParameterCollection()
+		internal MySqlParameterCollection(MySqlCommand cmd)
 		{
 			hash = new Hashtable();
 #if NET20
@@ -56,12 +57,12 @@ namespace MySql.Data.MySqlClient
 				new CaseInsensitiveComparer());
 #endif
             Clear();
+			owningCommand = cmd;
 		}
 
 		internal char ParameterMarker
 		{
-			get { return paramMarker; }
-			set { paramMarker = value; }
+			get { return owningCommand.Connection.ParameterMarker; }
 		}
 
 		private int InternalIndexOf(string name)

@@ -12,6 +12,9 @@ Version 1.0.11
     (Bug #32094) 
   - fixed problem where old code was preventing creating parameter objects with non-input direction using
     just a constructor (Bug #32093)  
+  - fixed problem where changing the connection string of a connection to one that changes
+    the parameter marker after the connection had been assigned to a command but before
+    the connection is opened can cause parameters to not be found (bug #13991)                
                 
 Version 1.0.10
     Bugs

@@ -53,7 +53,7 @@ namespace MySql.Data.MySqlClient
 		{
 			cmdType = CommandType.Text;
 			parameterMap = new ArrayList();
-			parameters = new MySqlParameterCollection();
+			parameters = new MySqlParameterCollection(this);
 			updatedRowSource = UpdateRowSource.Both;
 		}
 
@@ -69,8 +69,6 @@ namespace MySql.Data.MySqlClient
 			: this(cmdText)
 		{
 			Connection = connection;
-			if (connection != null)
-				parameters.ParameterMarker = connection.ParameterMarker;
 		}
 
 		/// <include file='docs/mysqlcommand.xml' path='docs/ctor4/*'/>
@@ -148,8 +146,6 @@ namespace MySql.Data.MySqlClient
 					this.Transaction = null;
 
 				connection = (MySqlConnection)value;
-				if (connection != null)
-					parameters.ParameterMarker = connection.ParameterMarker;
 			}
 		}
 
@@ -621,7 +617,7 @@ namespace MySql.Data.MySqlClient
 					writer.Version = connection.driver.Version;
 					continue;
 				}
-				else if (token[0] == parameters.ParameterMarker)
+				else if (token[0] == connection.ParameterMarker)
 				{
 					if (SerializeParameter(writer, token)) continue;
 				}
@@ -658,12 +654,12 @@ namespace MySql.Data.MySqlClient
 
 			foreach (string token in tokens)
 			{
-				if (token[0] != parameters.ParameterMarker)
+				if (token[0] != connection.ParameterMarker)
 					newSQL.Append(token);
 				else
 				{
 					parameterMap.Add(token);
-					newSQL.Append(parameters.ParameterMarker);
+					newSQL.Append(connection.ParameterMarker);
 				}
 			}
 
@@ -704,12 +700,12 @@ namespace MySql.Data.MySqlClient
 					delim = c;
 				else if (c == '\\')
 					escaped = !escaped;
-				else if (c == parameters.ParameterMarker && delim == Char.MinValue && !escaped)
+				else if (c == connection.ParameterMarker && delim == Char.MinValue && !escaped)
 				{
 					tokens.Add(sqlPart.ToString());
 					sqlPart.Remove(0, sqlPart.Length);
 				}
-				else if (sqlPart.Length > 0 && sqlPart[0] == parameters.ParameterMarker &&
+				else if (sqlPart.Length > 0 && sqlPart[0] == connection.ParameterMarker &&
 					!Char.IsLetterOrDigit(c) && c != '_' && c != '.' && c != '$'
 					&& c != '@')
 				{
