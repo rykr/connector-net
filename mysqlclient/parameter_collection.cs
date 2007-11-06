@@ -40,8 +40,8 @@ namespace MySql.Data.MySqlClient
 	public sealed class MySqlParameterCollection : MarshalByRefObject, IDataParameterCollection,
 		IList, ICollection, IEnumerable
 	{
+		private const char DefaultParameterMarker = '?';
 		private ArrayList _parms = new ArrayList();
-		private char paramMarker = '?';
 		private Hashtable ciHash;
 		private Hashtable hash;
         private int returnParameterIndex;
@@ -62,7 +62,12 @@ namespace MySql.Data.MySqlClient
 
 		internal char ParameterMarker
 		{
-			get { return owningCommand.Connection.ParameterMarker; }
+			get 
+			{ 
+				return owningCommand.Connection != null ? 
+					owningCommand.Connection.ParameterMarker : 
+					DefaultParameterMarker; 
+			}
 		}
 
 		private int InternalIndexOf(string name)
@@ -351,14 +356,14 @@ namespace MySql.Data.MySqlClient
 				return AddReturnParameter(value);
 
 			string inComingName = value.ParameterName.ToLower();
-			if (inComingName[0] == paramMarker)
+			if (inComingName[0] == ParameterMarker)
 				inComingName = inComingName.Substring(1, inComingName.Length - 1);
 
 			for (int i = 0; i < _parms.Count; i++)
 			{
 				MySqlParameter p = (MySqlParameter)_parms[i];
 				string name = p.ParameterName.ToLower();
-				if (name[0] == paramMarker)
+				if (name[0] == ParameterMarker)
 					name = name.Substring(1, name.Length - 1);
 				if (name == inComingName)
 				{
