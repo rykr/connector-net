@@ -229,9 +229,9 @@ namespace MySql.Data.MySqlClient
 			if ((connectionFlags & ClientFlags.COMPRESS) != 0)
 			{
 				//stream = new CompressedStream( stream, MaxSinglePacket );
-				writer = new PacketWriter(new BufferedStream(new CompressedStream(stream)), this);
+				writer = new PacketWriter(new CompressedStream(new BufferedStream(stream)), this);
 				writer.Encoding = encoding;
-				reader = new PacketReader(new BufferedStream(new CompressedStream(stream)), this);
+				reader = new PacketReader(new CompressedStream(new BufferedStream(stream)), this);
 			}
 
 			isOpen = true;
