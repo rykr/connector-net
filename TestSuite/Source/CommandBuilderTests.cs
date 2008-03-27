@@ -373,5 +373,22 @@ namespace MySql.Data.MySqlClient.Tests
 				Assert.Fail(ex.Message);
 			}
 		}
+
+        /// <summary>
+        /// Bug #35492 Please implement DbCommandBuilder.QuoteIdentifier 
+        /// </summary>
+        [Test]
+        public void QuoteAndUnquoteIdentifiers()
+        {
+            MySqlCommandBuilder cb = new MySqlCommandBuilder();
+            Assert.AreEqual("`boo`", cb.QuoteIdentifier("boo"));
+            Assert.AreEqual("`bo``o`", cb.QuoteIdentifier("bo`o"));
+            Assert.AreEqual("`boo`", cb.QuoteIdentifier("`boo`"));
+
+            // now do the unquoting
+            Assert.AreEqual("boo", cb.UnquoteIdentifier("`boo`"));
+            Assert.AreEqual("`boo", cb.UnquoteIdentifier("`boo"));
+            Assert.AreEqual("bo`o", cb.UnquoteIdentifier("`bo``o`"));
+        }
 	}
 }
