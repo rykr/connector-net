@@ -485,6 +485,8 @@ namespace MySql.Data.MySqlClient
 		{
 			MySqlParameter clone = new MySqlParameter(paramName, mySqlDbType, direction,
 				sourceColumn, sourceVersion, paramValue);
+            // if we have not had our type set yet then our clone should not either
+            clone.inferType = inferType;
 			return clone;
 		}
 		#endregion
