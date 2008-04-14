@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=MySQL Connector/Net
-AppVersion=5.0.8.1
+AppVersion=5.0.9
 AppVerName=MySQL Connector/Net {#SetupSetting("AppVersion")}
 AppPublisher=MySQL, Inc.
 AppPublisherURL=http://www.mysql.com.com/
@@ -19,7 +19,7 @@ PrivilegesRequired=admin
 WizardImageFile=Bitmaps\dlgbmp-is.bmp
 WizardImageStretch=false
 WizardSmallImageFile=compiler:wizmodernsmallimage-is.bmp
-VersionInfoVersion=5.0.8.1
+VersionInfoVersion=5.0.9
 
 [Languages]
 Name: english; MessagesFile: compiler:Default.isl
