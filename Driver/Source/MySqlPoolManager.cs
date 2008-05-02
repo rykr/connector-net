@@ -64,9 +64,17 @@ namespace MySql.Data.MySqlClient
             {
                 string key = driver.Settings.GetConnectionString(true);
                 MySqlPool pool = (MySqlPool)pools[key];
+                // if we can't find the pool but we did get a thread id then we assume
+                // something is bad wrong.  If we didn't get a thread id then we assume that
+                // the driver connection info was bogus and that led to the pool failing
+                // to create
                 if (pool == null)
-                    throw new MySqlException("Pooling exception: Unable to find original pool for connection");
-                pool.RemoveConnection(driver);
+                {
+                    if (driver.ThreadID != -1)
+                        throw new MySqlException("Pooling exception: Unable to find original pool for connection");
+                }
+                else
+                    pool.RemoveConnection(driver);
             }
         }
 
