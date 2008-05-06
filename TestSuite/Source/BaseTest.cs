@@ -134,7 +134,7 @@ namespace MySql.Data.MySqlClient.Tests
 		protected string GetConnectionString(bool includedb)
 		{
 			string connStr = String.Format("server={0};user id={1};password={2};" +
-				 "persist security info=true;{3}", host, user, password, csAdditions);
+                 "persist security info=true;connection reset=true;{3}", host, user, password, csAdditions);
 			if (includedb)
 				connStr += String.Format("database={0};", database0);
 			connStr += GetConnectionInfo();
@@ -144,7 +144,7 @@ namespace MySql.Data.MySqlClient.Tests
 		protected string GetConnectionStringEx(string user, string pw, bool includedb)
 		{
 			string connStr = String.Format("server={0};user id={1};" +
-				 "persist security info=true;{2}", host, user, csAdditions);
+                 "persist security info=true;connection reset=true;{2}", host, user, csAdditions);
 			if (includedb)
 				connStr += String.Format("database={0};", database0);
 			if (pw != null)
