@@ -16,6 +16,8 @@ Version 1.0.11
     the parameter marker after the connection had been assigned to a command but before
     the connection is opened can cause parameters to not be found (bug #13991)                
   - Fixed long standing problem with compression over a network.  It's now fast again. (bug #27865)    
+  - Replaced semaphore class that used Win32 API calls with one that uses an AutoResetEvent object
+    so it will work on Mono (bug # 33682)       
                 
 Version 1.0.10
     Bugs
