@@ -96,7 +96,12 @@ namespace MySql.Data.MySqlClient
 			get { return hasWarnings; }
 		}
 
-		#endregion
+	    public bool IsOpen
+	    {
+            get { return isOpen; }
+	    }
+
+#endregion
 
 		public string Property(string key)
 		{

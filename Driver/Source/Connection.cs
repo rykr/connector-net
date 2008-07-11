@@ -495,7 +495,7 @@ namespace MySql.Data.MySqlClient
             if (dataReader != null)
                 dataReader.Close();
 
-            if (settings.Pooling)
+            if (settings.Pooling && driver.IsOpen)
             {
                 // if we are in a transaction, roll it back
                 if ((driver.ServerStatus & ServerStatusFlags.InTransaction) != 0)
