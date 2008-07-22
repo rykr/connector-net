@@ -83,11 +83,10 @@ namespace MySql.Data.Types
 		void IMySqlValue.WriteValue(MySqlStream stream, bool binary, object val, int length)
 		{
 			double v = Convert.ToDouble(val);
-			if (binary)
-				stream.Write(BitConverter.GetBytes(v));
-			else
-				stream.WriteStringNoNull(v.ToString(
-					 CultureInfo.InvariantCulture));
+            if (binary)
+                stream.Write(BitConverter.GetBytes(v));
+            else
+                stream.WriteStringNoNull(v.ToString("R", CultureInfo.InvariantCulture));
 		}
 
 		IMySqlValue IMySqlValue.ReadValue(MySqlStream stream, long length,
@@ -102,7 +101,7 @@ namespace MySql.Data.Types
 				stream.Read(b, 0, 8);
 				return new MySqlDouble(BitConverter.ToDouble(b, 0));
 			}
-			return new MySqlDouble(Double.Parse(stream.ReadString(length),
+			return new MySqlDouble(Double.Parse(stream.ReadString(length), 
 					 CultureInfo.InvariantCulture));
 		}
 
