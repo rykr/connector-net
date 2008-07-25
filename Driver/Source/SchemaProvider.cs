@@ -47,7 +47,7 @@ namespace MySql.Data.MySqlClient
             if (connection.State != ConnectionState.Open)
                 throw new MySqlException("GetSchema can only be called on an open connection.");
 
-            collection = collection.ToLower(System.Globalization.CultureInfo.CurrentCulture);
+            collection = collection.ToLower(CultureInfo.InvariantCulture);
 
             DataTable dt = GetSchemaInternal(collection, restrictions);
 
