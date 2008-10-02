@@ -15,6 +15,8 @@ Version 5.0.10 -
     (bug #33322)
   - Fixed GetSchema to work properly when querying for a collection with non-English
     locale (bug #35459)
+  - Defaulting max allowed packet to 1024 to account for the possible case where the
+    value doesn't come in as a server variable   
    
 Version 5.0.9 - 4/14/08
 
