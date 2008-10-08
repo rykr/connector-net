@@ -17,6 +17,9 @@ Version 5.0.10 -
     locale (bug #35459)
   - Defaulting max allowed packet to 1024 to account for the possible case where the
     value doesn't come in as a server variable   
+  - implemented Disposable pattern on MySqlTransaction class so including one in a using statement
+    and then not calling commit will cause a rollback when the using exits (bug #39817)
+   
    
 Version 5.0.9 - 4/14/08
 
