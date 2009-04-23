@@ -1,4 +1,4 @@
-// Copyright (C) 2007 MySQL AB
+// Copyright (c) 2004-2008 MySQL AB, 2008-2009 Sun Microsystems, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -38,6 +38,8 @@ using System.Globalization;
 using System.Transactions;
 using System.Web.Security;
 using MySql.Web.Common;
+using MySql.Web.Properties;
+using MySql.Web.General;
 
 namespace MySql.Web.Profile
 {
@@ -46,9 +48,8 @@ namespace MySql.Web.Profile
     /// </summary>
     public class MySQLProfileProvider : ProfileProvider
     {
-        private string applicationName;
         private string connectionString;
-        private int applicationId;
+        private Application app;
 
         #region Abstract Members
 
@@ -62,7 +63,6 @@ namespace MySql.Web.Profile
         /// <exception cref="T:System.InvalidOperationException">An attempt is made to call <see cref="M:System.Configuration.Provider.ProviderBase.Initialize(System.String,System.Collections.Specialized.NameValueCollection)"/> on a provider after the provider has already been initialized.</exception>
         public override void Initialize(string name, NameValueCollection config)
         {
-            applicationId = -1;
             if (config == null)
                 throw new ArgumentNullException("config");
 
@@ -78,32 +78,24 @@ namespace MySql.Web.Profile
 
             try
             {
-                applicationName = GetConfigValue(config["applicationName"], HostingEnvironment.ApplicationVirtualPath);
+                string applicationName = GetConfigValue(config["applicationName"], HostingEnvironment.ApplicationVirtualPath);
 
+                connectionString = "";
                 ConnectionStringSettings ConnectionStringSettings = ConfigurationManager.ConnectionStrings[
                     config["connectionStringName"]];
                 if (ConnectionStringSettings != null)
                     connectionString = ConnectionStringSettings.ConnectionString.Trim();
-                else
-                    connectionString = "";
+
+                if (String.IsNullOrEmpty(connectionString)) return;
 
                 // make sure our schema is up to date
                 SchemaManager.CheckSchema(connectionString, config);
 
-                // now pre-cache the applicationId
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    conn.Open();
-                    MySqlCommand cmd = new MySqlCommand("SELECT id FROM my_aspnet_Applications WHERE name=@name", conn);
-                    cmd.Parameters.AddWithValue("@name", applicationName);
-                    object appIdValue = cmd.ExecuteScalar();
-                    if (appIdValue != null)
-                        applicationId = Convert.ToInt32(appIdValue);
-                }
+                app = new Application(applicationName, base.Description);
             }
             catch (Exception ex)
             {
-                throw new ProviderException("There was an error during provider initilization.", ex);
+                throw new ProviderException(Resources.ErrorInitProfileProvider, ex);
             }
         }
 
@@ -135,24 +127,24 @@ namespace MySql.Web.Profile
                 MySqlCommand queryCmd = new MySqlCommand(
                     @"SELECT * FROM my_aspnet_Users 
                     WHERE applicationId=@appId AND 
-                    LastActivityDate < @lastActivityDate",
+                    lastActivityDate < @lastActivityDate",
                     c);
-                queryCmd.Parameters.AddWithValue("@appId", applicationId);
+                queryCmd.Parameters.AddWithValue("@appId", app.FetchId(c));
                 queryCmd.Parameters.AddWithValue("@lastActivityDate", userInactiveSinceDate);
                 if (authenticationOption == ProfileAuthenticationOption.Anonymous)
-                    queryCmd.CommandText += " AND IsAnonymous = 1";
+                    queryCmd.CommandText += " AND isAnonymous = 1";
                 else if (authenticationOption == ProfileAuthenticationOption.Authenticated)
-                    queryCmd.CommandText += " AND IsAnonymous = 0";
+                    queryCmd.CommandText += " AND isAnonymous = 0";
 
                 MySqlCommand deleteCmd = new MySqlCommand(
-                    "DELETE FROM my_aspnet_Profiles WHERE UserId = @userId", c);
+                    "DELETE FROM my_aspnet_Profiles WHERE userId = @userId", c);
                 deleteCmd.Parameters.Add("@userId", MySqlDbType.UInt64);
 
                 List<ulong> uidList = new List<ulong>();
                 using (MySqlDataReader reader = queryCmd.ExecuteReader())
                 {
                     while (reader.Read())
-                        uidList.Add(reader.GetUInt64("UserId"));
+                        uidList.Add(reader.GetUInt64("userId"));
                 }
 
                 int count = 0;
@@ -183,11 +175,11 @@ namespace MySql.Web.Profile
                 MySqlCommand queryCmd = new MySqlCommand(
                     @"SELECT * FROM my_aspnet_Users  
                     WHERE applicationId=@appId AND name = @name", c);
-                queryCmd.Parameters.AddWithValue("@appId", applicationId);
+                queryCmd.Parameters.AddWithValue("@appId", app.FetchId(c));
                 queryCmd.Parameters.Add("@name", MySqlDbType.VarChar);
 
                 MySqlCommand deleteCmd = new MySqlCommand(
-                    "DELETE FROM my_aspnet_Profiles WHERE UserId = @userId", c);
+                    "DELETE FROM my_aspnet_Profiles WHERE userId = @userId", c);
                 deleteCmd.Parameters.Add("@userId", MySqlDbType.UInt64);
 
                 int count = 0;
@@ -366,34 +358,37 @@ namespace MySql.Web.Profile
                 MySqlCommand queryCmd = new MySqlCommand(
                     @"SELECT COUNT(*) FROM my_aspnet_Users
                     WHERE applicationId = @appId AND 
-                    LastActivityDate < @lastActivityDate",
+                    lastActivityDate < @lastActivityDate",
                     c);
-                queryCmd.Parameters.AddWithValue("@appId", applicationId);
+                queryCmd.Parameters.AddWithValue("@appId", app.FetchId(c));
                 queryCmd.Parameters.AddWithValue("@lastActivityDate", userInactiveSinceDate);
                 if (authenticationOption == ProfileAuthenticationOption.Anonymous)
-                    queryCmd.CommandText += " AND IsAnonymous = 1";
+                    queryCmd.CommandText += " AND isAnonymous = 1";
                 else if (authenticationOption == ProfileAuthenticationOption.Authenticated)
-                    queryCmd.CommandText += " AND IsAnonymous = 0";
+                    queryCmd.CommandText += " AND isAnonymous = 0";
                 return (int)queryCmd.ExecuteScalar();
             }
         }
 
+        /// <summary>
+        /// Gets or sets the name of the currently running application.
+        /// </summary>
+        /// <value></value>
+        /// <returns>A <see cref="T:System.String"/> that contains the application's shortened name, which does not contain a full path or extension, for example, SimpleAppSettings.</returns>
         public override string ApplicationName
         {
-            get { return applicationName; }
-            set { applicationName = value; }
+            get { return app.Name; }
+            set { app.Name = value; }
         }
 
-        public override string Name
-        {
-            get { return "MySQLProfileProvider"; }
-        }
-
-        public override string Description
-        {
-            get { return "MySQL Profile provider"; }
-        }
-
+        /// <summary>
+        /// Returns the collection of settings property values for the specified application instance and settings property group.
+        /// </summary>
+        /// <param name="context">A <see cref="T:System.Configuration.SettingsContext"/> describing the current application use.</param>
+        /// <param name="collection">A <see cref="T:System.Configuration.SettingsPropertyCollection"/> containing the settings property group whose values are to be retrieved.</param>
+        /// <returns>
+        /// A <see cref="T:System.Configuration.SettingsPropertyValueCollection"/> containing the values for the specified settings property group.
+        /// </returns>
         public override SettingsPropertyValueCollection GetPropertyValues(
             SettingsContext context, SettingsPropertyCollection collection)
         {
@@ -405,6 +400,11 @@ namespace MySql.Web.Profile
 
             foreach (SettingsProperty property in collection)
             {
+                if (property.PropertyType.IsPrimitive || property.PropertyType == typeof(string))
+                    property.SerializeAs = SettingsSerializeAs.String;
+                else
+                    property.SerializeAs = SettingsSerializeAs.Xml;
+
                 values.Add(new SettingsPropertyValue(property));
             }
 
@@ -414,26 +414,36 @@ namespace MySql.Web.Profile
             // retrieve encoded profile data from the database
             try
             {
-                MySqlConnection c = new MySqlConnection(connectionString);
-                MySqlCommand cmd = new MySqlCommand(@"SELECT * FROM my_aspnet_Profiles p
-                JOIN my_aspnet_Users u ON u.id = p.userId
-                WHERE u.applicationId = @appId AND u.name = @name", c);
-                cmd.Parameters.AddWithValue("@appId", applicationId);
-                cmd.Parameters.AddWithValue("@name", username);
-                MySqlDataAdapter da = new MySqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
 
-                if (dt.Rows.Count > 0)
-                    DecodeProfileData(dt.Rows[0], values);
-                return values;
+                using (MySqlConnection c = new MySqlConnection(connectionString))
+                {
+                    c.Open();
+                    MySqlCommand cmd = new MySqlCommand(
+                        @"SELECT * FROM my_aspnet_Profiles p
+                    JOIN my_aspnet_Users u ON u.id = p.userId
+                    WHERE u.applicationId = @appId AND u.name = @name", c);
+                    cmd.Parameters.AddWithValue("@appId", app.FetchId(c));
+                    cmd.Parameters.AddWithValue("@name", username);
+                    MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
+                        DecodeProfileData(dt.Rows[0], values);
+                    return values;
+                }
             }
             catch (Exception ex)
             {
-                throw new ProviderException("Unable to retrieve profile data from database.", ex);
+                throw new ProviderException(Resources.UnableToRetrieveProfileData, ex);
             }
         }
 
+        /// <summary>
+        /// Sets the values of the specified group of property settings.
+        /// </summary>
+        /// <param name="context">A <see cref="T:System.Configuration.SettingsContext"/> describing the current application usage.</param>
+        /// <param name="collection">A <see cref="T:System.Configuration.SettingsPropertyValueCollection"/> representing the group of property settings to set.</param>
         public override void SetPropertyValues(
             SettingsContext context, SettingsPropertyValueCollection collection)
         {
@@ -457,7 +467,10 @@ namespace MySql.Web.Profile
                     using (MySqlConnection connection = new MySqlConnection(connectionString))
                     {
                         connection.Open();
-                        int userId = CreateOrFetchUserId(connection, username, isAuthenticated);
+
+                        // either create a new user or fetch the existing user id
+                        int userId = SchemaManager.CreateOrFetchUserId(connection, username, 
+                            app.EnsureId(connection), isAuthenticated);
 
                         MySqlCommand cmd = new MySqlCommand(
                             @"INSERT INTO my_aspnet_Profiles  
@@ -470,15 +483,15 @@ namespace MySql.Web.Profile
                         cmd.Parameters.AddWithValue("@stringData", stringData);
                         cmd.Parameters.AddWithValue("@binaryData", binaryData);
                         count = cmd.ExecuteNonQuery();
-                        if (count != 1)
-                            throw new Exception("Profile update operation affected zero rows.");
+                        if (count == 0)
+                            throw new Exception(Resources.ProfileUpdateFailed);
                         ts.Complete();
                     }
                 }
             }
             catch (Exception ex)
             {
-                throw new ProviderException("Unable to save profile data to database.", ex);
+                throw new ProviderException(Resources.ProfileUpdateFailed, ex);
             }
         }
 
@@ -493,56 +506,6 @@ namespace MySql.Web.Profile
         }
 
         #region Private Methods
-
-        /// <summary>
-        /// It is assumed that this method is called from within a transaction or
-        /// a transactionscope
-        /// </summary>
-        /// <param name="connection"></param>
-        /// <param name="username"></param>
-        /// <param name="authenticated"></param>
-        /// <returns></returns>
-        private int CreateOrFetchUserId(MySqlConnection connection, string username, bool authenticated)
-        {
-            // first attempt to fetch an existing user id
-            MySqlCommand cmd = new MySqlCommand(@"SELECT id FROM my_aspnet_Users
-                WHERE applicationId = @appId AND name = @name", connection);
-            cmd.Parameters.AddWithValue("@appId", applicationId);
-            cmd.Parameters.AddWithValue("@name", username);
-            object userId = cmd.ExecuteScalar();
-            if (userId != null) return (int)userId;
-
-            // the user doesn't exist so we have to create one
-            int appId = CreateOrFetchApplicationId(connection);
-
-            cmd.CommandText = @"INSERT INTO my_aspnet_Users VALUES (NULL, @appId, @name, @isAnon, Now())";
-            cmd.Parameters[0].Value = appId;
-            cmd.Parameters.AddWithValue("@isAnon", !authenticated);
-            int recordsAffected = cmd.ExecuteNonQuery();
-            if (recordsAffected != 1)
-                throw new ProviderException("Unable to create use for profile.");
-
-            cmd.CommandText = "SELECT LAST_INSERT_ID()";
-            return Convert.ToInt32(cmd.ExecuteScalar());
-        }
-
-        private int CreateOrFetchApplicationId(MySqlConnection connection)
-        {
-            if (applicationId != -1)
-                return applicationId;
-            MySqlCommand cmd = new MySqlCommand(
-                @"INSERT INTO my_aspnet_Applications VALUES (NULL, @appName, @appDesc)",
-                connection);
-            cmd.Parameters.AddWithValue("@appName", applicationName);
-            cmd.Parameters.AddWithValue("@appDesc", base.Description);
-            int recordsAffected = cmd.ExecuteNonQuery();
-            if (recordsAffected != 1)
-                throw new ProviderException("Unable to create application for profile.");
-
-            cmd.CommandText = "SELECT LAST_INSERT_ID()";
-            applicationId = Convert.ToInt32(cmd.ExecuteScalar());
-            return applicationId;
-        }
 
         private void DecodeProfileData(DataRow profileRow, SettingsPropertyValueCollection values)
         {
@@ -651,26 +614,27 @@ namespace MySql.Web.Profile
                 c.Open();
 
                 MySqlCommand cmd = new MySqlCommand(
-                @"SELECT p.*, LENGTH(p.stringdata) + LENGTH(p.binarydata) AS profilesize, 
-                u.UserName FROM my_aspnet_Profiles p 
-                JOIN my_aspnet_Users u ON u.UserId = p.UserId 
+                @"SELECT p.*, u.name, u.isAnonymous, u.lastActivityDate,
+                LENGTH(p.stringdata) + LENGTH(p.binarydata) AS profilesize
+                FROM my_aspnet_Profiles p 
+                JOIN my_aspnet_Users u ON u.id = p.userId 
                 WHERE u.applicationId = @appId", c);
-                cmd.Parameters.AddWithValue("@appId", applicationId);
+                cmd.Parameters.AddWithValue("@appId", app.FetchId(c));
 
                 if (usernameToMatch != null)
                 {
-                    cmd.CommandText += " AND u.UserName LIKE @userName";
+                    cmd.CommandText += " AND u.name LIKE @userName";
                     cmd.Parameters.AddWithValue("@userName", usernameToMatch);
                 }
                 if (userInactiveSinceDate != DateTime.MinValue)
                 {
-                    cmd.CommandText += " AND u.LastActivityDate < @lastActivityDate";
+                    cmd.CommandText += " AND u.lastActivityDate < @lastActivityDate";
                     cmd.Parameters.AddWithValue("@lastActivityDate", userInactiveSinceDate);
                 }
                 if (authenticationOption == ProfileAuthenticationOption.Anonymous)
-                     cmd.CommandText += " AND u.IsAnonymous = 1";
+                     cmd.CommandText += " AND u.isAnonymous = 1";
                 else if (authenticationOption == ProfileAuthenticationOption.Authenticated)
-                    cmd.CommandText += " AND u.IsAnonymous = 0";
+                    cmd.CommandText += " AND u.isAnonymous = 0";
 
                 cmd.CommandText += String.Format(" LIMIT {0},{1}", pageIndex * pageSize, pageSize);
 
@@ -680,16 +644,16 @@ namespace MySql.Web.Profile
                     while (reader.Read())
                     {
                         ProfileInfo pi = new ProfileInfo(
-                            reader.GetString("UserName"),
-                            reader.GetBoolean("IsAnonymous"),
-                            reader.GetDateTime("LastActivityDate"),
-                            reader.GetDateTime("LastUpdatdDate"),
+                            reader.GetString("name"),
+                            reader.GetBoolean("isAnonymous"),
+                            reader.GetDateTime("lastActivityDate"),
+                            reader.GetDateTime("lastUpdatedDate"),
                             reader.GetInt32("profilesize"));
                         pic.Add(pi);
                     }
                 }
                 cmd.CommandText = "SELECT FOUND_ROWS()";
-                totalRecords = (int)cmd.ExecuteScalar();
+                totalRecords = Convert.ToInt32(cmd.ExecuteScalar());
                 return pic;
             }
         }

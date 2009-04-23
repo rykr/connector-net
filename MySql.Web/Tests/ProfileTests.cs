@@ -1,4 +1,4 @@
-// Copyright (C) 2007 MySQL AB
+// Copyright (c) 2004-2008 MySQL AB, 2008-2009 Sun Microsystems, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -31,6 +31,7 @@ using System.Configuration.Provider;
 using System.Configuration;
 using MySql.Web.Profile;
 using System.Web.Profile;
+using System.Reflection;
 
 namespace MySql.Web.Tests
 {
@@ -50,10 +51,6 @@ namespace MySql.Web.Tests
         [Test]
         public void SettingValuesCreatesAnAppAndUserId()
         {
-            // make sure there are no apps currently
-            DataTable dt = FillTable("SELECT * FROM my_aspnet_applications");
-            Assert.AreEqual(0, dt.Rows.Count);
-
             MySQLProfileProvider provider = InitProfileProvider();
             SettingsContext ctx = new SettingsContext();
             ctx.Add("IsAuthenticated", false);
@@ -69,21 +66,27 @@ namespace MySql.Web.Tests
 
             provider.SetPropertyValues(ctx, values);
 
-            dt = FillTable("SELECT * FROM my_aspnet_applications");
+            DataTable dt = FillTable("SELECT * FROM my_aspnet_Applications");
             Assert.AreEqual(1, dt.Rows.Count);
-            dt = FillTable("SELECT * FROM my_aspnet_users");
+            dt = FillTable("SELECT * FROM my_aspnet_Users");
             Assert.AreEqual(1, dt.Rows.Count);
-            dt = FillTable("SELECT * FROM my_aspnet_profiles");
+            dt = FillTable("SELECT * FROM my_aspnet_Profiles");
+            Assert.AreEqual(1, dt.Rows.Count);
+
+            values["color"].PropertyValue = "green";
+            provider.SetPropertyValues(ctx, values);
+
+            dt = FillTable("SELECT * FROM my_aspnet_Applications");
+            Assert.AreEqual(1, dt.Rows.Count);
+            dt = FillTable("SELECT * FROM my_aspnet_Users");
+            Assert.AreEqual(1, dt.Rows.Count);
+            dt = FillTable("SELECT * FROM my_aspnet_Profiles");
             Assert.AreEqual(1, dt.Rows.Count);
         }
 
         [Test]
         public void AnonymousUserSettingNonAnonymousProperties()
         {
-            // make sure there are no apps currently
-            DataTable dt = FillTable("SELECT * FROM my_aspnet_applications");
-            Assert.AreEqual(0, dt.Rows.Count);
-
             MySQLProfileProvider provider = InitProfileProvider();
             SettingsContext ctx = new SettingsContext();
             ctx.Add("IsAuthenticated", false);
@@ -99,22 +102,19 @@ namespace MySql.Web.Tests
 
             provider.SetPropertyValues(ctx, values);
 
-            dt = FillTable("SELECT * FROM my_aspnet_applications");
+            DataTable dt = FillTable("SELECT * FROM my_aspnet_Applications");
             Assert.AreEqual(0, dt.Rows.Count);
-            dt = FillTable("SELECT * FROM my_aspnet_users");
+            dt = FillTable("SELECT * FROM my_aspnet_Users");
             Assert.AreEqual(0, dt.Rows.Count);
-            dt = FillTable("SELECT * FROM my_aspnet_profiles");
+            dt = FillTable("SELECT * FROM my_aspnet_Profiles");
             Assert.AreEqual(0, dt.Rows.Count);
         }
 
         [Test]
         public void StringCollectionAsProperty()
         {
-            // make sure there are no apps currently
-            DataTable dt = FillTable("SELECT * FROM my_aspnet_applications");
-            Assert.AreEqual(0, dt.Rows.Count);
-
             ProfileBase profile = ProfileBase.Create("foo", true);
+            ResetAppId(profile.Providers["MySqlProfileProvider"] as MySQLProfileProvider);
             StringCollection colors = new StringCollection();
             colors.Add("red");
             colors.Add("green");
@@ -122,11 +122,11 @@ namespace MySql.Web.Tests
             profile["FavoriteColors"] = colors;
             profile.Save();
 
-            dt = FillTable("SELECT * FROM my_aspnet_applications");
+            DataTable dt = FillTable("SELECT * FROM my_aspnet_Applications");
             Assert.AreEqual(1, dt.Rows.Count);
-            dt = FillTable("SELECT * FROM my_aspnet_users");
+            dt = FillTable("SELECT * FROM my_aspnet_Users");
             Assert.AreEqual(1, dt.Rows.Count);
-            dt = FillTable("SELECT * FROM my_aspnet_profiles");
+            dt = FillTable("SELECT * FROM my_aspnet_Profiles");
             Assert.AreEqual(1, dt.Rows.Count);
 
             // now retrieve them
@@ -154,6 +154,7 @@ namespace MySql.Web.Tests
         public void AuthenticatedDateTime()
         {
             ProfileBase profile = ProfileBase.Create("foo", true);
+            ResetAppId(profile.Providers["MySqlProfileProvider"] as MySQLProfileProvider);
             DateTime date = DateTime.Now;
             profile["BirthDate"] = date;
             profile.Save();
@@ -175,10 +176,31 @@ namespace MySql.Web.Tests
             Assert.AreEqual(date, getValue1.PropertyValue);
         }
 
+        /// <summary>
+        /// We have to manually reset the app id because our profile provider is loaded from
+        /// previous tests but we are destroying our database between tests.  This means that 
+        /// our provider thinks we have an application in our database when we really don't.
+        /// Doing this will force the provider to generate a new app id.
+        /// Note that this is not really a problem in a normal app that is not destroying
+        /// the database behind the back of the provider.
+        /// </summary>
+        /// <param name="p"></param>
+        private void ResetAppId(MySQLProfileProvider p)
+        {
+            Type t = p.GetType();
+            FieldInfo fi = t.GetField("app",
+                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.GetField);
+            object appObject = fi.GetValue(p);
+            Type appType = appObject.GetType();
+            PropertyInfo pi = appType.GetProperty("Id");
+            pi.SetValue(appObject, -1, null);
+        }
+
         [Test]
         public void AuthenticatedStringProperty()
         {
             ProfileBase profile = ProfileBase.Create("foo", true);
+            ResetAppId(profile.Providers["MySqlProfileProvider"] as MySQLProfileProvider);
             profile["Name"] = "Fred Flintstone";
             profile.Save();
 
@@ -196,6 +218,33 @@ namespace MySql.Web.Tests
             Assert.AreEqual(1, getValues.Count);
             SettingsPropertyValue getValue1 = getValues["Name"];
             Assert.AreEqual("Fred Flintstone", getValue1.PropertyValue);
+        }
+
+        /// <summary>
+        /// Bug #41654	FindProfilesByUserName error into Connector .NET
+        /// </summary>
+        [Test]
+        public void GetAllProfiles()
+        {
+            ProfileBase profile = ProfileBase.Create("foo", true);
+            ResetAppId(profile.Providers["MySqlProfileProvider"] as MySQLProfileProvider);
+            profile["Name"] = "Fred Flintstone";
+            profile.Save();
+
+            SettingsPropertyCollection getProps = new SettingsPropertyCollection();
+            SettingsProperty getProp1 = new SettingsProperty("Name");
+            getProp1.PropertyType = typeof(String);
+            getProps.Add(getProp1);
+
+            MySQLProfileProvider provider = InitProfileProvider();
+            SettingsContext ctx = new SettingsContext();
+            ctx.Add("IsAuthenticated", true);
+            ctx.Add("UserName", "foo");
+
+            int total;
+            ProfileInfoCollection profiles = provider.GetAllProfiles(
+                ProfileAuthenticationOption.All, 0, 10, out total);
+            Assert.AreEqual(1, total);
         }
     }
 }

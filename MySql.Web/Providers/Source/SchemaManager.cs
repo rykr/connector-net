@@ -1,4 +1,4 @@
-// Copyright (C) 2007 MySQL AB
+// Copyright (c) 2004-2008 MySQL AB, 2008-2009 Sun Microsystems, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -29,6 +29,8 @@ using System.Collections.Specialized;
 using System.Configuration.Provider;
 using System.Resources;
 using System.IO;
+using System.Diagnostics;
+using MySql.Web.Properties;
 
 namespace MySql.Web.Common
 {
@@ -37,7 +39,7 @@ namespace MySql.Web.Common
     /// </summary>
     public static class SchemaManager
     {
-        private const int schemaVersion = 3;
+        private const int schemaVersion = 4;
 
         /// <summary>
         /// Gets the most recent version of the schema.
@@ -58,12 +60,12 @@ namespace MySql.Web.Common
                 if (config["autogenerateschema"] == "true")
                     UpgradeToCurrent(connectionString, ver);
                 else
-                    throw new ProviderException("Unable to initialize provider.  Missing or incorrect schema.");
+                    throw new ProviderException(Resources.MissingOrWrongSchema);
 
             }
             catch (Exception ex)
             {
-                throw new ProviderException("Error during provider initialization.", ex);
+                throw new ProviderException(Resources.MissingOrWrongSchema, ex);
             }
         }
 
@@ -95,22 +97,57 @@ namespace MySql.Web.Common
             {
                 conn.Open();
 
-                string[] restrictions = new string[4];
-                restrictions[2] = "mysql_Membership";
-                DataTable dt = conn.GetSchema("Tables", restrictions);
-                if (dt.Rows.Count == 1)
-                    return Convert.ToInt32(dt.Rows[0]["TABLE_COMMENT"]);
-
-                restrictions[2] = "my_aspnet_schemaversion";
-                dt = conn.GetSchema("Tables", restrictions);
-                if (dt.Rows.Count == 0) return 0;
-
                 MySqlCommand cmd = new MySqlCommand("SELECT * FROM my_aspnet_SchemaVersion", conn);
-                object ver = cmd.ExecuteScalar();
-                if (ver == null)
-                    throw new ProviderException("Schema corrupt");
-                return (int)ver;
+                try
+                {
+                    object ver = cmd.ExecuteScalar();
+                    if (ver != null)
+                        return (int)ver;
+                }
+                catch (MySqlException ex)
+                {
+                    if (ex.Number != (int)MySqlErrorCode.NoSuchTable)
+                        throw;
+                    string[] restrictions = new string[4];
+                    restrictions[2] = "mysql_Membership";
+                    DataTable dt = conn.GetSchema("Tables", restrictions);
+                    if (dt.Rows.Count == 1)
+                        return Convert.ToInt32(dt.Rows[0]["TABLE_COMMENT"]);
+                }
+                return 0;
             }
+        }
+
+        /// <summary>
+        /// Creates the or fetch user id.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="username">The username.</param>
+        /// <param name="applicationId">The application id.</param>
+        /// <param name="authenticated">if set to <c>true</c> [authenticated].</param>
+        /// <returns></returns>
+        internal static int CreateOrFetchUserId(MySqlConnection connection, string username, 
+            int applicationId, bool authenticated)
+        {
+            Debug.Assert(applicationId > 0);
+
+            // first attempt to fetch an existing user id
+            MySqlCommand cmd = new MySqlCommand(@"SELECT id FROM my_aspnet_Users
+                WHERE applicationId = @appId AND name = @name", connection);
+            cmd.Parameters.AddWithValue("@appId", applicationId);
+            cmd.Parameters.AddWithValue("@name", username);
+            object userId = cmd.ExecuteScalar();
+            if (userId != null) return (int)userId;
+
+            cmd.CommandText = @"INSERT INTO my_aspnet_Users VALUES 
+                (NULL, @appId, @name, @isAnon, Now())";
+            cmd.Parameters.AddWithValue("@isAnon", !authenticated);
+            int recordsAffected = cmd.ExecuteNonQuery();
+            if (recordsAffected != 1)
+                throw new ProviderException(Resources.UnableToCreateUser);
+
+            cmd.CommandText = "SELECT LAST_INSERT_ID()";
+            return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
 }

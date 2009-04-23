@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2004-2007 MySQL AB
+﻿// Copyright (c) 2004-2008 MySQL AB, 2008-2009 Sun Microsystems, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -16,7 +16,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -53,6 +53,5 @@ using System.Security;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("5.2")]
-[assembly: AssemblyFileVersion("5.2")]
+[assembly: AssemblyVersion("6.0.3")]
 [assembly: AssemblyKeyName("ConnectorNet")]

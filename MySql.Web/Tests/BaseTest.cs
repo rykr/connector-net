@@ -1,4 +1,4 @@
-// Copyright (C) 2007 MySQL AB
+// Copyright (c) 2004-2008 MySQL AB, 2008-2009 Sun Microsystems, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -72,29 +72,30 @@ namespace MySql.Web.Tests
 			ps.Parameters.Add("passwordStrengthRegularExpression", "");
 			ms.Providers.Add(ps);
 
+            RoleManagerSection rs = (RoleManagerSection)config.SectionGroups["system.web"].Sections["roleManager"];
+            rs.DefaultProvider = "MySQLRoleProvider";
+            rs.Enabled = true;
+            ps = new ProviderSettings();
+            ps.Name = "MySQLRoleProvider";
+            a = Assembly.GetAssembly(typeof(MySQLRoleProvider));
+            ps.Type = "MySql.Web.Security.MySQLRoleProvider, " + a.FullName;
+            ps.Parameters.Add("connectionStringName", "LocalMySqlServer");
+            ps.Parameters.Add("applicationName", "/");
+            rs.Providers.Add(ps);
+
 			config.Save();
 			ConfigurationManager.RefreshSection("connectionStrings");
 			ConfigurationManager.RefreshSection("system.web/membership");
-		}
-
-        [TestFixtureSetUp]
-        public override void FixtureSetup()
-        {
-            base.FixtureSetup();
-            for (int ver = 1; ver <= SchemaManager.Version; ver++)
-                LoadSchema(ver);
+            ConfigurationManager.RefreshSection("system.web/roleManager");
         }
 
         public override void Setup()
         {
            base.Setup();
-           execSQL("TRUNCATE TABLE my_aspnet_Applications");
-           execSQL("TRUNCATE TABLE my_aspnet_Membership");
-           execSQL("TRUNCATE TABLE my_aspnet_Profiles");
-           execSQL("TRUNCATE TABLE my_aspnet_Roles");
-           execSQL("TRUNCATE TABLE my_aspnet_Users");
-           execSQL("TRUNCATE TABLE my_aspnet_UsersInRoles");
-       }
+
+           for (int ver = 1; ver <= SchemaManager.Version; ver++)
+               LoadSchema(ver);
+        }
 
         protected void LoadSchema(int version)
         {

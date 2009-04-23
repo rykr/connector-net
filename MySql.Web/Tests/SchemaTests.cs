@@ -1,4 +1,4 @@
-// Copyright (C) 2007 MySQL AB
+// Copyright (c) 2004-2008 MySQL AB, 2008-2009 Sun Microsystems, Inc.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License version 2 as published by
@@ -31,6 +31,7 @@ using System.Data;
 using System;
 using System.IO;
 using System.Configuration.Provider;
+using System.Web.Security;
 
 namespace MySql.Web.Tests
 {
@@ -47,6 +48,9 @@ namespace MySql.Web.Tests
                 execSQL(String.Format("DROP TABLE IF EXISTS {0}", row["TABLE_NAME"]));
         }
 
+        /// <summary>
+        /// Bug #37469 autogenerateschema optimizing
+        /// </summary>
         [Test]
         public void SchemaNotPresent()
         {
@@ -122,6 +126,29 @@ namespace MySql.Web.Tests
             try
             {
                 provider.Initialize(null, config);
+                Assert.Fail("Should have failed");
+            }
+            catch (ProviderException)
+            {
+            }
+        }
+
+        [Test]
+        public void SchemaV4Present()
+        {
+            MySQLMembershipProvider provider = new MySQLMembershipProvider();
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionStringName", "LocalMySqlServer");
+            config.Add("applicationName", "/");
+            config.Add("passwordFormat", "Clear");
+
+            LoadSchema(1);
+            LoadSchema(2);
+            LoadSchema(3);
+            LoadSchema(4);
+            try
+            {
+                provider.Initialize(null, config);
             }
             catch (ProviderException)
             {
@@ -129,16 +156,30 @@ namespace MySql.Web.Tests
             }
         }
 
+        /// <summary>
+        /// Bug #36444 'autogenerateschema' produces tables with 'random' collations 
+        /// </summary>
         [Test]
         public void CurrentSchema()
         {
+            execSQL("set character_set_database=utf8");
+
             LoadSchema(1);
             LoadSchema(2);
             LoadSchema(3);
+            LoadSchema(4);
 
             MySqlCommand cmd = new MySqlCommand("SELECT * FROM my_aspnet_SchemaVersion", conn);
             object ver = cmd.ExecuteScalar();
-            Assert.AreEqual(3, ver);
+            Assert.AreEqual(4, ver);
+
+            cmd.CommandText = "SHOW CREATE TABLE my_aspnet_membership";
+            using (MySqlDataReader reader = cmd.ExecuteReader())
+            {
+                reader.Read();
+                string createSql = reader.GetString(1);
+                Assert.IsTrue(createSql.IndexOf("CHARSET=utf8") != -1);
+            }
         }
 
         [Test]
@@ -170,14 +211,14 @@ namespace MySql.Web.Tests
         {
             LoadSchema(1);
             LoadSchema(2);
-            execSQL(@"INSERT INTO mysql_membership (pkid, username, applicationname, lastactivitydate) 
-                VALUES('1', 'user1', 'app1', '2007-01-01')");
-            execSQL(@"INSERT INTO mysql_membership (pkid, username, applicationname, lastactivitydate) 
-                VALUES('2', 'user2', 'app1', '2007-01-01')");
-            execSQL(@"INSERT INTO mysql_membership (pkid, username, applicationname, lastactivitydate) 
-                VALUES('3', 'user1', 'app2', '2007-01-01')");
-            execSQL(@"INSERT INTO mysql_membership (pkid, username, applicationname, lastactivitydate) 
-                VALUES('4', 'user2', 'app2', '2007-01-01')");
+            execSQL(@"INSERT INTO mysql_membership (pkid, username, password, applicationname, lastactivitydate) 
+                VALUES('1', 'user1', '', 'app1', '2007-01-01')");
+            execSQL(@"INSERT INTO mysql_membership (pkid, username, password, applicationname, lastactivitydate) 
+                VALUES('2', 'user2', '', 'app1', '2007-01-01')");
+            execSQL(@"INSERT INTO mysql_membership (pkid, username, password, applicationname, lastactivitydate) 
+                VALUES('3', 'user1', '', 'app2', '2007-01-01')");
+            execSQL(@"INSERT INTO mysql_membership (pkid, username, password, applicationname, lastactivitydate) 
+                VALUES('4', 'user2', '', 'app2', '2007-01-01')");
             execSQL(@"INSERT INTO mysql_roles VALUES ('role1', 'app1')");
             execSQL(@"INSERT INTO mysql_roles VALUES ('role2', 'app1')");
             execSQL(@"INSERT INTO mysql_roles VALUES ('role1', 'app2')");
@@ -275,6 +316,26 @@ namespace MySql.Web.Tests
             Assert.AreEqual(3, dt.Rows[2]["roleid"]);
             Assert.AreEqual(4, dt.Rows[3]["userid"]);
             Assert.AreEqual(4, dt.Rows[3]["roleid"]);
+        }
+
+        /// <summary>
+        /// Bug #39072 Web provider does not work
+        /// </summary>
+        [Test]
+        public void AutoGenerateSchema()
+        {
+            MySQLMembershipProvider provider = new MySQLMembershipProvider();
+            NameValueCollection config = new NameValueCollection();
+            config.Add("connectionStringName", "LocalMySqlServer");
+            config.Add("autogenerateschema", "true");
+            config.Add("applicationName", "/");
+            config.Add("passwordFormat", "Clear");
+
+            provider.Initialize(null, config);
+
+            MembershipCreateStatus status;
+            MembershipUser user = provider.CreateUser("boo", "password", "email@email.com", 
+                "question", "answer", true, null, out status);
         }
     }
 }
